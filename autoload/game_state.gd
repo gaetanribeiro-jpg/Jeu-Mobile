@@ -27,13 +27,11 @@ func start_new_campaign(seed_value: int) -> void:
 	rng.seed = seed_value
 
 
-## Dérive un générateur indépendant pour un sous-système (un combat,
-## une Convocation), afin qu'il soit rejouable seul sans dépendre de
-## l'ordre exact des tirages précédents.
-func derive_rng(salt: int) -> RandomNumberGenerator:
-	var derived := RandomNumberGenerator.new()
-	derived.seed = hash([campaign_seed, salt])
-	return derived
+## Générateur d'un combat : journalisé, rejouable, indépendant du reste.
+## `salt` identifie le combat (index de saison, de nœud…) pour que rejouer
+## ce combat-là ne dépende pas de l'ordre des tirages qui l'ont précédé.
+func combat_rng(salt: int) -> CombatRng:
+	return CombatRng.new(hash([campaign_seed, salt]))
 
 
 func _generate_seed() -> int:
