@@ -1,0 +1,52 @@
+; Reconquete — configuration du projet Godot
+; Genere a la main : ne pas reordonner les sections sans raison,
+; l'editeur les reecrira de toute facon a la premiere ouverture.
+
+config_version=5
+
+[application]
+
+config/name="Reconquête"
+config/description="Tactique au tour par tour et gestion de comté."
+run/main_scene="res://scenes/ui/boot.tscn"
+config/features=PackedStringArray("4.6", "GL Compatibility")
+config/icon="res://icon.svg"
+
+[autoload]
+
+EventBus="*res://autoload/event_bus.gd"
+GameState="*res://autoload/game_state.gd"
+SaveManager="*res://autoload/save_manager.gd"
+AudioManager="*res://autoload/audio_manager.gd"
+
+[display]
+
+window/size/viewport_width=1280
+window/size/viewport_height=720
+window/stretch/mode="canvas_items"
+window/stretch/aspect="keep"
+; 4 = SCREEN_SENSOR_LANDSCAPE : paysage verrouille, mais le telephone
+; peut etre retourne a 180 degres. Mettre 0 pour un verrouillage strict.
+window/handheld/orientation=4
+
+[editor_plugins]
+
+enabled=PackedStringArray("res://addons/gut/plugin.cfg")
+
+[input_devices]
+
+pointing/emulate_touch_from_mouse=true
+
+[rendering]
+
+; gl_compatibility : le plus large support Android, suffisant pour du
+; pixel art 2D et le plus sur pour la cible « entree de gamme 2021 ».
+renderer/rendering_method="gl_compatibility"
+renderer/rendering_method.mobile="gl_compatibility"
+; 0 = Nearest. Obligatoire pour du pixel art (regle F0.5).
+textures/canvas_textures/default_texture_filter=0
+
+[internationalization]
+
+locale/translations=PackedStringArray("res://data/i18n/fr.fr.translation")
+locale/fallback="fr"
