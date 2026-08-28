@@ -1,0 +1,25 @@
+{
+  "_readme": "Règles chiffrées du combat. Aucune de ces valeurs ne doit apparaître dans un .gd.",
+  "grid": {
+    "combat_width": 8,
+    "combat_height": 6,
+    "siege_width": 10,
+    "siege_height": 8,
+    "_adjacency": "orthogonal = 4 voisins et distance de Manhattan (référence Into the Breach). diagonal = 8 voisins et distance de Chebyshev. À TRANCHER : le Lancier et le Canon sont dessinés sur 8 directions, ce qui plaide pour diagonal ; la lisibilité au doigt et la portée « 2 à 4 » plaident pour orthogonal.",
+    "adjacency": "orthogonal"
+  },
+  "turns": {
+    "min_turns": 3,
+    "max_turns": 6
+  },
+  "sides": {
+    "max_heroes": 4,
+    "min_enemies": 3,
+    "max_enemies": 7
+  },
+  "push": {
+    "_blocked": "Ce qui arrive quand une poussée est bloquée par un décor, une unité ou le bord. 0 = il ne se passe rien, le pousseur a gâché son coup.",
+    "blocked_damage": 0,
+    "distance": 1
+  }
+}

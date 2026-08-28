@@ -1,0 +1,76 @@
+{
+  "_readme": "Types de tuiles de combat (§ 4.3). walkable vaut pour les héros ; les unités aquatiques ont leur propre règle de franchissement. damage_taken s'ajoute aux dégâts subis par l'occupant : -1 pour la forêt qui protège, +1 pour la ruine qui expose.",
+  "grass": {
+    "walkable": true,
+    "swimmable": false,
+    "lethal": false,
+    "blocks_sight": false,
+    "move_cost": 1,
+    "damage_taken": 0,
+    "ranged_range_bonus": 0,
+    "ranged_damage_bonus": 0
+  },
+  "water": {
+    "walkable": false,
+    "swimmable": true,
+    "lethal": true,
+    "blocks_sight": false,
+    "move_cost": 1,
+    "damage_taken": 0,
+    "ranged_range_bonus": 0,
+    "ranged_damage_bonus": 0
+  },
+  "forest": {
+    "walkable": true,
+    "swimmable": false,
+    "lethal": false,
+    "blocks_sight": true,
+    "move_cost": 1,
+    "damage_taken": -1,
+    "ranged_range_bonus": 0,
+    "ranged_damage_bonus": 0
+  },
+  "hill": {
+    "walkable": true,
+    "swimmable": false,
+    "lethal": false,
+    "blocks_sight": false,
+    "move_cost": 1,
+    "damage_taken": 0,
+    "ranged_range_bonus": 1,
+    "ranged_damage_bonus": 1
+  },
+  "rock": {
+    "walkable": false,
+    "swimmable": false,
+    "lethal": false,
+    "blocks_sight": true,
+    "move_cost": 1,
+    "damage_taken": 0,
+    "ranged_range_bonus": 0,
+    "ranged_damage_bonus": 0
+  },
+  "bridge": {
+    "walkable": true,
+    "swimmable": false,
+    "lethal": false,
+    "blocks_sight": false,
+    "move_cost": 1,
+    "damage_taken": 0,
+    "ranged_range_bonus": 0,
+    "ranged_damage_bonus": 0,
+    "destructible": true,
+    "hit_points": 2,
+    "becomes_when_destroyed": "water"
+  },
+  "ruin": {
+    "walkable": true,
+    "swimmable": false,
+    "lethal": false,
+    "blocks_sight": false,
+    "move_cost": 1,
+    "damage_taken": 1,
+    "ranged_range_bonus": 0,
+    "ranged_damage_bonus": 0
+  }
+}
