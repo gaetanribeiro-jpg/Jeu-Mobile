@@ -4,3 +4,10 @@ BOOT_SUBTITLE,Chargement…
 ACCENT_TEST_UPPER,ÀÂÄÇÉÈÊËÎÏÔÖÙÛÜŸÆŒ
 ACCENT_TEST_LOWER,àâäçéèêëîïôöùûüÿæœ
 ACCENT_TEST_PUNCT,« ­— … ’ »
+FONT_TEST_TITLE,Contrôle de la police
+FONT_TEST_SAMPLE_CARD,"Vous apercevez un puits, mais il n'y a pas d'eau au fond. Il y a en revanche des marches, qui descendent plus bas que la vallée ne devrait aller…"
+FONT_TEST_PROMPT,Que souhaitez-vous faire ?
+FONT_TEST_STATS,Aldric — Guerrier · nv 4 · PV 9 · Dépl. 3 · Portée 1 · Dégâts 3
+FONT_TEST_RESOURCES,Menace 7 · Bois 24 · Or 51 · Vivres 12 · Renom 4
+FONT_TEST_NO_FONT,Aucune police dans assets/fonts/ — affichage avec la police par défaut de Godot.
+FONT_TEST_HINT,Toucher l'écran pour passer à la police suivante.
