@@ -35,6 +35,7 @@ manque : `AssetTable` renvoie une erreur explicite, pas un crash.
 res://
 ├── data/       # .tres et .json — TOUTES les valeurs chiffrées vivent ici
 ├── engine/     # logique pure — AUCUNE dépendance à un nœud Godot
+│   ├── assets/     AssetTable — le seul endroit qui résout un chemin
 │   ├── combat/     CombatEngine, Grid, Unit, Ability, AI
 │   ├── economy/    production, coûts, consommation
 │   └── campaign/   saisons, menace, Ordre, progression
@@ -43,6 +44,7 @@ res://
 ├── assets/     # tiny_swords/ audio/ fonts/ icons/
 ├── shaders/
 ├── tests/
+├── tools/      # scripts hors jeu : import de sprites, vérification d'assets
 └── docs/       # conception.md
 ```
 

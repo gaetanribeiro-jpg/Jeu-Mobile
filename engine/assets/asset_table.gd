@@ -1,0 +1,204 @@
+class_name AssetTable
+extends RefCounted
+
+## Accès unique aux fichiers du pack Tiny Swords.
+##
+## RÈGLE DURE : aucun chemin de fichier n'est écrit ailleurs que dans
+## `data/assets.json`. Tout le code passe par ici. Le jour où Pixel Frog
+## réorganise le pack, une seule ligne de JSON change.
+##
+## Le pack n'étant pas versionné (sa licence interdit la redistribution),
+## une entrée manquante doit produire une erreur lisible, jamais un crash :
+## toutes les fonctions renvoient un dictionnaire vide et poussent une
+## erreur nommée.
+
+const TABLE_PATH := "res://data/assets.json"
+
+## Catégories dont les entrées sont de simples fichiers, sans couleur.
+const PLAIN_CATEGORIES: Array[StringName] = [
+	&"terrain", &"decorations", &"resources", &"fx", &"ui", &"extra"
+]
+
+static var _table: Dictionary = {}
+
+
+## Charge la table si besoin et la renvoie. Vide si le fichier est absent
+## ou illisible.
+static func table() -> Dictionary:
+	if not _table.is_empty():
+		return _table
+	if not FileAccess.file_exists(TABLE_PATH):
+		push_error("AssetTable : %s introuvable" % TABLE_PATH)
+		return {}
+	var file := FileAccess.open(TABLE_PATH, FileAccess.READ)
+	if file == null:
+		push_error("AssetTable : %s illisible" % TABLE_PATH)
+		return {}
+	var parsed: Variant = JSON.parse_string(file.get_as_text())
+	file.close()
+	if typeof(parsed) != TYPE_DICTIONARY:
+		push_error("AssetTable : %s n'est pas un objet JSON" % TABLE_PATH)
+		return {}
+	_table = parsed
+	return _table
+
+
+## Vide le cache. Utile aux tests, inutile en jeu.
+static func reload() -> void:
+	_table = {}
+
+
+static func meta() -> Dictionary:
+	return table().get("meta", {})
+
+
+## Côté d'une tuile, en pixels.
+static func tile_size() -> int:
+	return int(meta().get("tile_size", 0))
+
+
+## Cadence des animations du pack.
+static func fps() -> int:
+	return int(meta().get("fps", 0))
+
+
+## Les cinq couleurs de faction.
+static func colors() -> Array:
+	return meta().get("colors", [])
+
+
+static func has_color(color: String) -> bool:
+	return colors().has(color)
+
+
+## Racine `res://` d'une catégorie (pack gratuit ou pack ennemi).
+static func root_of(category: StringName) -> String:
+	var roots: Dictionary = meta().get("roots", {})
+	var which: String = roots.get(String(category), "")
+	if which.is_empty():
+		push_error("AssetTable : catégorie inconnue « %s »" % category)
+		return ""
+	var root: String = meta().get("root_%s" % which, "")
+	if root.is_empty():
+		push_error("AssetTable : racine « root_%s » absente de meta" % which)
+		return ""
+	return "res://" + root
+
+
+## Animation d'une unité humaine, dans une couleur de faction.
+## Renvoie { path, frames, frame } ou {} si l'entrée n'existe pas.
+static func unit_animation(unit_id: StringName, animation: StringName, color: String) -> Dictionary:
+	if not has_color(color):
+		push_error("AssetTable : couleur inconnue « %s »" % color)
+		return {}
+	var units: Dictionary = table().get("units", {})
+	var unit: Dictionary = units.get(String(unit_id), {})
+	if unit.is_empty():
+		push_error("AssetTable : unité inconnue « %s »" % unit_id)
+		return {}
+	var animations: Dictionary = unit.get("animations", {})
+	var entry: Dictionary = animations.get(String(animation), {})
+	if entry.is_empty():
+		push_error("AssetTable : l'unité « %s » n'a pas d'animation « %s »" % [unit_id, animation])
+		return {}
+	var relative: String = String(unit.get("path_template", "")) \
+		.replace("{color}", color) \
+		.replace("{file}", String(entry.get("file", "")))
+	return _framed(root_of(&"units") + relative, entry)
+
+
+## Animation d'un ennemi. Les ennemis n'ont pas de couleur de faction.
+static func enemy_animation(enemy_id: StringName, animation: StringName) -> Dictionary:
+	var enemies: Dictionary = table().get("enemies", {})
+	var enemy: Dictionary = enemies.get(String(enemy_id), {})
+	if enemy.is_empty():
+		push_error("AssetTable : ennemi inconnu « %s »" % enemy_id)
+		return {}
+	var animations: Dictionary = enemy.get("animations", {})
+	var entry: Dictionary = animations.get(String(animation), {})
+	if entry.is_empty():
+		push_error("AssetTable : l'ennemi « %s » n'a pas d'animation « %s »" % [enemy_id, animation])
+		return {}
+	return _framed(root_of(&"enemies") + String(entry.get("file", "")), entry)
+
+
+## Bâtiment, dans une couleur de faction. Renvoie { path, w, h }.
+## Les bâtiments sont des images fixes, pas des feuilles d'animation.
+static func building(building_id: StringName, color: String) -> Dictionary:
+	if not has_color(color):
+		push_error("AssetTable : couleur inconnue « %s »" % color)
+		return {}
+	var buildings: Dictionary = table().get("buildings", {})
+	var entry: Dictionary = buildings.get(String(building_id), {})
+	if entry.is_empty():
+		push_error("AssetTable : bâtiment inconnu « %s »" % building_id)
+		return {}
+	var relative: String = String(entry.get("path_template", "")).replace("{color}", color)
+	return {
+		"path": root_of(&"buildings") + relative,
+		"w": int(entry.get("w", 0)),
+		"h": int(entry.get("h", 0)),
+	}
+
+
+## Entrée d'une catégorie simple : terrain, decorations, resources, fx, ui, extra.
+static func sprite(category: StringName, key: StringName) -> Dictionary:
+	if not PLAIN_CATEGORIES.has(category):
+		push_error("AssetTable : « %s » n'est pas une catégorie simple" % category)
+		return {}
+	var entries: Dictionary = table().get(String(category), {})
+	var entry: Dictionary = entries.get(String(key), {})
+	if entry.is_empty():
+		push_error("AssetTable : « %s » absent de la catégorie « %s »" % [key, category])
+		return {}
+	return _framed(root_of(category) + String(entry.get("file", "")), entry)
+
+
+## Toutes les entrées de la table, à plat, pour l'outil de vérification.
+## Chaque élément : { id, category, path, frames, frame }.
+static func all_entries() -> Array[Dictionary]:
+	var out: Array[Dictionary] = []
+	var data := table()
+
+	for unit_id: String in data.get("units", {}).keys():
+		for animation: String in data["units"][unit_id].get("animations", {}).keys():
+			for color: String in colors():
+				var found := unit_animation(unit_id, animation, color)
+				if not found.is_empty():
+					found["id"] = "%s.%s.%s" % [unit_id, animation, color]
+					found["category"] = "units"
+					out.append(found)
+
+	for enemy_id: String in data.get("enemies", {}).keys():
+		for animation: String in data["enemies"][enemy_id].get("animations", {}).keys():
+			var found := enemy_animation(enemy_id, animation)
+			if not found.is_empty():
+				found["id"] = "%s.%s" % [enemy_id, animation]
+				found["category"] = "enemies"
+				out.append(found)
+
+	for building_id: String in data.get("buildings", {}).keys():
+		for color: String in colors():
+			var found := building(building_id, color)
+			if not found.is_empty():
+				found["id"] = "%s.%s" % [building_id, color]
+				found["category"] = "buildings"
+				out.append(found)
+
+	for category: StringName in PLAIN_CATEGORIES:
+		for key: String in data.get(String(category), {}).keys():
+			var found := sprite(category, key)
+			if not found.is_empty():
+				found["id"] = "%s.%s" % [category, key]
+				found["category"] = String(category)
+				out.append(found)
+
+	return out
+
+
+static func _framed(path: String, entry: Dictionary) -> Dictionary:
+	return {
+		"path": path,
+		"frames": int(entry.get("frames", 1)),
+		"frame": int(entry.get("frame", 0)),
+	}
