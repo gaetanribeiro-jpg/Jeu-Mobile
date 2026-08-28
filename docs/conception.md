@@ -856,20 +856,20 @@ Si l'Ordre devait être réduit faute de temps, garder les rangs 2 et 3 et repou
 ## PHASE 0 — Fondations (16 h)
 
 - [ ] **F0.1** Installer Godot 4.x et le SDK Android (JDK, SDK, clé de debug)
-- [ ] **F0.2** Créer le projet, verrouiller l'orientation paysage, résolution de référence 1280×720, mode d'étirement `canvas_items` / `keep`
-- [ ] **F0.3** Initialiser git + `.gitignore` Godot, dépôt privé
-- [ ] **F0.4** Écrire le `CLAUDE.md` à la racine : conventions de nommage, arborescence, règle « pas de valeurs en dur », règle « logique séparée du rendu »
+- [x] **F0.2** Créer le projet, verrouiller l'orientation paysage, résolution de référence 1280×720, mode d'étirement `canvas_items` / `keep`
+- [x] **F0.3** Initialiser git + `.gitignore` Godot, dépôt privé
+- [x] **F0.4** Écrire le `CLAUDE.md` à la racine : conventions de nommage, arborescence, règle « pas de valeurs en dur », règle « logique séparée du rendu »
 - [ ] **F0.5** Importer Tiny Swords, configurer le filtrage **Nearest** par défaut sur toutes les textures
-- [ ] **F0.6** Découper les spritesheets en `AtlasTexture` et `SpriteFrames` (script d'import automatique)
-- [ ] **F0.7** Créer les autoloads vides : `GameState`, `SaveManager`, `AudioManager`, `EventBus`
-- [ ] **F0.8** Mettre en place le framework de test (GUT) et un premier test qui passe
+- [x] **F0.6** Découper les spritesheets en `AtlasTexture` et `SpriteFrames` (script d'import automatique)
+- [x] **F0.7** Créer les autoloads vides : `GameState`, `SaveManager`, `AudioManager`, `EventBus`
+- [x] **F0.8** Mettre en place le framework de test (GUT) et un premier test qui passe
 - [ ] **F0.9** Réussir un export APK de debug et l'installer sur ton téléphone — **avant d'écrire une ligne de gameplay**
-- [ ] **F0.10** Choisir et importer la police pixel, **afficher `ÀÂÄÇÉÈÊËÎÏÔÖÙÛÜŸÆŒ àâäçéèêëîïôöùûüÿæœ` et vérifier chaque glyphe**
-- [ ] **F0.11** Créer `CREDITS.md` et y noter Tiny Swords + chaque asset complémentaire dès son téléchargement
+- [~] **F0.10** Choisir et importer la police pixel, **afficher `ÀÂÄÇÉÈÊËÎÏÔÖÙÛÜŸÆŒ àâäçéèêëîïôöùûüÿæœ` et vérifier chaque glyphe** — *outillé (`tools/verify_font.gd` + `scenes/ui/font_test.tscn`), six candidates mesurées ; le choix reste à faire*
+- [x] **F0.11** Créer `CREDITS.md` et y noter Tiny Swords + chaque asset complémentaire dès son téléchargement
 - [ ] **F0.12** Rapatrier les effets de particules du pack (2 poussières, 3 feux, 2 explosions, gerbe d'eau) et les nuages
 - [ ] **F0.13** Installer Aseprite pour créer des couleurs de faction et composer les vignettes d'événement
-- [ ] **F0.14** Script d'import automatique : découper chaque PNG d'animation en `SpriteFrames` à partir de sa largeur / 64 (les feuilles font de 768 à 5120 px de large, le nombre d'images varie par animation)
-- [ ] **F0.15** Table de correspondance `data/assets.json` : nom logique → chemin de fichier, pour ne jamais coder un chemin en dur
+- [x] **F0.14** Script d'import automatique : découper chaque PNG d'animation en `SpriteFrames` à partir de sa largeur / 64 (les feuilles font de 768 à 5120 px de large, le nombre d'images varie par animation)
+- [x] **F0.15** Table de correspondance `data/assets.json` : nom logique → chemin de fichier, pour ne jamais coder un chemin en dur
 
 > **Jalon 0 : un écran noir avec « Reconquête » s'affiche sur ton téléphone.**
 
@@ -881,20 +881,20 @@ Si l'Ordre devait être réduit faute de temps, garder les rangs 2 et 3 et repou
 
 ### Logique pure
 
-- [ ] **C1.1** Classe `Grid` : coordonnées, voisinage, distance, conversion monde ↔ grille
-- [ ] **C1.2** Classe `Tile` : type de terrain, occupant, propriétés (bloquant, mortel, modificateurs)
-- [ ] **C1.3** Classe `Unit` : PV, déplacement, portée, dégâts, camp, état
-- [ ] **C1.4** Calcul des cases de déplacement atteignables (parcours en largeur avec coût)
-- [ ] **C1.5** Ligne de vue et calcul des cases attaquables
-- [ ] **C1.6** Résolution d'une attaque : dégâts, modificateurs de terrain, mort
-- [ ] **C1.7** Système de poussée : direction, case de destination, collision, chute dans l'eau
+- [x] **C1.1** Classe `Grid` : coordonnées, voisinage, distance, conversion monde ↔ grille
+- [x] **C1.2** Classe `Tile` : type de terrain, occupant, propriétés (bloquant, mortel, modificateurs)
+- [x] **C1.3** Classe `Unit` : PV, déplacement, portée, dégâts, camp, état
+- [x] **C1.4** Calcul des cases de déplacement atteignables (parcours en largeur avec coût)
+- [x] **C1.5** Ligne de vue et calcul des cases attaquables
+- [x] **C1.6** Résolution d'une attaque : dégâts, modificateurs de terrain, mort
+- [x] **C1.7** Système de poussée : direction, case de destination, collision, chute dans l'eau
 - [ ] **C1.8** Machine à états de tour : tour joueur → télégraphe → tour ennemi → vérification victoire
 - [ ] **C1.9** Système de télégraphe : chaque ennemi calcule et publie son intention
 - [ ] **C1.10** IA ennemie de base : choix de cible, pathfinding, comportement par rôle
 - [ ] **C1.11** Conditions de victoire et de défaite (les 6 types d'objectif)
-- [ ] **C1.12** RNG à graine, journalisable et rejouable
+- [x] **C1.12** RNG à graine, journalisable et rejouable
 - [ ] **C1.13** Pile d'annulation (undo) tant que le tour n'est pas validé
-- [ ] **C1.14** **Tests unitaires** : déplacement, poussée dans l'eau, ligne de vue, cohérence du télégraphe, fin de combat
+- [~] **C1.14** **Tests unitaires** : déplacement, poussée dans l'eau, ligne de vue, cohérence du télégraphe, fin de combat — *faits pour C1.1 à C1.7 et C1.12 ; restent le télégraphe et la fin de combat*
 
 ### Rendu et interaction
 
@@ -912,7 +912,7 @@ Si l'Ordre devait être réduit faute de temps, garder les rangs 2 et 3 et repou
 - [ ] **C1.23** Définir les 4 classes de héros en données (`.tres`)
 - [ ] **C1.24** Implémenter les 4 capacités : Provocation, Tir tendu, Repousse, Bénédiction
 - [ ] **C1.25** Définir 6 ennemis de l'Acte I en données
-- [ ] **C1.26** Éditeur de carte de combat (ou format JSON + 8 cartes écrites à la main)
+- [ ] **C1.26** Éditeur de carte de combat (ou format JSON + 8 cartes écrites à la main) — *le format texte est en place : `CombatBoard.from_rows`, un caractère par case, symboles dans `terrain.json`*
 
 > **Jalon 1 : un combat complet et satisfaisant, jouable au doigt sur ton téléphone.**
 > **C'est ici qu'il faut s'arrêter et jouer 20 fois avant de continuer.**

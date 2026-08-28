@@ -126,6 +126,34 @@ Les feuilles d'animation ont des largeurs variables (768 à 5120 px). Nombre d'i
 
 *(à tenir à jour à chaque fin de session)*
 
-- **Phase courante :** 0 — Fondations
-- **Dernière tâche terminée :** aucune
+- **Phase courante :** 1 — Moteur de combat
+- **Dernière tâche terminée :** C1.7 (poussée)
 - **Jalon visé :** Jalon 0 — un écran noir affichant « Reconquête » sur le téléphone
+
+**Fait :** F0.2 · F0.3 · F0.4 · F0.6 · F0.7 · F0.8 · F0.11 · F0.14 · F0.15 ·
+C1.1 · C1.2 · C1.3 · C1.4 · C1.5 · C1.6 · C1.7 · C1.12.
+127 tests passent sous Godot 4.6 en headless.
+
+**En attente de Gaetan, sur un poste de travail :**
+F0.1 (Godot + SDK Android) · F0.5 (copier Tiny Swords, puis lancer
+`tools/verify_assets.gd`) · F0.9 (export APK) · F0.12 · F0.13 (Aseprite).
+Sans ces quatre-là, le Jalon 0 ne peut pas être constaté.
+
+**Questions ouvertes, à trancher par Gaetan :**
+
+1. **Adjacence de la grille** (`data/combat/rules.json`, `grid.adjacency`).
+   `orthogonal` = 4 voisins, distance de Manhattan, comme Into the Breach.
+   `diagonal` = 8 voisins, distance de Chebyshev. Le défaut posé est
+   `orthogonal`. Le Lancier et le Canon sont dessinés sur 8 directions, ce
+   qui plaide pour l'autre. Les deux modes sont implémentés et testés :
+   basculer coûte une ligne de JSON tant que rien n'est dessiné par-dessus.
+2. **La police** (F0.10). Six candidates mesurées, toutes couvrent le
+   français ; le tri utile est la lisibilité. Voir `assets/fonts/README.md`.
+3. **Dégâts d'une poussée bloquée** (`rules.json`, `push.blocked_damage`),
+   posé à 0 : le pousseur a gâché son coup.
+4. **`.tres` ou `.json` pour les données de classes.** C1.23 dit `.tres` ;
+   `data/units/hero_classes.json` est en JSON, plus simple à tester en
+   headless. À trancher avant d'en écrire beaucoup d'autres.
+5. **`data/assets.json`, deux points à vérifier une fois le pack copié :**
+   la catégorie `extra` est supposée venir du pack ennemi, et l'ordre des
+   classes dans chaque groupe de 5 portraits reste une hypothèse.
