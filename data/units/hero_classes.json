@@ -1,0 +1,63 @@
+{
+  "_readme": "Les quatre classes de héros (§ 3.1). Toutes les valeurs chiffrées du combat sont ici. Les capacités sont nommées mais implémentées en C1.24 (première) et H2.19 (seconde, rang 3 de l'Ordre). portrait_hint : hypothèse à confirmer à l'œil, cf. avatars_note de data/assets.json.",
+  "warrior": {
+    "sprite": "warrior",
+    "hit_points": 8,
+    "movement": 3,
+    "range_min": 1,
+    "range_max": 1,
+    "damage": 3,
+    "aquatic": false,
+    "ability": "taunt",
+    "second_ability": "riposte",
+    "elevation": [
+      "champion",
+      "sergeant"
+    ]
+  },
+  "archer": {
+    "sprite": "archer",
+    "hit_points": 4,
+    "movement": 3,
+    "range_min": 2,
+    "range_max": 4,
+    "damage": 2,
+    "aquatic": false,
+    "ability": "aimed_shot",
+    "second_ability": "volley",
+    "elevation": [
+      "scout",
+      "crossbowman"
+    ]
+  },
+  "lancer": {
+    "sprite": "lancer",
+    "hit_points": 6,
+    "movement": 3,
+    "range_min": 1,
+    "range_max": 2,
+    "damage": 2,
+    "aquatic": false,
+    "ability": "push_back",
+    "second_ability": "charge",
+    "elevation": [
+      "halberdier",
+      "guard"
+    ]
+  },
+  "monk": {
+    "sprite": "monk",
+    "hit_points": 5,
+    "movement": 4,
+    "range_min": 1,
+    "range_max": 2,
+    "damage": 1,
+    "aquatic": false,
+    "ability": "blessing",
+    "second_ability": "raise",
+    "elevation": [
+      "preacher",
+      "healer"
+    ]
+  }
+}
