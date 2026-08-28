@@ -21,5 +21,10 @@
     "_blocked": "Ce qui arrive quand une poussée est bloquée par un décor, une unité ou le bord. 0 = il ne se passe rien, le pousseur a gâché son coup.",
     "blocked_damage": 0,
     "distance": 1
+  },
+  "movement": {
+    "_readme": "Traverser n'est pas s'arrêter : on ne finit jamais son déplacement sur une case occupée, quel que soit le réglage.",
+    "pass_through_allies": true,
+    "pass_through_enemies": false
   }
 }

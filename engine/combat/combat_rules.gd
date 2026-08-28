@@ -65,6 +65,16 @@ static func terrain_ids() -> Array[StringName]:
 	return out
 
 
+## Terrain associé à un symbole de carte écrite à la main.
+## Renvoie une chaîne vide si le symbole n'est déclaré nulle part.
+static func terrain_for_symbol(symbol: String) -> StringName:
+	for id: StringName in terrain_ids():
+		if String(terrain_property(id, &"symbol", "")) == symbol:
+			return id
+	push_error("CombatRules : aucun terrain pour le symbole « %s »" % symbol)
+	return &""
+
+
 static func adjacency() -> String:
 	return String(rule(&"grid", &"adjacency", ADJACENCY_ORTHOGONAL))
 

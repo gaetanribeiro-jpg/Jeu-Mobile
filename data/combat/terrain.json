@@ -1,6 +1,7 @@
 {
-  "_readme": "Types de tuiles de combat (§ 4.3). walkable vaut pour les héros ; les unités aquatiques ont leur propre règle de franchissement. damage_taken s'ajoute aux dégâts subis par l'occupant : -1 pour la forêt qui protège, +1 pour la ruine qui expose.",
+  "_readme": "Types de tuiles de combat (§ 4.3). walkable vaut pour les héros ; les unités aquatiques ont leur propre règle de franchissement. damage_taken s'ajoute aux dégâts subis par l'occupant : -1 pour la forêt qui protège, +1 pour la ruine qui expose. symbol : le caractère qui représente ce terrain dans une carte écrite à la main.",
   "grass": {
+    "symbol": ".",
     "walkable": true,
     "swimmable": false,
     "lethal": false,
@@ -11,6 +12,7 @@
     "ranged_damage_bonus": 0
   },
   "water": {
+    "symbol": "~",
     "walkable": false,
     "swimmable": true,
     "lethal": true,
@@ -21,6 +23,7 @@
     "ranged_damage_bonus": 0
   },
   "forest": {
+    "symbol": "f",
     "walkable": true,
     "swimmable": false,
     "lethal": false,
@@ -31,6 +34,7 @@
     "ranged_damage_bonus": 0
   },
   "hill": {
+    "symbol": "^",
     "walkable": true,
     "swimmable": false,
     "lethal": false,
@@ -41,6 +45,7 @@
     "ranged_damage_bonus": 1
   },
   "rock": {
+    "symbol": "#",
     "walkable": false,
     "swimmable": false,
     "lethal": false,
@@ -51,6 +56,7 @@
     "ranged_damage_bonus": 0
   },
   "bridge": {
+    "symbol": "=",
     "walkable": true,
     "swimmable": false,
     "lethal": false,
@@ -64,6 +70,7 @@
     "becomes_when_destroyed": "water"
   },
   "ruin": {
+    "symbol": "r",
     "walkable": true,
     "swimmable": false,
     "lethal": false,
