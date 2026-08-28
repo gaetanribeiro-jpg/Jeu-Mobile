@@ -1,0 +1,83 @@
+extends GutTest
+
+## Le découpage des feuilles est testé sur des textures fabriquées ici même :
+## le pack n'est pas versionné, et de toute façon ce qu'on veut vérifier
+## c'est l'arithmétique du découpage, pas le contenu des PNG de Pixel Frog.
+
+const FPS := 10
+
+
+func before_each() -> void:
+	SpriteFrameFactory.clear_cache()
+
+
+## Fabrique une feuille horizontale de `frames` cadres carrés de `size` px,
+## chaque cadre rempli d'une couleur différente pour pouvoir vérifier que
+## le bon morceau est découpé au bon endroit.
+func _make_sheet(frames: int, size: int) -> ImageTexture:
+	var image := Image.create(frames * size, size, false, Image.FORMAT_RGBA8)
+	for i in frames:
+		image.fill_rect(
+			Rect2i(i * size, 0, size, size),
+			Color(float(i) / float(frames), 0.0, 0.0, 1.0)
+		)
+	return ImageTexture.create_from_image(image)
+
+
+func test_le_nombre_d_images_suit_la_table() -> void:
+	# Warrior_Idle : 8 images de 192 px, soit une feuille de 1536 px.
+	var sheet := _make_sheet(8, 192)
+	var resource := SpriteFrameFactory.slice(sheet, 8, 192, FPS)
+	assert_eq(resource.get_frame_count(&"default"), 8)
+
+
+func test_les_cadres_sont_carres_et_alignes() -> void:
+	var sheet := _make_sheet(6, 64)
+	var resource := SpriteFrameFactory.slice(sheet, 6, 64, FPS)
+	for i in 6:
+		var atlas: AtlasTexture = resource.get_frame_texture(&"default", i)
+		assert_eq(atlas.region, Rect2(i * 64, 0, 64, 64), "cadre %d mal placé" % i)
+		assert_true(atlas.filter_clip, "filter_clip évite la bave d'un pixel sur les bords")
+
+
+func test_une_feuille_a_une_seule_image() -> void:
+	# Cas fréquent dans la table : les rochers, les icônes, les boutons.
+	var resource := SpriteFrameFactory.slice(_make_sheet(1, 64), 1, 64, FPS)
+	assert_eq(resource.get_frame_count(&"default"), 1)
+	assert_eq(resource.get_frame_texture(&"default", 0).region, Rect2(0, 0, 64, 64))
+
+
+func test_les_grandes_feuilles() -> void:
+	# Minotaur_Idle : 16 images de 320 px, soit 5120 px de large — la plus
+	# grande feuille du pack.
+	var resource := SpriteFrameFactory.slice(_make_sheet(16, 320), 16, 320, FPS)
+	assert_eq(resource.get_frame_count(&"default"), 16)
+	assert_eq(
+		resource.get_frame_texture(&"default", 15).region,
+		Rect2(15 * 320, 0, 320, 320)
+	)
+
+
+func test_la_cadence_du_pack_est_appliquee() -> void:
+	var resource := SpriteFrameFactory.slice(_make_sheet(4, 64), 4, 64, FPS)
+	assert_eq(resource.get_animation_speed(&"default"), 10.0, "le pack est à 10 fps")
+	assert_true(resource.get_animation_loop(&"default"))
+
+
+func test_un_decoupage_absurde_ne_plante_pas() -> void:
+	var resource := SpriteFrameFactory.slice(_make_sheet(4, 64), 0, 64, FPS)
+	assert_eq(resource.get_frame_count(&"default"), 0)
+	assert_push_error("découpage impossible")
+
+
+func test_une_texture_nulle_ne_plante_pas() -> void:
+	var resource := SpriteFrameFactory.slice(null, 4, 64, FPS)
+	assert_eq(resource.get_frame_count(&"default"), 0)
+	assert_push_error("découpage impossible")
+
+
+func test_un_asset_absent_renvoie_null_sans_planter() -> void:
+	# Le pack n'est pas versionné : demander une unité alors qu'il n'est pas
+	# installé doit donner null et une erreur lisible, pas un crash.
+	assert_null(SpriteFrameFactory.for_unit(&"dragon", &"idle", "Blue"))
+	assert_push_error("unité inconnue")
