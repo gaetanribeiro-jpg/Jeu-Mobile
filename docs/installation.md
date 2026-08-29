@@ -60,6 +60,24 @@ godot --headless --path . --import
 > même commande une seconde fois** : elles disparaissent et ne reviennent
 > plus. Toute autre erreur, en revanche, mérite attention.
 
+Un import réussi se termine ainsi — une progression, puis une seule ligne
+jaune :
+
+```
+[ DONE ] first_scan_filesystem
+[ DONE ] loading_editor_layout
+
+WARNING: ObjectDB instances leaked at exit (run with --verbose for details).
+     at: cleanup (core/object/object.cpp:2641)
+```
+
+> **Cet avertissement est sans conséquence.** Godot le produit à chaque
+> sortie de l'éditeur en mode `--headless` : il signale que l'éditeur n'a
+> pas libéré tous ses propres objets avant de quitter. Il ne dit rien du
+> projet, il apparaît sur toutes les machines, et il n'y a rien à corriger.
+> Ce qui compte est ce qui n'est PAS là : aucune ligne commençant par
+> `ERROR` ou `SCRIPT ERROR`.
+
 ---
 
 ## 3. Vérifier que tout est en place
