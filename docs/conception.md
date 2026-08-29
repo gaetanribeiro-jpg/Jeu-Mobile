@@ -859,14 +859,14 @@ Si l'Ordre devait être réduit faute de temps, garder les rangs 2 et 3 et repou
 - [x] **F0.2** Créer le projet, verrouiller l'orientation paysage, résolution de référence 1280×720, mode d'étirement `canvas_items` / `keep`
 - [x] **F0.3** Initialiser git + `.gitignore` Godot, dépôt privé
 - [x] **F0.4** Écrire le `CLAUDE.md` à la racine : conventions de nommage, arborescence, règle « pas de valeurs en dur », règle « logique séparée du rendu »
-- [ ] **F0.5** Importer Tiny Swords, configurer le filtrage **Nearest** par défaut sur toutes les textures
+- [x] **F0.5** Importer Tiny Swords, configurer le filtrage **Nearest** par défaut sur toutes les textures
 - [x] **F0.6** Découper les spritesheets en `AtlasTexture` et `SpriteFrames` (script d'import automatique)
 - [x] **F0.7** Créer les autoloads vides : `GameState`, `SaveManager`, `AudioManager`, `EventBus`
 - [x] **F0.8** Mettre en place le framework de test (GUT) et un premier test qui passe
 - [ ] **F0.9** Réussir un export APK de debug et l'installer sur ton téléphone — **avant d'écrire une ligne de gameplay**
-- [~] **F0.10** Choisir et importer la police pixel, **afficher `ÀÂÄÇÉÈÊËÎÏÔÖÙÛÜŸÆŒ àâäçéèêëîïôöùûüÿæœ` et vérifier chaque glyphe** — *outillé (`tools/verify_font.gd` + `scenes/ui/font_test.tscn`), six candidates mesurées ; le choix reste à faire*
+- [x] **F0.10** Choisir et importer la police pixel, **afficher `ÀÂÄÇÉÈÊËÎÏÔÖÙÛÜŸÆŒ àâäçéèêëîïôöùûüÿæœ` et vérifier chaque glyphe** — *Silver, vérifiée sur les 140 glyphes, réglée en pixel art et posée comme thème du projet. Reste le contrôle de rendu sur le téléphone.*
 - [x] **F0.11** Créer `CREDITS.md` et y noter Tiny Swords + chaque asset complémentaire dès son téléchargement
-- [ ] **F0.12** Rapatrier les effets de particules du pack (2 poussières, 3 feux, 2 explosions, gerbe d'eau) et les nuages
+- [x] **F0.12** Rapatrier les effets de particules du pack (2 poussières, 3 feux, 2 explosions, gerbe d'eau) et les nuages
 - [ ] **F0.13** Installer Aseprite pour créer des couleurs de faction et composer les vignettes d'événement
 - [x] **F0.14** Script d'import automatique : découper chaque PNG d'animation en `SpriteFrames` à partir de sa largeur / 64 (les feuilles font de 768 à 5120 px de large, le nombre d'images varie par animation)
 - [x] **F0.15** Table de correspondance `data/assets.json` : nom logique → chemin de fichier, pour ne jamais coder un chemin en dur
@@ -1057,7 +1057,7 @@ Si l'Ordre devait être réduit faute de temps, garder les rangs 2 et 3 et repou
 - [ ] **P8.13** Cohérence visuelle de l'UI à partir des éléments du Free Pack
 - [ ] **P8.14** Retour haptique sur les actions importantes (vibration légère)
 - [ ] **P8.15** Intégrer 3 pistes musicales
-- [ ] **P8.16** Intégrer ~25 effets sonores (Kenney RPG Audio / UI Audio, CC0)
+- [~] **P8.16** Intégrer ~25 effets sonores (Kenney RPG Audio / UI Audio, CC0) — *232 sons CC0 installés, 27 affectés dans `data/audio.json`, 8 manques nommés. Reste à jouer réellement (P8.15/P8.17) et à valider les affectations à l'oreille.*
 - [ ] **P8.16b** Rassembler 60 à 80 icônes (game-icons.net) et les remapper dans la palette Tiny Swords
 - [ ] **P8.16c** Recadrer des portraits de héros depuis les fichiers Aseprite du pack
 - [ ] **P8.17** Mixage : volumes séparés musique/effets, réglages dans les options

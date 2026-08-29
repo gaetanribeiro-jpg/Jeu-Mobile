@@ -127,17 +127,26 @@ Les feuilles d'animation ont des largeurs variables (768 à 5120 px). Nombre d'i
 *(à tenir à jour à chaque fin de session)*
 
 - **Phase courante :** 1 — Moteur de combat
-- **Dernière tâche terminée :** C1.7 (poussée)
+- **Dernière tâche terminée :** C1.7 (poussée) ; assets et audio installés
 - **Jalon visé :** Jalon 0 — un écran noir affichant « Reconquête » sur le téléphone
 
-**Fait :** F0.2 · F0.3 · F0.4 · F0.6 · F0.7 · F0.8 · F0.11 · F0.14 · F0.15 ·
-C1.1 · C1.2 · C1.3 · C1.4 · C1.5 · C1.6 · C1.7 · C1.12.
-127 tests passent sous Godot 4.6 en headless.
+**Fait :** F0.2 · F0.3 · F0.4 · F0.5 · F0.6 · F0.7 · F0.8 · F0.10 · F0.11 ·
+F0.12 · F0.14 · F0.15 · C1.1 · C1.2 · C1.3 · C1.4 · C1.5 · C1.6 · C1.7 ·
+C1.12. P8.16 aux trois quarts.
+155 tests passent sous Godot 4.6 en headless, dont 8 sur les vrais fichiers
+du pack.
+
+**Assets en place.** Tiny Swords (548 PNG, non versionné — licence), Silver
+(vérifiée sur 140 glyphes, posée en thème du projet), 232 sons Kenney CC0,
+3 musiques. Deux tables de correspondance, `data/assets.json` et
+`data/audio.json`, et deux vérificateurs qui les confrontent aux fichiers
+réels : `tools/verify_assets.gd` (535 entrées, 0 écart) et
+`tools/verify_audio.gd` (30 entrées, 0 écart). **À relancer après chaque
+mise à jour d'un pack.**
 
 **En attente de Gaetan, sur un poste de travail :**
-F0.1 (Godot + SDK Android) · F0.5 (copier Tiny Swords, puis lancer
-`tools/verify_assets.gd`) · F0.9 (export APK) · F0.12 · F0.13 (Aseprite).
-Sans ces quatre-là, le Jalon 0 ne peut pas être constaté.
+F0.1 (Godot 4.6 + SDK Android) · F0.9 (export APK, puis le Jalon 0 est
+constaté) · F0.13 (Aseprite, seulement si on veut de nouvelles couleurs).
 
 **Questions ouvertes, à trancher par Gaetan :**
 
@@ -147,13 +156,17 @@ Sans ces quatre-là, le Jalon 0 ne peut pas être constaté.
    `orthogonal`. Le Lancier et le Canon sont dessinés sur 8 directions, ce
    qui plaide pour l'autre. Les deux modes sont implémentés et testés :
    basculer coûte une ligne de JSON tant que rien n'est dessiné par-dessus.
-2. **La police** (F0.10). Six candidates mesurées, toutes couvrent le
-   français ; le tri utile est la lisibilité. Voir `assets/fonts/README.md`.
+   **C'est la plus urgente : le télégraphe et l'IA vont raisonner en
+   distances.**
+2. **Licences des trois musiques** (`CREDITS.md`). Inconnues. Il faut pour
+   chacune l'URL d'origine, l'auteur et la licence exacte. Le § 13.7 est
+   explicite, et le § 13.2 met en garde contre le CC BY-SA si le jeu est
+   vendu. Seule piste : `Battle.mp3` déclare « Theodore Kerr, 2012 ».
+   **Seul point qui bloque réellement la publication.**
 3. **Dégâts d'une poussée bloquée** (`rules.json`, `push.blocked_damage`),
    posé à 0 : le pousseur a gâché son coup.
 4. **`.tres` ou `.json` pour les données de classes.** C1.23 dit `.tres` ;
    `data/units/hero_classes.json` est en JSON, plus simple à tester en
    headless. À trancher avant d'en écrire beaucoup d'autres.
-5. **`data/assets.json`, deux points à vérifier une fois le pack copié :**
-   la catégorie `extra` est supposée venir du pack ennemi, et l'ordre des
-   classes dans chaque groupe de 5 portraits reste une hypothèse.
+5. **Les affectations de `data/audio.json`** ont été faites au nom des
+   fichiers, pas à l'oreille. À écouter et permuter librement.

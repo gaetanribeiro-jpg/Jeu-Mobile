@@ -33,6 +33,13 @@ window/handheld/orientation=4
 
 enabled=PackedStringArray("res://addons/gut/plugin.cfg")
 
+[gui]
+
+; Silver est une police pixel : son import est reglé en antialiasing=0,
+; hinting=0, subpixel_positioning=0. Sans ces trois-la elle est floue,
+; et le defaut de Godot est de les activer.
+theme/custom="res://assets/fonts/pixel_theme.tres"
+
 [input_devices]
 
 pointing/emulate_touch_from_mouse=true
