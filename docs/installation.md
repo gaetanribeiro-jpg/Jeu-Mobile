@@ -97,6 +97,25 @@ godot --headless --path . -s tools/verify_maps.gd    # 8 cartes
 « ignorés : Pack Tiny Swords absent », c'est que le pack n'est pas au bon
 endroit. Ce n'est pas une panne, c'est l'étape 2 qui reste à finir.
 
+> **Des lignes rouges défilent pendant les tests, et c'est voulu.** Une
+> vingtaine, du genre `ERROR: Unit : classe de héros inconnue « paladin »`
+> ou `ERROR: CombatRules : terrain inconnu « lave »`. Ce sont des tests qui
+> vérifient qu'une mauvaise entrée produit une erreur NOMMÉE au lieu d'un
+> plantage : le message affiché EST ce qu'ils vérifient. Ce qui compte est
+> le résumé final :
+>
+> ```
+> Scripts              20
+> Tests               262
+> Passing Tests       262
+> Asserts            4717
+>
+> ---- All tests passed! ----
+> ```
+>
+> Rien ne doit suivre cette ligne. Si `Failing Tests` apparaît, ou si le
+> résumé est suivi d'un `WARNING` ou d'un `ERROR`, c'est autre chose.
+
 Et pour jouer sur le PC, avant même de penser au téléphone :
 
 ```bash

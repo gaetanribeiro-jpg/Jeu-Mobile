@@ -255,6 +255,14 @@ func _confirm() -> void:
 	_clear_selection()
 
 
+## Le jeu est-il en train de jouer une animation ? Tant que c'est vrai,
+## les taps sont ignorés : la grammaire du § 11.2 suppose une action à la
+## fois, et laisser le joueur en lancer une seconde pendant que la
+## première glisse ferait sauter le sprite d'un bout à l'autre du plateau.
+func is_busy() -> bool:
+	return _resolving
+
+
 func _clear_selection() -> void:
 	_selection = Selection.NONE
 	_selected = null
@@ -319,6 +327,11 @@ func _resolve_enemy_turn() -> void:
 	var gap := ViewSettings.duration(&"enemy_step_gap")
 
 	for entry: Dictionary in log:
+		# La scène peut être libérée en pleine relecture — on quitte le
+		# combat, on revient au menu. Sans ce garde-fou, la coroutine
+		# continue de tourner sur un arbre qui n'existe plus.
+		if not is_inside_tree():
+			return
 		match String(entry["event"]):
 			"attack_landed", "attack_missed", "attack_warded":
 				var attacker: Unit = engine.board.unit_by_id(int(entry["attacker_id"]))
@@ -338,6 +351,8 @@ func _resolve_enemy_turn() -> void:
 				_hud.show_result(bool(entry["victory"]))
 				combat_finished.emit(bool(entry["victory"]))
 		await get_tree().create_timer(gap).timeout
+		if not is_inside_tree():
+			return
 		_refresh_all()
 
 	_sync_views()
@@ -352,7 +367,14 @@ func _animate_move(unit: Unit, from: Vector2i, to: Vector2i) -> void:
 	var path: Array[Vector2] = []
 	for cell: Vector2i in engine.board.grid.line(from, to):
 		path.append(_centre_of(cell))
+	# Le déplacement occupe la scène le temps du glissement. Sans ça, un
+	# second tap pendant l'animation lancerait une action par-dessus, et
+	# la coroutine en cours resterait pendante avec tout ce qu'elle tient.
+	_resolving = true
 	await view.move_along(path)
+	if not is_inside_tree():
+		return
+	_resolving = false
 	_refresh_all()
 
 
@@ -363,6 +385,8 @@ func _play_attack(attacker: Unit, target: Unit, report: Dictionary) -> void:
 		view.play_attack(target.cell - attacker.cell)
 		await get_tree().create_timer(ViewSettings.duration(&"attack_strike")).timeout
 	await _play_impact(target.id, bool(report.get("downed", false)))
+	if not is_inside_tree():
+		return
 	_resolving = false
 	_sync_views()
 	_refresh_all()

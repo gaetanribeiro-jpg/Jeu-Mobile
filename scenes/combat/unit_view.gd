@@ -161,7 +161,9 @@ func move_along(points: Array[Vector2]) -> void:
 		face(Vector2i(signi(int(point.x - previous.x)), 0))
 		tween.tween_property(self, "position", point, per_tile)
 		previous = point
-	await tween.finished
+	await _tween_done(tween)
+	if not is_inside_tree():
+		return
 	_busy = false
 	play(&"idle")
 	animation_finished.emit()
@@ -175,6 +177,8 @@ func play_attack(toward: Vector2i) -> void:
 	await get_tree().create_timer(
 		ViewSettings.duration(&"attack_windup") + ViewSettings.duration(&"attack_strike")
 	).timeout
+	if not is_inside_tree():
+		return
 	_busy = false
 	play(&"idle")
 	animation_finished.emit()
@@ -185,6 +189,8 @@ func play_hit() -> void:
 	var flash := ViewSettings.duration(&"death_flash")
 	_sprite.modulate = Color(4.0, 4.0, 4.0)
 	await get_tree().create_timer(flash).timeout
+	if not is_inside_tree():
+		return
 	_sprite.modulate = Color.WHITE
 	refresh()
 
@@ -196,16 +202,42 @@ func play_downed(drowned: bool = false) -> void:
 	refresh()
 	_sprite.modulate = Color(4.0, 4.0, 4.0)
 	await get_tree().create_timer(ViewSettings.duration(&"death_flash")).timeout
+	if not is_inside_tree():
+		return
 	var tween := create_tween()
 	tween.set_parallel(true)
 	tween.tween_property(_sprite, "modulate:a", 0.0, ViewSettings.duration(&"death_fade"))
 	tween.tween_property(self, "scale", Vector2(0.85, 0.85), ViewSettings.duration(&"death_fade"))
-	await tween.finished
+	await _tween_done(tween)
+	if not is_inside_tree():
+		return
 	visible = false
 	_busy = false
 	animation_finished.emit()
 	if drowned:
 		pass
+
+
+## Attend la fin d'un Tween SANS rester suspendu si le nœud disparaît.
+##
+## `await tween.finished` paraît naturel, et c'est un piège : un Tween créé
+## par un nœud est TUÉ avec lui, et un Tween tué n'émet jamais `finished`.
+## La coroutine reste alors suspendue pour toujours et retient tout ce
+## qu'elle capture — le sprite, l'unité, le chemin parcouru. Quitter un
+## combat pendant qu'une unité se déplace suffisait à laisser tout cela
+## derrière soi, une fois par combat, sur une campagne entière.
+##
+## Ici on avance image par image : dès que le nœud sort de l'arbre, on
+## rend la main. L'attente se termine toujours.
+func _tween_done(tween: Tween) -> void:
+	while is_instance_valid(tween) and tween.is_valid() and tween.is_running():
+		if not is_inside_tree():
+			tween.kill()
+			return
+		var tree := get_tree()
+		if tree == null:
+			return
+		await tree.process_frame
 
 
 func _attack_animation() -> StringName:

@@ -37,7 +37,7 @@ func before_each() -> void:
 	_scene = packed.instantiate()
 	_scene.map_id = &"vallee_01"
 	add_child_autofree(_scene)
-	await wait_frames(2)
+	await wait_process_frames(2)
 
 
 func _engine() -> CombatEngine:
@@ -90,6 +90,7 @@ func test_le_troisieme_tap_sur_la_meme_case_valide() -> void:
 	var destination := _a_reachable_cell(hero)
 	_scene.handle_tap(destination)
 	_scene.handle_tap(destination)
+	await _settle()
 	assert_eq(hero.cell, destination, "le déplacement est appliqué")
 	assert_true(hero.has_moved)
 	assert_eq(_scene._selection, _scene.Selection.NONE, "la sélection se referme")
@@ -131,7 +132,7 @@ func test_le_hud_reflete_le_moteur() -> void:
 	_scene.handle_tap(hero.cell)
 	_scene.handle_tap(destination)
 	_scene.handle_tap(destination)
-	await wait_frames(2)
+	await _settle()
 	hud.refresh(_engine())
 	assert_false(hud._undo.disabled, "après une action, on peut annuler")
 
@@ -143,6 +144,7 @@ func test_le_bouton_annuler_defait_le_deplacement() -> void:
 	_scene.handle_tap(start)
 	_scene.handle_tap(destination)
 	_scene.handle_tap(destination)
+	await _settle()
 	assert_eq(hero.cell, destination)
 	_scene._on_undo()
 	assert_eq(hero.cell, start, "le héros est revenu")
@@ -190,6 +192,16 @@ func test_le_telegraphe_de_la_couche_correspond_au_moteur() -> void:
 			"case %s : la couche annonce %d, le moteur %d"
 				% [cell, int(overlay.threat[cell]), engine.threat_on(cell)]
 		)
+
+
+## Attend que la scène ait fini son animation.
+##
+## Sans cette attente, le test se termine pendant le glissement, GUT libère
+## la scène, et la coroutine d'animation reste suspendue en retenant l'unité
+## qu'elle déplaçait. Godot le signalait à la sortie par un « 1 resources
+## still in use » qui ne désignait rien de compréhensible.
+func _settle() -> void:
+	await wait_until(func() -> bool: return not _scene.is_busy(), 3.0)
 
 
 func _reachable_cells(hero: Unit) -> Array[Vector2i]:
