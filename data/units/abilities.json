@@ -1,0 +1,45 @@
+{
+  "_readme": "Les capacités de classe. Les quatre premières sont celles du § 3.1 et couvrent les quatre verbes tactiques : attirer, frapper à distance, déplacer, annuler. Les secondes capacités (rang 3 de l'Ordre, § 3.5.3) sont déclarées mais implémentées en H2.19. Toute valeur chiffrée est ici, aucune dans un .gd.",
+  "taunt": {
+    "class": "warrior",
+    "verb": "attirer",
+    "kind": "taunt",
+    "target": "self",
+    "uses_per_combat": 0,
+    "note": "Les ennemis ADJACENTS doivent le cibler ce tour. Portée 0 : c'est l'adjacence à sa propre case qui compte, pas une portée d'attaque."
+  },
+  "aimed_shot": {
+    "class": "archer",
+    "verb": "frapper à distance",
+    "kind": "attack",
+    "target": "enemy",
+    "damage_bonus": 2,
+    "requires_not_moved": true,
+    "uses_per_combat": 0,
+    "note": "+2 dégâts s'il n'a pas bougé ce tour. C'est ce qui rend l'immobilité tentante, et donc le Voleur dangereux."
+  },
+  "push_back": {
+    "class": "lancer",
+    "verb": "déplacer",
+    "kind": "push",
+    "target": "enemy",
+    "distance": 1,
+    "uses_per_combat": 0,
+    "note": "Pousse la cible d'une case dans la direction du coup."
+  },
+  "blessing": {
+    "class": "monk",
+    "verb": "annuler",
+    "kind": "ward",
+    "target": "cell",
+    "range_min": 1,
+    "range_max": 2,
+    "uses_per_combat": 0,
+    "note": "Annule les attaques télégraphiées sur une case, pour ce tour seulement."
+  },
+
+  "riposte": { "class": "warrior", "kind": "retaliate", "damage": 1, "_todo": "H2.19" },
+  "volley": { "class": "archer", "kind": "splash", "damage": 1, "radius": 1, "_todo": "H2.19" },
+  "charge": { "class": "lancer", "kind": "charge", "distance": 3, "_todo": "H2.19" },
+  "raise": { "class": "monk", "kind": "revive", "hit_points": 1, "uses_per_combat": 1, "_todo": "H2.19" }
+}

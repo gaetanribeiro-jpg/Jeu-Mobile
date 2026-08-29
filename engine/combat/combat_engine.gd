@@ -38,6 +38,14 @@ var _intents: Dictionary = {}
 ## Piles d'annulation, vidées à chaque validation de tour (C1.13).
 var _undo_stack: Array[Dictionary] = []
 
+## Héros qui provoquent ce tour-ci. Les ennemis adjacents doivent les
+## cibler (§ 3.1, Provocation du Guerrier).
+var _taunting: Array[int] = []
+
+## Cases bénies : les attaques télégraphiées qui y tombent sont annulées
+## (§ 3.1, Bénédiction du Moine). Vidées après la résolution ennemie.
+var _warded: Array[Vector2i] = []
+
 
 func _init(
 	combat_board: CombatBoard,
@@ -60,7 +68,7 @@ func start() -> void:
 	# Les ennemis annoncent sans bouger : ils sont déjà placés par la carte,
 	# et le joueur doit avoir quelque chose à contrer dès le premier tour.
 	for enemy: Unit in _ordered(board.active_units(Unit.Side.ENEMIES)):
-		_intents[enemy.id] = ai.plan(board, enemy)["intent"]
+		_intents[enemy.id] = ai.plan(board, enemy, _taunting)["intent"]
 
 
 # --- Télégraphe (C1.9) ----------------------------------------------------
@@ -145,6 +153,104 @@ func push_with(attacker: Unit, target: Unit, distance: int = -1) -> Dictionary:
 	return board.push_away_from(target, attacker.cell, distance)
 
 
+# --- Capacités de classe (C1.24) ------------------------------------------
+
+## Les quatre verbes tactiques du § 3.1. `target` est une Unit pour une
+## attaque ou une poussée, un Vector2i pour une Bénédiction, et n'est pas
+## lu pour une Provocation.
+## Renvoie un compte rendu, ou {} si le coup est illégal.
+func use_ability(unit: Unit, ability_id: StringName, target: Variant = null) -> Dictionary:
+	if not _can_act(unit) or unit.has_acted:
+		return {}
+	var ability := Ability.get_ability(ability_id)
+	if ability.is_empty():
+		return {}
+
+	match StringName(ability.get("kind", "")):
+		Ability.KIND_TAUNT:
+			return _use_taunt(unit)
+		Ability.KIND_ATTACK:
+			return _use_aimed_attack(unit, ability, target)
+		Ability.KIND_PUSH:
+			return _use_push(unit, ability, target)
+		Ability.KIND_WARD:
+			return _use_ward(unit, ability, target)
+	push_error("CombatEngine : capacité « %s » sans effet connu" % ability_id)
+	return {}
+
+
+## Ce héros provoque-t-il ce tour-ci ?
+func is_taunting(unit_id: int) -> bool:
+	return _taunting.has(unit_id)
+
+
+## Cette case est-elle protégée par une Bénédiction ?
+func is_warded(cell: Vector2i) -> bool:
+	return _warded.has(cell)
+
+
+func _use_taunt(unit: Unit) -> Dictionary:
+	_push_undo()
+	unit.has_acted = true
+	if not _taunting.has(unit.id):
+		_taunting.append(unit.id)
+	# Les ennemis déjà adjacents redirigent leur annonce immédiatement :
+	# le joueur doit VOIR la provocation faire effet avant de valider.
+	_retelegraph_adjacent(unit)
+	return {"ability": "taunt", "unit_id": unit.id}
+
+
+## Tir tendu : une attaque ordinaire, augmentée si l'archer n'a pas bougé.
+func _use_aimed_attack(unit: Unit, ability: Dictionary, target: Variant) -> Dictionary:
+	if not (target is Unit) or not board.can_attack(unit, target):
+		return {}
+	if bool(ability.get("requires_not_moved", false)) and unit.has_moved:
+		return {}
+	_push_undo()
+	var victim: Unit = target
+	var damage := board.predicted_damage(unit, victim.cell) + int(ability.get("damage_bonus", 0))
+	var downed := victim.take_damage(damage)
+	if downed:
+		board.remove_from_board(victim)
+	unit.has_acted = true
+	return {
+		"ability": "aimed_shot", "attacker_id": unit.id, "target_id": victim.id,
+		"damage": damage, "downed": downed,
+	}
+
+
+func _use_push(unit: Unit, ability: Dictionary, target: Variant) -> Dictionary:
+	if not (target is Unit) or not board.can_attack(unit, target):
+		return {}
+	_push_undo()
+	unit.has_acted = true
+	var report := board.push_away_from(target, unit.cell, int(ability.get("distance", 1)))
+	report["ability"] = "push_back"
+	return report
+
+
+func _use_ward(unit: Unit, ability: Dictionary, target: Variant) -> Dictionary:
+	if not (target is Vector2i) or not board.grid.contains(target):
+		return {}
+	var distance := board.grid.distance(unit.cell, target)
+	if distance < int(ability.get("range_min", 1)) or distance > int(ability.get("range_max", 1)):
+		return {}
+	_push_undo()
+	unit.has_acted = true
+	if not _warded.has(target):
+		_warded.append(target)
+	return {"ability": "blessing", "unit_id": unit.id, "cell": target}
+
+
+## Recalcule l'annonce des ennemis adjacents à un provocateur.
+func _retelegraph_adjacent(taunter: Unit) -> void:
+	for enemy: Unit in _ordered(board.active_units(Unit.Side.ENEMIES)):
+		if board.grid.distance(enemy.cell, taunter.cell) > 1:
+			continue
+		if board.attackable_units(enemy).has(taunter):
+			_intents[enemy.id] = CombatIntent.attack_cell(enemy.id, enemy.cell, taunter.cell)
+
+
 # --- Annulation (C1.13) ---------------------------------------------------
 
 ## Rien n'est irréversible avant la validation du tour (§ 11.2).
@@ -187,6 +293,10 @@ func end_player_turn() -> Array[Dictionary]:
 	_undo_stack.clear()
 
 	_execute_intents(log)
+	# La Bénédiction et la Provocation ne valent que pour le tour qu'elles
+	# viennent de couvrir.
+	_warded.clear()
+	_taunting.clear()
 
 	if _settle(log):
 		return log
@@ -221,6 +331,11 @@ func _execute_intents(log: Array[Dictionary]) -> void:
 		for cell: Vector2i in intent.target_cells(enemy.cell):
 			if not board.grid.contains(cell):
 				continue
+			if _warded.has(cell):
+				log.append({
+					"event": "attack_warded", "attacker_id": enemy.id, "cell": cell,
+				})
+				continue
 			var damage := board.predicted_damage(enemy, cell)
 			var victim := board.unit_at(cell)
 			if victim == null or not victim.is_active():
@@ -243,7 +358,7 @@ func _execute_intents(log: Array[Dictionary]) -> void:
 ## Déplacements et nouvelles annonces, après que tous les coups sont partis.
 func _advance_enemies(log: Array[Dictionary]) -> void:
 	for enemy: Unit in _ordered(board.active_units(Unit.Side.ENEMIES)):
-		var plan := ai.plan(board, enemy)
+		var plan := ai.plan(board, enemy, _taunting)
 		var destination: Vector2i = plan["move_to"]
 		if destination != enemy.cell:
 			var from := enemy.cell
@@ -324,6 +439,8 @@ func snapshot() -> Dictionary:
 		"outcome": outcome,
 		"carried": objective.carried,
 		"rng": rng.position(),
+		"taunting": _taunting.duplicate(),
+		"warded": _warded.duplicate(),
 		"tiles": tiles,
 		"units": units,
 		"intents": intents,
@@ -336,6 +453,11 @@ func _restore(state: Dictionary) -> void:
 	outcome = int(state["outcome"])
 	objective.carried = bool(state["carried"])
 	rng.rewind_to(state["rng"])
+	_taunting = (state.get("taunting", []) as Array).duplicate()
+	var wards: Array[Vector2i] = []
+	for cell: Variant in state.get("warded", []):
+		wards.append(cell)
+	_warded = wards
 
 	for raw: Dictionary in state["tiles"]:
 		var tile := board.tile_at(Vector2i(int(raw["x"]), int(raw["y"])))

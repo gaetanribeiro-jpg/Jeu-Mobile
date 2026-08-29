@@ -34,14 +34,14 @@ func _init(rng: CombatRng = null) -> void:
 
 ## Plan d'un ennemi pour ce tour : { move_to, intent, target_id }.
 ## `move_to` vaut toujours une case légale — au pire celle de départ.
-func plan(board: CombatBoard, unit: Unit) -> Dictionary:
+func plan(board: CombatBoard, unit: Unit, taunting: Array[int] = []) -> Dictionary:
 	var empty := {
 		"move_to": unit.cell, "intent": CombatIntent.none(unit.id), "target_id": -1,
 	}
 	if unit.is_downed():
 		return empty
 
-	var target := _choose_target(board, unit)
+	var target := _choose_target(board, unit, taunting)
 	if target == null:
 		return empty
 
@@ -67,10 +67,24 @@ func plan(board: CombatBoard, unit: Unit) -> Dictionary:
 ## Cible retenue. Ordre de préférence, du plus fort au plus faible :
 ## la classe que ce rôle vise, puis celle qu'on peut achever, puis la plus
 ## proche. L'identifiant tranche les égalités pour rester déterministe.
-func _choose_target(board: CombatBoard, unit: Unit) -> Unit:
+func _choose_target(board: CombatBoard, unit: Unit, taunting: Array[int]) -> Unit:
 	var candidates := board.active_units(Unit.Side.HEROES)
 	if candidates.is_empty():
 		return null
+
+	# Provocation (§ 3.1) : un ennemi ADJACENT à un provocateur n'a pas le
+	# choix. C'est ce qui permet au Guerrier d'acheter un tour aux autres.
+	if not taunting.is_empty():
+		var forced: Unit = null
+		for candidate: Unit in candidates:
+			if not taunting.has(candidate.id):
+				continue
+			if board.grid.distance(unit.cell, candidate.cell) > 1:
+				continue
+			if forced == null or candidate.id < forced.id:
+				forced = candidate
+		if forced != null:
+			return forced
 
 	var preferred := StringName(Unit.enemy_stats(unit.class_id).get("prefers_class", ""))
 	var best: Unit = null
