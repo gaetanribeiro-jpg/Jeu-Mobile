@@ -143,7 +143,11 @@ func _refresh_squad(engine: CombatEngine) -> void:
 			_rows[unit.id] = row
 			_squad.add_child(row)
 		var name_ := tr("CLASS_%s" % String(unit.class_id).to_upper())
-		row.text = "%s  %d/%d" % [name_, unit.hit_points, unit.max_hit_points]
+		# Le numéro d'emplacement d'abord : avec les doublons de classe,
+		# « Guerrier 8/8 » deux fois de suite ne désigne personne.
+		row.text = "%d  %s  %d/%d" % [
+			unit.slot, name_, unit.hit_points, unit.max_hit_points
+		]
 		row.modulate = Color(1, 1, 1) if unit.is_active() else Color(0.5, 0.4, 0.4)
 
 

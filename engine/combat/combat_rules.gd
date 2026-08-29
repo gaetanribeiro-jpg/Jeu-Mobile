@@ -75,6 +75,20 @@ static func terrain_for_symbol(symbol: String) -> StringName:
 	return &""
 
 
+## Nombre d'emplacements dont le joueur dispose au départ.
+## Trois, pour quatre classes : il ne peut pas prendre un exemplaire de
+## chaque, et doit donc choisir.
+static func squad_size() -> int:
+	return int(rule(&"sides", &"squad_size", 3))
+
+
+## Plafond dur, Caserne de niveau 3 comprise (§ 5.4, « +1 héros en
+## expédition »). C'est le nombre de cases de départ qu'une carte doit
+## prévoir, pas le nombre de héros du début de partie.
+static func max_heroes() -> int:
+	return int(rule(&"sides", &"max_heroes", 4))
+
+
 static func adjacency() -> String:
 	return String(rule(&"grid", &"adjacency", ADJACENCY_ORTHOGONAL))
 

@@ -51,10 +51,16 @@ func _check(map: CombatMap, width: int, height: int) -> void:
 
 	if map.hero_spawns.is_empty():
 		_problems.append("%s : aucune case de départ" % id)
-	var max_heroes := int(CombatRules.rule(&"sides", &"max_heroes", 4))
-	if map.hero_spawns.size() > max_heroes:
+	# Une carte doit prévoir max_heroes cases, pas squad_size : la Caserne
+	# de niveau 3 emmène un héros de plus (§ 5.4), et une carte qui n'aurait
+	# que trois cases le laisserait au campement sans rien dire.
+	var cap := CombatRules.max_heroes()
+	if map.hero_spawns.size() > cap:
 		_problems.append("%s : %d cases de départ pour %d héros au plus"
-			% [id, map.hero_spawns.size(), max_heroes])
+			% [id, map.hero_spawns.size(), cap])
+	if map.hero_spawns.size() < cap:
+		_problems.append("%s : %d cases de départ, il en faut %d pour la Caserne 3"
+			% [id, map.hero_spawns.size(), cap])
 
 	var seen := {}
 	for cell: Vector2i in map.hero_spawns:

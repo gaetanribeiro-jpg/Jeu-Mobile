@@ -58,12 +58,8 @@ func _init() -> void:
 
 
 func _squad() -> Array[Unit]:
-	var out: Array[Unit] = []
-	var id := 1
-	for class_id: StringName in [&"warrior", &"archer", &"lancer", &"monk"]:
-		out.append(Unit.from_hero_class(id, class_id, Vector2i.ZERO))
-		id += 1
-	return out
+	var wanted: Array = [&"warrior", &"archer", &"lancer", &"monk"]
+	return Unit.squad_from_classes(wanted.slice(0, CombatRules.squad_size()))
 
 
 func _run(map_id: StringName, seed_value: int) -> Dictionary:

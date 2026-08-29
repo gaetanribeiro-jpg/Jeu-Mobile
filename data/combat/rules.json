@@ -13,6 +13,8 @@
     "max_turns": 6
   },
   "sides": {
+    "_readme": "squad_size est le nombre d'emplacements dont le joueur dispose au depart : 3, pour 4 classes. Il ne peut donc PAS prendre un exemplaire de chaque, et doit choisir. Les doublons sont autorises — 2 Guerriers + 1 Moine, ou 3 Lanciers — ce qui donne 20 compositions possibles au lieu d'une seule. Decision de Gaetan, 2026-08-29. max_heroes est le plafond dur : la Caserne de niveau 3 offre +1 emplacement (§ 5.4), ce qui fait 4. Les cartes de combat doivent donc prevoir max_heroes cases de depart.",
+    "squad_size": 3,
     "max_heroes": 4,
     "min_enemies": 3,
     "max_enemies": 7

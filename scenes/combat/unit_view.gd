@@ -21,6 +21,7 @@ var _frames_cache: Dictionary = {}
 var _float_phase: float = 0.0
 var _base_offset: Vector2 = Vector2.ZERO
 var _busy: bool = false
+var _font: Font
 
 
 func setup(combat_unit: Unit, faction_color: String) -> void:
@@ -32,6 +33,13 @@ func setup(combat_unit: Unit, faction_color: String) -> void:
 
 
 func _build() -> void:
+	# Police chargée une fois : `_draw()` s'exécute à chaque image, et y
+	# charger une ressource serait un load par unité et par image.
+	_font = ThemeDB.fallback_font
+	var theme: Theme = load("res://assets/fonts/pixel_theme.tres")
+	if theme != null and theme.default_font != null:
+		_font = theme.default_font
+
 	_sprite = AnimatedSprite2D.new()
 	_sprite.centered = true
 	_sprite.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
@@ -74,6 +82,33 @@ func _draw() -> void:
 	draw_circle(Vector2.ZERO, ViewSettings.size_of(&"shadow_radius_x_px"),
 		ViewSettings.color(&"shadow"))
 	draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
+	_draw_slot()
+
+
+## Numéro d'emplacement, sur les héros seulement.
+##
+## Les doublons de classe sont autorisés — deux Guerriers, trois Lanciers —
+## et toute la compagnie est de la même couleur. Sans ce numéro, deux
+## Guerriers sont littéralement le même sprite au même endroit du roster,
+## et le joueur ne sait pas lequel il vient de déplacer. PROVISOIRE : il
+## cédera la place à l'initiale du nom du héros quand les noms existeront
+## (H2.2), qui dit la même chose en plus incarné.
+func _draw_slot() -> void:
+	if not unit.is_hero() or unit.slot <= 0 or _font == null:
+		return
+	var radius := ViewSettings.size_of(&"slot_badge_radius_px")
+	# Au-dessus de la barre de vie et centré sur l'unité : posé sur le côté,
+	# il sortait de la case pour un héros de la colonne de gauche.
+	var centre := Vector2(0.0, ViewSettings.size_of(&"slot_badge_offset_px"))
+	draw_circle(centre, radius, ViewSettings.color(&"slot_badge"))
+	draw_arc(centre, radius, 0.0, TAU, 20, ViewSettings.color(&"slot_badge_border"), 2.0)
+	var size := ViewSettings.integer(&"sizes", &"slot_font_size", 22)
+	var text := str(unit.slot)
+	var span := _font.get_string_size(text, HORIZONTAL_ALIGNMENT_LEFT, -1, size)
+	draw_string(
+		_font, centre + Vector2(-span.x * 0.5, span.y * 0.33), text,
+		HORIZONTAL_ALIGNMENT_LEFT, -1, size, ViewSettings.color(&"slot_text")
+	)
 
 
 ## Remet la barre de vie et la visibilité en accord avec l'état de l'unité.

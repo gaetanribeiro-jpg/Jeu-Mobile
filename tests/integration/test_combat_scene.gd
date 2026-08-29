@@ -34,7 +34,11 @@ func _first_hero() -> Unit:
 func test_la_scene_se_construit_sur_une_carte() -> void:
 	assert_not_null(_engine(), "le moteur est monté")
 	assert_eq(_engine().turn_index, 1)
-	assert_eq(_engine().board.active_units(Unit.Side.HEROES).size(), 4)
+	assert_eq(
+		_engine().board.active_units(Unit.Side.HEROES).size(),
+		CombatRules.squad_size(),
+		"trois emplacements pour quatre classes : il faut choisir"
+	)
 	assert_gt(_engine().board.active_units(Unit.Side.ENEMIES).size(), 0)
 
 
@@ -200,3 +204,26 @@ func test_un_rocher_est_de_la_terre_pas_de_l_eau() -> void:
 	assert_false(terrain._is_land(Vector2i(2, 1)), "l'eau n'en est pas")
 	assert_true(terrain._is_land(Vector2i(0, 0)), "l'herbe non plus n'est pas de l'eau")
 	assert_false(terrain._is_land(Vector2i(-1, 0)), "hors grille compte comme de l'eau")
+
+
+func test_deux_heros_de_meme_classe_restent_distincts_a_l_ecran() -> void:
+	# Conséquence directe des doublons : sans numéro d'emplacement, deux
+	# Guerriers bleus sont le même sprite et le joueur ne sait pas lequel
+	# il vient de déplacer.
+	var squad := Unit.squad_from_classes([&"warrior", &"warrior", &"monk"])
+	var slots := {}
+	for unit: Unit in squad:
+		assert_false(slots.has(unit.slot), "deux héros au même emplacement")
+		slots[unit.slot] = true
+	assert_eq(slots.size(), 3)
+
+	var hud: CanvasLayer = _scene._hud
+	var texts := {}
+	for unit: Unit in squad:
+		var name_ := tr("CLASS_%s" % String(unit.class_id).to_upper())
+		var line := "%d  %s  %d/%d" % [
+			unit.slot, name_, unit.hit_points, unit.max_hit_points
+		]
+		assert_false(texts.has(line), "deux lignes de HUD identiques : %s" % line)
+		texts[line] = true
+	assert_not_null(hud)

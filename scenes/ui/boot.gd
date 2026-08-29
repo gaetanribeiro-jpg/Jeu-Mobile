@@ -12,15 +12,66 @@ extends Control
 
 const COMBAT_SCENE := "res://scenes/combat/combat_scene.tscn"
 
+## Composition courante. Trois emplacements pour quatre classes : on ne
+## peut pas prendre un exemplaire de chaque, et les doublons sont permis.
+var _composition: Array[StringName] = []
+
 @onready var _title: Label = %Title
 @onready var _subtitle: Label = %Subtitle
 @onready var _maps: VBoxContainer = %Maps
+@onready var _squad: VBoxContainer = %Squad
 
 
 func _ready() -> void:
 	_title.text = tr("GAME_TITLE")
 	_subtitle.text = tr("BOOT_TEMPORARY")
+	_reset_composition()
+	_build_squad_picker()
 	_build_map_list()
+
+
+func _reset_composition() -> void:
+	_composition.clear()
+	var classes := Unit.hero_class_ids()
+	for i in CombatRules.squad_size():
+		_composition.append(classes[i % classes.size()])
+
+
+## Trois boutons qui font défiler les classes. Provisoire : le vrai écran
+## de roster est H2.8. Mais sans lui, la règle des trois emplacements ne
+## se teste pas — on jouerait toujours la même composition.
+func _build_squad_picker() -> void:
+	for child in _squad.get_children():
+		child.queue_free()
+
+	var header := Label.new()
+	header.text = tr("BOOT_SQUAD")
+	header.add_theme_font_size_override("font_size", 22)
+	header.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_squad.add_child(header)
+
+	var centre := CenterContainer.new()
+	_squad.add_child(centre)
+	var row := HBoxContainer.new()
+	row.add_theme_constant_override("separation", 12)
+	centre.add_child(row)
+
+	for slot in _composition.size():
+		var button := Button.new()
+		button.custom_minimum_size = Vector2(230, 76)
+		button.add_theme_font_size_override("font_size", 22)
+		button.text = "%d  %s" % [
+			slot + 1, tr("CLASS_%s" % String(_composition[slot]).to_upper())
+		]
+		button.pressed.connect(_cycle_class.bind(slot))
+		row.add_child(button)
+
+
+func _cycle_class(slot: int) -> void:
+	var classes := Unit.hero_class_ids()
+	var index := classes.find(_composition[slot])
+	_composition[slot] = classes[(index + 1) % classes.size()]
+	_build_squad_picker()
 
 
 func _build_map_list() -> void:
@@ -60,6 +111,7 @@ func _start(map_id: StringName) -> void:
 		return
 	var scene: Node2D = packed.instantiate()
 	scene.map_id = map_id
+	scene.configure(map_id, Unit.squad_from_classes(_composition))
 	scene.combat_finished.connect(_on_combat_finished.bind(scene))
 	get_tree().root.add_child(scene)
 	visible = false

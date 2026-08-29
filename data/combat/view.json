@@ -129,6 +129,24 @@
       0.45,
       0.35,
       1.0
+    ],
+    "slot_badge": [
+      0.13,
+      0.16,
+      0.22,
+      0.95
+    ],
+    "slot_text": [
+      0.92,
+      0.95,
+      1.0,
+      1.0
+    ],
+    "slot_badge_border": [
+      0.75,
+      0.85,
+      1.0,
+      0.9
     ]
   },
   "sizes": {
@@ -143,7 +161,10 @@
     "damage_font_size": 28,
     "telegraph_font_size": 34,
     "telegraph_badge_radius_px": 17.0,
-    "hill_cliff_height_px": 22.0
+    "hill_cliff_height_px": 22.0,
+    "slot_badge_radius_px": 13.0,
+    "slot_badge_offset_px": -60.0,
+    "slot_font_size": 22
   },
   "idle_float": {
     "_note": "Flottement sinusoïdal des sprites au repos (§ 12). Trivial à coder, fort en impact.",

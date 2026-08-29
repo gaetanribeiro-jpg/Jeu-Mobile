@@ -65,12 +65,18 @@ func configure(combat_map_id: StringName, squad: Array[Unit], rng: CombatRng = n
 	engine.start()
 
 
+## Escouade de démonstration, quand la scène est lancée sans configuration.
+## Elle compte `squad_size` héros — trois pour quatre classes, donc un
+## choix à faire — et la composition par défaut porte volontairement un
+## doublon, pour que le cas des deux mêmes classes soit celui qu'on voit
+## tous les jours plutôt qu'un cas limite qu'on découvre tard.
+func default_squad() -> Array[Unit]:
+	var wanted: Array = [&"warrior", &"archer", &"warrior", &"monk"]
+	return Unit.squad_from_classes(wanted.slice(0, CombatRules.squad_size()))
+
+
 func _build_from_map() -> void:
-	var squad: Array[Unit] = []
-	var id := 1
-	for class_id: StringName in [&"warrior", &"archer", &"lancer", &"monk"]:
-		squad.append(Unit.from_hero_class(id, class_id, Vector2i.ZERO))
-		id += 1
+	var squad := default_squad()
 	var map := CombatMap.load_map(map_id)
 	if map == null:
 		return

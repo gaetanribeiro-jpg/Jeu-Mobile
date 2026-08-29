@@ -50,6 +50,11 @@ var flying: bool = false
 ## Comportement d'IA. Vide pour un héros, que le joueur pilote.
 var role: StringName = &""
 
+## Numéro d'emplacement dans l'escouade, à partir de 1. Les doublons de
+## classe étant autorisés, c'est la seule chose qui distingue deux
+## Guerriers tant que les héros n'ont pas de nom (H2.2).
+var slot: int = 0
+
 var state: int = State.ACTIVE
 
 ## Remis à faux au début de chaque tour. Le Tir tendu de l'Archer donne
@@ -114,6 +119,31 @@ static func from_hero_class(
 		return null
 	var unit := Unit.from_stats(unit_id, class_to_use, Side.HEROES, at, stats)
 	return unit
+
+
+## Escouade de combat, à partir d'une liste de classes.
+##
+## LES DOUBLONS SONT AUTORISÉS : deux Guerriers et un Moine est une
+## composition légale, trois Lanciers aussi. Avec 3 emplacements et 4
+## classes, cela fait 20 compositions au lieu d'une seule — c'est tout
+## l'intérêt de descendre à 3, et c'est pour ça que rien ici ne vérifie
+## l'unicité des classes.
+##
+## Les identifiants vont de 1 à n, dans l'ordre donné. Cet ordre est le
+## numéro d'emplacement affiché en jeu : sans lui, deux Guerriers de la
+## même couleur sont impossibles à distinguer sur le plateau.
+static func squad_from_classes(class_ids: Array) -> Array[Unit]:
+	var out: Array[Unit] = []
+	var limit := CombatRules.max_heroes()
+	if class_ids.size() > limit:
+		push_error("Unit : escouade de %d héros, %d au plus" % [class_ids.size(), limit])
+	for i in mini(class_ids.size(), limit):
+		var unit := Unit.from_hero_class(i + 1, StringName(class_ids[i]), Vector2i.ZERO)
+		if unit == null:
+			continue
+		unit.slot = i + 1
+		out.append(unit)
+	return out
 
 
 ## Fabrique une unité à partir d'un bloc de statistiques déjà calculé.
@@ -268,6 +298,7 @@ func to_dictionary() -> Dictionary:
 		"aquatic": aquatic,
 		"flying": flying,
 		"role": String(role),
+		"slot": slot,
 		"state": int(state),
 		"has_moved": has_moved,
 		"has_acted": has_acted,
@@ -289,6 +320,7 @@ static func from_dictionary(data: Dictionary) -> Unit:
 	unit.aquatic = bool(data.get("aquatic", false))
 	unit.flying = bool(data.get("flying", false))
 	unit.role = StringName(data.get("role", ""))
+	unit.slot = int(data.get("slot", 0))
 	unit.state = int(data.get("state", State.ACTIVE))
 	unit.has_moved = bool(data.get("has_moved", false))
 	unit.has_acted = bool(data.get("has_acted", false))

@@ -84,6 +84,14 @@ res://
 - **L'Ordre** : les maîtrises de classe sont permanentes et rétroactives, elles survivent à la mort des héros.
 - **Trois ressources matérielles** (bois, or, vivres) + le Renom. Il n'y a pas de pierre : le pack d'assets n'en fournit pas.
 - **Grille 8×6** en combat, 10×8 en siège. Combats de 3 à 6 tours.
+- **Adjacence orthogonale** : 4 voisins, distance de Manhattan. Une case en
+  diagonale est donc à distance 2, ce qui la met à portée du Lancier (1–2)
+  et de l'Archer (2–4) : les 8 directions dessinées servent à l'orientation
+  de l'attaque, pas au déplacement.
+- **Escouade de 3 héros pour 4 classes, doublons autorisés.** Le joueur ne
+  peut pas prendre un exemplaire de chaque : il renonce toujours à quelque
+  chose. 20 compositions possibles au lieu d'une. La Caserne de niveau 3
+  rend le 4ᵉ emplacement (§ 5.4) — récompense tardive, pas état de départ.
 - **Aucun bâtiment décoratif.** Chaque bâtiment répond à « qu'est-ce que ça permet à mes héros ? »
 - **Pas de free-to-play** : pas d'énergie, pas de timer, pas de monnaie premium, pas de publicité.
 
@@ -167,6 +175,7 @@ godot --headless --path . -s tools/verify_audio.gd      # 30 entrées
 godot --headless --path . -s tools/verify_font.gd       # 140 glyphes
 godot --headless --path . -s tools/verify_maps.gd       # 8 cartes
 godot --headless --path . -s tools/simulate_combats.gd  # équilibrage
+godot --headless --path . -s tools/compare_squads.gd    # les 20 compositions
 ```
 
 **Prochaine étape, côté Gaetan :** F0.1 (Godot 4.6 + SDK Android) puis
@@ -184,10 +193,12 @@ F0.9 (export APK). Les Jalons 0 et 1 arrivent ensemble.
 
 **Questions ouvertes, à trancher par Gaetan :**
 
-1. **Les ennemis sont trop faibles.** `tools/simulate_combats.gd` donne
-   100 % de victoires avec une politique de joueur triviale. Leurs valeurs
-   sont de mon invention — le document ne chiffre que les héros au § 3.1.
-   À régler en T10.5.
+1. **Les ennemis sont trop faibles**, et c'est maintenant chiffré autrement.
+   `tools/compare_squads.gd` joue les 20 compositions sur les 8 cartes :
+   **17 sur 20 gagnent à 100 %**. La règle des trois emplacements ne créera
+   de vrais choix que quand les ennemis feront payer les mauvaises. Leurs
+   valeurs sont de mon invention — le document ne chiffre que les héros au
+   § 3.1. À régler en T10.5, et l'outil dira quand c'est réglé.
 2. **Dégâts d'une poussée bloquée** (`rules.json`, `push.blocked_damage`),
    posé à 0 : le pousseur a gâché son coup.
 3. **`.tres` ou `.json`** pour les données de classes (C1.23). Tout est en

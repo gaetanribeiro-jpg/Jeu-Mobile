@@ -255,7 +255,7 @@ Et personne n'est fusionné avec personne : les héros restent des personnes qui
 ### 4.1 Règles de base
 
 - Grille **8 × 6** en vue de dessus, tuiles 64×64
-- **4 héros maximum** engagés, 3 à 7 ennemis
+- **3 héros engagés** pour 4 classes disponibles, 3 à 7 ennemis. Les doublons sont autorisés : 2 Guerriers + 1 Moine, ou 3 Lanciers. *(Décision du 2026-08-29, en remplacement des 4 héros : à 4 emplacements pour 4 classes, le joueur prenait un exemplaire de chaque et ne choisissait rien. À 3, il renonce toujours à quelque chose, et les 20 compositions possibles remplacent l'unique composition évidente. La Caserne de niveau 3 rend le quatrième emplacement, § 5.4 — c'est alors une récompense de fin de partie, pas l'état de départ.)*
 - Tour du joueur (toutes les unités, dans l'ordre choisi) → **résolution des ennemis** → nouveau tour
 - Un combat dure **3 à 6 tours**. Au-delà, c'est trop long pour du mobile.
 
