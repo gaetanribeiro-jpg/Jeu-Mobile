@@ -143,34 +143,36 @@ Les feuilles d'animation ont des largeurs variables (768 à 5120 px). Nombre d'i
 
 *(à tenir à jour à chaque fin de session)*
 
-- **Phase courante :** 1 — Moteur de combat. **TERMINÉE**, logique et rendu.
-- **Dernière tâche terminée :** C1.22 (séquence du tour ennemi)
-- **Jalon visé :** Jalon 0 et Jalon 1 en même temps, sur le téléphone
+- **Phase courante :** 1 — Moteur de combat, **TERMINÉE**. Prochaine :
+  Phase 2, héros et Ordre (Jalon 2).
+- **Dernière tâche terminée :** placement initial de l'escouade
+- **277 tests passent** sous Godot 4.6 en headless.
 
-**Fait :** tout le § Phase 0 sauf F0.1, F0.9, F0.13 · **toute la Phase 1**.
-P8.16 et T10.2 entamées.
-**251 tests passent** sous Godot 4.6 en headless.
+**Le combat se joue, sur PC.** Écran de titre → composition de l'escouade
+→ choix d'une des 8 cartes → placement → combat. `pointing/emulate_touch_from_mouse`
+est actif, donc la souris se comporte comme un doigt.
 
-**Le combat se joue.** L'écran d'amorçage liste les 8 cartes de l'Acte I
-(lanceur PROVISOIRE — le vrai menu est A9.1). Grammaire du § 11.2 :
-tap sur un héros, tap sur une case, tap de confirmation ; glissement et
-pincement pour la caméra ; Annuler toujours présent.
+**PAS DE TÉLÉPHONE ANDROID pour l'instant.** Les étapes F, G et H de
+`docs/installation.md` (SDK, préréglage d'export, déploiement) attendent.
+Conséquences, et elles sont limitées :
+- Le Jalon 0 ne peut pas être constaté sur un appareil. Le reste du
+  développement n'en dépend pas.
+- Deux points de la liste « à regarder en jouant » restent invérifiables :
+  la taille réelle des cibles tactiles et les 60 fps sur l'appareil. Tous
+  les autres se testent à la souris.
+- Rien à refaire le jour venu : le projet est déjà réglé pour Android
+  (paysage, gl_compatibility, filtrage Nearest). Compter deux heures.
 
-**Je peux voir le rendu.** xvfb est disponible dans mon conteneur, donc
-Godot rend et je capture l'écran :
+**Je peux voir le rendu.** xvfb est disponible dans mon conteneur :
 ```bash
 xvfb-run -a godot --path . --resolution 1280x720 \
   -s tools/dev/screenshot.gd -- res://scenes/ui/boot.tscn /tmp/x.png
 xvfb-run -a godot --path . --resolution 1280x720 \
   -s tools/dev/combat_storyboard.gd -- /tmp/planche vallee_03
 ```
-Trois défauts n'ont été trouvés que comme ça, dont un vrai bug de moteur.
-Ce que je ne peux toujours PAS juger : le ressenti, la fluidité, la taille
-réelle des cibles tactiles, et les performances.
+Cinq défauts n'ont été trouvés que comme ça, dont deux vrais bugs.
 
-**Toutes les valeurs de ressenti sont dans `data/combat/view.json`** —
-couleurs, durées, hit stop, flottement, seuils de geste. C'est fait pour
-être réglé sans toucher au code.
+**Toutes les valeurs de ressenti sont dans `data/combat/view.json`.**
 
 **Outils de vérification, à relancer après toute modification :**
 ```bash
@@ -182,35 +184,24 @@ godot --headless --path . -s tools/simulate_combats.gd  # équilibrage
 godot --headless --path . -s tools/compare_squads.gd    # les 20 compositions
 ```
 
-**Prochaine étape, côté Gaetan :** F0.1 (Godot 4.6 + SDK Android) puis
-F0.9 (export APK). Les Jalons 0 et 1 arrivent ensemble.
-
-**À regarder en jouant, et que je ne peux pas voir :**
-1. Les cibles tactiles font-elles vraiment 48 dp ? Le § 11.3 vise une case
-   à l'échelle 2 ; le cadrage automatique peut la rendre plus petite.
-2. Les boutons du bas recouvrent le plateau. Gênant, ou acceptable ?
-3. Les durées d'animation (`view.json`, section `durations`) : trop lentes,
-   trop rapides ?
-4. Le tour ennemi est rejoué un évènement à la fois. Comprend-on ce qui
-   s'est passé, ou est-ce trop long ?
-5. 60 fps sur le téléphone. Je rends en logiciel, je ne peux pas mesurer.
+**À regarder en jouant, maintenant que c'est jouable à la souris :**
+1. Le placement initial : le choix se sent-il, ou pose-t-on toujours pareil ?
+2. Les boutons du bas recouvrent le plateau. Gênant ?
+3. Les durées d'animation (`view.json`, `durations`) : trop lentes, trop rapides ?
+4. Le tour ennemi rejoué évènement par évènement : lisible, ou trop long ?
+5. La composition d'escouade : le renoncement se sent-il ?
 
 **Questions ouvertes, à trancher par Gaetan :**
 
-1. **Les ennemis sont trop faibles**, et c'est maintenant chiffré autrement.
-   `tools/compare_squads.gd` joue les 20 compositions sur les 8 cartes :
-   **17 sur 20 gagnent à 100 %**. La règle des trois emplacements ne créera
-   de vrais choix que quand les ennemis feront payer les mauvaises. Leurs
-   valeurs sont de mon invention — le document ne chiffre que les héros au
-   § 3.1. À régler en T10.5, et l'outil dira quand c'est réglé.
+1. **Les ennemis sont trop faibles.** `tools/compare_squads.gd` :
+   **17 compositions sur 20 gagnent à 100 %**. Leurs valeurs sont de mon
+   invention — le document ne chiffre que les héros au § 3.1. C'est T10.5,
+   et l'outil dira quand ce sera réglé.
 2. **Dégâts d'une poussée bloquée** (`rules.json`, `push.blocked_damage`),
-   posé à 0 : le pousseur a gâché son coup.
-3. **`.tres` ou `.json`** pour les données de classes (C1.23). Tout est en
-   JSON aujourd'hui, plus simple à tester en headless.
-4. **Les affectations de `data/audio.json`** ont été faites au nom des
-   fichiers, pas à l'oreille. Rien n'est encore joué en jeu (P8.15/P8.17).
+   posé à 0.
+3. **`.tres` ou `.json`** pour les données de classes (C1.23).
+4. **Les affectations de `data/audio.json`**, faites au nom des fichiers.
 
-**Constat à connaître :** un combat ne dépend d'aucun tirage aléatoire —
-ni les dégâts, ni le choix de cible, ni les départages de l'IA. C'est
-conforme au deuxième pilier, et c'est un test explicite. Le générateur à
-graine servira à la couche campagne.
+**Constat à connaître :** un combat ne dépend d'aucun tirage aléatoire.
+C'est conforme au deuxième pilier, et c'est un test explicite. Le
+générateur à graine servira à la couche campagne.
