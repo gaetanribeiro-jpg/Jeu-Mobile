@@ -136,6 +136,15 @@ func _spawn_view(unit: Unit) -> void:
 	_views[unit.id] = view
 
 
+## Retire la vue d'un héros repris pendant le placement.
+func _remove_view(unit: Unit) -> void:
+	var view: Node2D = _views.get(unit.id, null)
+	if view == null:
+		return
+	_views.erase(unit.id)
+	view.queue_free()
+
+
 func _centre_of(cell: Vector2i) -> Vector2:
 	return engine.board.grid.to_world_center(cell, _tile_size)
 
@@ -185,6 +194,11 @@ func handle_tap(cell: Vector2i) -> void:
 		_clear_selection()
 		return
 
+	if engine.is_deploying():
+		_handle_deployment_tap(cell)
+		_refresh_all()
+		return
+
 	match _selection:
 		Selection.NONE:
 			_try_select(cell)
@@ -196,6 +210,24 @@ func handle_tap(cell: Vector2i) -> void:
 			else:
 				_try_preview(cell)
 	_refresh_all()
+
+
+## Placement initial : toucher une case libre y pose le héros suivant,
+## toucher un héros déjà posé le reprend. Deux règles, pas de sélection à
+## maintenir — c'est ce qui rend le placement rapide au doigt, et on
+## réordonne en reprenant.
+func _handle_deployment_tap(cell: Vector2i) -> void:
+	var occupant := engine.board.unit_at(cell)
+	if occupant != null and occupant.is_hero():
+		if engine.undeploy(occupant):
+			_remove_view(occupant)
+		return
+	var pending := engine.pending_heroes()
+	if pending.is_empty():
+		return
+	var next: Unit = pending[0]
+	if engine.deploy(cell, next):
+		_spawn_view(next)
 
 
 func _on_tap(world_position: Vector2) -> void:
@@ -300,6 +332,12 @@ func _refresh_ghost() -> void:
 # --- Boutons --------------------------------------------------------------
 
 func _on_undo() -> void:
+	if engine.is_deploying():
+		var taken := engine.undeploy_last()
+		if taken != null:
+			_remove_view(taken)
+			_refresh_all()
+		return
 	if engine.undo():
 		_clear_selection()
 		_sync_views()
@@ -310,6 +348,10 @@ func _on_end_turn() -> void:
 	if _resolving or engine.is_finished():
 		return
 	_clear_selection()
+	if engine.is_deploying():
+		if engine.begin_combat():
+			_refresh_all()
+		return
 	_resolve_enemy_turn()
 
 
@@ -432,8 +474,13 @@ func _refresh_overlay() -> void:
 		return
 	_overlay.move_cells.clear()
 	_overlay.attack_cells.clear()
+	_overlay.deployment_cells.clear()
 	_overlay.objective_cells = engine.objective.cells.duplicate()
 	_overlay.warded_cells.clear()
+
+	if engine.is_deploying():
+		_refresh_deployment_overlay()
+		return
 	_overlay.selected_cell = _selected.cell if _selected != null else Vector2i(-1, -1)
 	_overlay.ghost_cell = _preview_cell
 
@@ -465,5 +512,30 @@ func _refresh_overlay() -> void:
 		)
 
 	_overlay.threat = threat
+	_refresh_ghost()
+	_overlay.queue_redraw()
+
+
+## Pendant le placement, la couche montre deux choses : où l'on a le droit
+## de se poser, et lesquelles de ces cases sont déjà à portée d'un ennemi.
+##
+## Ce n'est pas encore le télégraphe — personne n'a d'intention tant que
+## personne n'est placé — mais c'est la même promesse : le joueur décide
+## en sachant. Se poser sur une case rouge est un choix, pas un piège.
+func _refresh_deployment_overlay() -> void:
+	var threatened := engine.threatened_deployment_cells()
+	for cell: Vector2i in engine.deployment_cells():
+		if not threatened.has(cell):
+			_overlay.deployment_cells.append(cell)
+
+	var threat := {}
+	for cell: Vector2i in threatened:
+		threat[cell] = 0
+		for enemy: Unit in engine.board.active_units(Unit.Side.ENEMIES):
+			if engine.board.attackable_cells(enemy).has(cell):
+				threat[cell] = int(threat[cell]) + engine.board.predicted_damage(enemy, cell)
+	_overlay.threat = threat
+	_overlay.selected_cell = Vector2i(-1, -1)
+	_overlay.ghost_cell = Vector2i(-1, -1)
 	_refresh_ghost()
 	_overlay.queue_redraw()

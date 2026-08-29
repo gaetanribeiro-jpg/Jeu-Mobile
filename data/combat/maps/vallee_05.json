@@ -1,13 +1,84 @@
 {
-  "_note": "Protéger le pont 4 tours. Le Torch Goblin vient le brûler : il faut choisir entre le tuer et tenir la ligne.",
+  "_note": "Protéger le pont 4 tours. Le Torch Goblin vient le brûler : il faut choisir entre le tuer et tenir la ligne. Protéger le pont 4 tours. La zone de déploiement est AUTOUR du pont, pas sur un bord : c'est la carte qui dit où est l'enjeu.",
   "act": 1,
   "name_key": "MAP_VALLEE_05",
-  "rows": ["..~~~~..", "..~~~~..", "...==...", "........", "........", "........"],
-  "objective": { "kind": "protect", "turns": 4, "protected_cells": [[3, 2], [4, 2]] },
-  "hero_spawns": [[3, 3], [4, 3], [2, 3], [5, 3]],
+  "rows": [
+    "..~~~~..",
+    "..~~~~..",
+    "...==...",
+    "........",
+    "........",
+    "........"
+  ],
+  "objective": {
+    "kind": "protect",
+    "turns": 4,
+    "protected_cells": [
+      [
+        3,
+        2
+      ],
+      [
+        4,
+        2
+      ]
+    ]
+  },
+  "deployment_cells": [
+    [
+      2,
+      3
+    ],
+    [
+      3,
+      3
+    ],
+    [
+      4,
+      3
+    ],
+    [
+      5,
+      3
+    ],
+    [
+      2,
+      4
+    ],
+    [
+      3,
+      4
+    ],
+    [
+      4,
+      4
+    ],
+    [
+      5,
+      4
+    ]
+  ],
   "enemies": [
-    { "type": "torch_goblin", "cell": [1, 1] },
-    { "type": "spear_goblin", "cell": [6, 1] },
-    { "type": "gnome", "cell": [0, 0] }
+    {
+      "type": "torch_goblin",
+      "cell": [
+        1,
+        1
+      ]
+    },
+    {
+      "type": "spear_goblin",
+      "cell": [
+        6,
+        1
+      ]
+    },
+    {
+      "type": "gnome",
+      "cell": [
+        0,
+        0
+      ]
+    }
   ]
 }

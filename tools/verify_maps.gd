@@ -49,32 +49,34 @@ func _check(map: CombatMap, width: int, height: int) -> void:
 	elif TranslationServer.translate(map.name_key) == map.name_key:
 		_problems.append("%s : la clé « %s » n'est pas traduite" % [id, map.name_key])
 
-	if map.hero_spawns.is_empty():
-		_problems.append("%s : aucune case de départ" % id)
-	# Une carte doit prévoir max_heroes cases, pas squad_size : la Caserne
-	# de niveau 3 emmène un héros de plus (§ 5.4), et une carte qui n'aurait
-	# que trois cases le laisserait au campement sans rien dire.
-	var cap := CombatRules.max_heroes()
-	if map.hero_spawns.size() > cap:
-		_problems.append("%s : %d cases de départ pour %d héros au plus"
-			% [id, map.hero_spawns.size(), cap])
-	if map.hero_spawns.size() < cap:
-		_problems.append("%s : %d cases de départ, il en faut %d pour la Caserne 3"
-			% [id, map.hero_spawns.size(), cap])
+	# La zone de placement doit proposer PLUS de cases que le joueur n'a de
+	# héros : c'est cet écart qui fait du placement une décision. Trop peu
+	# et le choix disparaît, trop et il se dilue.
+	var minimum := int(CombatRules.rule(&"deployment", &"cells_min", 6))
+	var maximum := int(CombatRules.rule(&"deployment", &"cells_max", 10))
+	var count := map.deployment_cells.size()
+	if count < minimum:
+		_problems.append("%s : %d cases de placement, %d au moins" % [id, count, minimum])
+	if count > maximum:
+		_problems.append("%s : %d cases de placement, %d au plus" % [id, count, maximum])
+	if count <= CombatRules.max_heroes():
+		_problems.append("%s : %d cases pour %d héros — aucun choix de placement"
+			% [id, count, CombatRules.max_heroes()])
 
 	var seen := {}
-	for cell: Vector2i in map.hero_spawns:
+	for cell: Vector2i in map.deployment_cells:
 		if not map.board.grid.contains(cell):
-			_problems.append("%s : case de départ %s hors grille" % [id, cell])
+			_problems.append("%s : case de placement %s hors grille" % [id, cell])
 			continue
 		if seen.has(cell):
-			_problems.append("%s : deux héros partent de %s" % [id, cell])
+			_problems.append("%s : case de placement %s en double" % [id, cell])
 		seen[cell] = true
 		var tile := map.board.tile_at(cell)
 		if not tile.is_walkable():
-			_problems.append("%s : case de départ %s sur du « %s »" % [id, cell, tile.terrain_id])
+			_problems.append("%s : case de placement %s sur du « %s »"
+				% [id, cell, tile.terrain_id])
 		if tile.is_occupied():
-			_problems.append("%s : case de départ %s déjà occupée" % [id, cell])
+			_problems.append("%s : case de placement %s déjà occupée" % [id, cell])
 
 	var enemies := map.board.active_units(Unit.Side.ENEMIES)
 	if enemies.is_empty():

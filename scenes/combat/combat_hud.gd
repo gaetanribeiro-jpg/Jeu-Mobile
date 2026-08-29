@@ -127,16 +127,46 @@ func refresh(engine: CombatEngine) -> void:
 	if engine == null:
 		return
 	_objective.text = _objective_text(engine.objective)
-	_turn.text = tr("HUD_TURN") % engine.turn_index
-	_undo.disabled = not engine.can_undo()
-	_end_turn.disabled = engine.phase != CombatEngine.Phase.PLAYER_TURN
+	if engine.is_deploying():
+		# Pendant le placement, le bouton principal démarre le combat et le
+		# compteur de tours n'a pas encore de sens : on met à la place ce
+		# qu'il reste à poser.
+		var left := engine.pending_heroes().size()
+		_turn.text = tr("HUD_DEPLOY_READY") if left == 0 else tr("HUD_DEPLOY") % left
+		_end_turn.text = tr("HUD_BEGIN_COMBAT")
+		_end_turn.disabled = not engine.can_begin_combat()
+		# Annuler reprend le dernier héros posé : rien n'est irréversible
+		# avant que le combat commence, comme rien ne l'est avant la
+		# validation d'un tour (§ 11.2).
+		_undo.disabled = _placed_count(engine) == 0
+	else:
+		_turn.text = tr("HUD_TURN") % engine.turn_index
+		_end_turn.text = tr("HUD_END_TURN")
+		_end_turn.disabled = engine.phase != CombatEngine.Phase.PLAYER_TURN
+		_undo.disabled = not engine.can_undo()
 	_refresh_squad(engine)
 
 
+func _placed_count(engine: CombatEngine) -> int:
+	var placed := 0
+	for unit: Unit in engine.board.active_units(Unit.Side.HEROES):
+		if not engine.pending_heroes().has(unit):
+			placed += 1
+	return placed
+
+
 func _refresh_squad(engine: CombatEngine) -> void:
+	var pending := engine.pending_heroes()
+	var listed: Array[Unit] = []
 	for unit: Unit in engine.board.units():
-		if not unit.is_hero():
-			continue
+		if unit.is_hero():
+			listed.append(unit)
+	for unit: Unit in pending:
+		if not listed.has(unit):
+			listed.append(unit)
+	listed.sort_custom(func(a: Unit, b: Unit) -> bool: return a.slot < b.slot)
+
+	for unit: Unit in listed:
 		var row: Label = _rows.get(unit.id, null)
 		if row == null:
 			row = _label(22)
@@ -148,7 +178,10 @@ func _refresh_squad(engine: CombatEngine) -> void:
 		row.text = "%d  %s  %d/%d" % [
 			unit.slot, name_, unit.hit_points, unit.max_hit_points
 		]
-		row.modulate = Color(1, 1, 1) if unit.is_active() else Color(0.5, 0.4, 0.4)
+		if pending.has(unit):
+			row.modulate = Color(0.62, 0.7, 0.62)
+		else:
+			row.modulate = Color(1, 1, 1) if unit.is_active() else Color(0.5, 0.4, 0.4)
 
 
 func show_result(victory: bool) -> void:

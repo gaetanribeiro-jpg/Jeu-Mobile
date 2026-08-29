@@ -26,34 +26,52 @@ func _init() -> void:
 	await _settle()
 
 	var engine: CombatEngine = _scene.engine
+
+	await _shot("01_placement")
+
+	# Placement : on pose deux héros à la main, pour montrer le geste.
+	var cells := engine.deployment_cells()
+	_scene.handle_tap(cells[0])
+	_scene.handle_tap(cells[3] if cells.size() > 3 else cells[1])
+	await _settle()
+	await _shot("02_deux_poses")
+
+	# On complète et on lance le combat. Sans passer par les taps : sur une
+	# case déjà occupée, un tap REPREND le héros, et la boucle oscillerait.
+	engine.auto_deploy()
+	for unit: Unit in engine.board.active_units(Unit.Side.HEROES):
+		if not _scene._views.has(unit.id):
+			_scene._spawn_view(unit)
+	_scene._on_end_turn()
+	await _settle()
+	await _shot("03_combat_lance")
+
 	var heroes := engine.board.active_units(Unit.Side.HEROES)
 	if heroes.is_empty():
 		quit(1)
 		return
 	var warrior: Unit = heroes[0]
 
-	await _shot("01_ouverture")
-
 	# Tap sur le guerrier : ses cases de déplacement et d'attaque s'allument.
 	_scene.handle_tap(warrior.cell)
 	await _settle()
-	await _shot("02_selection")
+	await _shot("04_selection")
 
 	# Tap sur une case valide : fantôme de prévisualisation.
 	var destination := _far_reachable(engine, warrior)
 	_scene.handle_tap(destination)
 	await _settle()
-	await _shot("03_previsualisation")
+	await _shot("05_previsualisation")
 
 	# Tap de confirmation sur la même case.
 	_scene.handle_tap(destination)
 	await _wait(1.2)
-	await _shot("04_deplacement_valide")
+	await _shot("06_deplacement_valide")
 
 	# Fin de tour : les ennemis avancent et annoncent.
 	_scene._on_end_turn()
 	await _wait(3.0)
-	await _shot("05_apres_tour_ennemi")
+	await _shot("07_apres_tour_ennemi")
 
 	# Deuxième tour : on s'approche encore, puis on regarde le télégraphe.
 	for i in 3:
@@ -67,7 +85,7 @@ func _init() -> void:
 					engine.move_hero(hero, step)
 		_scene._on_end_turn()
 		await _wait(3.0)
-	await _shot("06_melee")
+	await _shot("08_melee")
 
 	print("storyboard terminé : %d captures dans %s" % [_step, _out])
 	quit(0)

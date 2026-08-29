@@ -40,6 +40,19 @@ func before_each() -> void:
 	await wait_process_frames(2)
 
 
+## Pose l'escouade et démarre le combat, en passant par les vrais taps.
+## La plupart des tests portent sur le combat, pas sur le placement : ils
+## ont besoin d'un plateau garni, et le chemin le plus honnête pour y
+## arriver est celui du joueur.
+func _deploy_and_start() -> void:
+	for cell: Vector2i in _engine().deployment_cells():
+		if _engine().pending_heroes().is_empty():
+			break
+		_scene.handle_tap(cell)
+	_scene._on_end_turn()
+	await wait_process_frames(2)
+
+
 func _engine() -> CombatEngine:
 	return _scene.engine
 
@@ -49,6 +62,7 @@ func _first_hero() -> Unit:
 
 
 func test_la_scene_se_construit_sur_une_carte() -> void:
+	await _deploy_and_start()
 	assert_not_null(_engine(), "le moteur est monté")
 	assert_eq(_engine().turn_index, 1)
 	assert_eq(
@@ -60,6 +74,7 @@ func test_la_scene_se_construit_sur_une_carte() -> void:
 
 
 func test_un_tap_sur_un_heros_le_selectionne() -> void:
+	await _deploy_and_start()
 	var hero := _first_hero()
 	_scene.handle_tap(hero.cell)
 	assert_eq(_scene._selection, _scene.Selection.UNIT)
@@ -67,6 +82,7 @@ func test_un_tap_sur_un_heros_le_selectionne() -> void:
 
 
 func test_un_tap_dans_le_vide_ne_selectionne_rien() -> void:
+	await _deploy_and_start()
 	_scene.handle_tap(Vector2i(4, 5))
 	assert_eq(_scene._selection, _scene.Selection.NONE)
 
@@ -74,6 +90,7 @@ func test_un_tap_dans_le_vide_ne_selectionne_rien() -> void:
 func test_le_deuxieme_tap_previsualise_sans_rien_appliquer() -> void:
 	# Toute la raison d'être du double tap : le premier montre, le second
 	# engage. 90 % des erreurs de gros doigts s'arrêtent là (§ 11.2).
+	await _deploy_and_start()
 	var hero := _first_hero()
 	var start := hero.cell
 	_scene.handle_tap(start)
@@ -85,6 +102,7 @@ func test_le_deuxieme_tap_previsualise_sans_rien_appliquer() -> void:
 
 
 func test_le_troisieme_tap_sur_la_meme_case_valide() -> void:
+	await _deploy_and_start()
 	var hero := _first_hero()
 	_scene.handle_tap(hero.cell)
 	var destination := _a_reachable_cell(hero)
@@ -97,6 +115,7 @@ func test_le_troisieme_tap_sur_la_meme_case_valide() -> void:
 
 
 func test_un_tap_sur_une_autre_case_deplace_la_previsualisation() -> void:
+	await _deploy_and_start()
 	var hero := _first_hero()
 	_scene.handle_tap(hero.cell)
 	var cells := _reachable_cells(hero)
@@ -110,6 +129,7 @@ func test_un_tap_sur_une_autre_case_deplace_la_previsualisation() -> void:
 
 
 func test_un_tap_sur_un_autre_heros_change_de_selection() -> void:
+	await _deploy_and_start()
 	var heroes := _engine().board.active_units(Unit.Side.HEROES)
 	_scene.handle_tap(heroes[0].cell)
 	_scene.handle_tap(heroes[1].cell)
@@ -118,12 +138,14 @@ func test_un_tap_sur_un_autre_heros_change_de_selection() -> void:
 
 
 func test_on_ne_selectionne_pas_un_ennemi() -> void:
+	await _deploy_and_start()
 	var enemy: Unit = _engine().board.active_units(Unit.Side.ENEMIES)[0]
 	_scene.handle_tap(enemy.cell)
 	assert_eq(_scene._selection, _scene.Selection.NONE)
 
 
 func test_le_hud_reflete_le_moteur() -> void:
+	await _deploy_and_start()
 	var hud: CanvasLayer = _scene._hud
 	assert_not_null(hud)
 	assert_true(hud._undo.disabled, "rien à annuler en début de tour")
@@ -138,6 +160,7 @@ func test_le_hud_reflete_le_moteur() -> void:
 
 
 func test_le_bouton_annuler_defait_le_deplacement() -> void:
+	await _deploy_and_start()
 	var hero := _first_hero()
 	var start := hero.cell
 	var destination := _a_reachable_cell(hero)
@@ -152,6 +175,7 @@ func test_le_bouton_annuler_defait_le_deplacement() -> void:
 
 
 func test_la_couche_de_surbrillance_suit_la_selection() -> void:
+	await _deploy_and_start()
 	var hero := _first_hero()
 	var overlay: Node2D = _scene._overlay
 	assert_eq(overlay.move_cells.size(), 0, "rien de sélectionné, rien d'allumé")
@@ -163,6 +187,7 @@ func test_la_couche_de_surbrillance_suit_la_selection() -> void:
 
 
 func test_le_fantome_ne_parait_que_sur_un_deplacement() -> void:
+	await _deploy_and_start()
 	var hero := _first_hero()
 	_scene.handle_tap(hero.cell)
 	assert_false(_scene._ghost.visible, "pas de fantôme sur une simple sélection")
@@ -179,6 +204,7 @@ func test_le_telegraphe_de_la_couche_correspond_au_moteur() -> void:
 	# La couche d'affichage ne recalcule rien : elle recopie le moteur.
 	# S'ils divergent, le joueur voit un chiffre qui n'est pas celui qu'il
 	# va prendre, et le pilier de l'information parfaite tombe.
+	await _deploy_and_start()
 	var engine := _engine()
 	for i in 3:
 		engine.end_player_turn()

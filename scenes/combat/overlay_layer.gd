@@ -13,6 +13,7 @@ var grid: Grid
 var move_cells: Array[Vector2i] = []
 var attack_cells: Array[Vector2i] = []
 var objective_cells: Array[Vector2i] = []
+var deployment_cells: Array[Vector2i] = []
 var warded_cells: Array[Vector2i] = []
 var selected_cell: Vector2i = Vector2i(-1, -1)
 var ghost_cell: Vector2i = Vector2i(-1, -1)
@@ -57,6 +58,10 @@ func _draw() -> void:
 	if grid == null:
 		return
 	_fill(objective_cells, ViewSettings.color(&"objective"), Color.TRANSPARENT)
+	_fill(
+		deployment_cells,
+		ViewSettings.color(&"deployment"), ViewSettings.color(&"deployment_border")
+	)
 	_fill(move_cells, ViewSettings.color(&"move"), ViewSettings.color(&"move_border"))
 	_fill(attack_cells, ViewSettings.color(&"attack"), ViewSettings.color(&"attack_border"))
 	_draw_threat()

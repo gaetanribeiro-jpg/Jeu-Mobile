@@ -2,14 +2,79 @@
   "_note": "Tenir 4 tours. Les ennemis restent sur le terrain à la fin : on apprend que gagner n'est pas toujours nettoyer.",
   "act": 1,
   "name_key": "MAP_VALLEE_03",
-  "rows": ["#.......", "..^.....", "..f.....", "..f.....", "..^.....", "#......."],
-  "objective": { "kind": "survive", "turns": 4 },
-  "hero_spawns": [[1, 2], [1, 3], [0, 2], [0, 3]],
+  "rows": [
+    "#.......",
+    "..^.....",
+    "..f.....",
+    "..f.....",
+    "..^.....",
+    "#......."
+  ],
+  "objective": {
+    "kind": "survive",
+    "turns": 4
+  },
+  "deployment_cells": [
+    [
+      0,
+      2
+    ],
+    [
+      0,
+      3
+    ],
+    [
+      1,
+      1
+    ],
+    [
+      1,
+      2
+    ],
+    [
+      1,
+      3
+    ],
+    [
+      1,
+      4
+    ]
+  ],
   "enemies": [
-    { "type": "spear_goblin", "cell": [7, 1] },
-    { "type": "spear_goblin", "cell": [7, 4] },
-    { "type": "gnome", "cell": [6, 2] },
-    { "type": "gnome", "cell": [6, 3] },
-    { "type": "slingshot_gnome", "cell": [7, 2] }
+    {
+      "type": "spear_goblin",
+      "cell": [
+        7,
+        1
+      ]
+    },
+    {
+      "type": "spear_goblin",
+      "cell": [
+        7,
+        4
+      ]
+    },
+    {
+      "type": "gnome",
+      "cell": [
+        6,
+        2
+      ]
+    },
+    {
+      "type": "gnome",
+      "cell": [
+        6,
+        3
+      ]
+    },
+    {
+      "type": "slingshot_gnome",
+      "cell": [
+        7,
+        2
+      ]
+    }
   ]
 }

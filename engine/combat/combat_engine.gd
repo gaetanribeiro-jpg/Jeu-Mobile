@@ -6,6 +6,10 @@ extends RefCounted
 ## L'ordre d'un tour découle directement de la décision verrouillée du
 ## § 4.2 — les ennemis annoncent leur attaque un tour à l'avance :
 ##
+##   0. Le joueur PLACE son escouade sur les cases que la carte propose.
+##      Il y en a toujours plus que de héros : partir groupé, étalé, près
+##      de l'eau ou loin d'elle est déjà une décision, et elle se prend en
+##      voyant où sont les ennemis et ce qu'ils atteignent.
 ##   1. Le joueur agit, en voyant le télégraphe posé au tour précédent.
 ##   2. Il valide son tour.
 ##   3. Les ennemis EXÉCUTENT ce qu'ils avaient annoncé, dans l'ordre.
@@ -21,7 +25,7 @@ extends RefCounted
 ## d'évènements que la couche de rendu relaiera sur l'EventBus. C'est ce
 ## qui permet de simuler mille combats en headless (T10.2).
 
-enum Phase { SETUP, PLAYER_TURN, RESOLVING, FINISHED }
+enum Phase { SETUP, DEPLOYMENT, PLAYER_TURN, RESOLVING, FINISHED }
 
 var board: CombatBoard
 var objective: CombatObjective
@@ -37,6 +41,12 @@ var _intents: Dictionary = {}
 
 ## Piles d'annulation, vidées à chaque validation de tour (C1.13).
 var _undo_stack: Array[Dictionary] = []
+
+## Cases proposées par la carte pour le placement initial.
+var _deployment_cells: Array[Vector2i] = []
+
+## Héros pas encore posés, dans l'ordre de leurs emplacements.
+var _pending: Array[Unit] = []
 
 ## Héros qui provoquent ce tour-ci. Les ennemis adjacents doivent les
 ## cibler (§ 3.1, Provocation du Guerrier).
@@ -58,12 +68,28 @@ func _init(
 	ai = EnemyAI.new(rng)
 
 
-## Ouvre le combat : premier tour du joueur, télégraphe déjà posé.
+## Déclare la zone de placement et l'escouade à poser. À appeler avant
+## `start()` ; sans elle, le combat s'ouvre directement au premier tour,
+## ce qui reste utile aux tests qui posent les unités eux-mêmes.
+func set_deployment(cells: Array[Vector2i], squad: Array[Unit]) -> void:
+	_deployment_cells = cells.duplicate()
+	_pending = squad.duplicate()
+
+
+## Ouvre le combat. Sur la phase de placement s'il y a une escouade à
+## poser, sur le premier tour sinon.
 func start() -> void:
 	turn_index = 1
-	phase = Phase.PLAYER_TURN
 	outcome = CombatObjective.Outcome.ONGOING
 	_undo_stack.clear()
+	if not _pending.is_empty() and not _deployment_cells.is_empty():
+		phase = Phase.DEPLOYMENT
+		return
+	_open_first_turn()
+
+
+func _open_first_turn() -> void:
+	phase = Phase.PLAYER_TURN
 	_begin_player_turn()
 	# Les ennemis annoncent sans bouger : ils sont déjà placés par la carte,
 	# et le joueur doit avoir quelque chose à contrer dès le premier tour.
@@ -72,6 +98,110 @@ func start() -> void:
 	# d'arrivée d'un déplacement qui n'a pas eu lieu désigne des cases vides.
 	for enemy: Unit in _ordered(board.active_units(Unit.Side.ENEMIES)):
 		_intents[enemy.id] = ai.intent_here(board, enemy, _taunting)
+
+
+# --- Placement initial ----------------------------------------------------
+
+func is_deploying() -> bool:
+	return phase == Phase.DEPLOYMENT
+
+
+## Cases où le joueur a le droit de poser un héros.
+func deployment_cells() -> Array[Vector2i]:
+	return _deployment_cells.duplicate()
+
+
+## Héros qui restent à poser, dans l'ordre de leurs emplacements.
+func pending_heroes() -> Array[Unit]:
+	return _pending.duplicate()
+
+
+## Cases qu'un ennemi peut atteindre depuis là où il se tient.
+##
+## Ce n'est pas encore le télégraphe — aucun ennemi n'a d'intention tant
+## que personne n'est placé — mais c'est l'information dont le joueur a
+## besoin pour choisir : se poser là, c'est se mettre à portée. Le pilier
+## de l'information parfaite vaut avant le premier tour comme après.
+func threatened_deployment_cells() -> Array[Vector2i]:
+	var out: Array[Vector2i] = []
+	for enemy: Unit in board.active_units(Unit.Side.ENEMIES):
+		for cell: Vector2i in board.attackable_cells(enemy):
+			if _deployment_cells.has(cell) and not out.has(cell):
+				out.append(cell)
+	return out
+
+
+## Pose un héros sur une case. Sans unité précisée, pose le premier qui
+## attend, dans l'ordre des emplacements.
+func deploy(cell: Vector2i, unit: Unit = null) -> bool:
+	if not is_deploying() or not _deployment_cells.has(cell):
+		return false
+	if board.unit_at(cell) != null:
+		return false
+	var chosen := unit if unit != null else (_pending[0] if not _pending.is_empty() else null)
+	if chosen == null or not _pending.has(chosen):
+		return false
+	if not board.place_unit(chosen, cell):
+		return false
+	_pending.erase(chosen)
+	return true
+
+
+## Reprend un héros déjà posé. Il retourne dans la file, à sa place selon
+## son numéro d'emplacement, pour que l'ordre reste prévisible.
+func undeploy(unit: Unit) -> bool:
+	if not is_deploying() or unit == null or not unit.is_hero():
+		return false
+	if _pending.has(unit) or board.unit_at(unit.cell) != unit:
+		return false
+	board.remove_from_board(unit)
+	var index := 0
+	while index < _pending.size() and _pending[index].slot < unit.slot:
+		index += 1
+	_pending.insert(index, unit)
+	return true
+
+
+## Reprend le dernier héros posé. C'est ce que fait le bouton Annuler
+## pendant le placement : rien n'est irréversible avant que le combat
+## commence, comme rien ne l'est avant la validation d'un tour (§ 11.2).
+func undeploy_last() -> Unit:
+	if not is_deploying():
+		return null
+	var last: Unit = null
+	for unit: Unit in board.active_units(Unit.Side.HEROES):
+		if _pending.has(unit):
+			continue
+		if last == null or unit.slot > last.slot:
+			last = unit
+	if last == null or not undeploy(last):
+		return null
+	return last
+
+
+## Pose ce qui reste sur les premières cases libres. Sert aux simulations
+## et aux tests, pas au jeu : le placement est justement ce qu'on veut
+## laisser au joueur.
+func auto_deploy() -> void:
+	if not is_deploying():
+		return
+	for cell: Vector2i in _deployment_cells:
+		if _pending.is_empty():
+			break
+		if board.unit_at(cell) == null:
+			deploy(cell)
+
+
+func can_begin_combat() -> bool:
+	return is_deploying() and _pending.is_empty()
+
+
+## Referme le placement et ouvre le premier tour.
+func begin_combat() -> bool:
+	if not can_begin_combat():
+		return false
+	_open_first_turn()
+	return true
 
 
 # --- Télégraphe (C1.9) ----------------------------------------------------
@@ -460,6 +590,7 @@ func snapshot() -> Dictionary:
 		"outcome": outcome,
 		"carried": objective.carried,
 		"rng": rng.position(),
+		"pending": _pending.size(),
 		"taunting": _taunting.duplicate(),
 		"warded": _warded.duplicate(),
 		"tiles": tiles,

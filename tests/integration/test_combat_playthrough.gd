@@ -89,6 +89,11 @@ func _run(map_id: StringName, seed_value: int) -> Dictionary:
 		return {}
 	var engine := map.to_engine(_squad(), CombatRng.new(seed_value))
 	engine.start()
+	# Les simulations ne choisissent pas leur placement : ce serait une
+	# stratégie de plus à écrire, et c'est justement la décision qu'on veut
+	# laisser au joueur. On pose sur les premières cases libres.
+	engine.auto_deploy()
+	engine.begin_combat()
 	var turns := 0
 	while not engine.is_finished() and turns < TURN_CAP:
 		_play_turn(engine)
@@ -105,7 +110,10 @@ func test_les_huit_cartes_se_chargent() -> void:
 		assert_not_null(map, String(id))
 		if map != null:
 			assert_not_null(map.objective, "%s : pas d'objectif" % id)
-			assert_gt(map.hero_spawns.size(), 0, "%s : pas de case de départ" % id)
+			assert_gt(
+				map.deployment_cells.size(), CombatRules.max_heroes(),
+				"%s : la zone de placement doit offrir un choix" % id
+			)
 
 
 func test_chaque_carte_va_jusqu_a_une_conclusion() -> void:
@@ -160,6 +168,8 @@ func test_le_telegraphe_ne_ment_jamais_sur_une_partie_entiere() -> void:
 		var map := CombatMap.load_map(id, CombatRules.ADJACENCY_ORTHOGONAL)
 		var engine := map.to_engine(_squad(), CombatRng.new(555))
 		engine.start()
+		engine.auto_deploy()
+		engine.begin_combat()
 		var turns := 0
 		while not engine.is_finished() and turns < TURN_CAP:
 			_play_turn(engine)

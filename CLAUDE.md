@@ -89,6 +89,9 @@ res://
   diagonale est donc à distance 2, ce qui la met à portée du Lancier (1–2)
   et de l'Archer (2–4) : les 8 directions dessinées servent à l'orientation
   de l'attaque, pas au déplacement.
+- **Placement initial.** Le joueur pose son escouade avant le premier tour,
+  sur les 6 à 8 cases que la carte propose. Les cases déjà à portée d'un
+  ennemi sont signalées : se poser dessus doit être un choix, pas un piège.
 - **Escouade de 3 héros pour 4 classes, doublons autorisés.** Le joueur ne
   peut pas prendre un exemplaire de chaque : il renonce toujours à quelque
   chose. 20 compositions possibles au lieu d'une. La Caserne de niveau 3

@@ -25,8 +25,10 @@ var act: int = 1
 var board: CombatBoard
 var objective: CombatObjective
 
-## Cases où le joueur pose son escouade, dans l'ordre.
-var hero_spawns: Array[Vector2i] = []
+## Cases sur lesquelles le joueur PEUT poser ses héros. Il y en a plus que
+## de héros : c'est ce qui fait du placement une décision plutôt qu'une
+## formalité. La carte propose, le joueur dispose.
+var deployment_cells: Array[Vector2i] = []
 
 
 static func map_ids() -> Array[StringName]:
@@ -77,8 +79,8 @@ static func load_map(map_id: StringName, adjacency: String = "") -> CombatMap:
 	map.act = int(data.get("act", 1))
 	map.board = built
 
-	for pair: Variant in data.get("hero_spawns", []):
-		map.hero_spawns.append(Vector2i(int(pair[0]), int(pair[1])))
+	for pair: Variant in data.get("deployment_cells", []):
+		map.deployment_cells.append(Vector2i(int(pair[0]), int(pair[1])))
 
 	var next_ally := ALLY_ID_BASE
 	for entry: Variant in data.get("allies", []):
@@ -98,21 +100,12 @@ static func load_map(map_id: StringName, adjacency: String = "") -> CombatMap:
 	return map
 
 
-## Pose l'escouade du joueur sur les cases de départ. Renvoie les unités
-## effectivement placées — une escouade plus grande que la carte est
-## tronquée plutôt que refusée.
-func place_squad(squad: Array[Unit]) -> Array[Unit]:
-	var placed: Array[Unit] = []
-	for i in mini(squad.size(), hero_spawns.size()):
-		if board.place_unit(squad[i], hero_spawns[i]):
-			placed.append(squad[i])
-	return placed
-
-
-## Moteur prêt à jouer, escouade posée.
+## Moteur prêt à déployer. L'escouade n'est PAS posée : le combat s'ouvre
+## sur la phase de placement, et c'est le joueur qui décide où chacun va.
 func to_engine(squad: Array[Unit], rng: CombatRng = null) -> CombatEngine:
-	place_squad(squad)
-	return CombatEngine.new(board, objective, rng)
+	var engine := CombatEngine.new(board, objective, rng)
+	engine.set_deployment(deployment_cells, squad)
+	return engine
 
 
 func _spawn(entry: Variant, unit_id: int, side: int) -> Unit:

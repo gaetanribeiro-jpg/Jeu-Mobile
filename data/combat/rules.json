@@ -34,5 +34,10 @@
     "survive_default_turns": 4,
     "protect_default_hit_points": 2,
     "max_turns_before_draw": 12
+  },
+  "deployment": {
+    "_readme": "Le joueur PLACE ses heros avant le premier tour, sur les cases que la carte propose. Il y en a plus que de heros : c'est ce qui fait du placement une decision. Decision de Gaetan, 2026-08-29. min et max encadrent ce qu'une carte a le droit de proposer — trop peu et le choix disparait, trop et il se dilue.",
+    "cells_min": 6,
+    "cells_max": 10
   }
 }

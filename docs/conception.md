@@ -256,6 +256,7 @@ Et personne n'est fusionné avec personne : les héros restent des personnes qui
 
 - Grille **8 × 6** en vue de dessus, tuiles 64×64
 - **3 héros engagés** pour 4 classes disponibles, 3 à 7 ennemis. Les doublons sont autorisés : 2 Guerriers + 1 Moine, ou 3 Lanciers. *(Décision du 2026-08-29, en remplacement des 4 héros : à 4 emplacements pour 4 classes, le joueur prenait un exemplaire de chaque et ne choisissait rien. À 3, il renonce toujours à quelque chose, et les 20 compositions possibles remplacent l'unique composition évidente. La Caserne de niveau 3 rend le quatrième emplacement, § 5.4 — c'est alors une récompense de fin de partie, pas l'état de départ.)*
+- **Placement initial** : avant le premier tour, le joueur pose son escouade sur les cases que la carte propose. Il y en a toujours plus que de héros — 6 à 8 pour 3 — et les cases déjà à portée d'un ennemi sont signalées. *(Décision du 2026-08-29 : partir groupé ou étalé, près de l'eau pour y pousser ou loin d'elle pour ne pas y tomber, à portée d'un tirailleur pour le faire taire ou hors de portée pour encaisser un tour de moins — c'est une décision entière, et elle ne coûte aucun asset.)*
 - Tour du joueur (toutes les unités, dans l'ordre choisi) → **résolution des ennemis** → nouveau tour
 - Un combat dure **3 à 6 tours**. Au-delà, c'est trop long pour du mobile.
 

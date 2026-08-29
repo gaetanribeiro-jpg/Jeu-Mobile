@@ -42,3 +42,6 @@ BOOT_PICK_MAP,Choisir un combat
 BOOT_TEMPORARY,Écran de test provisoire — le vrai menu viendra en A9.1
 COMBAT_BACK,Retour
 BOOT_SQUAD,Escouade — toucher pour changer de classe
+HUD_BEGIN_COMBAT,Commencer
+HUD_DEPLOY,"Placez votre escouade — %d à poser"
+HUD_DEPLOY_READY,Escouade en place

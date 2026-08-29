@@ -2,12 +2,72 @@
   "_note": "Tutoriel. Terrain nu, ennemis faibles : on apprend à bouger et à frapper. Rien d'autre.",
   "act": 1,
   "name_key": "MAP_VALLEE_01",
-  "rows": ["........", "........", "..f.....", "........", ".....f..", "........"],
-  "objective": { "kind": "eliminate" },
-  "hero_spawns": [[0, 2], [0, 3], [1, 2], [1, 3]],
+  "rows": [
+    "........",
+    "........",
+    "..f.....",
+    "........",
+    ".....f..",
+    "........"
+  ],
+  "objective": {
+    "kind": "eliminate"
+  },
+  "deployment_cells": [
+    [
+      0,
+      1
+    ],
+    [
+      0,
+      2
+    ],
+    [
+      0,
+      3
+    ],
+    [
+      0,
+      4
+    ],
+    [
+      1,
+      1
+    ],
+    [
+      1,
+      2
+    ],
+    [
+      1,
+      3
+    ],
+    [
+      1,
+      4
+    ]
+  ],
   "enemies": [
-    { "type": "gnome", "cell": [6, 2] },
-    { "type": "gnome", "cell": [6, 3] },
-    { "type": "spear_goblin", "cell": [7, 2] }
+    {
+      "type": "gnome",
+      "cell": [
+        6,
+        2
+      ]
+    },
+    {
+      "type": "gnome",
+      "cell": [
+        6,
+        3
+      ]
+    },
+    {
+      "type": "spear_goblin",
+      "cell": [
+        7,
+        2
+      ]
+    }
   ]
 }
