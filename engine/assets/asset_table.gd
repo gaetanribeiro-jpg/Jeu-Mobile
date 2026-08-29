@@ -119,6 +119,19 @@ static func unit_animation(unit_id: StringName, animation: StringName, color: St
 	return _resolved(root_of(&"units") + relative, entry)
 
 
+## Cette unité a-t-elle cette animation ? À demander AVANT d'aller la
+## chercher : toutes les unités du pack n'ont pas les mêmes animations, et
+## une absence attendue ne doit pas remplir la console d'erreurs.
+static func has_unit_animation(unit_id: StringName, animation: StringName) -> bool:
+	var unit: Dictionary = table().get("units", {}).get(String(unit_id), {})
+	return unit.get("animations", {}).has(String(animation))
+
+
+static func has_enemy_animation(enemy_id: StringName, animation: StringName) -> bool:
+	var enemy: Dictionary = table().get("enemies", {}).get(String(enemy_id), {})
+	return enemy.get("animations", {}).has(String(animation))
+
+
 ## Animation d'un ennemi. Les ennemis n'ont pas de couleur de faction.
 static func enemy_animation(enemy_id: StringName, animation: StringName) -> Dictionary:
 	var enemies: Dictionary = table().get("enemies", {})

@@ -898,14 +898,14 @@ Si l'Ordre devait être réduit faute de temps, garder les rangs 2 et 3 et repou
 
 ### Rendu et interaction
 
-- [ ] **C1.15** Scène `Combat` : TileMap de terrain, couche d'unités, caméra
-- [ ] **C1.16** Affichage des cases valides (surbrillance déplacement / attaque)
-- [ ] **C1.17** Contrôles tactiles : tap, tap long, pincement, glissement de caméra
-- [ ] **C1.18** Prévisualisation fantôme avant validation
-- [ ] **C1.19** Animations d'unité : repos, marche, attaque, dégât, mort
-- [ ] **C1.20** Rendu du télégraphe : icônes et zones de menace lisibles
-- [ ] **C1.21** HUD de combat : PV, tour en cours, objectif, bouton Fin de tour, bouton Annuler
-- [ ] **C1.22** Séquence d'animation du tour ennemi (résolution ordonnée, pas simultanée)
+- [x] **C1.15** Scène `Combat` : TileMap de terrain, couche d'unités, caméra
+- [x] **C1.16** Affichage des cases valides (surbrillance déplacement / attaque)
+- [x] **C1.17** Contrôles tactiles : tap, tap long, pincement, glissement de caméra
+- [x] **C1.18** Prévisualisation fantôme avant validation
+- [x] **C1.19** Animations d'unité : repos, marche, attaque, dégât, mort
+- [x] **C1.20** Rendu du télégraphe : icônes et zones de menace lisibles
+- [x] **C1.21** HUD de combat : PV, tour en cours, objectif, bouton Fin de tour, bouton Annuler
+- [x] **C1.22** Séquence d'animation du tour ennemi (résolution ordonnée, pas simultanée)
 
 ### Contenu de base
 

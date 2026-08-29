@@ -1,0 +1,194 @@
+extends Node2D
+
+## Un combattant à l'écran : son ombre, son sprite animé, sa barre de vie.
+##
+## Le pack ne fournit AUCUNE animation de mort sauf pour le Troll (§ 13.4bis).
+## D'où l'effet universel : flash blanc, fondu, poussière — et gerbe d'eau
+## si la mort est une noyade. C'est plus lisible qu'une vraie animation de
+## mort, et ça coûte une heure.
+
+signal animation_finished
+
+const ANIMATION := &"default"
+
+var unit: Unit
+var color: String = "Blue"
+
+var _sprite: AnimatedSprite2D
+var _bar_back: ColorRect
+var _bar_fill: ColorRect
+var _frames_cache: Dictionary = {}
+var _float_phase: float = 0.0
+var _base_offset: Vector2 = Vector2.ZERO
+var _busy: bool = false
+
+
+func setup(combat_unit: Unit, faction_color: String) -> void:
+	unit = combat_unit
+	color = faction_color
+	_build()
+	play(&"idle")
+	refresh()
+
+
+func _build() -> void:
+	_sprite = AnimatedSprite2D.new()
+	_sprite.centered = true
+	_sprite.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	add_child(_sprite)
+
+	var width := ViewSettings.size_of(&"health_bar_width_px")
+	var height := ViewSettings.size_of(&"health_bar_height_px")
+	var offset := ViewSettings.size_of(&"health_bar_offset_px")
+
+	_bar_back = ColorRect.new()
+	_bar_back.color = ViewSettings.color(&"bar_back")
+	_bar_back.size = Vector2(width, height)
+	_bar_back.position = Vector2(-width * 0.5, offset)
+	add_child(_bar_back)
+
+	_bar_fill = ColorRect.new()
+	_bar_fill.size = Vector2(width, height)
+	_bar_fill.position = _bar_back.position
+	add_child(_bar_fill)
+
+	# Chaque unité démarre à une phase différente, sinon toute l'escouade
+	# flotte au même rythme et l'effet se voit comme un artifice.
+	_float_phase = float(unit.id) * 0.7
+
+
+func _process(delta: float) -> void:
+	if _busy or unit == null or unit.is_downed():
+		return
+	_float_phase += delta
+	var amplitude := ViewSettings.number(&"idle_float", &"amplitude_px", 0.0)
+	var period := maxf(ViewSettings.number(&"idle_float", &"period_seconds", 1.0), 0.01)
+	_sprite.position.y = _base_offset.y + sin(_float_phase * TAU / period) * amplitude
+
+
+func _draw() -> void:
+	if unit == null or unit.is_downed():
+		return
+	# Ombre portée : une ellipse noire à 30 %, l'effet le moins cher du § 12.
+	draw_set_transform(Vector2(0, ViewSettings.size_of(&"shadow_offset_px")), 0.0, Vector2.ONE)
+	draw_circle(Vector2.ZERO, ViewSettings.size_of(&"shadow_radius_x_px"),
+		ViewSettings.color(&"shadow"))
+	draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
+
+
+## Remet la barre de vie et la visibilité en accord avec l'état de l'unité.
+func refresh() -> void:
+	if unit == null:
+		return
+	var ratio := 0.0
+	if unit.max_hit_points > 0:
+		ratio = clampf(float(unit.hit_points) / float(unit.max_hit_points), 0.0, 1.0)
+	var width := ViewSettings.size_of(&"health_bar_width_px")
+	_bar_fill.size.x = width * ratio
+	_bar_fill.color = ViewSettings.color(
+		&"hero_bar" if unit.is_hero() else &"enemy_bar"
+	)
+	var alive := not unit.is_downed()
+	_bar_back.visible = alive
+	_bar_fill.visible = alive
+	queue_redraw()
+
+
+## Joue une animation du pack. Retombe sur « idle » si elle n'existe pas :
+## toutes les unités n'ont pas les mêmes, et un sprite manquant ne doit
+## jamais faire disparaître un combattant.
+func play(animation: StringName) -> void:
+	var frames := _frames_for(animation)
+	if frames == null:
+		frames = _frames_for(&"idle")
+	if frames == null:
+		return
+	_sprite.sprite_frames = frames
+	_sprite.animation = ANIMATION
+	_sprite.play()
+
+
+func face(direction: Vector2i) -> void:
+	if direction.x != 0:
+		_sprite.flip_h = direction.x < 0
+
+
+## Glisse jusqu'à une position, à la vitesse réglée dans view.json.
+func move_along(points: Array[Vector2]) -> void:
+	if points.is_empty():
+		return
+	_busy = true
+	play(&"run")
+	var per_tile := ViewSettings.duration(&"move_per_tile")
+	var tween := create_tween()
+	var previous := position
+	for point: Vector2 in points:
+		face(Vector2i(signi(int(point.x - previous.x)), 0))
+		tween.tween_property(self, "position", point, per_tile)
+		previous = point
+	await tween.finished
+	_busy = false
+	play(&"idle")
+	animation_finished.emit()
+
+
+## Animation d'attaque, sans appliquer de dégâts : le moteur a déjà tranché.
+func play_attack(toward: Vector2i) -> void:
+	face(toward)
+	_busy = true
+	play(_attack_animation())
+	await get_tree().create_timer(
+		ViewSettings.duration(&"attack_windup") + ViewSettings.duration(&"attack_strike")
+	).timeout
+	_busy = false
+	play(&"idle")
+	animation_finished.emit()
+
+
+## Encaisse un coup : teinte blanche brève, puis retour.
+func play_hit() -> void:
+	var flash := ViewSettings.duration(&"death_flash")
+	_sprite.modulate = Color(4.0, 4.0, 4.0)
+	await get_tree().create_timer(flash).timeout
+	_sprite.modulate = Color.WHITE
+	refresh()
+
+
+## Mise hors de combat. Effet universel du § 13.4bis, faute d'animation de
+## mort dans le pack : flash blanc, fondu, et poussière par-dessus.
+func play_downed(drowned: bool = false) -> void:
+	_busy = true
+	refresh()
+	_sprite.modulate = Color(4.0, 4.0, 4.0)
+	await get_tree().create_timer(ViewSettings.duration(&"death_flash")).timeout
+	var tween := create_tween()
+	tween.set_parallel(true)
+	tween.tween_property(_sprite, "modulate:a", 0.0, ViewSettings.duration(&"death_fade"))
+	tween.tween_property(self, "scale", Vector2(0.85, 0.85), ViewSettings.duration(&"death_fade"))
+	await tween.finished
+	visible = false
+	_busy = false
+	animation_finished.emit()
+	if drowned:
+		pass
+
+
+func _attack_animation() -> StringName:
+	for candidate: StringName in [&"attack", &"attack1", &"shoot", &"throw", &"heal"]:
+		if _frames_for(candidate) != null:
+			return candidate
+	return &"idle"
+
+
+func _frames_for(animation: StringName) -> SpriteFrames:
+	var key := String(animation)
+	if _frames_cache.has(key):
+		return _frames_cache[key]
+	var frames: SpriteFrames = null
+	if unit.is_hero():
+		if AssetTable.has_unit_animation(unit.class_id, animation):
+			frames = SpriteFrameFactory.for_unit(unit.class_id, animation, color)
+	elif AssetTable.has_enemy_animation(unit.class_id, animation):
+		frames = SpriteFrameFactory.for_enemy(unit.class_id, animation)
+	_frames_cache[key] = frames
+	return frames

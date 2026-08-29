@@ -360,3 +360,35 @@ func test_un_instantane_et_sa_restauration_sont_fideles() -> void:
 	assert_eq(engine.turn_index, 1)
 	assert_eq(hero.cell, Vector2i(1, 1))
 	assert_eq(engine.phase, CombatEngine.Phase.PLAYER_TURN)
+
+
+func test_un_ennemi_hors_de_portee_n_annonce_rien_au_premier_tour() -> void:
+	# Bug attrapé en regardant une capture d'écran, pas en lisant du code :
+	# les cases menacées apparaissaient à côté des ennemis, sur du vide.
+	# La cause tenait en un mot — l'intention était calculée depuis la case
+	# d'ARRIVÉE du plan de déplacement, alors qu'au premier tour personne
+	# n'a bougé, et ses décalages sont relatifs à l'attaquant.
+	var board := _plain()
+	_hero(board, &"warrior", Vector2i(0, 2), 1)
+	_hero(board, &"archer", Vector2i(0, 3), 2)
+	_enemy(board, &"gnome", Vector2i(6, 2), 3)
+	_enemy(board, &"spear_goblin", Vector2i(7, 2), 4)
+	var engine := _engine(board)
+	engine.start()
+	assert_eq(engine.telegraph(), [] as Array[Dictionary],
+		"aucun ennemi n'est à portée : rien ne doit être annoncé")
+	for cell: Vector2i in board.grid.cells():
+		assert_eq(engine.threat_on(cell), 0, "case %s menacée à tort" % cell)
+
+
+func test_l_annonce_du_premier_tour_vise_la_bonne_case() -> void:
+	var board := _plain()
+	var hero := _hero(board, &"warrior", Vector2i(3, 3), 1)
+	_enemy(board, &"gnome", Vector2i(5, 3), 2)
+	var engine := _engine(board)
+	engine.start()
+	# Le gnome a un déplacement de 4 : son plan l'amènerait au contact.
+	# Mais tant qu'il n'a pas bougé, il n'annonce rien.
+	assert_eq(engine.threat_on(hero.cell), 0, "il n'est pas encore à portée")
+	engine.end_player_turn()
+	assert_gt(engine.threat_on(hero.cell), 0, "après s'être approché, il annonce")

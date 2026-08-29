@@ -5,7 +5,7 @@
     "combat_height": 6,
     "siege_width": 10,
     "siege_height": 8,
-    "_adjacency": "orthogonal = 4 voisins et distance de Manhattan (référence Into the Breach). diagonal = 8 voisins et distance de Chebyshev. À TRANCHER : le Lancier et le Canon sont dessinés sur 8 directions, ce qui plaide pour diagonal ; la lisibilité au doigt et la portée « 2 à 4 » plaident pour orthogonal.",
+    "_adjacency": "orthogonal = 4 voisins et distance de Manhattan. diagonal = 8 voisins et distance de Chebyshev. TRANCHE le 2026-08-29 : orthogonal. En diagonal, sur 8 x 6, le Moine atteint les 48 cases en un deplacement et le Guerrier 42 sur 48 : le placement cesse d'etre une decision. Les 8 directions du Lancier et du Canon servent a l'orientation de l'attaque — en distance de Manhattan une case en diagonale est a distance 2, donc portee 1-2 l'atteint.",
     "adjacency": "orthogonal"
   },
   "turns": {

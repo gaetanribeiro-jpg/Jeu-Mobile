@@ -51,17 +51,34 @@ func plan(board: CombatBoard, unit: Unit, taunting: Array[int] = []) -> Dictiona
 	# d'arrivée : annoncer une attaque impossible serait un mensonge.
 	var origin := unit.cell
 	var moved := destination != origin and board.move_unit(unit, destination)
-	var reachable := board.attackable_units(unit).has(target)
-	var intent := (
-		CombatIntent.attack_cell(unit.id, unit.cell, target.cell)
-		if reachable else CombatIntent.none(unit.id)
-	)
-	if intent.is_attack() and unit.role == ROLE_BRUTE:
-		intent = _line_intent(board, unit, target)
+	var intent := _intent_from_here(board, unit, target)
 	if moved:
 		board.move_unit(unit, origin)
 
 	return {"move_to": destination, "intent": intent, "target_id": target.id}
+
+
+## Intention depuis la case OÙ L'UNITÉ SE TROUVE, sans rien déplacer.
+##
+## C'est ce qu'il faut à l'ouverture du combat : les ennemis sont posés par
+## la carte et annoncent de là. Utiliser `plan()["intent"]` à ce moment-là
+## donnerait des décalages calculés depuis une case d'arrivée où l'ennemi
+## n'ira que le tour suivant — et le télégraphe désignerait des cases vides.
+func intent_here(board: CombatBoard, unit: Unit, taunting: Array[int] = []) -> CombatIntent:
+	if unit.is_downed():
+		return CombatIntent.none(unit.id)
+	var target := _choose_target(board, unit, taunting)
+	if target == null:
+		return CombatIntent.none(unit.id)
+	return _intent_from_here(board, unit, target)
+
+
+func _intent_from_here(board: CombatBoard, unit: Unit, target: Unit) -> CombatIntent:
+	if not board.attackable_units(unit).has(target):
+		return CombatIntent.none(unit.id)
+	if unit.role == ROLE_BRUTE:
+		return _line_intent(board, unit, target)
+	return CombatIntent.attack_cell(unit.id, unit.cell, target.cell)
 
 
 ## Cible retenue. Ordre de préférence, du plus fort au plus faible :

@@ -19,3 +19,22 @@ MAP_VALLEE_05,Le pont de bois
 MAP_VALLEE_06,La route basse
 MAP_VALLEE_07,Les ruines noyées
 MAP_VALLEE_08,La tanière
+HUD_TURN,Tour %d
+HUD_END_TURN,Fin de tour
+HUD_UNDO,Annuler
+OBJECTIVE_ELIMINATE,Éliminer tous les ennemis
+OBJECTIVE_SURVIVE,Tenir %d tours
+OBJECTIVE_ESCORT,Mener le protégé à l'autre bord
+OBJECTIVE_PROTECT,Protéger la structure %d tours
+OBJECTIVE_SEIZE,Atteindre la position avant le tour %d
+OBJECTIVE_EXTRACT,Récupérer la cache et ressortir
+RESULT_VICTORY,Victoire
+RESULT_DEFEAT,Défaite
+CLASS_WARRIOR,Guerrier
+CLASS_ARCHER,Archer
+CLASS_LANCER,Lancier
+CLASS_MONK,Moine
+ABILITY_TAUNT,Provocation
+ABILITY_AIMED_SHOT,Tir tendu
+ABILITY_PUSH_BACK,Repousse
+ABILITY_BLESSING,Bénédiction

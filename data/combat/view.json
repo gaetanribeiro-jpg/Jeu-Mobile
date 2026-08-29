@@ -1,0 +1,192 @@
+{
+  "_readme": "Valeurs de PRÉSENTATION du combat : couleurs, durées, caméra, choix de tuiles. Séparées de rules.json, qui porte les règles du jeu. Tout ce qui touche au ressenti est ici pour être réglé sans toucher au code — c'est la partie que je ne peux pas juger seul.",
+  "camera": {
+    "_note": "zoom_default est calculé pour que la grille tienne en largeur ; ces bornes encadrent le pincement.",
+    "zoom_min": 0.8,
+    "zoom_max": 3.0,
+    "zoom_default": 1.6,
+    "drag_threshold_px": 12,
+    "edge_margin_tiles": 1.5,
+    "follow_speed": 8.0
+  },
+  "durations": {
+    "_note": "Secondes. Le § 12 met le hit stop et le screen shake en tête du rapport impact/coût.",
+    "move_per_tile": 0.11,
+    "attack_windup": 0.12,
+    "attack_strike": 0.18,
+    "hit_stop": 0.08,
+    "damage_number": 0.9,
+    "death_flash": 0.1,
+    "death_fade": 0.2,
+    "enemy_step_gap": 0.15,
+    "telegraph_pulse": 1.2
+  },
+  "shake": {
+    "hit_pixels": 3.0,
+    "hit_seconds": 0.15,
+    "death_pixels": 5.0,
+    "death_seconds": 0.25
+  },
+  "colors": {
+    "move": [
+      0.35,
+      0.72,
+      1.0,
+      0.3
+    ],
+    "move_border": [
+      0.55,
+      0.85,
+      1.0,
+      0.65
+    ],
+    "attack": [
+      1.0,
+      0.42,
+      0.35,
+      0.3
+    ],
+    "attack_border": [
+      1.0,
+      0.55,
+      0.45,
+      0.7
+    ],
+    "threat": [
+      0.95,
+      0.25,
+      0.25,
+      0.34
+    ],
+    "threat_border": [
+      1.0,
+      0.45,
+      0.35,
+      0.85
+    ],
+    "ward": [
+      1.0,
+      0.9,
+      0.5,
+      0.4
+    ],
+    "selection": [
+      1.0,
+      0.95,
+      0.7,
+      0.9
+    ],
+    "ghost": [
+      1.0,
+      1.0,
+      1.0,
+      0.45
+    ],
+    "objective": [
+      0.55,
+      1.0,
+      0.6,
+      0.35
+    ],
+    "hero_bar": [
+      0.45,
+      0.85,
+      0.45,
+      1.0
+    ],
+    "enemy_bar": [
+      0.9,
+      0.35,
+      0.35,
+      1.0
+    ],
+    "bar_back": [
+      0.08,
+      0.07,
+      0.06,
+      0.85
+    ],
+    "damage_text": [
+      1.0,
+      0.85,
+      0.3,
+      1.0
+    ],
+    "shadow": [
+      0.0,
+      0.0,
+      0.0,
+      0.3
+    ],
+    "telegraph_badge": [
+      0.12,
+      0.04,
+      0.04,
+      0.92
+    ],
+    "telegraph_badge_border": [
+      1.0,
+      0.45,
+      0.35,
+      1.0
+    ]
+  },
+  "sizes": {
+    "highlight_inset_px": 3.0,
+    "border_width_px": 2.0,
+    "health_bar_width_px": 44.0,
+    "health_bar_height_px": 6.0,
+    "health_bar_offset_px": -46.0,
+    "shadow_radius_x_px": 18.0,
+    "shadow_radius_y_px": 7.0,
+    "shadow_offset_px": 4.0,
+    "damage_font_size": 28,
+    "telegraph_font_size": 34,
+    "telegraph_badge_radius_px": 17.0
+  },
+  "idle_float": {
+    "_note": "Flottement sinusoïdal des sprites au repos (§ 12). Trivial à coder, fort en impact.",
+    "amplitude_px": 2.0,
+    "period_seconds": 2.2
+  },
+  "terrain_blocks": {
+    "_note": "Le tileset est fait de blocs 4 x 4. Chaque axe encode QUATRE etats et non trois : 1 = aucun bord, 0 = bord avant (gauche ou haut), 2 = bord apres (droite ou bas), 3 = les deux bords, pour une bande d'une seule case. Releve sur les fichiers. [colonne, rangee] designe le coin haut-gauche du bloc. 'land' est l'herbe et ses rives, 'hill' le plateau et ses falaises.",
+    "land": [
+      0,
+      0
+    ],
+    "hill": [
+      5,
+      0
+    ]
+  },
+  "terrain_block_of": {
+    "grass": "land",
+    "forest": "land",
+    "rock": "land",
+    "ruin": "land",
+    "bridge": "land",
+    "hill": "hill"
+  },
+  "terrain_decorations": {
+    "_note": "Sprite pose par-dessus la tuile de base : [categorie, cle] de data/assets.json, plus [colonne, rangee] pour une entree de type atlas. Le pack ne fournit ni pont ni ruine : la palissade sert de planches, les ossements de ruine.",
+    "forest": [
+      "resources",
+      "tree3"
+    ],
+    "rock": [
+      "decorations",
+      "rock3"
+    ],
+    "ruin": [
+      "extra",
+      "skull_decorations_bones_02"
+    ],
+    "bridge": [
+      "extra",
+      "wooden_fence_wooden_fence_64x64_tile",
+      1,
+      0
+    ]
+  }
+}

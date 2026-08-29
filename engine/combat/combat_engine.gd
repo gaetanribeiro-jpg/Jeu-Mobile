@@ -67,8 +67,11 @@ func start() -> void:
 	_begin_player_turn()
 	# Les ennemis annoncent sans bouger : ils sont déjà placés par la carte,
 	# et le joueur doit avoir quelque chose à contrer dès le premier tour.
+	# `intent_here` et non `plan()` — les décalages d'une intention sont
+	# relatifs à l'attaquant, donc une intention calculée depuis la case
+	# d'arrivée d'un déplacement qui n'a pas eu lieu désigne des cases vides.
 	for enemy: Unit in _ordered(board.active_units(Unit.Side.ENEMIES)):
-		_intents[enemy.id] = ai.plan(board, enemy, _taunting)["intent"]
+		_intents[enemy.id] = ai.intent_here(board, enemy, _taunting)
 
 
 # --- Télégraphe (C1.9) ----------------------------------------------------
