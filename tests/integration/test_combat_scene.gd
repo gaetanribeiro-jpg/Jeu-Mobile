@@ -11,6 +11,23 @@ extends GutTest
 var _scene: Node2D
 
 
+## Ces tests montent la vraie scène, donc ils chargent de vraies textures.
+## Sans le pack — qui n'est pas versionné, sa licence l'interdit — chaque
+## sprite manquant pousse une erreur nommée, et GUT les compte comme des
+## échecs. Un dépôt fraîchement cloné doit montrer une suite verte avec des
+## tests EN ATTENTE, pas une suite rouge : le nouveau venu croirait avoir
+## cassé quelque chose alors qu'il lui manque juste une étape d'installation.
+## GUT ignore le script dès qu'on lui rend une chaîne — MÊME VIDE. Il faut
+## donc rendre `false` quand tout va bien, pas "". Et sans annotation de
+## type de retour : la méthode parente n'en a pas, et GDScript refuse une
+## redéfinition mieux typée que ce qu'elle redéfinit.
+func should_skip_script():
+	var entry := AssetTable.unit_animation(&"warrior", &"idle", "Blue")
+	if entry.is_empty() or not FileAccess.file_exists(entry["path"]):
+		return "Pack Tiny Swords absent — voir docs/installation.md"
+	return false
+
+
 func before_each() -> void:
 	CombatRules.reload()
 	Unit.reload()

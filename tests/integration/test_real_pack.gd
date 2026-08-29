@@ -10,6 +10,16 @@ extends GutTest
 ## ces tests-là n'ont pas tourné.
 
 
+## GUT ignore le script dès qu'on lui rend une chaîne — MÊME VIDE. Il faut
+## donc rendre `false` quand tout va bien, pas "". Et sans annotation de
+## type de retour : la méthode parente n'en a pas, et GDScript refuse une
+## redéfinition mieux typée que ce qu'elle redéfinit.
+func should_skip_script():
+	if not _pack_present():
+		return "Pack Tiny Swords absent — voir docs/installation.md"
+	return false
+
+
 func _pack_present() -> bool:
 	return FileAccess.file_exists(
 		AssetTable.unit_animation(&"warrior", &"idle", "Blue").get("path", "")

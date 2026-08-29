@@ -11,8 +11,13 @@ export_presets.cfg
 # (l'audio Kenney est en CC0 et la police est autorisée : eux sont versionnés)
 # Tiny Swords interdit la redistribution des fichiers, meme modifies.
 # Chaque poste de travail doit copier le pack a la main dans assets/tiny_swords/.
-assets/tiny_swords/free/
-assets/tiny_swords/enemy/
+# On garde les dossiers (via .gitkeep) pour qu'ils existent sur un clone
+# neuf : sinon il faut les créer à la main avant de copier le pack, et
+# rien ne dit où.
+assets/tiny_swords/free/*
+assets/tiny_swords/enemy/*
+!assets/tiny_swords/free/.gitkeep
+!assets/tiny_swords/enemy/.gitkeep
 
 # Systeme
 .DS_Store

@@ -5,6 +5,7 @@ Moteur **Godot 4.x**, GDScript. Orientation **paysage verrouillée**.
 
 **La conception complète est dans `docs/conception.md`.** Lis-la avant toute tâche de gameplay.
 Ce fichier ne contient que les règles de travail.
+**Pour installer le projet et exporter sur le téléphone : `docs/installation.md`.**
 
 ---
 
