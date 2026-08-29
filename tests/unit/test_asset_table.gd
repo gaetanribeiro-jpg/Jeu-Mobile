@@ -27,8 +27,10 @@ func test_chemin_d_une_animation_d_unite() -> void:
 		entry["path"],
 		"res://assets/tiny_swords/free/Units/Blue Units/Warrior/Warrior_Idle.png"
 	)
+	assert_eq(entry["kind"], AssetTable.KIND_STRIP)
 	assert_eq(entry["frames"], 8)
-	assert_eq(entry["frame"], 192)
+	assert_eq(entry["frame_w"], 192)
+	assert_eq(entry["frame_h"], 192)
 
 
 func test_le_dossier_de_classe_n_est_pas_duplique() -> void:
@@ -49,7 +51,9 @@ func test_le_dossier_de_classe_n_est_pas_duplique() -> void:
 func test_chemin_d_une_animation_d_ennemi() -> void:
 	var entry := AssetTable.enemy_animation(&"troll", &"windup")
 	assert_eq(entry["path"], "res://assets/tiny_swords/enemy/Troll/Troll_Windup.png")
+	assert_eq(entry["kind"], AssetTable.KIND_STRIP)
 	assert_eq(entry["frames"], 5)
+	assert_eq(entry["frame_w"], 384)
 
 
 func test_chemin_d_un_batiment() -> void:
@@ -58,6 +62,7 @@ func test_chemin_d_un_batiment() -> void:
 		entry["path"],
 		"res://assets/tiny_swords/free/Buildings/Red Buildings/Castle.png"
 	)
+	assert_eq(entry["kind"], AssetTable.KIND_IMAGE)
 	assert_eq(entry["w"], 320)
 	assert_eq(entry["h"], 256)
 
@@ -110,15 +115,57 @@ func test_une_cle_inconnue_ne_plante_pas() -> void:
 func test_toutes_les_entrees_sont_coherentes() -> void:
 	var entries := AssetTable.all_entries()
 	assert_gt(entries.size(), 500, "la table doit couvrir tout le pack")
+	var kinds := [AssetTable.KIND_IMAGE, AssetTable.KIND_STRIP, AssetTable.KIND_ATLAS]
 	for entry: Dictionary in entries:
 		assert_true(
 			entry["path"].begins_with("res://assets/tiny_swords/"),
 			"chemin hors du pack : %s" % entry["path"]
 		)
 		assert_false(entry["path"].contains("{"), "gabarit non substitué : %s" % entry["path"])
-		if entry.has("frames"):
-			assert_gt(entry["frames"], 0, "%s : nombre d'images nul" % entry["id"])
-			assert_gt(entry["frame"], 0, "%s : cadre de taille nulle" % entry["id"])
+		assert_true(kinds.has(entry["kind"]), "%s : kind inconnu « %s »" % [entry["id"], entry["kind"]])
+		var size := AssetTable.pixel_size(entry)
+		assert_gt(size.x, 0, "%s : largeur nulle" % entry["id"])
+		assert_gt(size.y, 0, "%s : hauteur nulle" % entry["id"])
+
+
+func test_les_cadres_ne_sont_pas_tous_carres() -> void:
+	# Le piège qui a tenu jusqu'à ce que le pack soit sur le disque : la
+	# table supposait des cadres carrés. La tour pirate sur l'eau est une
+	# animation de 8 cadres de 128 × 192.
+	var entry := AssetTable.sprite(&"extra", &"pirate_tower_pirate_tower_water")
+	assert_eq(entry["kind"], AssetTable.KIND_STRIP)
+	assert_eq(entry["frames"], 8)
+	assert_eq(entry["frame_w"], 128)
+	assert_eq(entry["frame_h"], 192)
+	assert_eq(AssetTable.pixel_size(entry), Vector2i(1024, 192))
+
+
+func test_les_tilesets_sont_des_atlas() -> void:
+	# 5 variantes de couleur, 9 × 6 tuiles de 64 : les quatre saisons.
+	for i in range(1, 6):
+		var entry := AssetTable.sprite(&"terrain", StringName("tilemap_color%d" % i))
+		assert_eq(entry["kind"], AssetTable.KIND_ATLAS, "tilemap_color%d" % i)
+		assert_eq(entry["columns"], 9)
+		assert_eq(entry["rows"], 6)
+		assert_eq(entry["cell_w"], AssetTable.tile_size())
+		assert_eq(entry["cell_h"], AssetTable.tile_size())
+
+
+func test_la_palissade_est_un_atlas_de_tuiles_64() -> void:
+	var entry := AssetTable.sprite(&"extra", &"wooden_fence_wooden_fence_64x64_tile")
+	assert_eq(entry["kind"], AssetTable.KIND_ATLAS)
+	assert_eq(entry["columns"], 4)
+	assert_eq(entry["rows"], 3)
+	assert_eq(entry["cell_w"], 64)
+
+
+func test_les_planches_d_ui_sont_signalees_comme_telles() -> void:
+	# Elles ne se découpent pas en grille régulière : leurs rectangles
+	# seront relevés en P8.13. La table dit au moins qu'il faudra le faire.
+	for key: StringName in [&"banner", &"woodtable", &"regularpaper", &"bigbluebutton_regular"]:
+		assert_eq(AssetTable.sprite(&"ui", key).get("layout", ""), "nine_slice", String(key))
+	for key: StringName in [&"bigribbons", &"smallribbons", &"swords"]:
+		assert_eq(AssetTable.sprite(&"ui", key).get("layout", ""), "color_sheet", String(key))
 
 
 func test_toutes_les_couleurs_produisent_un_chemin_distinct() -> void:

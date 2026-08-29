@@ -8,9 +8,10 @@ extends RefCounted
 ## occasions de se tromper d'une image — d'où ce découpage automatique,
 ## à partir des seules valeurs de `data/assets.json`.
 ##
-## Règle du pack : le cadre est carré, de côté `frame`, et la feuille est
-## une bande horizontale de `frames` cadres. On ne relit pas la largeur
-## réelle du PNG ici : ce script fait confiance à la table, et c'est
+## Une feuille est une bande horizontale de `frames` cadres de
+## `frame_w` × `frame_h`. Les cadres ne sont PAS tous carrés : la tour
+## pirate sur l'eau fait 8 cadres de 128 × 192. On ne relit pas la taille
+## réelle du PNG ici : cette classe fait confiance à la table, et c'est
 ## `tools/verify_assets.gd` qui la met en doute.
 ##
 ## Cette classe ne manipule que des ressources, jamais de nœud : elle reste
@@ -30,13 +31,15 @@ static func clear_cache() -> void:
 	_cache.clear()
 
 
-## Découpe une texture en bande horizontale de cadres carrés.
+## Découpe une texture en bande horizontale de cadres.
 ## C'est le cœur de la classe, et il ne touche à aucun fichier.
-static func slice(texture: Texture2D, frames: int, frame_size: int, fps: int) -> SpriteFrames:
+static func slice(
+	texture: Texture2D, frames: int, frame_width: int, frame_height: int, fps: int
+) -> SpriteFrames:
 	var resource := SpriteFrames.new()
-	if texture == null or frames <= 0 or frame_size <= 0:
-		push_error("SpriteFrameFactory : découpage impossible (%d images de %d px)"
-			% [frames, frame_size])
+	if texture == null or frames <= 0 or frame_width <= 0 or frame_height <= 0:
+		push_error("SpriteFrameFactory : découpage impossible (%d cadres de %dx%d)"
+			% [frames, frame_width, frame_height])
 		return resource
 
 	# SpriteFrames naît avec une animation "default" ; on la reconfigure
@@ -46,7 +49,7 @@ static func slice(texture: Texture2D, frames: int, frame_size: int, fps: int) ->
 	for i in frames:
 		var atlas := AtlasTexture.new()
 		atlas.atlas = texture
-		atlas.region = Rect2(i * frame_size, 0, frame_size, frame_size)
+		atlas.region = Rect2(i * frame_width, 0, frame_width, frame_height)
 		# Sans filter_clip, les cadres voisins bavent d'un pixel sur les
 		# bords à l'échelle 2 — le défaut le plus visible en pixel art.
 		atlas.filter_clip = true
@@ -84,10 +87,19 @@ static func _from_entry(cache_key: String, entry: Dictionary) -> SpriteFrames:
 		return _cache[cache_key]
 	if entry.is_empty():
 		return null
+	if StringName(entry.get("kind", AssetTable.KIND_IMAGE)) != AssetTable.KIND_STRIP:
+		push_error(
+			"SpriteFrameFactory : « %s » n'est pas une bande d'animation mais un « %s »"
+			% [entry["path"], entry.get("kind", "?")]
+		)
+		return null
 	var texture: Texture2D = load(entry["path"])
 	if texture == null:
 		push_error("SpriteFrameFactory : texture introuvable — %s" % entry["path"])
 		return null
-	var resource := slice(texture, int(entry["frames"]), int(entry["frame"]), AssetTable.fps())
+	var resource := slice(
+		texture, int(entry["frames"]), int(entry["frame_w"]), int(entry["frame_h"]),
+		AssetTable.fps()
+	)
 	_cache[cache_key] = resource
 	return resource

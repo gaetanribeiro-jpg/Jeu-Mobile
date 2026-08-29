@@ -5,16 +5,20 @@ extends SceneTree
 ##     godot --headless --path . -s tools/verify_assets.gd
 ##
 ## À lancer après avoir copié le pack, et après chaque mise à jour de
-## Pixel Frog. Contrôle trois choses par entrée :
+## Pixel Frog. Contrôle deux choses par entrée :
 ##   1. le fichier existe au chemin annoncé ;
-##   2. la largeur du PNG vaut bien frames × frame ;
-##   3. la hauteur vaut frame — le cadre du pack est carré.
+##   2. ses dimensions réelles sont exactement celles que la table annonce,
+##      selon son `kind` — `frames × frame_w` pour une bande, `columns ×
+##      cell_w` pour un atlas, `w × h` pour une image.
 ##
-## Sort en code 1 s'il y a le moindre écart, pour pouvoir être branché
-## sur une vérification automatique plus tard.
+## Sort en code 1 s'il y a le moindre écart. C'est cet outil qui a démasqué
+## les 28 entrées que la table décrivait comme des bandes de cadres carrés
+## alors qu'elles étaient des tilesets, des planches d'UI ou, pour la tour
+## pirate sur l'eau, une animation à cadres rectangulaires.
 
 var _missing: Array[String] = []
 var _mismatched: Array[String] = []
+var _by_kind := {}
 var _checked := 0
 
 
@@ -25,8 +29,9 @@ func _init() -> void:
 	for entry: Dictionary in entries:
 		_check(entry)
 
-	print("")
 	print("Entrées vérifiées : %d" % _checked)
+	for kind: String in _by_kind.keys():
+		print("  %-6s : %d" % [kind, _by_kind[kind]])
 	print("Fichiers manquants : %d" % _missing.size())
 	print("Dimensions incohérentes : %d" % _mismatched.size())
 
@@ -45,33 +50,27 @@ func _init() -> void:
 
 func _check(entry: Dictionary) -> void:
 	var path: String = entry["path"]
-	var absolute := ProjectSettings.globalize_path(path)
 	if not FileAccess.file_exists(path):
 		_missing.append("%s → %s" % [entry["id"], path])
 		return
 
 	_checked += 1
+	var kind := String(entry.get("kind", "image"))
+	_by_kind[kind] = int(_by_kind.get(kind, 0)) + 1
 
-	# Les bâtiments sont des images fixes : on contrôle w et h tels quels.
-	if entry.has("w"):
-		_check_size(entry, absolute, int(entry["w"]), int(entry["h"]))
+	var expected := AssetTable.pixel_size(entry)
+	if expected.x <= 0 or expected.y <= 0:
+		_mismatched.append("%s → la table n'annonce aucune dimension" % entry["id"])
 		return
 
-	var frames := int(entry.get("frames", 1))
-	var frame := int(entry.get("frame", 0))
-	if frame <= 0:
-		return
-	_check_size(entry, absolute, frames * frame, frame)
-
-
-func _check_size(entry: Dictionary, absolute: String, expected_w: int, expected_h: int) -> void:
-	var image := Image.load_from_file(absolute)
+	var image := Image.load_from_file(ProjectSettings.globalize_path(path))
 	if image == null:
 		_mismatched.append("%s → image illisible" % entry["id"])
 		return
+
 	var size := image.get_size()
-	if size.x != expected_w or size.y != expected_h:
+	if size.x != expected.x or size.y != expected.y:
 		_mismatched.append(
-			"%s → attendu %dx%d, trouvé %dx%d (%s)"
-			% [entry["id"], expected_w, expected_h, size.x, size.y, entry["path"]]
+			"%s (%s) → attendu %dx%d, trouvé %dx%d (%s)"
+			% [entry["id"], kind, expected.x, expected.y, size.x, size.y, entry["path"]]
 		)

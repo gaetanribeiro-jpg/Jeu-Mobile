@@ -11,6 +11,14 @@ extends RefCounted
 ## une entrée manquante doit produire une erreur lisible, jamais un crash :
 ## toutes les fonctions renvoient un dictionnaire vide et poussent une
 ## erreur nommée.
+##
+## Chaque entrée renvoyée porte un `kind` qui dit comment la lire :
+##   KIND_IMAGE : une seule image      → w, h
+##   KIND_STRIP : bande d'animation    → frames, frame_w, frame_h
+##   KIND_ATLAS : grille de cellules   → columns, rows, cell_w, cell_h
+## Les cadres d'une bande ne sont pas tous carrés : Pirate Tower_Water fait
+## 8 cadres de 128 × 192. Toute la table a été mesurée sur les fichiers
+## réels, jamais supposée.
 
 const TABLE_PATH := "res://data/assets.json"
 
@@ -18,6 +26,10 @@ const TABLE_PATH := "res://data/assets.json"
 const PLAIN_CATEGORIES: Array[StringName] = [
 	&"terrain", &"decorations", &"resources", &"fx", &"ui", &"extra"
 ]
+
+const KIND_IMAGE := &"image"
+const KIND_STRIP := &"strip"
+const KIND_ATLAS := &"atlas"
 
 static var _table: Dictionary = {}
 
@@ -104,7 +116,7 @@ static func unit_animation(unit_id: StringName, animation: StringName, color: St
 	var relative: String = String(unit.get("path_template", "")) \
 		.replace("{color}", color) \
 		.replace("{file}", String(entry.get("file", "")))
-	return _framed(root_of(&"units") + relative, entry)
+	return _resolved(root_of(&"units") + relative, entry)
 
 
 ## Animation d'un ennemi. Les ennemis n'ont pas de couleur de faction.
@@ -119,7 +131,7 @@ static func enemy_animation(enemy_id: StringName, animation: StringName) -> Dict
 	if entry.is_empty():
 		push_error("AssetTable : l'ennemi « %s » n'a pas d'animation « %s »" % [enemy_id, animation])
 		return {}
-	return _framed(root_of(&"enemies") + String(entry.get("file", "")), entry)
+	return _resolved(root_of(&"enemies") + String(entry.get("file", "")), entry)
 
 
 ## Bâtiment, dans une couleur de faction. Renvoie { path, w, h }.
@@ -134,11 +146,7 @@ static func building(building_id: StringName, color: String) -> Dictionary:
 		push_error("AssetTable : bâtiment inconnu « %s »" % building_id)
 		return {}
 	var relative: String = String(entry.get("path_template", "")).replace("{color}", color)
-	return {
-		"path": root_of(&"buildings") + relative,
-		"w": int(entry.get("w", 0)),
-		"h": int(entry.get("h", 0)),
-	}
+	return _resolved(root_of(&"buildings") + relative, entry)
 
 
 ## Entrée d'une catégorie simple : terrain, decorations, resources, fx, ui, extra.
@@ -151,7 +159,7 @@ static func sprite(category: StringName, key: StringName) -> Dictionary:
 	if entry.is_empty():
 		push_error("AssetTable : « %s » absent de la catégorie « %s »" % [key, category])
 		return {}
-	return _framed(root_of(category) + String(entry.get("file", "")), entry)
+	return _resolved(root_of(category) + String(entry.get("file", "")), entry)
 
 
 ## Toutes les entrées de la table, à plat, pour l'outil de vérification.
@@ -196,9 +204,42 @@ static func all_entries() -> Array[Dictionary]:
 	return out
 
 
-static func _framed(path: String, entry: Dictionary) -> Dictionary:
-	return {
-		"path": path,
-		"frames": int(entry.get("frames", 1)),
-		"frame": int(entry.get("frame", 0)),
-	}
+## Champs qui comptent des pixels ou des images. `JSON.parse_string`
+## rend tous les nombres en flottant ; on les repasse en entier ici, une
+## fois pour toutes, plutôt que de laisser chaque appelant s'en souvenir.
+const INTEGER_KEYS: Array[String] = [
+	"frames", "frame_w", "frame_h", "w", "h", "columns", "rows", "cell_w", "cell_h"
+]
+
+
+## Recopie l'entrée telle qu'elle est écrite, en remplaçant le chemin
+## relatif par le chemin `res://` complet. Aucune dimension n'est
+## recalculée : ce que dit `assets.json` est ce que reçoit l'appelant.
+static func _resolved(path: String, entry: Dictionary) -> Dictionary:
+	var out := entry.duplicate(true)
+	out.erase("file")
+	out.erase("path_template")
+	out["path"] = path
+	out["kind"] = StringName(entry.get("kind", KIND_IMAGE))
+	for key: String in INTEGER_KEYS:
+		if out.has(key):
+			out[key] = int(out[key])
+	return out
+
+
+## Dimensions totales de l'image d'une entrée, quel que soit son kind.
+## Sert à la vérification et au calcul de mise en page.
+static func pixel_size(entry: Dictionary) -> Vector2i:
+	match StringName(entry.get("kind", KIND_IMAGE)):
+		KIND_STRIP:
+			return Vector2i(
+				int(entry.get("frames", 1)) * int(entry.get("frame_w", 0)),
+				int(entry.get("frame_h", 0))
+			)
+		KIND_ATLAS:
+			return Vector2i(
+				int(entry.get("columns", 1)) * int(entry.get("cell_w", 0)),
+				int(entry.get("rows", 1)) * int(entry.get("cell_h", 0))
+			)
+		_:
+			return Vector2i(int(entry.get("w", 0)), int(entry.get("h", 0)))

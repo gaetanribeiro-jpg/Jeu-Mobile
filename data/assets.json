@@ -1,5 +1,5 @@
 {
-  "_readme": "Table de correspondance des assets Tiny Swords. Le chemin complet d'une entree est : res:// + meta.roots[categorie] + chemin relatif. Pour les unites et les batiments, path_template accepte {color} (une des meta.colors) et {file}. Nombre d'images = largeur du PNG / hauteur ; le cadre est carre (frame x frame). Ne jamais coder un chemin en dur ailleurs que dans ce fichier. Verifier apres toute mise a jour du pack : godot --headless --path . -s tools/verify_assets.gd",
+  "_readme": "Table de correspondance des assets Tiny Swords. Chemin complet : res:// + meta.roots[categorie] + chemin relatif ; {color} et {file} se substituent dans path_template. Chaque entree porte un kind qui dit comment la lire. image : une seule image, w x h. strip : bande horizontale de `frames` cadres de frame_w x frame_h — les cadres ne sont PAS tous carres, Pirate Tower_Water fait 8 cadres de 128x192. atlas : grille de columns x rows cellules de cell_w x cell_h. layout, quand il est present, decrit la mise en page d'une planche d'UI : nine_slice = 9 morceaux (coins, bords, centre) ; color_sheet = les memes morceaux declines dans les 5 couleurs. Leurs rectangles exacts seront releves en P8.13. Toutes ces valeurs ont ete mesurees sur les fichiers reels, pas supposees. Verification : godot --headless --path . -s tools/verify_assets.gd",
   "meta": {
     "tile_size": 64,
     "fps": 10,
@@ -30,28 +30,38 @@
       "animations": {
         "idle": {
           "file": "Warrior/Warrior_Idle.png",
+          "kind": "strip",
           "frames": 8,
-          "frame": 192
+          "frame_w": 192,
+          "frame_h": 192
         },
         "run": {
           "file": "Warrior/Warrior_Run.png",
+          "kind": "strip",
           "frames": 6,
-          "frame": 192
+          "frame_w": 192,
+          "frame_h": 192
         },
         "attack1": {
           "file": "Warrior/Warrior_Attack1.png",
+          "kind": "strip",
           "frames": 4,
-          "frame": 192
+          "frame_w": 192,
+          "frame_h": 192
         },
         "attack2": {
           "file": "Warrior/Warrior_Attack2.png",
+          "kind": "strip",
           "frames": 4,
-          "frame": 192
+          "frame_w": 192,
+          "frame_h": 192
         },
         "guard": {
           "file": "Warrior/Warrior_Guard.png",
+          "kind": "strip",
           "frames": 6,
-          "frame": 192
+          "frame_w": 192,
+          "frame_h": 192
         }
       }
     },
@@ -60,18 +70,24 @@
       "animations": {
         "idle": {
           "file": "Archer/Archer_Idle.png",
+          "kind": "strip",
           "frames": 6,
-          "frame": 192
+          "frame_w": 192,
+          "frame_h": 192
         },
         "run": {
           "file": "Archer/Archer_Run.png",
+          "kind": "strip",
           "frames": 4,
-          "frame": 192
+          "frame_w": 192,
+          "frame_h": 192
         },
         "shoot": {
           "file": "Archer/Archer_Shoot.png",
+          "kind": "strip",
           "frames": 8,
-          "frame": 192
+          "frame_w": 192,
+          "frame_h": 192
         }
       }
     },
@@ -80,23 +96,31 @@
       "animations": {
         "idle": {
           "file": "Monk/Idle.png",
+          "kind": "strip",
           "frames": 6,
-          "frame": 192
+          "frame_w": 192,
+          "frame_h": 192
         },
         "run": {
           "file": "Monk/Run.png",
+          "kind": "strip",
           "frames": 4,
-          "frame": 192
+          "frame_w": 192,
+          "frame_h": 192
         },
         "heal": {
           "file": "Monk/Heal.png",
+          "kind": "strip",
           "frames": 11,
-          "frame": 192
+          "frame_w": 192,
+          "frame_h": 192
         },
         "heal_effect": {
           "file": "Monk/Heal_Effect.png",
+          "kind": "strip",
           "frames": 11,
-          "frame": 192
+          "frame_w": 192,
+          "frame_h": 192
         }
       }
     },
@@ -105,103 +129,143 @@
       "animations": {
         "idle": {
           "file": "Pawn/Pawn_Idle.png",
+          "kind": "strip",
           "frames": 8,
-          "frame": 192
+          "frame_w": 192,
+          "frame_h": 192
         },
         "run": {
           "file": "Pawn/Pawn_Run.png",
+          "kind": "strip",
           "frames": 6,
-          "frame": 192
+          "frame_w": 192,
+          "frame_h": 192
         },
         "idle_axe": {
           "file": "Pawn/Pawn_Idle Axe.png",
+          "kind": "strip",
           "frames": 8,
-          "frame": 192
+          "frame_w": 192,
+          "frame_h": 192
         },
         "run_axe": {
           "file": "Pawn/Pawn_Run Axe.png",
+          "kind": "strip",
           "frames": 6,
-          "frame": 192
+          "frame_w": 192,
+          "frame_h": 192
         },
         "interact_axe": {
           "file": "Pawn/Pawn_Interact Axe.png",
+          "kind": "strip",
           "frames": 6,
-          "frame": 192
+          "frame_w": 192,
+          "frame_h": 192
         },
         "idle_pickaxe": {
           "file": "Pawn/Pawn_Idle Pickaxe.png",
+          "kind": "strip",
           "frames": 8,
-          "frame": 192
+          "frame_w": 192,
+          "frame_h": 192
         },
         "run_pickaxe": {
           "file": "Pawn/Pawn_Run Pickaxe.png",
+          "kind": "strip",
           "frames": 6,
-          "frame": 192
+          "frame_w": 192,
+          "frame_h": 192
         },
         "interact_pickaxe": {
           "file": "Pawn/Pawn_Interact Pickaxe.png",
+          "kind": "strip",
           "frames": 6,
-          "frame": 192
+          "frame_w": 192,
+          "frame_h": 192
         },
         "idle_knife": {
           "file": "Pawn/Pawn_Idle Knife.png",
+          "kind": "strip",
           "frames": 8,
-          "frame": 192
+          "frame_w": 192,
+          "frame_h": 192
         },
         "run_knife": {
           "file": "Pawn/Pawn_Run Knife.png",
+          "kind": "strip",
           "frames": 6,
-          "frame": 192
+          "frame_w": 192,
+          "frame_h": 192
         },
         "interact_knife": {
           "file": "Pawn/Pawn_Interact Knife.png",
+          "kind": "strip",
           "frames": 4,
-          "frame": 192
+          "frame_w": 192,
+          "frame_h": 192
         },
         "idle_hammer": {
           "file": "Pawn/Pawn_Idle Hammer.png",
+          "kind": "strip",
           "frames": 8,
-          "frame": 192
+          "frame_w": 192,
+          "frame_h": 192
         },
         "run_hammer": {
           "file": "Pawn/Pawn_Run Hammer.png",
+          "kind": "strip",
           "frames": 6,
-          "frame": 192
+          "frame_w": 192,
+          "frame_h": 192
         },
         "interact_hammer": {
           "file": "Pawn/Pawn_Interact Hammer.png",
+          "kind": "strip",
           "frames": 3,
-          "frame": 192
+          "frame_w": 192,
+          "frame_h": 192
         },
         "idle_wood": {
           "file": "Pawn/Pawn_Idle Wood.png",
+          "kind": "strip",
           "frames": 8,
-          "frame": 192
+          "frame_w": 192,
+          "frame_h": 192
         },
         "run_wood": {
           "file": "Pawn/Pawn_Run Wood.png",
+          "kind": "strip",
           "frames": 6,
-          "frame": 192
+          "frame_w": 192,
+          "frame_h": 192
         },
         "idle_gold": {
           "file": "Pawn/Pawn_Idle Gold.png",
+          "kind": "strip",
           "frames": 8,
-          "frame": 192
+          "frame_w": 192,
+          "frame_h": 192
         },
         "run_gold": {
           "file": "Pawn/Pawn_Run Gold.png",
+          "kind": "strip",
           "frames": 6,
-          "frame": 192
+          "frame_w": 192,
+          "frame_h": 192
         },
         "idle_meat": {
           "file": "Pawn/Pawn_Idle Meat.png",
+          "kind": "strip",
           "frames": 8,
-          "frame": 192
+          "frame_w": 192,
+          "frame_h": 192
         },
         "run_meat": {
           "file": "Pawn/Pawn_Run Meat.png",
+          "kind": "strip",
           "frames": 6,
-          "frame": 192
+          "frame_w": 192,
+          "frame_h": 192
         }
       }
     },
@@ -211,63 +275,87 @@
       "animations": {
         "attack_up": {
           "file": "Lancer/Lancer_Up_Attack.png",
+          "kind": "strip",
           "frames": 3,
-          "frame": 320
+          "frame_w": 320,
+          "frame_h": 320
         },
         "defence_up": {
           "file": "Lancer/Lancer_Up_Defence.png",
+          "kind": "strip",
           "frames": 6,
-          "frame": 320
+          "frame_w": 320,
+          "frame_h": 320
         },
         "attack_upright": {
           "file": "Lancer/Lancer_UpRight_Attack.png",
+          "kind": "strip",
           "frames": 3,
-          "frame": 320
+          "frame_w": 320,
+          "frame_h": 320
         },
         "defence_upright": {
           "file": "Lancer/Lancer_UpRight_Defence.png",
+          "kind": "strip",
           "frames": 6,
-          "frame": 320
+          "frame_w": 320,
+          "frame_h": 320
         },
         "attack_right": {
           "file": "Lancer/Lancer_Right_Attack.png",
+          "kind": "strip",
           "frames": 3,
-          "frame": 320
+          "frame_w": 320,
+          "frame_h": 320
         },
         "defence_right": {
           "file": "Lancer/Lancer_Right_Defence.png",
+          "kind": "strip",
           "frames": 6,
-          "frame": 320
+          "frame_w": 320,
+          "frame_h": 320
         },
         "attack_downright": {
           "file": "Lancer/Lancer_DownRight_Attack.png",
+          "kind": "strip",
           "frames": 3,
-          "frame": 320
+          "frame_w": 320,
+          "frame_h": 320
         },
         "defence_downright": {
           "file": "Lancer/Lancer_DownRight_Defence.png",
+          "kind": "strip",
           "frames": 6,
-          "frame": 320
+          "frame_w": 320,
+          "frame_h": 320
         },
         "attack_down": {
           "file": "Lancer/Lancer_Down_Attack.png",
+          "kind": "strip",
           "frames": 3,
-          "frame": 320
+          "frame_w": 320,
+          "frame_h": 320
         },
         "defence_down": {
           "file": "Lancer/Lancer_Down_Defence.png",
+          "kind": "strip",
           "frames": 6,
-          "frame": 320
+          "frame_w": 320,
+          "frame_h": 320
         },
         "idle": {
           "file": "Lancer/Lancer_Idle.png",
+          "kind": "strip",
           "frames": 12,
-          "frame": 320
+          "frame_w": 320,
+          "frame_h": 320
         },
         "run": {
           "file": "Lancer/Lancer_Run.png",
+          "kind": "strip",
           "frames": 6,
-          "frame": 320
+          "frame_w": 320,
+          "frame_h": 320
         }
       }
     }
@@ -277,23 +365,30 @@
       "animations": {
         "attack": {
           "file": "Bear/Bear_Attack.png",
+          "kind": "strip",
           "frames": 9,
-          "frame": 256
+          "frame_w": 256,
+          "frame_h": 256
         },
         "avatar": {
           "file": "Bear/Bear_Avatar.png",
-          "frames": 1,
-          "frame": 256
+          "kind": "image",
+          "w": 256,
+          "h": 256
         },
         "idle": {
           "file": "Bear/Bear_Idle.png",
+          "kind": "strip",
           "frames": 8,
-          "frame": 256
+          "frame_w": 256,
+          "frame_h": 256
         },
         "run": {
           "file": "Bear/Bear_Run.png",
+          "kind": "strip",
           "frames": 5,
-          "frame": 256
+          "frame_w": 256,
+          "frame_h": 256
         }
       }
     },
@@ -301,33 +396,43 @@
       "animations": {
         "avatar": {
           "file": "Bomb Fish/Bomb Fish_Avatar.png",
-          "frames": 1,
-          "frame": 256
+          "kind": "image",
+          "w": 256,
+          "h": 256
         },
         "idle": {
           "file": "Bomb Fish/Bomb_Idle.png",
-          "frames": 1,
-          "frame": 128
+          "kind": "image",
+          "w": 128,
+          "h": 128
         },
         "run": {
           "file": "Bomb Fish/Bomb Fish_Run.png",
+          "kind": "strip",
           "frames": 6,
-          "frame": 192
+          "frame_w": 192,
+          "frame_h": 192
         },
         "shoot": {
           "file": "Bomb Fish/Bomb Fish_Shoot.png",
+          "kind": "strip",
           "frames": 7,
-          "frame": 192
+          "frame_w": 192,
+          "frame_h": 192
         },
         "fuselit": {
           "file": "Bomb Fish/Bomb_FuseLit.png",
+          "kind": "strip",
           "frames": 4,
-          "frame": 128
+          "frame_w": 128,
+          "frame_h": 128
         },
         "spinning": {
           "file": "Bomb Fish/Bomb_Spinning.png",
+          "kind": "strip",
           "frames": 4,
-          "frame": 128
+          "frame_w": 128,
+          "frame_h": 128
         }
       }
     },
@@ -335,23 +440,30 @@
       "animations": {
         "attack": {
           "file": "Bumblebee/Bumblebee_Attack.png",
+          "kind": "strip",
           "frames": 11,
-          "frame": 192
+          "frame_w": 192,
+          "frame_h": 192
         },
         "avatar": {
           "file": "Bumblebee/Bumblebee_Avatar.png",
-          "frames": 1,
-          "frame": 256
+          "kind": "image",
+          "w": 256,
+          "h": 256
         },
         "idle": {
           "file": "Bumblebee/Bumblebee_Idle.png",
+          "kind": "strip",
           "frames": 8,
-          "frame": 192
+          "frame_w": 192,
+          "frame_h": 192
         },
         "move": {
           "file": "Bumblebee/Bumblebee_Move.png",
+          "kind": "strip",
           "frames": 4,
-          "frame": 192
+          "frame_w": 192,
+          "frame_h": 192
         }
       }
     },
@@ -359,23 +471,30 @@
       "animations": {
         "attack": {
           "file": "Giant Bat/Giant Bat_Attack.png",
+          "kind": "strip",
           "frames": 7,
-          "frame": 192
+          "frame_w": 192,
+          "frame_h": 192
         },
         "avatar": {
           "file": "Giant Bat/Giant Bat_Avatar.png",
-          "frames": 1,
-          "frame": 256
+          "kind": "image",
+          "w": 256,
+          "h": 256
         },
         "idle": {
           "file": "Giant Bat/Giant Bat_Idle.png",
+          "kind": "strip",
           "frames": 6,
-          "frame": 192
+          "frame_w": 192,
+          "frame_h": 192
         },
         "move": {
           "file": "Giant Bat/Giant Bat_Move.png",
+          "kind": "strip",
           "frames": 4,
-          "frame": 192
+          "frame_w": 192,
+          "frame_h": 192
         }
       }
     },
@@ -383,28 +502,37 @@
       "animations": {
         "avatar": {
           "file": "Gnoll/Gnoll_Avatar.png",
-          "frames": 1,
-          "frame": 256
+          "kind": "image",
+          "w": 256,
+          "h": 256
         },
         "bone": {
           "file": "Gnoll/Gnoll_Bone.png",
+          "kind": "strip",
           "frames": 4,
-          "frame": 64
+          "frame_w": 64,
+          "frame_h": 64
         },
         "idle": {
           "file": "Gnoll/Gnoll_Idle.png",
+          "kind": "strip",
           "frames": 6,
-          "frame": 192
+          "frame_w": 192,
+          "frame_h": 192
         },
         "throw": {
           "file": "Gnoll/Gnoll_Throw.png",
+          "kind": "strip",
           "frames": 8,
-          "frame": 192
+          "frame_w": 192,
+          "frame_h": 192
         },
         "walk": {
           "file": "Gnoll/Gnoll_Walk.png",
+          "kind": "strip",
           "frames": 8,
-          "frame": 192
+          "frame_w": 192,
+          "frame_h": 192
         }
       }
     },
@@ -412,23 +540,30 @@
       "animations": {
         "attack": {
           "file": "Gnome/Gnome_Attack.png",
+          "kind": "strip",
           "frames": 7,
-          "frame": 192
+          "frame_w": 192,
+          "frame_h": 192
         },
         "avatar": {
           "file": "Gnome/Gnome_Avatar.png",
-          "frames": 1,
-          "frame": 256
+          "kind": "image",
+          "w": 256,
+          "h": 256
         },
         "idle": {
           "file": "Gnome/Gnome_Idle.png",
+          "kind": "strip",
           "frames": 8,
-          "frame": 192
+          "frame_w": 192,
+          "frame_h": 192
         },
         "run": {
           "file": "Gnome/Gnome_Run.png",
+          "kind": "strip",
           "frames": 6,
-          "frame": 192
+          "frame_w": 192,
+          "frame_h": 192
         }
       }
     },
@@ -436,28 +571,36 @@
       "animations": {
         "avatar": {
           "file": "Harpoon Shark/Harpoon Shark_Avatar.png",
-          "frames": 1,
-          "frame": 256
+          "kind": "image",
+          "w": 256,
+          "h": 256
         },
         "idle": {
           "file": "Harpoon Shark/Harpoon Shark_Idle.png",
+          "kind": "strip",
           "frames": 8,
-          "frame": 192
+          "frame_w": 192,
+          "frame_h": 192
         },
         "run": {
           "file": "Harpoon Shark/Harpoon Shark_Run.png",
+          "kind": "strip",
           "frames": 6,
-          "frame": 192
+          "frame_w": 192,
+          "frame_h": 192
         },
         "throw": {
           "file": "Harpoon Shark/Harpoon Shark_Throw.png",
+          "kind": "strip",
           "frames": 8,
-          "frame": 192
+          "frame_w": 192,
+          "frame_h": 192
         },
         "harpoon": {
           "file": "Harpoon Shark/Harpoon.png",
-          "frames": 1,
-          "frame": 64
+          "kind": "image",
+          "w": 64,
+          "h": 64
         }
       }
     },
@@ -465,33 +608,44 @@
       "animations": {
         "attack": {
           "file": "Hex Shaman/Hex Shaman_Attack.png",
+          "kind": "strip",
           "frames": 10,
-          "frame": 192
+          "frame_w": 192,
+          "frame_h": 192
         },
         "avatar": {
           "file": "Hex Shaman/Hex Shaman_Avatar.png",
-          "frames": 1,
-          "frame": 256
+          "kind": "image",
+          "w": 256,
+          "h": 256
         },
         "explosion": {
           "file": "Hex Shaman/Hex Shaman_Explosion.png",
+          "kind": "strip",
           "frames": 9,
-          "frame": 128
+          "frame_w": 128,
+          "frame_h": 128
         },
         "idle": {
           "file": "Hex Shaman/Hex Shaman_Idle.png",
+          "kind": "strip",
           "frames": 8,
-          "frame": 192
+          "frame_w": 192,
+          "frame_h": 192
         },
         "projectile": {
           "file": "Hex Shaman/Hex Shaman_Projectile.png",
+          "kind": "strip",
           "frames": 3,
-          "frame": 128
+          "frame_w": 128,
+          "frame_h": 128
         },
         "run": {
           "file": "Hex Shaman/Hex Shaman_Run.png",
+          "kind": "strip",
           "frames": 4,
-          "frame": 192
+          "frame_w": 192,
+          "frame_h": 192
         }
       }
     },
@@ -499,23 +653,30 @@
       "animations": {
         "attack": {
           "file": "Lizard/Lizard_Attack.png",
+          "kind": "strip",
           "frames": 9,
-          "frame": 192
+          "frame_w": 192,
+          "frame_h": 192
         },
         "avatar": {
           "file": "Lizard/Lizard_Avatar.png",
-          "frames": 1,
-          "frame": 256
+          "kind": "image",
+          "w": 256,
+          "h": 256
         },
         "idle": {
           "file": "Lizard/Lizard_Idle.png",
+          "kind": "strip",
           "frames": 7,
-          "frame": 192
+          "frame_w": 192,
+          "frame_h": 192
         },
         "run": {
           "file": "Lizard/Lizard_Run.png",
+          "kind": "strip",
           "frames": 6,
-          "frame": 192
+          "frame_w": 192,
+          "frame_h": 192
         }
       }
     },
@@ -523,23 +684,30 @@
       "animations": {
         "attack": {
           "file": "Minotaur/Minotaur_Attack.png",
+          "kind": "strip",
           "frames": 12,
-          "frame": 320
+          "frame_w": 320,
+          "frame_h": 320
         },
         "idle": {
           "file": "Minotaur/Minotaur_Idle.png",
+          "kind": "strip",
           "frames": 16,
-          "frame": 320
+          "frame_w": 320,
+          "frame_h": 320
         },
         "walk": {
           "file": "Minotaur/Minotaur_Walk.png",
+          "kind": "strip",
           "frames": 8,
-          "frame": 320
+          "frame_w": 320,
+          "frame_h": 320
         },
         "avatar": {
           "file": "Minotaur/Minotaur__Avatar.png",
-          "frames": 1,
-          "frame": 256
+          "kind": "image",
+          "w": 256,
+          "h": 256
         }
       }
     },
@@ -547,23 +715,30 @@
       "animations": {
         "attack": {
           "file": "Paddle Shark/Paddle Shark_Attack.png",
+          "kind": "strip",
           "frames": 6,
-          "frame": 192
+          "frame_w": 192,
+          "frame_h": 192
         },
         "avatar": {
           "file": "Paddle Shark/Paddle Shark_Avatar.png",
-          "frames": 1,
-          "frame": 256
+          "kind": "image",
+          "w": 256,
+          "h": 256
         },
         "idle": {
           "file": "Paddle Shark/Paddle Shark_Idle.png",
+          "kind": "strip",
           "frames": 8,
-          "frame": 192
+          "frame_w": 192,
+          "frame_h": 192
         },
         "run": {
           "file": "Paddle Shark/Paddle Shark_Run.png",
+          "kind": "strip",
           "frames": 6,
-          "frame": 192
+          "frame_w": 192,
+          "frame_h": 192
         }
       }
     },
@@ -571,23 +746,30 @@
       "animations": {
         "attack": {
           "file": "Panda/Panda_Attack.png",
+          "kind": "strip",
           "frames": 13,
-          "frame": 256
+          "frame_w": 256,
+          "frame_h": 256
         },
         "avatar": {
           "file": "Panda/Panda_Avatar.png",
-          "frames": 1,
-          "frame": 256
+          "kind": "image",
+          "w": 256,
+          "h": 256
         },
         "idle": {
           "file": "Panda/Panda_Idle.png",
+          "kind": "strip",
           "frames": 10,
-          "frame": 256
+          "frame_w": 256,
+          "frame_h": 256
         },
         "run": {
           "file": "Panda/Panda_Run.png",
+          "kind": "strip",
           "frames": 6,
-          "frame": 256
+          "frame_w": 256,
+          "frame_h": 256
         }
       }
     },
@@ -595,23 +777,30 @@
       "animations": {
         "attack": {
           "file": "Skull/Skull_Attack.png",
+          "kind": "strip",
           "frames": 7,
-          "frame": 192
+          "frame_w": 192,
+          "frame_h": 192
         },
         "avatar": {
           "file": "Skull/Skull_Avatar.png",
-          "frames": 1,
-          "frame": 256
+          "kind": "image",
+          "w": 256,
+          "h": 256
         },
         "idle": {
           "file": "Skull/Skull_Idle.png",
+          "kind": "strip",
           "frames": 8,
-          "frame": 192
+          "frame_w": 192,
+          "frame_h": 192
         },
         "run": {
           "file": "Skull/Skull_Run.png",
+          "kind": "strip",
           "frames": 6,
-          "frame": 192
+          "frame_w": 192,
+          "frame_h": 192
         }
       }
     },
@@ -619,28 +808,37 @@
       "animations": {
         "projectile": {
           "file": "Slingshot Gnome/Acorn_Projectile.png",
+          "kind": "strip",
           "frames": 4,
-          "frame": 64
+          "frame_w": 64,
+          "frame_h": 64
         },
         "avatar": {
           "file": "Slingshot Gnome/Slingshot Gnome_Avatar.png",
-          "frames": 1,
-          "frame": 256
+          "kind": "image",
+          "w": 256,
+          "h": 256
         },
         "idle": {
           "file": "Slingshot Gnome/Slingshot Gnome_Idle.png",
+          "kind": "strip",
           "frames": 10,
-          "frame": 192
+          "frame_w": 192,
+          "frame_h": 192
         },
         "run": {
           "file": "Slingshot Gnome/Slingshot Gnome_Run.png",
+          "kind": "strip",
           "frames": 6,
-          "frame": 192
+          "frame_w": 192,
+          "frame_h": 192
         },
         "shoot": {
           "file": "Slingshot Gnome/Slingshot Gnome_Shoot.png",
+          "kind": "strip",
           "frames": 9,
-          "frame": 192
+          "frame_w": 192,
+          "frame_h": 192
         }
       }
     },
@@ -648,23 +846,30 @@
       "animations": {
         "attack": {
           "file": "Snake/Snake_Attack.png",
+          "kind": "strip",
           "frames": 6,
-          "frame": 192
+          "frame_w": 192,
+          "frame_h": 192
         },
         "avatar": {
           "file": "Snake/Snake_Avatar.png",
-          "frames": 1,
-          "frame": 256
+          "kind": "image",
+          "w": 256,
+          "h": 256
         },
         "idle": {
           "file": "Snake/Snake_Idle.png",
+          "kind": "strip",
           "frames": 8,
-          "frame": 192
+          "frame_w": 192,
+          "frame_h": 192
         },
         "run": {
           "file": "Snake/Snake_Run.png",
+          "kind": "strip",
           "frames": 8,
-          "frame": 192
+          "frame_w": 192,
+          "frame_h": 192
         }
       }
     },
@@ -672,23 +877,30 @@
       "animations": {
         "attack_fast": {
           "file": "Spear Goblin/Spear Goblin_Attack Fast.png",
+          "kind": "strip",
           "frames": 7,
-          "frame": 256
+          "frame_w": 256,
+          "frame_h": 256
         },
         "avatar": {
           "file": "Spear Goblin/Spear Goblin_Avatar.png",
-          "frames": 1,
-          "frame": 256
+          "kind": "image",
+          "w": 256,
+          "h": 256
         },
         "idle": {
           "file": "Spear Goblin/Spear Goblin_Idle.png",
+          "kind": "strip",
           "frames": 8,
-          "frame": 256
+          "frame_w": 256,
+          "frame_h": 256
         },
         "run": {
           "file": "Spear Goblin/Spear Goblin_Run.png",
+          "kind": "strip",
           "frames": 6,
-          "frame": 256
+          "frame_w": 256,
+          "frame_h": 256
         }
       }
     },
@@ -696,23 +908,30 @@
       "animations": {
         "attack": {
           "file": "Spider/Spider_Attack.png",
+          "kind": "strip",
           "frames": 8,
-          "frame": 192
+          "frame_w": 192,
+          "frame_h": 192
         },
         "avatar": {
           "file": "Spider/Spider_Avatar.png",
-          "frames": 1,
-          "frame": 256
+          "kind": "image",
+          "w": 256,
+          "h": 256
         },
         "idle": {
           "file": "Spider/Spider_Idle.png",
+          "kind": "strip",
           "frames": 8,
-          "frame": 192
+          "frame_w": 192,
+          "frame_h": 192
         },
         "run": {
           "file": "Spider/Spider_Run.png",
+          "kind": "strip",
           "frames": 5,
-          "frame": 192
+          "frame_w": 192,
+          "frame_h": 192
         }
       }
     },
@@ -720,23 +939,30 @@
       "animations": {
         "attack": {
           "file": "Thief/Thief_Attack.png",
+          "kind": "strip",
           "frames": 6,
-          "frame": 192
+          "frame_w": 192,
+          "frame_h": 192
         },
         "avatar": {
           "file": "Thief/Thief_Avatar.png",
-          "frames": 1,
-          "frame": 256
+          "kind": "image",
+          "w": 256,
+          "h": 256
         },
         "idle": {
           "file": "Thief/Thief_Idle.png",
+          "kind": "strip",
           "frames": 6,
-          "frame": 192
+          "frame_w": 192,
+          "frame_h": 192
         },
         "run": {
           "file": "Thief/Thief_Run.png",
+          "kind": "strip",
           "frames": 6,
-          "frame": 192
+          "frame_w": 192,
+          "frame_h": 192
         }
       }
     },
@@ -744,23 +970,30 @@
       "animations": {
         "attack": {
           "file": "Torch Goblin/Torch Goblin_Attack.png",
+          "kind": "strip",
           "frames": 8,
-          "frame": 192
+          "frame_w": 192,
+          "frame_h": 192
         },
         "avatar": {
           "file": "Torch Goblin/Torch Goblin_Avatar.png",
-          "frames": 1,
-          "frame": 256
+          "kind": "image",
+          "w": 256,
+          "h": 256
         },
         "idle": {
           "file": "Torch Goblin/Torch Goblin_Idle.png",
+          "kind": "strip",
           "frames": 8,
-          "frame": 192
+          "frame_w": 192,
+          "frame_h": 192
         },
         "run": {
           "file": "Torch Goblin/Torch Goblin_Run.png",
+          "kind": "strip",
           "frames": 6,
-          "frame": 192
+          "frame_w": 192,
+          "frame_h": 192
         }
       }
     },
@@ -768,33 +1001,44 @@
       "animations": {
         "attack": {
           "file": "Troll/Troll_Attack.png",
+          "kind": "strip",
           "frames": 6,
-          "frame": 384
+          "frame_w": 384,
+          "frame_h": 384
         },
         "avatar": {
           "file": "Troll/Troll_Avatar.png",
-          "frames": 1,
-          "frame": 256
+          "kind": "image",
+          "w": 256,
+          "h": 256
         },
         "idle": {
           "file": "Troll/Troll_Idle.png",
+          "kind": "strip",
           "frames": 12,
-          "frame": 384
+          "frame_w": 384,
+          "frame_h": 384
         },
         "recovery": {
           "file": "Troll/Troll_Recovery.png",
+          "kind": "strip",
           "frames": 10,
-          "frame": 384
+          "frame_w": 384,
+          "frame_h": 384
         },
         "walk": {
           "file": "Troll/Troll_Walk.png",
+          "kind": "strip",
           "frames": 10,
-          "frame": 384
+          "frame_w": 384,
+          "frame_h": 384
         },
         "windup": {
           "file": "Troll/Troll_Windup.png",
+          "kind": "strip",
           "frames": 5,
-          "frame": 384
+          "frame_w": 384,
+          "frame_h": 384
         }
       }
     },
@@ -802,23 +1046,30 @@
       "animations": {
         "attack": {
           "file": "Turtle/Turtle_Attack.png",
+          "kind": "strip",
           "frames": 10,
-          "frame": 320
+          "frame_w": 320,
+          "frame_h": 320
         },
         "avatar": {
           "file": "Turtle/Turtle_Avatar.png",
-          "frames": 1,
-          "frame": 256
+          "kind": "image",
+          "w": 256,
+          "h": 256
         },
         "idle": {
           "file": "Turtle/Turtle_Idle.png",
+          "kind": "strip",
           "frames": 10,
-          "frame": 320
+          "frame_w": 320,
+          "frame_h": 320
         },
         "walk": {
           "file": "Turtle/Turtle_Walk.png",
+          "kind": "strip",
           "frames": 7,
-          "frame": 320
+          "frame_w": 320,
+          "frame_h": 320
         }
       }
     }
@@ -826,263 +1077,345 @@
   "extra": {
     "boat_boat_idle": {
       "file": "Extra/Boat/Boat_Idle.png",
+      "kind": "strip",
       "frames": 8,
-      "frame": 256
+      "frame_w": 256,
+      "frame_h": 256
     },
     "boat_paddle_shark_row": {
       "file": "Extra/Boat/Paddle Shark_Row.png",
+      "kind": "strip",
       "frames": 7,
-      "frame": 192
+      "frame_w": 192,
+      "frame_h": 192
     },
     "cannon_cannon_ball": {
       "file": "Extra/Cannon/Cannon_Ball.png",
-      "frames": 1,
-      "frame": 128
+      "kind": "image",
+      "w": 128,
+      "h": 128
     },
     "cannon_cannon_down": {
       "file": "Extra/Cannon/Cannon_Down.png",
-      "frames": 1,
-      "frame": 128
+      "kind": "image",
+      "w": 128,
+      "h": 128
     },
     "cannon_cannon_downright": {
       "file": "Extra/Cannon/Cannon_DownRight.png",
-      "frames": 1,
-      "frame": 128
+      "kind": "image",
+      "w": 128,
+      "h": 128
     },
     "cannon_cannon_right": {
       "file": "Extra/Cannon/Cannon_Right.png",
-      "frames": 1,
-      "frame": 128
+      "kind": "image",
+      "w": 128,
+      "h": 128
     },
     "cannon_cannon_up": {
       "file": "Extra/Cannon/Cannon_Up.png",
-      "frames": 1,
-      "frame": 128
+      "kind": "image",
+      "w": 128,
+      "h": 128
     },
     "cannon_cannon_upright": {
       "file": "Extra/Cannon/Cannon_UpRight.png",
-      "frames": 1,
-      "frame": 128
+      "kind": "image",
+      "w": 128,
+      "h": 128
     },
     "cave_cave_idle": {
       "file": "Extra/Cave/Cave_Idle.png",
+      "kind": "strip",
       "frames": 8,
-      "frame": 192
+      "frame_w": 192,
+      "frame_h": 192
     },
     "dead_tree_dead_tree": {
       "file": "Extra/Dead Tree/Dead Tree.png",
-      "frames": 1,
-      "frame": 320
+      "kind": "image",
+      "w": 384,
+      "h": 320
     },
     "fish_hut_fish_hut": {
       "file": "Extra/Fish Hut/Fish Hut.png",
+      "kind": "strip",
       "frames": 8,
-      "frame": 192
+      "frame_w": 192,
+      "frame_h": 192
     },
     "gnoll_hit_gnoll_hit": {
       "file": "Extra/Gnoll Hit/Gnoll_Hit.png",
+      "kind": "strip",
       "frames": 2,
-      "frame": 192
+      "frame_w": 192,
+      "frame_h": 192
     },
     "gnome_buildings_gnome_hut": {
       "file": "Extra/Gnome Buildings/Gnome Hut.png",
-      "frames": 1,
-      "frame": 192
+      "kind": "image",
+      "w": 128,
+      "h": 192
     },
     "gnome_buildings_gnome_tower": {
       "file": "Extra/Gnome Buildings/Gnome Tower.png",
-      "frames": 1,
-      "frame": 256
+      "kind": "image",
+      "w": 128,
+      "h": 256
     },
     "goblin_hut_goblin_hut": {
       "file": "Extra/Goblin Hut/Goblin Hut.png",
+      "kind": "strip",
       "frames": 12,
-      "frame": 256
+      "frame_w": 256,
+      "frame_h": 256
     },
     "hex_shaman_transformation_spell_hex_shaman_explosion_spell": {
       "file": "Extra/Hex Shaman Transformation Spell/Hex Shaman_Explosion Spell.png",
+      "kind": "strip",
       "frames": 10,
-      "frame": 192
+      "frame_w": 192,
+      "frame_h": 192
     },
     "hex_shaman_transformation_spell_hex_shaman_transformation_spell": {
       "file": "Extra/Hex Shaman Transformation Spell/Hex Shaman_Transformation Spell.png",
+      "kind": "strip",
       "frames": 11,
-      "frame": 192
+      "frame_w": 192,
+      "frame_h": 192
     },
     "lizard_hit_lizard_hit": {
       "file": "Extra/Lizard Hit/Lizard_Hit.png",
+      "kind": "strip",
       "frames": 2,
-      "frame": 192
+      "frame_w": 192,
+      "frame_h": 192
     },
     "minotaur_guard_minotaur_guard": {
       "file": "Extra/Minotaur Guard/Minotaur_Guard.png",
+      "kind": "strip",
       "frames": 11,
-      "frame": 320
+      "frame_w": 320,
+      "frame_h": 320
     },
     "panda_guard_panda_guard": {
       "file": "Extra/Panda Guard/Panda_Guard.png",
+      "kind": "strip",
       "frames": 8,
-      "frame": 256
+      "frame_w": 256,
+      "frame_h": 256
     },
     "pig_rider_spear_goblin_pig_rider_attack": {
       "file": "Extra/Pig Rider Spear Goblin/Pig Rider_Attack.png",
+      "kind": "strip",
       "frames": 7,
-      "frame": 256
+      "frame_w": 256,
+      "frame_h": 256
     },
     "pig_rider_spear_goblin_pig_rider_idle": {
       "file": "Extra/Pig Rider Spear Goblin/Pig Rider_Idle.png",
+      "kind": "strip",
       "frames": 8,
-      "frame": 256
+      "frame_w": 256,
+      "frame_h": 256
     },
     "pig_rider_spear_goblin_pig_rider_run": {
       "file": "Extra/Pig Rider Spear Goblin/Pig Rider_Run.png",
+      "kind": "strip",
       "frames": 4,
-      "frame": 256
+      "frame_w": 256,
+      "frame_h": 256
     },
     "pig_pig_idle": {
       "file": "Extra/Pig/Pig_Idle.png",
+      "kind": "strip",
       "frames": 10,
-      "frame": 192
+      "frame_w": 192,
+      "frame_h": 192
     },
     "pig_pig_run": {
       "file": "Extra/Pig/Pig_Run.png",
+      "kind": "strip",
       "frames": 4,
-      "frame": 192
+      "frame_w": 192,
+      "frame_h": 192
     },
     "pirate_tower_pirate_tower_ground": {
       "file": "Extra/Pirate Tower/Pirate Tower_Ground.png",
-      "frames": 1,
-      "frame": 192
+      "kind": "image",
+      "w": 128,
+      "h": 192
     },
     "pirate_tower_pirate_tower_water": {
       "file": "Extra/Pirate Tower/Pirate Tower_Water.png",
-      "frames": 1,
-      "frame": 192
+      "kind": "strip",
+      "frames": 8,
+      "frame_w": 128,
+      "frame_h": 192
     },
     "seahorse_boat_seahorse_boat_bomb_fish": {
       "file": "Extra/Seahorse Boat/Seahorse Boat_Bomb Fish.png",
+      "kind": "strip",
       "frames": 8,
-      "frame": 192
+      "frame_w": 192,
+      "frame_h": 192
     },
     "seahorse_boat_seahorse_boat_harpoon_shark": {
       "file": "Extra/Seahorse Boat/Seahorse Boat_Harpoon Shark.png",
+      "kind": "strip",
       "frames": 8,
-      "frame": 192
+      "frame_w": 192,
+      "frame_h": 192
     },
     "seahorse_boat_seahorse_boat_idle": {
       "file": "Extra/Seahorse Boat/Seahorse Boat_Idle.png",
+      "kind": "strip",
       "frames": 8,
-      "frame": 192
+      "frame_w": 192,
+      "frame_h": 192
     },
     "seahorse_boat_seahorse_boat_paddle_shark": {
       "file": "Extra/Seahorse Boat/Seahorse Boat_Paddle Shark.png",
+      "kind": "strip",
       "frames": 8,
-      "frame": 192
+      "frame_w": 192,
+      "frame_h": 192
     },
     "skull_guard_skull_guard": {
       "file": "Extra/Skull Guard/Skull_Guard.png",
+      "kind": "strip",
       "frames": 7,
-      "frame": 192
+      "frame_w": 192,
+      "frame_h": 192
     },
     "skull_decorations_bones_01": {
       "file": "Extra/Skull decorations/Bones_01.png",
-      "frames": 1,
-      "frame": 64
+      "kind": "image",
+      "w": 64,
+      "h": 64
     },
     "skull_decorations_bones_02": {
       "file": "Extra/Skull decorations/Bones_02.png",
-      "frames": 1,
-      "frame": 64
+      "kind": "image",
+      "w": 64,
+      "h": 64
     },
     "skull_decorations_bones_03": {
       "file": "Extra/Skull decorations/Bones_03.png",
-      "frames": 1,
-      "frame": 64
+      "kind": "image",
+      "w": 64,
+      "h": 64
     },
     "skull_decorations_skull_spike_01": {
       "file": "Extra/Skull decorations/Skull Spike_01.png",
-      "frames": 1,
-      "frame": 128
+      "kind": "image",
+      "w": 64,
+      "h": 128
     },
     "skull_decorations_skull_spike_02": {
       "file": "Extra/Skull decorations/Skull Spike_02.png",
-      "frames": 1,
-      "frame": 128
+      "kind": "image",
+      "w": 64,
+      "h": 128
     },
     "spear_goblin_strong_attack_spear_goblin_attack_strong": {
       "file": "Extra/Spear Goblin Strong Attack/Spear Goblin_Attack Strong.png",
+      "kind": "strip",
       "frames": 8,
-      "frame": 256
+      "frame_w": 256,
+      "frame_h": 256
     },
     "troll_dead_troll_clubpart1": {
       "file": "Extra/Troll Dead/Troll_ClubPart1.png",
+      "kind": "strip",
       "frames": 10,
-      "frame": 384
+      "frame_w": 384,
+      "frame_h": 384
     },
     "troll_dead_troll_clubpart2": {
       "file": "Extra/Troll Dead/Troll_ClubPart2.png",
+      "kind": "strip",
       "frames": 10,
-      "frame": 384
+      "frame_w": 384,
+      "frame_h": 384
     },
     "troll_dead_troll_dead": {
       "file": "Extra/Troll Dead/Troll_Dead.png",
+      "kind": "strip",
       "frames": 10,
-      "frame": 384
+      "frame_w": 384,
+      "frame_h": 384
     },
     "turtle_guard_turtle_guard_in": {
       "file": "Extra/Turtle Guard/Turtle_Guard_In.png",
+      "kind": "strip",
       "frames": 6,
-      "frame": 320
+      "frame_w": 320,
+      "frame_h": 320
     },
     "turtle_guard_turtle_guard_out": {
       "file": "Extra/Turtle Guard/Turtle_Guard_Out.png",
+      "kind": "strip",
       "frames": 3,
-      "frame": 320
+      "frame_w": 320,
+      "frame_h": 320
     },
     "wooden_fence_wooden_fence_64x64_tile": {
       "file": "Extra/Wooden Fence/Wooden Fence_64x64 tile.png",
-      "frames": 1,
-      "frame": 192
+      "kind": "atlas",
+      "columns": 4,
+      "rows": 3,
+      "cell_w": 64,
+      "cell_h": 64
     }
   },
   "buildings": {
     "castle": {
       "path_template": "Buildings/{color} Buildings/Castle.png",
+      "kind": "image",
       "w": 320,
       "h": 256
     },
     "barracks": {
       "path_template": "Buildings/{color} Buildings/Barracks.png",
+      "kind": "image",
       "w": 192,
       "h": 256
     },
     "archery": {
       "path_template": "Buildings/{color} Buildings/Archery.png",
+      "kind": "image",
       "w": 192,
       "h": 256
     },
     "monastery": {
       "path_template": "Buildings/{color} Buildings/Monastery.png",
+      "kind": "image",
       "w": 192,
       "h": 320
     },
     "tower": {
       "path_template": "Buildings/{color} Buildings/Tower.png",
+      "kind": "image",
       "w": 128,
       "h": 256
     },
     "house1": {
       "path_template": "Buildings/{color} Buildings/House1.png",
+      "kind": "image",
       "w": 128,
       "h": 192
     },
     "house2": {
       "path_template": "Buildings/{color} Buildings/House2.png",
+      "kind": "image",
       "w": 128,
       "h": 192
     },
     "house3": {
       "path_template": "Buildings/{color} Buildings/House3.png",
+      "kind": "image",
       "w": 128,
       "h": 192
     }
@@ -1090,701 +1423,894 @@
   "terrain": {
     "shadow": {
       "file": "Terrain/Tileset/Shadow.png",
-      "frames": 1,
-      "frame": 192
+      "kind": "image",
+      "w": 192,
+      "h": 192
     },
     "tilemap_color1": {
       "file": "Terrain/Tileset/Tilemap_color1.png",
-      "frames": 1,
-      "frame": 384
+      "kind": "atlas",
+      "columns": 9,
+      "rows": 6,
+      "cell_w": 64,
+      "cell_h": 64
     },
     "tilemap_color2": {
       "file": "Terrain/Tileset/Tilemap_color2.png",
-      "frames": 1,
-      "frame": 384
+      "kind": "atlas",
+      "columns": 9,
+      "rows": 6,
+      "cell_w": 64,
+      "cell_h": 64
     },
     "tilemap_color3": {
       "file": "Terrain/Tileset/Tilemap_color3.png",
-      "frames": 1,
-      "frame": 384
+      "kind": "atlas",
+      "columns": 9,
+      "rows": 6,
+      "cell_w": 64,
+      "cell_h": 64
     },
     "tilemap_color4": {
       "file": "Terrain/Tileset/Tilemap_color4.png",
-      "frames": 1,
-      "frame": 384
+      "kind": "atlas",
+      "columns": 9,
+      "rows": 6,
+      "cell_w": 64,
+      "cell_h": 64
     },
     "tilemap_color5": {
       "file": "Terrain/Tileset/Tilemap_color5.png",
-      "frames": 1,
-      "frame": 384
+      "kind": "atlas",
+      "columns": 9,
+      "rows": 6,
+      "cell_w": 64,
+      "cell_h": 64
     },
     "water_background_color": {
       "file": "Terrain/Tileset/Water Background color.png",
-      "frames": 1,
-      "frame": 64
+      "kind": "image",
+      "w": 64,
+      "h": 64
     },
     "water_foam": {
       "file": "Terrain/Tileset/Water Foam.png",
+      "kind": "strip",
       "frames": 16,
-      "frame": 192
+      "frame_w": 192,
+      "frame_h": 192
     }
   },
   "decorations": {
     "bushe1": {
       "file": "Terrain/Decorations/Bushes/Bushe1.png",
+      "kind": "strip",
       "frames": 8,
-      "frame": 128
+      "frame_w": 128,
+      "frame_h": 128
     },
     "bushe2": {
       "file": "Terrain/Decorations/Bushes/Bushe2.png",
+      "kind": "strip",
       "frames": 8,
-      "frame": 128
+      "frame_w": 128,
+      "frame_h": 128
     },
     "bushe3": {
       "file": "Terrain/Decorations/Bushes/Bushe3.png",
+      "kind": "strip",
       "frames": 8,
-      "frame": 128
+      "frame_w": 128,
+      "frame_h": 128
     },
     "bushe4": {
       "file": "Terrain/Decorations/Bushes/Bushe4.png",
+      "kind": "strip",
       "frames": 8,
-      "frame": 128
+      "frame_w": 128,
+      "frame_h": 128
     },
     "clouds_01": {
       "file": "Terrain/Decorations/Clouds/Clouds_01.png",
-      "frames": 1,
-      "frame": 256
+      "kind": "image",
+      "w": 576,
+      "h": 256
     },
     "clouds_02": {
       "file": "Terrain/Decorations/Clouds/Clouds_02.png",
-      "frames": 1,
-      "frame": 256
+      "kind": "image",
+      "w": 576,
+      "h": 256
     },
     "clouds_03": {
       "file": "Terrain/Decorations/Clouds/Clouds_03.png",
-      "frames": 1,
-      "frame": 256
+      "kind": "image",
+      "w": 576,
+      "h": 256
     },
     "clouds_04": {
       "file": "Terrain/Decorations/Clouds/Clouds_04.png",
-      "frames": 1,
-      "frame": 256
+      "kind": "image",
+      "w": 576,
+      "h": 256
     },
     "clouds_05": {
       "file": "Terrain/Decorations/Clouds/Clouds_05.png",
-      "frames": 1,
-      "frame": 256
+      "kind": "image",
+      "w": 576,
+      "h": 256
     },
     "clouds_06": {
       "file": "Terrain/Decorations/Clouds/Clouds_06.png",
-      "frames": 1,
-      "frame": 256
+      "kind": "image",
+      "w": 576,
+      "h": 256
     },
     "clouds_07": {
       "file": "Terrain/Decorations/Clouds/Clouds_07.png",
-      "frames": 1,
-      "frame": 256
+      "kind": "image",
+      "w": 576,
+      "h": 256
     },
     "clouds_08": {
       "file": "Terrain/Decorations/Clouds/Clouds_08.png",
-      "frames": 1,
-      "frame": 256
+      "kind": "image",
+      "w": 576,
+      "h": 256
     },
     "water_rocks_01": {
       "file": "Terrain/Decorations/Rocks in the Water/Water Rocks_01.png",
+      "kind": "strip",
       "frames": 16,
-      "frame": 64
+      "frame_w": 64,
+      "frame_h": 64
     },
     "water_rocks_02": {
       "file": "Terrain/Decorations/Rocks in the Water/Water Rocks_02.png",
+      "kind": "strip",
       "frames": 16,
-      "frame": 64
+      "frame_w": 64,
+      "frame_h": 64
     },
     "water_rocks_03": {
       "file": "Terrain/Decorations/Rocks in the Water/Water Rocks_03.png",
+      "kind": "strip",
       "frames": 16,
-      "frame": 64
+      "frame_w": 64,
+      "frame_h": 64
     },
     "water_rocks_04": {
       "file": "Terrain/Decorations/Rocks in the Water/Water Rocks_04.png",
+      "kind": "strip",
       "frames": 16,
-      "frame": 64
+      "frame_w": 64,
+      "frame_h": 64
     },
     "rock1": {
       "file": "Terrain/Decorations/Rocks/Rock1.png",
-      "frames": 1,
-      "frame": 64
+      "kind": "image",
+      "w": 64,
+      "h": 64
     },
     "rock2": {
       "file": "Terrain/Decorations/Rocks/Rock2.png",
-      "frames": 1,
-      "frame": 64
+      "kind": "image",
+      "w": 64,
+      "h": 64
     },
     "rock3": {
       "file": "Terrain/Decorations/Rocks/Rock3.png",
-      "frames": 1,
-      "frame": 64
+      "kind": "image",
+      "w": 64,
+      "h": 64
     },
     "rock4": {
       "file": "Terrain/Decorations/Rocks/Rock4.png",
-      "frames": 1,
-      "frame": 64
+      "kind": "image",
+      "w": 64,
+      "h": 64
     },
     "rubber_duck": {
       "file": "Terrain/Decorations/Rubber Duck/Rubber duck.png",
+      "kind": "strip",
       "frames": 3,
-      "frame": 32
+      "frame_w": 32,
+      "frame_h": 32
     }
   },
   "resources": {
     "gold_resource": {
       "file": "Terrain/Resources/Gold/Gold Resource/Gold_Resource.png",
-      "frames": 1,
-      "frame": 128
+      "kind": "image",
+      "w": 128,
+      "h": 128
     },
     "gold_resource_highlight": {
       "file": "Terrain/Resources/Gold/Gold Resource/Gold_Resource_Highlight.png",
+      "kind": "strip",
       "frames": 6,
-      "frame": 128
+      "frame_w": 128,
+      "frame_h": 128
     },
     "gold_stone_1": {
       "file": "Terrain/Resources/Gold/Gold Stones/Gold Stone 1.png",
-      "frames": 1,
-      "frame": 128
+      "kind": "image",
+      "w": 128,
+      "h": 128
     },
     "gold_stone_1_highlight": {
       "file": "Terrain/Resources/Gold/Gold Stones/Gold Stone 1_Highlight.png",
+      "kind": "strip",
       "frames": 6,
-      "frame": 128
+      "frame_w": 128,
+      "frame_h": 128
     },
     "gold_stone_2": {
       "file": "Terrain/Resources/Gold/Gold Stones/Gold Stone 2.png",
-      "frames": 1,
-      "frame": 128
+      "kind": "image",
+      "w": 128,
+      "h": 128
     },
     "gold_stone_2_highlight": {
       "file": "Terrain/Resources/Gold/Gold Stones/Gold Stone 2_Highlight.png",
+      "kind": "strip",
       "frames": 6,
-      "frame": 128
+      "frame_w": 128,
+      "frame_h": 128
     },
     "gold_stone_3": {
       "file": "Terrain/Resources/Gold/Gold Stones/Gold Stone 3.png",
-      "frames": 1,
-      "frame": 128
+      "kind": "image",
+      "w": 128,
+      "h": 128
     },
     "gold_stone_3_highlight": {
       "file": "Terrain/Resources/Gold/Gold Stones/Gold Stone 3_Highlight.png",
+      "kind": "strip",
       "frames": 6,
-      "frame": 128
+      "frame_w": 128,
+      "frame_h": 128
     },
     "gold_stone_4": {
       "file": "Terrain/Resources/Gold/Gold Stones/Gold Stone 4.png",
-      "frames": 1,
-      "frame": 128
+      "kind": "image",
+      "w": 128,
+      "h": 128
     },
     "gold_stone_4_highlight": {
       "file": "Terrain/Resources/Gold/Gold Stones/Gold Stone 4_Highlight.png",
+      "kind": "strip",
       "frames": 6,
-      "frame": 128
+      "frame_w": 128,
+      "frame_h": 128
     },
     "gold_stone_5": {
       "file": "Terrain/Resources/Gold/Gold Stones/Gold Stone 5.png",
-      "frames": 1,
-      "frame": 128
+      "kind": "image",
+      "w": 128,
+      "h": 128
     },
     "gold_stone_5_highlight": {
       "file": "Terrain/Resources/Gold/Gold Stones/Gold Stone 5_Highlight.png",
+      "kind": "strip",
       "frames": 6,
-      "frame": 128
+      "frame_w": 128,
+      "frame_h": 128
     },
     "gold_stone_6": {
       "file": "Terrain/Resources/Gold/Gold Stones/Gold Stone 6.png",
-      "frames": 1,
-      "frame": 128
+      "kind": "image",
+      "w": 128,
+      "h": 128
     },
     "gold_stone_6_highlight": {
       "file": "Terrain/Resources/Gold/Gold Stones/Gold Stone 6_Highlight.png",
+      "kind": "strip",
       "frames": 6,
-      "frame": 128
+      "frame_w": 128,
+      "frame_h": 128
     },
     "meat_resource": {
       "file": "Terrain/Resources/Meat/Meat Resource/Meat Resource.png",
-      "frames": 1,
-      "frame": 64
+      "kind": "image",
+      "w": 64,
+      "h": 64
     },
     "sheep_grass": {
       "file": "Terrain/Resources/Meat/Sheep/Sheep_Grass.png",
+      "kind": "strip",
       "frames": 12,
-      "frame": 128
+      "frame_w": 128,
+      "frame_h": 128
     },
     "sheep_idle": {
       "file": "Terrain/Resources/Meat/Sheep/Sheep_Idle.png",
+      "kind": "strip",
       "frames": 6,
-      "frame": 128
+      "frame_w": 128,
+      "frame_h": 128
     },
     "sheep_move": {
       "file": "Terrain/Resources/Meat/Sheep/Sheep_Move.png",
+      "kind": "strip",
       "frames": 4,
-      "frame": 128
+      "frame_w": 128,
+      "frame_h": 128
     },
     "tool_01": {
       "file": "Terrain/Resources/Tools/Tool_01.png",
-      "frames": 1,
-      "frame": 64
+      "kind": "image",
+      "w": 64,
+      "h": 64
     },
     "tool_02": {
       "file": "Terrain/Resources/Tools/Tool_02.png",
-      "frames": 1,
-      "frame": 64
+      "kind": "image",
+      "w": 64,
+      "h": 64
     },
     "tool_03": {
       "file": "Terrain/Resources/Tools/Tool_03.png",
-      "frames": 1,
-      "frame": 64
+      "kind": "image",
+      "w": 64,
+      "h": 64
     },
     "tool_04": {
       "file": "Terrain/Resources/Tools/Tool_04.png",
-      "frames": 1,
-      "frame": 64
+      "kind": "image",
+      "w": 64,
+      "h": 64
     },
     "stump_1": {
       "file": "Terrain/Resources/Wood/Trees/Stump 1.png",
-      "frames": 1,
-      "frame": 256
+      "kind": "image",
+      "w": 192,
+      "h": 256
     },
     "stump_2": {
       "file": "Terrain/Resources/Wood/Trees/Stump 2.png",
-      "frames": 1,
-      "frame": 256
+      "kind": "image",
+      "w": 192,
+      "h": 256
     },
     "stump_3": {
       "file": "Terrain/Resources/Wood/Trees/Stump 3.png",
-      "frames": 1,
-      "frame": 256
+      "kind": "image",
+      "w": 192,
+      "h": 256
     },
     "stump_4": {
       "file": "Terrain/Resources/Wood/Trees/Stump 4.png",
-      "frames": 1,
-      "frame": 256
+      "kind": "image",
+      "w": 192,
+      "h": 256
     },
     "tree1": {
       "file": "Terrain/Resources/Wood/Trees/Tree1.png",
+      "kind": "strip",
       "frames": 6,
-      "frame": 256
+      "frame_w": 256,
+      "frame_h": 256
     },
     "tree2": {
       "file": "Terrain/Resources/Wood/Trees/Tree2.png",
+      "kind": "strip",
       "frames": 6,
-      "frame": 256
+      "frame_w": 256,
+      "frame_h": 256
     },
     "tree3": {
       "file": "Terrain/Resources/Wood/Trees/Tree3.png",
+      "kind": "strip",
       "frames": 8,
-      "frame": 192
+      "frame_w": 192,
+      "frame_h": 192
     },
     "tree4": {
       "file": "Terrain/Resources/Wood/Trees/Tree4.png",
+      "kind": "strip",
       "frames": 8,
-      "frame": 192
+      "frame_w": 192,
+      "frame_h": 192
     },
     "wood_resource": {
       "file": "Terrain/Resources/Wood/Wood Resource/Wood Resource.png",
-      "frames": 1,
-      "frame": 64
+      "kind": "image",
+      "w": 64,
+      "h": 64
     }
   },
   "fx": {
     "dust_01": {
       "file": "Particle FX/Dust_01.png",
+      "kind": "strip",
       "frames": 8,
-      "frame": 64
+      "frame_w": 64,
+      "frame_h": 64
     },
     "dust_02": {
       "file": "Particle FX/Dust_02.png",
+      "kind": "strip",
       "frames": 10,
-      "frame": 64
+      "frame_w": 64,
+      "frame_h": 64
     },
     "explosion_01": {
       "file": "Particle FX/Explosion_01.png",
+      "kind": "strip",
       "frames": 8,
-      "frame": 192
+      "frame_w": 192,
+      "frame_h": 192
     },
     "explosion_02": {
       "file": "Particle FX/Explosion_02.png",
+      "kind": "strip",
       "frames": 10,
-      "frame": 192
+      "frame_w": 192,
+      "frame_h": 192
     },
     "fire_01": {
       "file": "Particle FX/Fire_01.png",
+      "kind": "strip",
       "frames": 8,
-      "frame": 64
+      "frame_w": 64,
+      "frame_h": 64
     },
     "fire_02": {
       "file": "Particle FX/Fire_02.png",
+      "kind": "strip",
       "frames": 10,
-      "frame": 64
+      "frame_w": 64,
+      "frame_h": 64
     },
     "fire_03": {
       "file": "Particle FX/Fire_03.png",
+      "kind": "strip",
       "frames": 12,
-      "frame": 64
+      "frame_w": 64,
+      "frame_h": 64
     },
     "water_splash": {
       "file": "Particle FX/Water Splash.png",
+      "kind": "strip",
       "frames": 9,
-      "frame": 192
+      "frame_w": 192,
+      "frame_h": 192
     }
   },
   "ui": {
     "banner": {
       "file": "UI Elements/UI Elements/Banners/Banner.png",
-      "frames": 1,
-      "frame": 448
+      "kind": "image",
+      "w": 448,
+      "h": 448,
+      "layout": "nine_slice"
     },
     "banner_slots": {
       "file": "UI Elements/UI Elements/Banners/Banner_Slots.png",
-      "frames": 1,
-      "frame": 192
+      "kind": "image",
+      "w": 192,
+      "h": 192
     },
     "bigbar_base": {
       "file": "UI Elements/UI Elements/Bars/BigBar_Base.png",
+      "kind": "strip",
       "frames": 5,
-      "frame": 64
+      "frame_w": 64,
+      "frame_h": 64
     },
     "bigbar_fill": {
       "file": "UI Elements/UI Elements/Bars/BigBar_Fill.png",
-      "frames": 1,
-      "frame": 64
+      "kind": "image",
+      "w": 64,
+      "h": 64
     },
     "smallbar_base": {
       "file": "UI Elements/UI Elements/Bars/SmallBar_Base.png",
+      "kind": "strip",
       "frames": 5,
-      "frame": 64
+      "frame_w": 64,
+      "frame_h": 64
     },
     "smallbar_fill": {
       "file": "UI Elements/UI Elements/Bars/SmallBar_Fill.png",
-      "frames": 1,
-      "frame": 64
+      "kind": "image",
+      "w": 64,
+      "h": 64
     },
     "bigbluebutton_pressed": {
       "file": "UI Elements/UI Elements/Buttons/BigBlueButton_Pressed.png",
-      "frames": 1,
-      "frame": 320
+      "kind": "image",
+      "w": 320,
+      "h": 320,
+      "layout": "nine_slice"
     },
     "bigbluebutton_regular": {
       "file": "UI Elements/UI Elements/Buttons/BigBlueButton_Regular.png",
-      "frames": 1,
-      "frame": 320
+      "kind": "image",
+      "w": 320,
+      "h": 320,
+      "layout": "nine_slice"
     },
     "bigredbutton_pressed": {
       "file": "UI Elements/UI Elements/Buttons/BigRedButton_Pressed.png",
-      "frames": 1,
-      "frame": 320
+      "kind": "image",
+      "w": 320,
+      "h": 320,
+      "layout": "nine_slice"
     },
     "bigredbutton_regular": {
       "file": "UI Elements/UI Elements/Buttons/BigRedButton_Regular.png",
-      "frames": 1,
-      "frame": 320
+      "kind": "image",
+      "w": 320,
+      "h": 320,
+      "layout": "nine_slice"
     },
     "smallblueroundbutton_pressed": {
       "file": "UI Elements/UI Elements/Buttons/SmallBlueRoundButton_Pressed.png",
-      "frames": 1,
-      "frame": 128
+      "kind": "image",
+      "w": 128,
+      "h": 128
     },
     "smallblueroundbutton_regular": {
       "file": "UI Elements/UI Elements/Buttons/SmallBlueRoundButton_Regular.png",
-      "frames": 1,
-      "frame": 128
+      "kind": "image",
+      "w": 128,
+      "h": 128
     },
     "smallbluesquarebutton_pressed": {
       "file": "UI Elements/UI Elements/Buttons/SmallBlueSquareButton_Pressed.png",
-      "frames": 1,
-      "frame": 128
+      "kind": "image",
+      "w": 128,
+      "h": 128
     },
     "smallbluesquarebutton_regular": {
       "file": "UI Elements/UI Elements/Buttons/SmallBlueSquareButton_Regular.png",
-      "frames": 1,
-      "frame": 128
+      "kind": "image",
+      "w": 128,
+      "h": 128
     },
     "smallredroundbutton_pressed": {
       "file": "UI Elements/UI Elements/Buttons/SmallRedRoundButton_Pressed.png",
-      "frames": 1,
-      "frame": 128
+      "kind": "image",
+      "w": 128,
+      "h": 128
     },
     "smallredroundbutton_regular": {
       "file": "UI Elements/UI Elements/Buttons/SmallRedRoundButton_Regular.png",
-      "frames": 1,
-      "frame": 128
+      "kind": "image",
+      "w": 128,
+      "h": 128
     },
     "smallredsquarebutton_pressed": {
       "file": "UI Elements/UI Elements/Buttons/SmallRedSquareButton_Pressed.png",
-      "frames": 1,
-      "frame": 128
+      "kind": "image",
+      "w": 128,
+      "h": 128
     },
     "smallredsquarebutton_regular": {
       "file": "UI Elements/UI Elements/Buttons/SmallRedSquareButton_Regular.png",
-      "frames": 1,
-      "frame": 128
+      "kind": "image",
+      "w": 128,
+      "h": 128
     },
     "tinyroundbluebutton": {
       "file": "UI Elements/UI Elements/Buttons/TinyRoundBlueButton.png",
-      "frames": 1,
-      "frame": 64
+      "kind": "image",
+      "w": 64,
+      "h": 64
     },
     "tinyroundredbutton": {
       "file": "UI Elements/UI Elements/Buttons/TinyRoundRedButton.png",
-      "frames": 1,
-      "frame": 64
+      "kind": "image",
+      "w": 64,
+      "h": 64
     },
     "tinysquarebluebutton": {
       "file": "UI Elements/UI Elements/Buttons/TinySquareBlueButton.png",
-      "frames": 1,
-      "frame": 64
+      "kind": "image",
+      "w": 64,
+      "h": 64
     },
     "tinysquareredbutton": {
       "file": "UI Elements/UI Elements/Buttons/TinySquareRedButton.png",
-      "frames": 1,
-      "frame": 64
+      "kind": "image",
+      "w": 64,
+      "h": 64
     },
     "cursor_01": {
       "file": "UI Elements/UI Elements/Cursors/Cursor_01.png",
-      "frames": 1,
-      "frame": 64
+      "kind": "image",
+      "w": 64,
+      "h": 64
     },
     "cursor_02": {
       "file": "UI Elements/UI Elements/Cursors/Cursor_02.png",
-      "frames": 1,
-      "frame": 64
+      "kind": "image",
+      "w": 64,
+      "h": 64
     },
     "cursor_03": {
       "file": "UI Elements/UI Elements/Cursors/Cursor_03.png",
-      "frames": 1,
-      "frame": 64
+      "kind": "image",
+      "w": 64,
+      "h": 64
     },
     "cursor_04": {
       "file": "UI Elements/UI Elements/Cursors/Cursor_04.png",
-      "frames": 1,
-      "frame": 128
+      "kind": "image",
+      "w": 128,
+      "h": 128
     },
     "avatars_01": {
       "file": "UI Elements/UI Elements/Human Avatars/Avatars_01.png",
-      "frames": 1,
-      "frame": 256
+      "kind": "image",
+      "w": 256,
+      "h": 256
     },
     "avatars_02": {
       "file": "UI Elements/UI Elements/Human Avatars/Avatars_02.png",
-      "frames": 1,
-      "frame": 256
+      "kind": "image",
+      "w": 256,
+      "h": 256
     },
     "avatars_03": {
       "file": "UI Elements/UI Elements/Human Avatars/Avatars_03.png",
-      "frames": 1,
-      "frame": 256
+      "kind": "image",
+      "w": 256,
+      "h": 256
     },
     "avatars_04": {
       "file": "UI Elements/UI Elements/Human Avatars/Avatars_04.png",
-      "frames": 1,
-      "frame": 256
+      "kind": "image",
+      "w": 256,
+      "h": 256
     },
     "avatars_05": {
       "file": "UI Elements/UI Elements/Human Avatars/Avatars_05.png",
-      "frames": 1,
-      "frame": 256
+      "kind": "image",
+      "w": 256,
+      "h": 256
     },
     "avatars_06": {
       "file": "UI Elements/UI Elements/Human Avatars/Avatars_06.png",
-      "frames": 1,
-      "frame": 256
+      "kind": "image",
+      "w": 256,
+      "h": 256
     },
     "avatars_07": {
       "file": "UI Elements/UI Elements/Human Avatars/Avatars_07.png",
-      "frames": 1,
-      "frame": 256
+      "kind": "image",
+      "w": 256,
+      "h": 256
     },
     "avatars_08": {
       "file": "UI Elements/UI Elements/Human Avatars/Avatars_08.png",
-      "frames": 1,
-      "frame": 256
+      "kind": "image",
+      "w": 256,
+      "h": 256
     },
     "avatars_09": {
       "file": "UI Elements/UI Elements/Human Avatars/Avatars_09.png",
-      "frames": 1,
-      "frame": 256
+      "kind": "image",
+      "w": 256,
+      "h": 256
     },
     "avatars_10": {
       "file": "UI Elements/UI Elements/Human Avatars/Avatars_10.png",
-      "frames": 1,
-      "frame": 256
+      "kind": "image",
+      "w": 256,
+      "h": 256
     },
     "avatars_11": {
       "file": "UI Elements/UI Elements/Human Avatars/Avatars_11.png",
-      "frames": 1,
-      "frame": 256
+      "kind": "image",
+      "w": 256,
+      "h": 256
     },
     "avatars_12": {
       "file": "UI Elements/UI Elements/Human Avatars/Avatars_12.png",
-      "frames": 1,
-      "frame": 256
+      "kind": "image",
+      "w": 256,
+      "h": 256
     },
     "avatars_13": {
       "file": "UI Elements/UI Elements/Human Avatars/Avatars_13.png",
-      "frames": 1,
-      "frame": 256
+      "kind": "image",
+      "w": 256,
+      "h": 256
     },
     "avatars_14": {
       "file": "UI Elements/UI Elements/Human Avatars/Avatars_14.png",
-      "frames": 1,
-      "frame": 256
+      "kind": "image",
+      "w": 256,
+      "h": 256
     },
     "avatars_15": {
       "file": "UI Elements/UI Elements/Human Avatars/Avatars_15.png",
-      "frames": 1,
-      "frame": 256
+      "kind": "image",
+      "w": 256,
+      "h": 256
     },
     "avatars_16": {
       "file": "UI Elements/UI Elements/Human Avatars/Avatars_16.png",
-      "frames": 1,
-      "frame": 256
+      "kind": "image",
+      "w": 256,
+      "h": 256
     },
     "avatars_17": {
       "file": "UI Elements/UI Elements/Human Avatars/Avatars_17.png",
-      "frames": 1,
-      "frame": 256
+      "kind": "image",
+      "w": 256,
+      "h": 256
     },
     "avatars_18": {
       "file": "UI Elements/UI Elements/Human Avatars/Avatars_18.png",
-      "frames": 1,
-      "frame": 256
+      "kind": "image",
+      "w": 256,
+      "h": 256
     },
     "avatars_19": {
       "file": "UI Elements/UI Elements/Human Avatars/Avatars_19.png",
-      "frames": 1,
-      "frame": 256
+      "kind": "image",
+      "w": 256,
+      "h": 256
     },
     "avatars_20": {
       "file": "UI Elements/UI Elements/Human Avatars/Avatars_20.png",
-      "frames": 1,
-      "frame": 256
+      "kind": "image",
+      "w": 256,
+      "h": 256
     },
     "avatars_21": {
       "file": "UI Elements/UI Elements/Human Avatars/Avatars_21.png",
-      "frames": 1,
-      "frame": 256
+      "kind": "image",
+      "w": 256,
+      "h": 256
     },
     "avatars_22": {
       "file": "UI Elements/UI Elements/Human Avatars/Avatars_22.png",
-      "frames": 1,
-      "frame": 256
+      "kind": "image",
+      "w": 256,
+      "h": 256
     },
     "avatars_23": {
       "file": "UI Elements/UI Elements/Human Avatars/Avatars_23.png",
-      "frames": 1,
-      "frame": 256
+      "kind": "image",
+      "w": 256,
+      "h": 256
     },
     "avatars_24": {
       "file": "UI Elements/UI Elements/Human Avatars/Avatars_24.png",
-      "frames": 1,
-      "frame": 256
+      "kind": "image",
+      "w": 256,
+      "h": 256
     },
     "avatars_25": {
       "file": "UI Elements/UI Elements/Human Avatars/Avatars_25.png",
-      "frames": 1,
-      "frame": 256
+      "kind": "image",
+      "w": 256,
+      "h": 256
     },
     "icon_01": {
       "file": "UI Elements/UI Elements/Icons/Icon_01.png",
-      "frames": 1,
-      "frame": 64
+      "kind": "image",
+      "w": 64,
+      "h": 64
     },
     "icon_02": {
       "file": "UI Elements/UI Elements/Icons/Icon_02.png",
-      "frames": 1,
-      "frame": 64
+      "kind": "image",
+      "w": 64,
+      "h": 64
     },
     "icon_03": {
       "file": "UI Elements/UI Elements/Icons/Icon_03.png",
-      "frames": 1,
-      "frame": 64
+      "kind": "image",
+      "w": 64,
+      "h": 64
     },
     "icon_04": {
       "file": "UI Elements/UI Elements/Icons/Icon_04.png",
-      "frames": 1,
-      "frame": 64
+      "kind": "image",
+      "w": 64,
+      "h": 64
     },
     "icon_05": {
       "file": "UI Elements/UI Elements/Icons/Icon_05.png",
-      "frames": 1,
-      "frame": 64
+      "kind": "image",
+      "w": 64,
+      "h": 64
     },
     "icon_06": {
       "file": "UI Elements/UI Elements/Icons/Icon_06.png",
-      "frames": 1,
-      "frame": 64
+      "kind": "image",
+      "w": 64,
+      "h": 64
     },
     "icon_07": {
       "file": "UI Elements/UI Elements/Icons/Icon_07.png",
-      "frames": 1,
-      "frame": 64
+      "kind": "image",
+      "w": 64,
+      "h": 64
     },
     "icon_08": {
       "file": "UI Elements/UI Elements/Icons/Icon_08.png",
-      "frames": 1,
-      "frame": 64
+      "kind": "image",
+      "w": 64,
+      "h": 64
     },
     "icon_09": {
       "file": "UI Elements/UI Elements/Icons/Icon_09.png",
-      "frames": 1,
-      "frame": 64
+      "kind": "image",
+      "w": 64,
+      "h": 64
     },
     "icon_10": {
       "file": "UI Elements/UI Elements/Icons/Icon_10.png",
-      "frames": 1,
-      "frame": 64
+      "kind": "image",
+      "w": 64,
+      "h": 64
     },
     "icon_11": {
       "file": "UI Elements/UI Elements/Icons/Icon_11.png",
-      "frames": 1,
-      "frame": 64
+      "kind": "image",
+      "w": 64,
+      "h": 64
     },
     "icon_12": {
       "file": "UI Elements/UI Elements/Icons/Icon_12.png",
-      "frames": 1,
-      "frame": 64
+      "kind": "image",
+      "w": 64,
+      "h": 64
     },
     "regularpaper": {
       "file": "UI Elements/UI Elements/Papers/RegularPaper.png",
-      "frames": 1,
-      "frame": 320
+      "kind": "image",
+      "w": 320,
+      "h": 320,
+      "layout": "nine_slice"
     },
     "specialpaper": {
       "file": "UI Elements/UI Elements/Papers/SpecialPaper.png",
-      "frames": 1,
-      "frame": 320
+      "kind": "image",
+      "w": 320,
+      "h": 320,
+      "layout": "nine_slice"
     },
     "bigribbons": {
       "file": "UI Elements/UI Elements/Ribbons/BigRibbons.png",
-      "frames": 1,
-      "frame": 640
+      "kind": "image",
+      "w": 448,
+      "h": 640,
+      "layout": "color_sheet"
     },
     "smallribbons": {
       "file": "UI Elements/UI Elements/Ribbons/SmallRibbons.png",
-      "frames": 1,
-      "frame": 640
+      "kind": "image",
+      "w": 320,
+      "h": 640,
+      "layout": "color_sheet"
     },
     "swords": {
       "file": "UI Elements/UI Elements/Swords/Swords.png",
-      "frames": 1,
-      "frame": 640
+      "kind": "image",
+      "w": 448,
+      "h": 640,
+      "layout": "color_sheet"
     },
     "woodtable": {
       "file": "UI Elements/UI Elements/Wood Table/WoodTable.png",
-      "frames": 1,
-      "frame": 448
+      "kind": "image",
+      "w": 448,
+      "h": 448,
+      "layout": "nine_slice"
     },
     "woodtable_slots": {
       "file": "UI Elements/UI Elements/Wood Table/WoodTable_Slots.png",
-      "frames": 1,
-      "frame": 192
+      "kind": "image",
+      "w": 192,
+      "h": 192
     }
   },
   "avatars_note": "Les 25 avatars humains sont groupes par couleur, 5 par couleur, dans l'ordre Blue 01-05, Red 06-10, Yellow 11-15, Purple 16-20, Black 21-25. A CONFIRMER VISUELLEMENT : l'ordre des classes a l'interieur de chaque groupe de 5. Hypothese actuelle : guerrier, lancier, archer, moine, pion."

@@ -27,13 +27,13 @@ func _make_sheet(frames: int, size: int) -> ImageTexture:
 func test_le_nombre_d_images_suit_la_table() -> void:
 	# Warrior_Idle : 8 images de 192 px, soit une feuille de 1536 px.
 	var sheet := _make_sheet(8, 192)
-	var resource := SpriteFrameFactory.slice(sheet, 8, 192, FPS)
+	var resource := SpriteFrameFactory.slice(sheet, 8, 192, 192, FPS)
 	assert_eq(resource.get_frame_count(&"default"), 8)
 
 
 func test_les_cadres_sont_carres_et_alignes() -> void:
 	var sheet := _make_sheet(6, 64)
-	var resource := SpriteFrameFactory.slice(sheet, 6, 64, FPS)
+	var resource := SpriteFrameFactory.slice(sheet, 6, 64, 64, FPS)
 	for i in 6:
 		var atlas: AtlasTexture = resource.get_frame_texture(&"default", i)
 		assert_eq(atlas.region, Rect2(i * 64, 0, 64, 64), "cadre %d mal placé" % i)
@@ -42,15 +42,28 @@ func test_les_cadres_sont_carres_et_alignes() -> void:
 
 func test_une_feuille_a_une_seule_image() -> void:
 	# Cas fréquent dans la table : les rochers, les icônes, les boutons.
-	var resource := SpriteFrameFactory.slice(_make_sheet(1, 64), 1, 64, FPS)
+	var resource := SpriteFrameFactory.slice(_make_sheet(1, 64), 1, 64, 64, FPS)
 	assert_eq(resource.get_frame_count(&"default"), 1)
 	assert_eq(resource.get_frame_texture(&"default", 0).region, Rect2(0, 0, 64, 64))
+
+
+func test_un_cadre_rectangulaire() -> void:
+	# Pirate Tower_Water : 8 cadres de 128 × 192. Le modèle « cadres carrés »
+	# tenait jusqu'à ce que le pack arrive sur le disque.
+	var image := Image.create(8 * 128, 192, false, Image.FORMAT_RGBA8)
+	var sheet := ImageTexture.create_from_image(image)
+	var resource := SpriteFrameFactory.slice(sheet, 8, 128, 192, FPS)
+	assert_eq(resource.get_frame_count(&"default"), 8)
+	assert_eq(
+		resource.get_frame_texture(&"default", 7).region,
+		Rect2(7 * 128, 0, 128, 192)
+	)
 
 
 func test_les_grandes_feuilles() -> void:
 	# Minotaur_Idle : 16 images de 320 px, soit 5120 px de large — la plus
 	# grande feuille du pack.
-	var resource := SpriteFrameFactory.slice(_make_sheet(16, 320), 16, 320, FPS)
+	var resource := SpriteFrameFactory.slice(_make_sheet(16, 320), 16, 320, 320, FPS)
 	assert_eq(resource.get_frame_count(&"default"), 16)
 	assert_eq(
 		resource.get_frame_texture(&"default", 15).region,
@@ -59,21 +72,28 @@ func test_les_grandes_feuilles() -> void:
 
 
 func test_la_cadence_du_pack_est_appliquee() -> void:
-	var resource := SpriteFrameFactory.slice(_make_sheet(4, 64), 4, 64, FPS)
+	var resource := SpriteFrameFactory.slice(_make_sheet(4, 64), 4, 64, 64, FPS)
 	assert_eq(resource.get_animation_speed(&"default"), 10.0, "le pack est à 10 fps")
 	assert_true(resource.get_animation_loop(&"default"))
 
 
 func test_un_decoupage_absurde_ne_plante_pas() -> void:
-	var resource := SpriteFrameFactory.slice(_make_sheet(4, 64), 0, 64, FPS)
+	var resource := SpriteFrameFactory.slice(_make_sheet(4, 64), 0, 64, 64, FPS)
 	assert_eq(resource.get_frame_count(&"default"), 0)
 	assert_push_error("découpage impossible")
 
 
 func test_une_texture_nulle_ne_plante_pas() -> void:
-	var resource := SpriteFrameFactory.slice(null, 4, 64, FPS)
+	var resource := SpriteFrameFactory.slice(null, 4, 64, 64, FPS)
 	assert_eq(resource.get_frame_count(&"default"), 0)
 	assert_push_error("découpage impossible")
+
+
+func test_une_entree_qui_n_est_pas_une_bande_est_refusee() -> void:
+	# Demander une animation sur un tileset est une erreur de programmation :
+	# elle doit se voir tout de suite et nommément.
+	assert_null(SpriteFrameFactory.for_sprite(&"terrain", &"tilemap_color1"))
+	assert_push_error("n'est pas une bande")
 
 
 func test_un_asset_absent_renvoie_null_sans_planter() -> void:
