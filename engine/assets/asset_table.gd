@@ -149,6 +149,34 @@ static func building(building_id: StringName, color: String) -> Dictionary:
 	return _resolved(root_of(&"buildings") + relative, entry)
 
 
+## Portrait d'un héros, d'après sa classe et sa couleur de faction.
+##
+## Le pack fournit 25 portraits humains : 5 classes × 5 couleurs. Le
+## portrait découle donc de la classe et de la couleur, pas de l'individu
+## — c'est assez pour la fiche de héros, le roster et la Convocation.
+##
+## PIÈGE : l'ordre des couleurs des portraits n'est pas celui de
+## `meta.colors`. Les portraits mettent Yellow avant Purple, l'inverse du
+## reste du pack. C'est pour ça que cette fonction existe au lieu d'un
+## calcul d'indice recopié à chaque appel.
+static func portrait(class_id: StringName, color: String) -> Dictionary:
+	var block: Dictionary = table().get("portraits", {})
+	var classes: Array = block.get("class_order", [])
+	var colors_order: Array = block.get("color_order", [])
+
+	var class_index := classes.find(String(class_id))
+	if class_index < 0:
+		push_error("AssetTable : aucun portrait pour la classe « %s »" % class_id)
+		return {}
+	var color_index := colors_order.find(color)
+	if color_index < 0:
+		push_error("AssetTable : aucun portrait pour la couleur « %s »" % color)
+		return {}
+
+	var index := color_index * classes.size() + class_index + 1
+	return sprite(&"ui", StringName("avatars_%02d" % index))
+
+
 ## Entrée d'une catégorie simple : terrain, decorations, resources, fx, ui, extra.
 static func sprite(category: StringName, key: StringName) -> Dictionary:
 	if not PLAIN_CATEGORIES.has(category):

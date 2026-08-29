@@ -2313,5 +2313,22 @@
       "h": 192
     }
   },
-  "avatars_note": "Les 25 avatars humains sont groupes par couleur, 5 par couleur, dans l'ordre Blue 01-05, Red 06-10, Yellow 11-15, Purple 16-20, Black 21-25. A CONFIRMER VISUELLEMENT : l'ordre des classes a l'interieur de chaque groupe de 5. Hypothese actuelle : guerrier, lancier, archer, moine, pion."
+  "portraits": {
+    "_readme": "Les 25 portraits humains, verifies a l'oeil le 2026-08-29 en comparant chaque portrait a la premiere image du sprite Idle correspondant. Index = color_order.index(couleur) * 5 + class_order.index(classe) + 1, a lire dans ui.avatars_NN. ATTENTION : color_order n'est PAS meta.colors — les portraits mettent Yellow avant Purple, l'inverse du reste du pack. Confondre les deux donne un portrait violet a un heros jaune.",
+    "class_order": [
+      "warrior",
+      "lancer",
+      "archer",
+      "monk",
+      "pawn"
+    ],
+    "color_order": [
+      "Blue",
+      "Red",
+      "Yellow",
+      "Purple",
+      "Black"
+    ],
+    "key_template": "avatars_{index:02}"
+  }
 }

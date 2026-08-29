@@ -1,0 +1,65 @@
+{
+  "_readme": "Table de correspondance de l'audio : nom logique -> fichier. Meme principe que data/assets.json, aucun chemin de fichier ailleurs que dans ce fichier. Les affectations de sfx sont une PREMIERE PROPOSITION faite au nom des fichiers, pas a l'oreille : je ne peux pas ecouter. A valider et a permuter librement, cela ne coute qu'une ligne. Verification : godot --headless --path . -s tools/verify_audio.gd",
+  "meta": {
+    "root": "assets/audio/",
+    "music_dir": "music/",
+    "sfx_dir": "sfx/"
+  },
+  "music": {
+    "town": {
+      "file": "music/town_theme.mp3",
+      "loop": true,
+      "use": "Ville, intendance, ecrans de gestion"
+    },
+    "battle": {
+      "file": "music/battle_theme.mp3",
+      "loop": true,
+      "use": "Combat tactique ordinaire"
+    },
+    "boss": {
+      "file": "music/boss_theme.mp3",
+      "loop": true,
+      "use": "Gardien de parcelle, contre-attaque, siege final"
+    }
+  },
+  "sfx": {
+    "sword_swing":      { "file": "sfx/kenney_rpg/drawKnife1.ogg" },
+    "sword_hit":        { "file": "sfx/kenney_impact/impactMetal_medium_000.ogg" },
+    "blade_slice":      { "file": "sfx/kenney_rpg/knifeSlice.ogg" },
+    "bow_release":      { "file": "sfx/kenney_rpg/cloth3.ogg" },
+    "arrow_hit":        { "file": "sfx/kenney_impact/impactWood_light_000.ogg" },
+    "hit_flesh":        { "file": "sfx/kenney_impact/impactSoft_medium_000.ogg" },
+    "hit_heavy":        { "file": "sfx/kenney_impact/impactPunch_heavy_000.ogg" },
+    "unit_downed":      { "file": "sfx/kenney_impact/impactSoft_heavy_000.ogg" },
+    "push":             { "file": "sfx/kenney_impact/impactPlank_medium_000.ogg" },
+    "structure_hit":    { "file": "sfx/kenney_impact/impactWood_heavy_000.ogg" },
+    "build":            { "file": "sfx/kenney_impact/impactMining_000.ogg" },
+    "pickup_wood":      { "file": "sfx/kenney_rpg/dropLeather.ogg" },
+    "pickup_gold":      { "file": "sfx/kenney_rpg/handleCoins.ogg" },
+    "pickup_food":      { "file": "sfx/kenney_rpg/handleSmallLeather.ogg" },
+    "footstep":         { "file": "sfx/kenney_impact/footstep_grass_000.ogg" },
+    "ui_click":         { "file": "sfx/kenney_ui/click1.ogg" },
+    "ui_hover":         { "file": "sfx/kenney_ui/rollover1.ogg" },
+    "ui_confirm":       { "file": "sfx/kenney_ui/switch2.ogg" },
+    "ui_cancel":        { "file": "sfx/kenney_ui/switch7.ogg" },
+    "ui_refused":       { "file": "sfx/kenney_ui/switch30.ogg" },
+    "card_reveal":      { "file": "sfx/kenney_rpg/bookFlip1.ogg" },
+    "card_place":       { "file": "sfx/kenney_rpg/bookPlace1.ogg" },
+    "codex_open":       { "file": "sfx/kenney_rpg/bookOpen.ogg" },
+    "codex_close":      { "file": "sfx/kenney_rpg/bookClose.ogg" },
+    "expedition_enter": { "file": "sfx/kenney_rpg/doorOpen_1.ogg" },
+    "equip":            { "file": "sfx/kenney_rpg/clothBelt.ogg" },
+    "forge":            { "file": "sfx/kenney_rpg/metalPot1.ogg" }
+  },
+  "missing": {
+    "_readme": "Sons dont le jeu a besoin et qu'aucun des trois paquets Kenney ne fournit. Chercher sur freesound.org filtre en CC0, ou dans Kenney Music Jingles (CC0) pour les fanfares. A completer avant P8.16.",
+    "water_splash": "Chute dans l'eau. C'est la mort la plus spectaculaire du jeu, elle merite son son.",
+    "fire": "Boucle de feu au sol, laisse par le Torch Goblin.",
+    "victory_fanfare": "Fin de combat gagne. Kenney Music Jingles.",
+    "level_up": "Montee de niveau d'un heros. Kenney Music Jingles.",
+    "elevation": "Ceremonie d'Elevation (P8.19). Doit sonner plus rare que la montee de niveau.",
+    "siege_horn": "Corne annoncant la contre-attaque.",
+    "sheep": "Belement, pour la vue de ville.",
+    "candidate_elite": "Eclat sonore sur un candidat Elite a la Convocation (P8.18)."
+  }
+}

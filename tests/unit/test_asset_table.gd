@@ -174,3 +174,43 @@ func test_toutes_les_couleurs_produisent_un_chemin_distinct() -> void:
 		var path: String = AssetTable.unit_animation(&"archer", &"shoot", color)["path"]
 		assert_false(seen.has(path), "deux couleurs pointent sur %s" % path)
 		seen[path] = true
+
+
+func test_les_portraits_suivent_la_classe_et_la_couleur() -> void:
+	# Vérifié à l'œil le 2026-08-29 en comparant chaque portrait à la
+	# première image du sprite Idle correspondant : l'ordre des classes est
+	# guerrier, lancier, archer, moine, pion.
+	assert_eq(AssetTable.portrait(&"warrior", "Blue")["path"].get_file(), "Avatars_01.png")
+	assert_eq(AssetTable.portrait(&"lancer", "Blue")["path"].get_file(), "Avatars_02.png")
+	assert_eq(AssetTable.portrait(&"archer", "Blue")["path"].get_file(), "Avatars_03.png")
+	assert_eq(AssetTable.portrait(&"monk", "Blue")["path"].get_file(), "Avatars_04.png")
+	assert_eq(AssetTable.portrait(&"pawn", "Blue")["path"].get_file(), "Avatars_05.png")
+	assert_eq(AssetTable.portrait(&"warrior", "Red")["path"].get_file(), "Avatars_06.png")
+	assert_eq(AssetTable.portrait(&"pawn", "Black")["path"].get_file(), "Avatars_25.png")
+
+
+func test_l_ordre_des_couleurs_des_portraits_n_est_pas_celui_du_pack() -> void:
+	# Le piège : les portraits mettent Yellow avant Purple, l'inverse du
+	# reste du pack. Confondre les deux donne un portrait violet à un héros
+	# jaune, et personne ne le remarque avant très tard.
+	assert_eq(AssetTable.portrait(&"warrior", "Yellow")["path"].get_file(), "Avatars_11.png")
+	assert_eq(AssetTable.portrait(&"warrior", "Purple")["path"].get_file(), "Avatars_16.png")
+	assert_ne(
+		AssetTable.colors(), AssetTable.table()["portraits"]["color_order"],
+		"si les deux ordres deviennent identiques, cette fonction n'a plus de raison d'être"
+	)
+
+
+func test_les_25_portraits_sont_tous_distincts() -> void:
+	var seen := {}
+	for color: String in AssetTable.table()["portraits"]["color_order"]:
+		for class_id: String in AssetTable.table()["portraits"]["class_order"]:
+			var path: String = AssetTable.portrait(class_id, color)["path"]
+			assert_false(seen.has(path), "deux héros partagent %s" % path)
+			seen[path] = true
+	assert_eq(seen.size(), 25)
+
+
+func test_un_portrait_introuvable_ne_plante_pas() -> void:
+	assert_eq(AssetTable.portrait(&"paladin", "Blue"), {})
+	assert_push_error("aucun portrait pour la classe")

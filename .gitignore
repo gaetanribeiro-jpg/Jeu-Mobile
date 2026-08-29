@@ -8,6 +8,7 @@ build/
 export_presets.cfg
 
 # Assets sous licence — NE JAMAIS COMMITTER
+# (l'audio Kenney est en CC0 et la police est autorisée : eux sont versionnés)
 # Tiny Swords interdit la redistribution des fichiers, meme modifies.
 # Chaque poste de travail doit copier le pack a la main dans assets/tiny_swords/.
 assets/tiny_swords/free/

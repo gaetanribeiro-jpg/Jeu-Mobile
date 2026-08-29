@@ -37,9 +37,16 @@ suspension, apostrophe courbe.
 | **Press Start 2P** | OFL | Trop large pour du corps de texte : une carte d'événement déborde. Titres seulement. |
 | **Micro 5** | OFL | Trop petite pour être lue sur un téléphone. Écartée. |
 
-**Silver (Poppy Works)**, la recommandation du § 13.4, n'a pas pu être testée :
-elle n'est distribuée que sur itch.io derrière un formulaire de téléchargement.
-À passer dans `tools/verify_font.gd` une fois récupérée.
+**Silver (Poppy Works) est installée et vérifiée** (2026-08-29). Elle couvre
+les 136 glyphes indispensables **et** les 4 glyphes de confort : la
+recommandation du § 13.4 tient. C'est la police par défaut du projet.
+
+Reste le contrôle que l'outil ne peut pas faire — un glyphe peut exister et
+rester illisible à la taille réelle. Ouvrir `scenes/ui/font_test.tscn` **sur
+le téléphone**, pas sur l'écran du PC.
+
+Sa licence exacte reste à noter dans `CREDITS.md` : elle accompagne le
+téléchargement itch.io.
 
 Rien n'oblige à n'en avoir qu'une : une police large pour les titres et une
 police lisible pour le corps est un choix courant et bon marché.
