@@ -16,6 +16,7 @@ extends RefCounted
 ## faire une blessure (§ 3.4).
 
 const HERO_CLASSES_PATH := "res://data/units/hero_classes.json"
+const ENEMIES_PATH := "res://data/enemies/act1.json"
 
 ## Les deux camps et les deux états d'une unité. Stockés en `int` plutôt
 ## qu'en type énuméré : GDScript refuse d'annoter un champ avec une
@@ -24,6 +25,7 @@ enum Side { HEROES, ENEMIES }
 enum State { ACTIVE, DOWNED }
 
 static var _hero_classes: Dictionary = {}
+static var _enemies: Dictionary = {}
 
 var id: int = -1
 var class_id: StringName = &""
@@ -41,6 +43,13 @@ var damage: int = 0
 ## aquatiques du bestiaire, faux pour tous les héros.
 var aquatic: bool = false
 
+## Ignore le terrain : la chauve-souris et le bourdon passent au-dessus
+## des rochers, de l'eau et de la forêt (§ 4.4).
+var flying: bool = false
+
+## Comportement d'IA. Vide pour un héros, que le joueur pilote.
+var role: StringName = &""
+
 var state: int = State.ACTIVE
 
 ## Remis à faux au début de chaque tour. Le Tir tendu de l'Archer donne
@@ -51,25 +60,30 @@ var has_acted: bool = false
 
 static func reload() -> void:
 	_hero_classes = {}
+	_enemies = {}
 
 
 static func hero_classes() -> Dictionary:
 	if not _hero_classes.is_empty():
 		return _hero_classes
-	if not FileAccess.file_exists(HERO_CLASSES_PATH):
-		push_error("Unit : %s introuvable" % HERO_CLASSES_PATH)
+	_hero_classes = _read_json(HERO_CLASSES_PATH)
+	return _hero_classes
+
+
+static func _read_json(path: String) -> Dictionary:
+	if not FileAccess.file_exists(path):
+		push_error("Unit : %s introuvable" % path)
 		return {}
-	var file := FileAccess.open(HERO_CLASSES_PATH, FileAccess.READ)
+	var file := FileAccess.open(path, FileAccess.READ)
 	if file == null:
-		push_error("Unit : %s illisible" % HERO_CLASSES_PATH)
+		push_error("Unit : %s illisible" % path)
 		return {}
 	var parsed: Variant = JSON.parse_string(file.get_as_text())
 	file.close()
 	if typeof(parsed) != TYPE_DICTIONARY:
-		push_error("Unit : %s n'est pas un objet JSON" % HERO_CLASSES_PATH)
+		push_error("Unit : %s n'est pas un objet JSON" % path)
 		return {}
-	_hero_classes = parsed
-	return _hero_classes
+	return parsed
 
 
 ## Identifiants des classes de héros déclarées.
@@ -120,7 +134,41 @@ static func from_stats(
 	unit.range_max = int(stats.get("range_max", 1))
 	unit.damage = int(stats.get("damage", 0))
 	unit.aquatic = bool(stats.get("aquatic", false))
+	unit.flying = bool(stats.get("flying", false))
+	unit.role = StringName(stats.get("role", ""))
 	return unit
+
+
+static func enemies() -> Dictionary:
+	if not _enemies.is_empty():
+		return _enemies
+	_enemies = _read_json(ENEMIES_PATH)
+	return _enemies
+
+
+## Identifiants des ennemis déclarés.
+static func enemy_ids() -> Array[StringName]:
+	var out: Array[StringName] = []
+	for key: String in enemies().keys():
+		if not key.begins_with("_"):
+			out.append(StringName(key))
+	return out
+
+
+## Statistiques de base d'un ennemi, telles qu'écrites en données.
+static func enemy_stats(enemy_id: StringName) -> Dictionary:
+	var found: Dictionary = enemies().get(String(enemy_id), {})
+	if found.is_empty():
+		push_error("Unit : ennemi inconnu « %s »" % enemy_id)
+	return found
+
+
+## Fabrique un ennemi à partir de son identifiant.
+static func from_enemy(unit_id: int, enemy_id: StringName, at: Vector2i) -> Unit:
+	var stats := enemy_stats(enemy_id)
+	if stats.is_empty():
+		return null
+	return Unit.from_stats(unit_id, enemy_id, Side.ENEMIES, at, stats)
 
 
 func is_active() -> bool:
@@ -218,6 +266,8 @@ func to_dictionary() -> Dictionary:
 		"range_max": range_max,
 		"damage": damage,
 		"aquatic": aquatic,
+		"flying": flying,
+		"role": String(role),
 		"state": int(state),
 		"has_moved": has_moved,
 		"has_acted": has_acted,
@@ -237,6 +287,8 @@ static func from_dictionary(data: Dictionary) -> Unit:
 	unit.range_max = int(data.get("range_max", 1))
 	unit.damage = int(data.get("damage", 0))
 	unit.aquatic = bool(data.get("aquatic", false))
+	unit.flying = bool(data.get("flying", false))
+	unit.role = StringName(data.get("role", ""))
 	unit.state = int(data.get("state", State.ACTIVE))
 	unit.has_moved = bool(data.get("has_moved", false))
 	unit.has_acted = bool(data.get("has_acted", false))

@@ -127,6 +127,9 @@ func can_stand_on(unit: Unit, cell: Vector2i) -> bool:
 	var tile := tile_at(cell)
 	if tile == null:
 		return false
+	# Le volant ignore le terrain : ni rocher, ni eau, ni forêt ne l'arrêtent.
+	if unit.flying:
+		return true
 	if tile.is_swimmable() and unit.aquatic:
 		return true
 	return tile.is_walkable()

@@ -1,0 +1,68 @@
+{
+  "_readme": "Les six ennemis de l'Acte I (§ 4.4, § 10.1). ATTENTION : le document de conception ne chiffre pas les ennemis — seuls les héros le sont, au § 3.1. Ces valeurs sont donc une PREMIÈRE PASSE, calibrée pour que les héros (4 à 8 PV, 1 à 3 dégâts) tiennent 3 à 6 tours. Elles seront réglées en T10.5. Chaque ennemi doit poser une question tactique inédite, jamais « plus de dégâts ».",
+  "spear_goblin": {
+    "sprite": "spear_goblin",
+    "role": "melee",
+    "hit_points": 3,
+    "movement": 3,
+    "range_min": 1,
+    "range_max": 1,
+    "damage": 2,
+    "question": "La piétaille. Deux attaques dessinées, donc deux télégraphes distincts."
+  },
+  "gnome": {
+    "sprite": "gnome",
+    "role": "melee",
+    "hit_points": 2,
+    "movement": 4,
+    "range_min": 1,
+    "range_max": 1,
+    "damage": 1,
+    "question": "Rapide et fragile, en nombre. Oblige à choisir qui on ignore."
+  },
+  "slingshot_gnome": {
+    "sprite": "slingshot_gnome",
+    "role": "skirmisher",
+    "hit_points": 2,
+    "movement": 3,
+    "range_min": 2,
+    "range_max": 3,
+    "damage": 1,
+    "question": "Recule si on l'approche. Oblige à le coincer ou à l'ignorer."
+  },
+  "torch_goblin": {
+    "sprite": "torch_goblin",
+    "role": "melee",
+    "hit_points": 3,
+    "movement": 3,
+    "range_min": 1,
+    "range_max": 1,
+    "damage": 2,
+    "leaves_fire": true,
+    "question": "Laisse du feu sur la case. Rend le terrain gagné coûteux à tenir. Le feu persistant est X7.4."
+  },
+  "thief": {
+    "sprite": "thief",
+    "role": "assassin",
+    "prefers_class": "archer",
+    "hit_points": 3,
+    "movement": 4,
+    "range_min": 1,
+    "range_max": 1,
+    "damage": 2,
+    "moves_after_attack": true,
+    "question": "Vise l'Archer et se replie. Oblige à protéger l'arrière. Le repli après coup est X7.4."
+  },
+  "troll": {
+    "sprite": "troll",
+    "role": "brute",
+    "hit_points": 10,
+    "movement": 2,
+    "range_min": 1,
+    "range_max": 1,
+    "damage": 4,
+    "line_attack": 2,
+    "guardian": true,
+    "question": "Gardien de parcelle. Windup, Attack, Recovery : trois animations distinctes, donc un boss sur trois tours entièrement dessiné. Le cycle à trois temps reste à implémenter."
+  }
+}
