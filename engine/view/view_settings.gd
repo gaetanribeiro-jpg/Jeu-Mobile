@@ -72,15 +72,26 @@ static func size_of(key: StringName) -> float:
 	return number(&"sizes", key, 0.0)
 
 
+## Nom du bloc de tuiles d'un terrain. Deux terrains du même bloc se
+## touchent sans bord ; deux terrains de blocs différents ont une rive
+## entre eux. C'est ce qui rend une colline visible au milieu de l'herbe.
+static func terrain_block_name(terrain_id: StringName) -> String:
+	return String(section(&"terrain_block_of").get(String(terrain_id), "land"))
+
+
 ## Coin haut-gauche du bloc 4 x 4 dans lequel se prend un terrain.
 static func terrain_block_origin(terrain_id: StringName) -> Vector2i:
-	var block_name := String(section(&"terrain_block_of").get(String(terrain_id), "land"))
-	var raw: Variant = section(&"terrain_blocks").get(block_name, [0, 0])
+	var raw: Variant = section(&"terrain_blocks").get(terrain_block_name(terrain_id), [0, 0])
 	var cell: Array = raw
 	return Vector2i(int(cell[0]), int(cell[1]))
 
 
-## Tuile à prendre dans un bloc 4 x 4 selon les voisins du même milieu.
+## Tuile à prendre dans un bloc 4 x 4 selon les voisins du MÊME BLOC.
+##
+## « Du même bloc » et non « de la terre » : une colline entourée d'herbe
+## doit recevoir des bords sur ses quatre côtés, sinon elle est peinte avec
+## la tuile de remplissage du plateau — identique à celle de l'herbe — et
+## le joueur ne voit pas où est le bonus de portée.
 ##
 ## Le bloc encode CHAQUE AXE sur quatre états, et pas trois comme on
 ## l'attendrait — relevé sur les fichiers, pas supposé :
@@ -93,13 +104,13 @@ static func terrain_block_origin(terrain_id: StringName) -> Vector2i:
 ## côté et pas de l'autre : la rive s'arrête net au milieu de l'herbe.
 static func terrain_tile_region(
 	terrain_id: StringName, tile_size: int,
-	land_left: bool = true, land_right: bool = true,
-	land_up: bool = true, land_down: bool = true
+	same_left: bool = true, same_right: bool = true,
+	same_up: bool = true, same_down: bool = true
 ) -> Rect2:
 	var origin := terrain_block_origin(terrain_id)
 	return Rect2(
-		(origin.x + _edge_index(land_left, land_right)) * tile_size,
-		(origin.y + _edge_index(land_up, land_down)) * tile_size,
+		(origin.x + _edge_index(same_left, same_right)) * tile_size,
+		(origin.y + _edge_index(same_up, same_down)) * tile_size,
 		tile_size, tile_size
 	)
 
@@ -112,6 +123,17 @@ static func _edge_index(before: bool, after: bool) -> int:
 	if not after:
 		return 2
 	return 1
+
+
+## Rangée de falaise du bloc « hill », dessinée sous le bord bas d'une
+## colline. L'intérieur du plateau est identique à celui de l'herbe : sans
+## cette lèvre de pierre, le joueur ne voit pas où est le bonus de portée.
+static func hill_cliff_region(tile_size: int) -> Rect2:
+	var raw: Variant = section(&"terrain_blocks").get("hill_cliff", [6, 4])
+	var cell: Array = raw
+	return Rect2(
+		int(cell[0]) * tile_size, int(cell[1]) * tile_size, tile_size, tile_size
+	)
 
 
 ## Décoration posée sur un terrain : { category, key }, ou {} s'il n'y en a pas.

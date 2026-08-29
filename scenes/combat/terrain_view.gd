@@ -52,28 +52,75 @@ func _draw() -> void:
 			_draw_land(cell, tile, origin)
 		_draw_decoration(tile, origin)
 
+	# Falaises en second passage : elles débordent sur la case du dessous,
+	# donc elles doivent passer après toutes les tuiles de base.
+	for cell: Vector2i in board.grid.cells():
+		_draw_cliff(cell)
 
-## Une case est « de la terre » si on peut marcher dessus. L'eau et le
-## pont détruit n'en sont pas ; hors grille non plus, ce qui donne au
-## plateau une rive tout autour et le fait lire comme une île.
+
+## Une case est « de la terre » si ce n'est pas de l'eau — et surtout PAS
+## « si on peut marcher dessus ». Un rocher est infranchissable et reste
+## de la terre ; le confondre avec de l'eau le fait apparaître au fond
+## d'une mare. Hors grille compte comme de l'eau, ce qui donne au plateau
+## une rive tout autour et le fait lire comme une île.
 func _is_land(cell: Vector2i) -> bool:
 	if not board.grid.contains(cell):
 		return false
 	var tile := board.tile_at(cell)
-	return tile != null and tile.is_walkable()
+	if tile == null:
+		return false
+	return tile.is_walkable() or not tile.is_swimmable()
+
+
+## Le voisin est-il peint dans le même bloc de tuiles ? L'eau et le hors
+## grille n'en sont jamais, ce qui donne les rives ; une colline voisine
+## d'herbe non plus, ce qui donne le relief.
+func _same_block(cell: Vector2i, block: String) -> bool:
+	if not _is_land(cell):
+		return false
+	return ViewSettings.terrain_block_name(board.tile_at(cell).terrain_id) == block
 
 
 func _draw_land(cell: Vector2i, tile: Tile, origin: Vector2) -> void:
 	if _tileset == null:
 		draw_rect(Rect2(origin, Vector2(_tile_size, _tile_size)), Color(0.35, 0.45, 0.3))
 		return
+	var block := ViewSettings.terrain_block_name(tile.terrain_id)
 	var region := ViewSettings.terrain_tile_region(
 		tile.terrain_id, _tile_size,
-		_is_land(cell + Vector2i.LEFT), _is_land(cell + Vector2i.RIGHT),
-		_is_land(cell + Vector2i.UP), _is_land(cell + Vector2i.DOWN)
+		_same_block(cell + Vector2i.LEFT, block), _same_block(cell + Vector2i.RIGHT, block),
+		_same_block(cell + Vector2i.UP, block), _same_block(cell + Vector2i.DOWN, block)
 	)
 	draw_texture_rect_region(
 		_tileset, Rect2(origin, Vector2(_tile_size, _tile_size)), region
+	)
+
+
+## Lèvre de pierre sous une colline, quand la case du dessous n'en est pas
+## une. C'est ce qui rend le relief visible : sans elle, l'intérieur du
+## plateau et celui de l'herbe sont la même image.
+func _draw_cliff(cell: Vector2i) -> void:
+	if _tileset == null:
+		return
+	var tile := board.tile_at(cell)
+	if tile == null or tile.ranged_range_bonus() <= 0:
+		return
+	var below := board.tile_at(cell + Vector2i.DOWN)
+	if below != null and below.ranged_range_bonus() > 0:
+		return
+
+	# La falaise PEND SOUS la colline plutôt que de mordre dedans : la case
+	# de la colline garde son herbe entière, et le relief se lit au décroché.
+	var height := ViewSettings.size_of(&"hill_cliff_height_px")
+	var region := ViewSettings.hill_cliff_region(_tile_size)
+	region.size.y = height
+	draw_texture_rect_region(
+		_tileset,
+		Rect2(
+			Vector2(cell.x * _tile_size, float((cell.y + 1) * _tile_size)),
+			Vector2(_tile_size, height)
+		),
+		region
 	)
 
 

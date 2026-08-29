@@ -131,20 +131,34 @@ Les feuilles d'animation ont des largeurs variables (768 à 5120 px). Nombre d'i
 
 *(à tenir à jour à chaque fin de session)*
 
-- **Phase courante :** 1 — Moteur de combat. **Toute la logique est écrite.**
-  Reste le rendu et l'interaction (C1.15 à C1.22).
-- **Dernière tâche terminée :** C1.26 (cartes de combat)
-- **Jalon visé :** Jalon 0, puis Jalon 1 — un combat complet jouable au doigt
+- **Phase courante :** 1 — Moteur de combat. **TERMINÉE**, logique et rendu.
+- **Dernière tâche terminée :** C1.22 (séquence du tour ennemi)
+- **Jalon visé :** Jalon 0 et Jalon 1 en même temps, sur le téléphone
 
-**Fait :** tout le § Phase 0 sauf F0.1, F0.9, F0.13 · C1.1 à C1.14 ·
-C1.24 · C1.25 · C1.26. P8.16 et T10.2 entamées.
-**234 tests passent** sous Godot 4.6 en headless, dont 8 sur les vrais
-fichiers du pack et un qui rejoue les 8 cartes de combat entières.
+**Fait :** tout le § Phase 0 sauf F0.1, F0.9, F0.13 · **toute la Phase 1**.
+P8.16 et T10.2 entamées.
+**251 tests passent** sous Godot 4.6 en headless.
 
-**Reste pour le Jalon 1 :** C1.15 à C1.22 — scène de combat, surbrillance
-des cases, contrôles tactiles, prévisualisation fantôme, animations,
-rendu du télégraphe, HUD, séquence du tour ennemi. C'est la partie que je
-ne peux pas valider seul : je ne vois ni le rendu ni le ressenti.
+**Le combat se joue.** L'écran d'amorçage liste les 8 cartes de l'Acte I
+(lanceur PROVISOIRE — le vrai menu est A9.1). Grammaire du § 11.2 :
+tap sur un héros, tap sur une case, tap de confirmation ; glissement et
+pincement pour la caméra ; Annuler toujours présent.
+
+**Je peux voir le rendu.** xvfb est disponible dans mon conteneur, donc
+Godot rend et je capture l'écran :
+```bash
+xvfb-run -a godot --path . --resolution 1280x720 \
+  -s tools/dev/screenshot.gd -- res://scenes/ui/boot.tscn /tmp/x.png
+xvfb-run -a godot --path . --resolution 1280x720 \
+  -s tools/dev/combat_storyboard.gd -- /tmp/planche vallee_03
+```
+Trois défauts n'ont été trouvés que comme ça, dont un vrai bug de moteur.
+Ce que je ne peux toujours PAS juger : le ressenti, la fluidité, la taille
+réelle des cibles tactiles, et les performances.
+
+**Toutes les valeurs de ressenti sont dans `data/combat/view.json`** —
+couleurs, durées, hit stop, flottement, seuils de geste. C'est fait pour
+être réglé sans toucher au code.
 
 **Outils de vérification, à relancer après toute modification :**
 ```bash
@@ -155,48 +169,33 @@ godot --headless --path . -s tools/verify_maps.gd       # 8 cartes
 godot --headless --path . -s tools/simulate_combats.gd  # équilibrage
 ```
 
-**En attente de Gaetan, sur un poste de travail :**
-F0.1 (Godot 4.6 + SDK Android) · F0.9 (export APK → Jalon 0 constaté) ·
-F0.13 (Aseprite, seulement pour de nouvelles couleurs).
+**Prochaine étape, côté Gaetan :** F0.1 (Godot 4.6 + SDK Android) puis
+F0.9 (export APK). Les Jalons 0 et 1 arrivent ensemble.
+
+**À regarder en jouant, et que je ne peux pas voir :**
+1. Les cibles tactiles font-elles vraiment 48 dp ? Le § 11.3 vise une case
+   à l'échelle 2 ; le cadrage automatique peut la rendre plus petite.
+2. Les boutons du bas recouvrent le plateau. Gênant, ou acceptable ?
+3. Les durées d'animation (`view.json`, section `durations`) : trop lentes,
+   trop rapides ?
+4. Le tour ennemi est rejoué un évènement à la fois. Comprend-on ce qui
+   s'est passé, ou est-ce trop long ?
+5. 60 fps sur le téléphone. Je rends en logiciel, je ne peux pas mesurer.
 
 **Questions ouvertes, à trancher par Gaetan :**
 
-1. **Adjacence de la grille** (`data/combat/rules.json`, `grid.adjacency`).
-   `orthogonal` = 4 voisins, distance de Manhattan. `diagonal` = 8 voisins,
-   distance de Chebyshev. Le moteur marche dans les deux modes ; **c'est
-   avant le rendu qu'il faut trancher**, parce que les surbrillances et
-   les animations de déplacement se dessinent différemment.
-
-   Mesuré sur la grille 8 × 6, unité au centre :
-
-   | | orthogonal | diagonal |
-   |---|---|---|
-   | Guerrier (dépl. 3) atteint | 24 / 48 | 42 / 48 |
-   | Moine (dépl. 4) atteint | 35 / 48 | **48 / 48** |
-   | Archer (portée 2–4) vise | 30 / 48 | 39 / 48 |
-   | Lancier (portée 1–2) vise | 12 / 48 | 24 / 48 |
-
-   **Recommandation : garder `orthogonal`.** En diagonal, le Moine traverse
-   toute la carte en un déplacement et le Guerrier en atteint 87 % : le
-   placement cesse d'être une décision, donc la grille cesse d'être un jeu.
-   L'argument des sprites tombe de lui-même — en distance de Manhattan une
-   case en diagonale est à distance 2, donc le Lancier (portée 1–2) et
-   l'Archer (portée 2–4) peuvent tous deux attaquer en diagonale. Les 8
-   directions du Lancier et du Canon servent à l'orientation de l'attaque ;
-   c'est le déplacement qui reste à 4 directions.
-2. **Les ennemis sont trop faibles.** `tools/simulate_combats.gd` donne
+1. **Les ennemis sont trop faibles.** `tools/simulate_combats.gd` donne
    100 % de victoires avec une politique de joueur triviale. Leurs valeurs
    sont de mon invention — le document ne chiffre que les héros au § 3.1.
-   À régler en T10.5, mais autant le savoir maintenant.
-3. **Dégâts d'une poussée bloquée** (`rules.json`, `push.blocked_damage`),
+   À régler en T10.5.
+2. **Dégâts d'une poussée bloquée** (`rules.json`, `push.blocked_damage`),
    posé à 0 : le pousseur a gâché son coup.
-4. **`.tres` ou `.json`** pour les données de classes (C1.23). Tout est en
+3. **`.tres` ou `.json`** pour les données de classes (C1.23). Tout est en
    JSON aujourd'hui, plus simple à tester en headless.
-5. **Les affectations de `data/audio.json`** ont été faites au nom des
-   fichiers, pas à l'oreille.
+4. **Les affectations de `data/audio.json`** ont été faites au nom des
+   fichiers, pas à l'oreille. Rien n'est encore joué en jeu (P8.15/P8.17).
 
 **Constat à connaître :** un combat ne dépend d'aucun tirage aléatoire —
 ni les dégâts, ni le choix de cible, ni les départages de l'IA. C'est
-conforme au deuxième pilier, et c'est désormais un test explicite. Le
-générateur à graine servira à la couche campagne (Convocation, cartes
-d'événement, butin), pas au combat.
+conforme au deuxième pilier, et c'est un test explicite. Le générateur à
+graine servira à la couche campagne.

@@ -184,3 +184,19 @@ func _reachable_cells(hero: Unit) -> Array[Vector2i]:
 func _a_reachable_cell(hero: Unit) -> Vector2i:
 	var cells := _reachable_cells(hero)
 	return cells[0] if not cells.is_empty() else hero.cell
+
+
+func test_un_rocher_est_de_la_terre_pas_de_l_eau() -> void:
+	# Défaut vu en capture d'écran : les rochers apparaissaient au fond
+	# d'une mare. Le rendu du terrain demandait « peut-on marcher dessus »
+	# là où la question est « est-ce de l'eau ».
+	var terrain: Node2D = _scene._terrain
+	var board := CombatBoard.from_rows(
+		PackedStringArray(["..#.", "..~.", "....", "...."]),
+		CombatRules.ADJACENCY_ORTHOGONAL
+	)
+	terrain.setup(board)
+	assert_true(terrain._is_land(Vector2i(2, 0)), "un rocher est de la terre")
+	assert_false(terrain._is_land(Vector2i(2, 1)), "l'eau n'en est pas")
+	assert_true(terrain._is_land(Vector2i(0, 0)), "l'herbe non plus n'est pas de l'eau")
+	assert_false(terrain._is_land(Vector2i(-1, 0)), "hors grille compte comme de l'eau")

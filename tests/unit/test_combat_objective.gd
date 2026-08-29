@@ -172,3 +172,13 @@ func test_un_objectif_inconnu_ne_plante_pas() -> void:
 func test_le_nom_du_type_fait_l_aller_retour() -> void:
 	for name_: String in ["eliminate", "survive", "escort", "protect", "seize", "extract"]:
 		assert_eq(CombatObjective.from_dictionary({"kind": name_}).kind_name(), name_)
+
+
+func test_les_cartes_sont_listees_dans_l_ordre() -> void:
+	# Le lanceur les affiche dans cet ordre, et l'Acte I est une
+	# progression : vallee_01 est le tutoriel, vallee_08 le gardien.
+	var ids := CombatMap.map_ids()
+	var expected: Array[StringName] = []
+	for i in range(1, ids.size() + 1):
+		expected.append(StringName("vallee_%02d" % i))
+	assert_eq(ids, expected)

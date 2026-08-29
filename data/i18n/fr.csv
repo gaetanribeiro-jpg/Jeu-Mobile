@@ -38,3 +38,6 @@ ABILITY_TAUNT,Provocation
 ABILITY_AIMED_SHOT,Tir tendu
 ABILITY_PUSH_BACK,Repousse
 ABILITY_BLESSING,Bénédiction
+BOOT_PICK_MAP,Choisir un combat
+BOOT_TEMPORARY,Écran de test provisoire — le vrai menu viendra en A9.1
+COMBAT_BACK,Retour

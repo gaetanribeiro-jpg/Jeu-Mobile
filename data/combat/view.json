@@ -142,7 +142,8 @@
     "shadow_offset_px": 4.0,
     "damage_font_size": 28,
     "telegraph_font_size": 34,
-    "telegraph_badge_radius_px": 17.0
+    "telegraph_badge_radius_px": 17.0,
+    "hill_cliff_height_px": 22.0
   },
   "idle_float": {
     "_note": "Flottement sinusoïdal des sprites au repos (§ 12). Trivial à coder, fort en impact.",
@@ -158,6 +159,11 @@
     "hill": [
       5,
       0
+    ],
+    "_cliff_note": "cliff = la rangee de falaise du bloc 'hill', dessinee sous le bord bas d'une colline. Sans elle, l'interieur du plateau est identique a l'herbe et le joueur ne voit pas ou est le bonus de portee.",
+    "hill_cliff": [
+      6,
+      4
     ]
   },
   "terrain_block_of": {

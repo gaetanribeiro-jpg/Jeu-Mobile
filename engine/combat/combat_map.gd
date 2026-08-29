@@ -35,11 +35,16 @@ static func map_ids() -> Array[StringName]:
 	if dir == null:
 		push_error("CombatMap : %s introuvable" % MAPS_DIR)
 		return out
+	var names := PackedStringArray()
 	for name_ in dir.get_files():
 		var clean: String = name_.trim_suffix(".remap")
 		if clean.get_extension() == "json":
-			out.append(StringName(clean.get_basename()))
-	out.sort()
+			names.append(clean.get_basename())
+	# Tri sur des String : `Array[StringName].sort()` ne range pas dans
+	# l'ordre alphabétique attendu, et les cartes sortaient à l'envers.
+	names.sort()
+	for name_: String in names:
+		out.append(StringName(name_))
 	return out
 
 
