@@ -162,12 +162,28 @@ F0.13 (Aseprite, seulement pour de nouvelles couleurs).
 **Questions ouvertes, à trancher par Gaetan :**
 
 1. **Adjacence de la grille** (`data/combat/rules.json`, `grid.adjacency`).
-   `orthogonal` = 4 voisins, distance de Manhattan, comme Into the Breach.
-   `diagonal` = 8 voisins, distance de Chebyshev. Le défaut posé est
-   `orthogonal`, et tout le moteur marche dans les deux modes. **C'est
-   avant le rendu qu'il faut trancher** : les surbrillances, la
-   prévisualisation et les animations de déplacement se dessinent
-   différemment selon le mode.
+   `orthogonal` = 4 voisins, distance de Manhattan. `diagonal` = 8 voisins,
+   distance de Chebyshev. Le moteur marche dans les deux modes ; **c'est
+   avant le rendu qu'il faut trancher**, parce que les surbrillances et
+   les animations de déplacement se dessinent différemment.
+
+   Mesuré sur la grille 8 × 6, unité au centre :
+
+   | | orthogonal | diagonal |
+   |---|---|---|
+   | Guerrier (dépl. 3) atteint | 24 / 48 | 42 / 48 |
+   | Moine (dépl. 4) atteint | 35 / 48 | **48 / 48** |
+   | Archer (portée 2–4) vise | 30 / 48 | 39 / 48 |
+   | Lancier (portée 1–2) vise | 12 / 48 | 24 / 48 |
+
+   **Recommandation : garder `orthogonal`.** En diagonal, le Moine traverse
+   toute la carte en un déplacement et le Guerrier en atteint 87 % : le
+   placement cesse d'être une décision, donc la grille cesse d'être un jeu.
+   L'argument des sprites tombe de lui-même — en distance de Manhattan une
+   case en diagonale est à distance 2, donc le Lancier (portée 1–2) et
+   l'Archer (portée 2–4) peuvent tous deux attaquer en diagonale. Les 8
+   directions du Lancier et du Canon servent à l'orientation de l'attaque ;
+   c'est le déplacement qui reste à 4 directions.
 2. **Les ennemis sont trop faibles.** `tools/simulate_combats.gd` donne
    100 % de victoires avec une politique de joueur triviale. Leurs valeurs
    sont de mon invention — le document ne chiffre que les héros au § 3.1.
