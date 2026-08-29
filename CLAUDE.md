@@ -73,6 +73,11 @@ res://
 
 ## Décisions verrouillées — ne pas rouvrir
 
+- **Projet personnel.** Le jeu ne sera ni vendu ni publié publiquement.
+  Aucune licence d'asset n'est donc bloquante tant que ce cadre tient.
+  Si ce cadre change un jour, `CREDITS.md` garde la liste de ce qu'il
+  faudrait alors établir.
+
 - **Le télégraphe** : les ennemis annoncent leur attaque un tour à l'avance, avec les dégâts chiffrés. Information parfaite, toujours.
 - **Rien n'est irréversible avant validation du tour.** Un bouton Annuler est présent en permanence pendant le tour du joueur.
 - **Blessures, pas mort instantanée.** 0 PV = hors de combat + 1 blessure. 3 blessures = mort définitive.
@@ -158,15 +163,10 @@ constaté) · F0.13 (Aseprite, seulement si on veut de nouvelles couleurs).
    basculer coûte une ligne de JSON tant que rien n'est dessiné par-dessus.
    **C'est la plus urgente : le télégraphe et l'IA vont raisonner en
    distances.**
-2. **Licences des trois musiques** (`CREDITS.md`). Inconnues. Il faut pour
-   chacune l'URL d'origine, l'auteur et la licence exacte. Le § 13.7 est
-   explicite, et le § 13.2 met en garde contre le CC BY-SA si le jeu est
-   vendu. Seule piste : `Battle.mp3` déclare « Theodore Kerr, 2012 ».
-   **Seul point qui bloque réellement la publication.**
-3. **Dégâts d'une poussée bloquée** (`rules.json`, `push.blocked_damage`),
+2. **Dégâts d'une poussée bloquée** (`rules.json`, `push.blocked_damage`),
    posé à 0 : le pousseur a gâché son coup.
-4. **`.tres` ou `.json` pour les données de classes.** C1.23 dit `.tres` ;
+3. **`.tres` ou `.json` pour les données de classes.** C1.23 dit `.tres` ;
    `data/units/hero_classes.json` est en JSON, plus simple à tester en
    headless. À trancher avant d'en écrire beaucoup d'autres.
-5. **Les affectations de `data/audio.json`** ont été faites au nom des
+4. **Les affectations de `data/audio.json`** ont été faites au nom des
    fichiers, pas à l'oreille. À écouter et permuter librement.

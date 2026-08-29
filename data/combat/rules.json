@@ -26,5 +26,11 @@
     "_readme": "Traverser n'est pas s'arrêter : on ne finit jamais son déplacement sur une case occupée, quel que soit le réglage.",
     "pass_through_allies": true,
     "pass_through_enemies": false
+  },
+  "objectives": {
+    "_readme": "Les six types d'objectif du § 4.5. Chaque carte de combat en choisit un et fournit ses parametres. La defaite par escouade entierement hors de combat s'applique a TOUS les types, en plus de la defaite propre a l'objectif.",
+    "survive_default_turns": 4,
+    "protect_default_hit_points": 2,
+    "max_turns_before_draw": 12
   }
 }

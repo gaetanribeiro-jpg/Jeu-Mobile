@@ -80,21 +80,24 @@ que le § 13.2 recommande, et ils sont versionnés : la licence l'autorise.
 | `music/battle_theme.mp3` (`Battle.mp3`) | auteur « Theodore Kerr », 2012 | **inconnue** | **à fournir** |
 | `music/boss_theme.mp3` (`bosstheme_WO_low.mp3`) | aucun auteur, encodé sous FL Studio | **inconnue** | **à fournir** |
 
-> **C'est le seul point bloquant pour la publication.** Le § 13.7 est
-> explicite : une licence CC BY oubliée est une infraction, pas un détail,
-> et le § 13.2 met en garde contre le CC BY-SA si le jeu est vendu. Ces
-> trois pistes sont installées et jouables, mais elles ne peuvent pas
-> partir en production tant que ces lignes ne sont pas remplies.
+> **Statut : non bloquant.** Décision de Gaetan, 2026-08-29 — *Reconquête*
+> est un projet personnel, qui ne sera ni vendu ni publié publiquement.
+> Un usage strictement privé ne met en jeu aucune des licences ci-dessus.
 >
-> Il faut, pour chacune : l'URL de la page d'origine, le nom de l'auteur,
-> et la licence exacte. Si l'une est en CC BY-SA, il vaut mieux la
-> remplacer maintenant que d'y revenir après avoir monté tout le mixage.
+> **Ce que ça ne change pas.** Le jour où le jeu sortirait du cadre privé —
+> une release sur itch.io, un APK envoyé à un ami, une vidéo publiée — ces
+> trois lignes redeviennent bloquantes, et il faudra pour chacune l'URL
+> d'origine, l'auteur et la licence exacte. Le § 13.2 met en garde contre
+> le CC BY-SA en cas de vente. C'est pour ça que ce tableau reste ici,
+> rempli à moitié, plutôt que d'être effacé : le jour où la question se
+> reposera, elle se reposera avec ses trois cases vides bien visibles.
 
 **Format.** Les trois sont en MP3, dont deux à 128 kbps. Le § 13.2
 recommande l'OGG, qui boucle sans le micro-silence du MP3. Je ne les ai
 **pas** converties : transcoder du MP3 128 kbps vers de l'OGG, c'est une
-seconde perte sur une qualité déjà modeste. Quand la page d'origine sera
-retrouvée pour la licence, prendre l'OGG ou le WAV s'il y en a un.
+seconde perte sur une qualité déjà modeste. Si une piste boucle mal en
+jeu, le réglage `loop_offset` de Godot corrige le micro-silence sans
+retoucher au fichier.
 
 ---
 
