@@ -103,6 +103,25 @@ func derive(salt: int) -> CombatRng:
 	return CombatRng.new(hash([_seed, salt]))
 
 
+## Position du générateur : graine et nombre de tirages consommés.
+## C'est ce qu'il faut pour que l'annulation remette le hasard exactement
+## où il était — sans quoi annuler puis rejouer donnerait deux combats
+## différents à partir de la même graine.
+func position() -> Dictionary:
+	return {"seed": _seed, "draws": _draws}
+
+
+## Ramène le générateur à une position relevée par `position()`.
+## On rembobine et on rejoue les tirages : c'est exact, et bon marché à
+## l'échelle d'un combat (quelques dizaines de tirages).
+func rewind_to(saved: Dictionary) -> void:
+	reset(int(saved.get("seed", _seed)))
+	var draws := int(saved.get("draws", 0))
+	for i in draws:
+		_rng.randf()
+	_draws = draws
+
+
 func _record(reason: StringName, kind: StringName, result: Variant) -> void:
 	_log.append({
 		"index": _draws,
