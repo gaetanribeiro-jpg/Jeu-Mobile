@@ -1,0 +1,13 @@
+{
+  "_note": "Le gardien. Le Troll frappe sur deux cases en ligne et à 4 dégâts : rester groupé est puni. Les collines valent le détour pour l'archer.",
+  "act": 1,
+  "name_key": "MAP_VALLEE_08",
+  "rows": ["..^.....", "........", "...#....", "....#...", "........", ".....^.."],
+  "objective": { "kind": "eliminate" },
+  "hero_spawns": [[0, 2], [0, 3], [1, 2], [1, 3]],
+  "enemies": [
+    { "type": "troll", "cell": [6, 3] },
+    { "type": "spear_goblin", "cell": [7, 1] },
+    { "type": "gnome", "cell": [7, 4] }
+  ]
+}

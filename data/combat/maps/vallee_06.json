@@ -1,0 +1,18 @@
+{
+  "_note": "Escorter un pion jusqu'au bord opposé. Il ne se défend pas ; le Voleur, lui, vise l'arrière.",
+  "act": 1,
+  "name_key": "MAP_VALLEE_06",
+  "rows": ["........", "..f..f..", "........", "........", "..f..f..", "........"],
+  "objective": {
+    "kind": "escort",
+    "subject_ids": [100],
+    "cells": [[7, 2], [7, 3]]
+  },
+  "hero_spawns": [[1, 2], [1, 3], [1, 1], [1, 4]],
+  "allies": [{ "type": "monk", "cell": [0, 3] }],
+  "enemies": [
+    { "type": "thief", "cell": [6, 1] },
+    { "type": "spear_goblin", "cell": [5, 3] },
+    { "type": "gnome", "cell": [6, 4] }
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "_note": "Extraire. La cache est au fond des ruines, à l'opposé de la sortie : il faut traverser la carte, ramasser, et refaire le chemin en sens inverse avec les ennemis réveillés. Les ruines exposent (+1 dégât subi), et le gnome à fronde tient le couloir du retour.",
+  "act": 1,
+  "name_key": "MAP_VALLEE_07",
+  "rows": ["........", ".#....rr", "......rr", "........", ".^..#...", "........"],
+  "objective": {
+    "kind": "extract",
+    "pickup_cells": [[6, 1], [7, 1], [6, 2], [7, 2]],
+    "cells": [[0, 2], [0, 3]]
+  },
+  "hero_spawns": [[0, 2], [0, 3], [1, 3], [1, 4]],
+  "enemies": [
+    { "type": "spear_goblin", "cell": [5, 2] },
+    { "type": "slingshot_gnome", "cell": [3, 5] },
+    { "type": "thief", "cell": [5, 4] }
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "_note": "Saisir avant le tour 5. Le chemin direct passe sous le tir du gnome à fronde : on peut foncer et encaisser, ou contourner et manquer le délai.",
+  "act": 1,
+  "name_key": "MAP_VALLEE_04",
+  "rows": ["........", ".##.##..", "........", "........", ".##.##..", "........"],
+  "objective": { "kind": "seize", "cells": [[7, 2], [7, 3]], "deadline": 5 },
+  "hero_spawns": [[0, 2], [0, 3], [0, 1], [0, 4]],
+  "enemies": [
+    { "type": "slingshot_gnome", "cell": [5, 0] },
+    { "type": "slingshot_gnome", "cell": [5, 5] },
+    { "type": "spear_goblin", "cell": [6, 2] }
+  ]
+}

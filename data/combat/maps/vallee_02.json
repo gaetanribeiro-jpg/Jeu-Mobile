@@ -1,0 +1,13 @@
+{
+  "_note": "La leçon de l'eau. Un canal traverse la carte : pousser coûte moins cher que tuer, et la carte le dit sans un mot de texte.",
+  "act": 1,
+  "name_key": "MAP_VALLEE_02",
+  "rows": ["...~....", "...~....", "...=....", "...~....", "...~....", "........"],
+  "objective": { "kind": "eliminate" },
+  "hero_spawns": [[0, 2], [0, 3], [1, 2], [1, 3]],
+  "enemies": [
+    { "type": "spear_goblin", "cell": [5, 1] },
+    { "type": "spear_goblin", "cell": [5, 3] },
+    { "type": "gnome", "cell": [6, 2] }
+  ]
+}

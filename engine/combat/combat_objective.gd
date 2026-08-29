@@ -36,6 +36,9 @@ var protected_cells: Array[Vector2i] = []
 ## SEIZE : tour limite. 0 = pas de limite.
 var deadline: int = 0
 
+## EXTRACT : cases où se trouve la cache à ramasser.
+var pickup_cells: Array[Vector2i] = []
+
 ## EXTRACT : vrai une fois la cache ramassée, posé par le moteur.
 var carried := false
 
@@ -54,6 +57,7 @@ static func from_dictionary(data: Dictionary) -> CombatObjective:
 	objective.deadline = int(data.get("deadline", 0))
 	objective.cells = _cells_from(data.get("cells", []))
 	objective.protected_cells = _cells_from(data.get("protected_cells", []))
+	objective.pickup_cells = _cells_from(data.get("pickup_cells", []))
 	var ids: Array[int] = []
 	for raw: Variant in data.get("subject_ids", []):
 		ids.append(int(raw))

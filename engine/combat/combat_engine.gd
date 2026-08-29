@@ -129,6 +129,7 @@ func move_hero(unit: Unit, to: Vector2i) -> bool:
 		return false
 	unit.has_moved = true
 	_check_lethal_landing(unit, from)
+	_check_pickup(unit)
 	return true
 
 
@@ -375,6 +376,14 @@ func _advance_enemies(log: Array[Dictionary]) -> void:
 ## Regarde où en est l'objectif. Renvoie true si le combat s'arrête ici.
 func _settle(log: Array[Dictionary]) -> bool:
 	outcome = objective.evaluate(board, turn_index)
+	# Garde-fou : un combat doit toujours finir. Le § 4.1 vise 3 à 6 tours ;
+	# au-delà du plafond, l'objectif n'a pas été rempli à temps, et c'est
+	# une défaite. Sans ça, une escorte qu'on n'avance pas tourne sans fin.
+	if outcome == CombatObjective.Outcome.ONGOING:
+		var cap := int(CombatRules.rule(&"objectives", &"max_turns_before_draw", 0))
+		if cap > 0 and turn_index >= cap:
+			outcome = CombatObjective.Outcome.DEFEAT
+			log.append({"event": "turn_limit_reached", "turn": turn_index})
 	if outcome == CombatObjective.Outcome.ONGOING:
 		return false
 	phase = Phase.FINISHED
@@ -389,6 +398,15 @@ func _settle(log: Array[Dictionary]) -> bool:
 func _begin_player_turn() -> void:
 	for hero: Unit in board.active_units(Unit.Side.HEROES):
 		hero.begin_turn()
+
+
+## Ramassage de la cache d'un objectif « Extraire ». Il se fait en passant
+## dessus, sans action : le coût de l'objectif est le détour, pas le geste.
+func _check_pickup(unit: Unit) -> void:
+	if objective.carried or objective.kind != CombatObjective.Kind.EXTRACT:
+		return
+	if unit.is_hero() and objective.pickup_cells.has(unit.cell):
+		objective.carried = true
 
 
 func _can_act(unit: Unit) -> bool:

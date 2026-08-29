@@ -888,13 +888,13 @@ Si l'Ordre devait être réduit faute de temps, garder les rangs 2 et 3 et repou
 - [x] **C1.5** Ligne de vue et calcul des cases attaquables
 - [x] **C1.6** Résolution d'une attaque : dégâts, modificateurs de terrain, mort
 - [x] **C1.7** Système de poussée : direction, case de destination, collision, chute dans l'eau
-- [ ] **C1.8** Machine à états de tour : tour joueur → télégraphe → tour ennemi → vérification victoire
-- [ ] **C1.9** Système de télégraphe : chaque ennemi calcule et publie son intention
-- [ ] **C1.10** IA ennemie de base : choix de cible, pathfinding, comportement par rôle
-- [ ] **C1.11** Conditions de victoire et de défaite (les 6 types d'objectif)
+- [x] **C1.8** Machine à états de tour : tour joueur → télégraphe → tour ennemi → vérification victoire
+- [x] **C1.9** Système de télégraphe : chaque ennemi calcule et publie son intention
+- [x] **C1.10** IA ennemie de base : choix de cible, pathfinding, comportement par rôle
+- [x] **C1.11** Conditions de victoire et de défaite (les 6 types d'objectif)
 - [x] **C1.12** RNG à graine, journalisable et rejouable
-- [ ] **C1.13** Pile d'annulation (undo) tant que le tour n'est pas validé
-- [~] **C1.14** **Tests unitaires** : déplacement, poussée dans l'eau, ligne de vue, cohérence du télégraphe, fin de combat — *faits pour C1.1 à C1.7 et C1.12 ; restent le télégraphe et la fin de combat*
+- [x] **C1.13** Pile d'annulation (undo) tant que le tour n'est pas validé
+- [x] **C1.14** **Tests unitaires** : déplacement, poussée dans l'eau, ligne de vue, cohérence du télégraphe, fin de combat — *234 tests. Un test rejoue les 8 cartes entières en vérifiant à chaque tour que le télégraphe n'a pas menti.*
 
 ### Rendu et interaction
 
@@ -909,10 +909,10 @@ Si l'Ordre devait être réduit faute de temps, garder les rangs 2 et 3 et repou
 
 ### Contenu de base
 
-- [ ] **C1.23** Définir les 4 classes de héros en données (`.tres`)
-- [ ] **C1.24** Implémenter les 4 capacités : Provocation, Tir tendu, Repousse, Bénédiction
-- [ ] **C1.25** Définir 6 ennemis de l'Acte I en données
-- [ ] **C1.26** Éditeur de carte de combat (ou format JSON + 8 cartes écrites à la main) — *le format texte est en place : `CombatBoard.from_rows`, un caractère par case, symboles dans `terrain.json`*
+- [~] **C1.23** Définir les 4 classes de héros en données (`.tres`) — *fait en JSON (`data/units/hero_classes.json`), plus simple à tester en headless. Le choix `.tres` / `.json` reste à trancher.*
+- [x] **C1.24** Implémenter les 4 capacités : Provocation, Tir tendu, Repousse, Bénédiction
+- [x] **C1.25** Définir 6 ennemis de l'Acte I en données
+- [x] **C1.26** Éditeur de carte de combat (ou format JSON + 8 cartes écrites à la main) — *format JSON retenu, 8 cartes écrites, `tools/verify_maps.gd` les valide et `tools/simulate_combats.gd` les joue en masse*
 
 > **Jalon 1 : un combat complet et satisfaisant, jouable au doigt sur ton téléphone.**
 > **C'est ici qu'il faut s'arrêter et jouer 20 fois avant de continuer.**
@@ -1082,7 +1082,7 @@ Si l'Ordre devait être réduit faute de temps, garder les rangs 2 et 3 et repou
 ## PHASE 10 — Équilibrage et tests (42 h)
 
 - [ ] **T10.1** Console de debug interne : donner des ressources, sauter une saison, forcer un siège, tuer un héros
-- [ ] **T10.2** Simulateur de combat automatique (1000 combats, taux de victoire par carte)
+- [~] **T10.2** Simulateur de combat automatique (1000 combats, taux de victoire par carte) — *`tools/simulate_combats.gd` existe et tourne ; la politique de joueur est triviale, à améliorer*
 - [ ] **T10.3** **Terminer la campagne complète toi-même, au moins 3 fois**
 - [ ] **T10.4** Ajuster la courbe économique selon les mesures
 - [ ] **T10.5** Ajuster la difficulté des combats par acte

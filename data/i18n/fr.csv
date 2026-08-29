@@ -11,3 +11,11 @@ FONT_TEST_STATS,Aldric — Guerrier · nv 4 · PV 9 · Dépl. 3 · Portée 1 · 
 FONT_TEST_RESOURCES,Menace 7 · Bois 24 · Or 51 · Vivres 12 · Renom 4
 FONT_TEST_NO_FONT,Aucune police dans assets/fonts/ — affichage avec la police par défaut de Godot.
 FONT_TEST_HINT,Toucher l'écran pour passer à la police suivante.
+MAP_VALLEE_01,Le sentier des bergers
+MAP_VALLEE_02,Le gué de Cendre
+MAP_VALLEE_03,La crête aux corbeaux
+MAP_VALLEE_04,La brèche
+MAP_VALLEE_05,Le pont de bois
+MAP_VALLEE_06,La route basse
+MAP_VALLEE_07,Les ruines noyées
+MAP_VALLEE_08,La tanière
