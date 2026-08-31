@@ -234,10 +234,12 @@ dur : passer par `data/assets.json`.
 - **Phase courante : 1 — cœur tactique PA/PM.** Le pivot vers la vision
   Tiny Kingdoms a été acté le 2026-08-31.
 - **Phase 1 terminée.** T1.1 à T1.12 sont faites et testées.
-- **Phase courante : 2 — RPG.** T2.1 à T2.6 sont faites : le `Hero`, les
-  niveaux, l'équipement, le butin, la `Company` et la sauvegarde.
-  **474 tests passent** sous Godot 4.6 en headless.
-- **Reste en Phase 2 :** l'écran de fiche de héros et de compagnie.
+- **Phase 2 terminée.** T2.1 à T2.7 : le `Hero`, les niveaux,
+  l'équipement, le butin, la `Company`, la sauvegarde, l'écran de
+  compagnie. **488 tests passent** sous Godot 4.6 en headless.
+- **La boucle du § 3 tourne, en court-circuit :** compagnie → combat →
+  expérience et butin → compagnie → sauvegarde. Il manque entre les deux
+  le monde et le royaume, qui sont les Phases 3 et 4.
 
 **Le sens de la dépendance, à ne pas inverser :** `Hero` connaît `Unit`,
 jamais l'inverse. Le combat ignore ce qu'est un niveau. Toutes les
@@ -270,12 +272,19 @@ Conséquences, et elles sont limitées :
 
 **Je peux voir le rendu.** xvfb est disponible dans mon conteneur :
 ```bash
-xvfb-run -a godot --path . --resolution 1280x720 \
-  -s tools/dev/screenshot.gd -- res://scenes/ui/boot.tscn /tmp/x.png
+# Le JEU RÉEL, autoloads compris. À préférer, toujours.
+xvfb-run -a godot --path . --resolution 1280x720 -- --capture /tmp/x.png
 xvfb-run -a godot --path . --resolution 1280x720 \
   -s tools/dev/combat_storyboard.gd -- /tmp/planche vallee_03
 ```
-Cinq défauts n'ont été trouvés que comme ça, dont deux vrais bugs.
+**Huit défauts n'ont été trouvés que comme ça**, dont trois vrais bugs.
+
+**Un script lancé par `-s` ne reçoit AUCUN autoload**, et l'identifiant
+`GameState` est résolu à la COMPILATION : un écran qui lit la partie
+sauvegardée ne compile même pas sous `tools/dev/screenshot.gd`, il reste
+sur son texte de secours, et on croit l'écran cassé. Les installer à la
+main ne répare rien — l'échec est antérieur. D'où l'autoload `Capture`,
+inerte sans son argument, qui photographie le vrai jeu.
 
 **Toutes les valeurs de ressenti sont dans `data/combat/view.json`.**
 

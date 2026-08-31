@@ -334,7 +334,7 @@ jamais un décor. `vallee_05` protège donc encore un villageois. Faire
 viser une structure par l'IA relève de la défense du royaume (§ 38), donc
 de la Phase 5.
 
-### Phase 2 — RPG ⏳ *en cours*
+### Phase 2 — RPG ✅
 
 | Tâche | Contenu | État |
 |---|---|---|
@@ -344,7 +344,7 @@ de la Phase 5.
 | **T2.4** | Butin : ce qu'une rencontre laisse tomber | ✅ |
 | **T2.5** | `Company` : les héros, l'or, la réserve | ✅ |
 | **T2.6** | Sauvegarde et rechargement de la partie | ✅ |
-| **T2.7** | Écran de fiche de héros et de compagnie | ⏳ |
+| **T2.7** | Écran de fiche de héros et de compagnie | ✅ |
 
 **Le sens de la dépendance est la décision structurante :** `Hero` connaît
 `Unit`, jamais l'inverse. Le combat ne sait pas ce qu'est un niveau, et
@@ -426,6 +426,47 @@ avec elle.
 Un détail qui n'en est pas un : `_next_id` est sauvegardé. Sans lui, un
 rechargement réattribuerait l'identifiant d'un héros vivant au recrutement
 suivant, et la sauvegarde en écraserait un.
+
+### L'écran de compagnie, et la boucle qui se referme (T2.7)
+
+Sans cet écran, toute la Phase 2 est invisible : un niveau gagné, un objet
+trouvé, un choix à faire n'existent pour le joueur que s'il peut les voir
+et y toucher. Trois colonnes, une question chacune — qui compose ma
+compagnie, que vaut celui-ci, qu'ai-je en réserve.
+
+**Les choix de niveau sont ici, et nulle part ailleurs.** Trois niveaux sur
+dix en demandent un, définitif ; un joueur qui ne peut pas le faire ne
+monte pas de niveau, il regarde un compteur augmenter. Les boutons disent
+donc ce que chaque option donne : « Endurant » ne dit rien, « Endurant —
+PV +15 » dit tout.
+
+L'écran **ne sauvegarde pas lui-même** : il émet `changed`, et l'appelant
+décide. Sans cette séparation il serait intestable hors d'une partie
+chargée, et il faudrait un singleton pour afficher trois portraits.
+
+L'écran de titre part maintenant de la vraie compagnie, envoie ses héros au
+combat avec leurs niveaux et leur équipement, et lui rend l'expérience et
+le butin au retour. **C'est le plus court chemin complet de la boucle du
+§ 3, et il tourne** — il y manque le monde et le royaume, qui sont les
+Phases 3 et 4.
+
+### Une leçon d'outillage payée deux fois
+
+`tools/dev/screenshot.gd` monte une scène dans un script lancé par `-s`, et
+un tel script ne reçoit **aucun autoload**. Pire : l'identifiant
+`GameState` est résolu à la **compilation**, donc l'écran de titre a cessé
+de compiler sous l'outil le jour où il a lu la partie sauvegardée. Il
+restait sur son texte de secours — et on en conclut que l'écran est cassé.
+
+Installer les singletons à la main ne répare rien, puisque l'échec est
+antérieur. La seule façon de photographier un écran qui touche à la
+campagne est de lancer le **jeu**, pas une simulation de jeu. D'où
+l'autoload `Capture` : inerte sans son argument, il photographie le vrai
+jeu après quelques images et rend la main.
+
+```bash
+xvfb-run -a godot --path . --resolution 1280x720 -- --capture /tmp/x.png
+```
 
 ### Phase 3 — Monde
 
