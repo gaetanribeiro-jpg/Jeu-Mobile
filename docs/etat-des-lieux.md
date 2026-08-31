@@ -334,10 +334,44 @@ jamais un décor. `vallee_05` protège donc encore un villageois. Faire
 viser une structure par l'IA relève de la défense du royaume (§ 38), donc
 de la Phase 5.
 
-### Phase 2 — RPG
+### Phase 2 — RPG ⏳ *en cours*
 
-XP, niveaux, statistiques, arbre de compétences, équipement, loot, raretés.
-Reprend `data/heroes/progression.json`, réécrit sans l'Élévation.
+| Tâche | Contenu | État |
+|---|---|---|
+| **T2.1** | `Hero` : identité persistante, niveau, choix, fabrique son `Unit` | ✅ |
+| **T2.2** | XP, seuils, montée en niveau, récompenses de rencontre | ✅ |
+| **T2.3** | Équipement : armes, armures, accessoires, raretés | ⏳ |
+| **T2.4** | Butin : ce qu'une rencontre laisse tomber | ⏳ |
+| **T2.5** | Écran de fiche de héros et de compagnie | ⏳ |
+| **T2.6** | Sauvegarde de la compagnie | ⏳ |
+
+**Le sens de la dépendance est la décision structurante :** `Hero` connaît
+`Unit`, jamais l'inverse. Le combat ne sait pas ce qu'est un niveau, et
+c'est ce qui permet de le tester seul et de simuler mille rencontres en
+headless. Toutes les modifications — gains de niveau, choix retenus,
+équipement, bonus du royaume — sont donc appliquées **une seule fois**,
+dans `Hero.effective_stats()` ; `Unit.from_stats` reçoit un bloc déjà
+calculé et ne recalcule jamais rien.
+
+`CombatRewards` est la couture : elle lit un combat terminé et rend des
+chiffres que la couche campagne applique. C'est là que la Phase 3
+branchera l'expédition et la Phase 4 le butin.
+
+**Deux décisions prises en chemin :**
+
+1. **L'expérience va à l'équipe, pas au tueur.** Le § 33 parle de la
+   progression du héros sans jamais dire « celui qui porte le coup ».
+   Récompenser le tueur pousserait le joueur à voler les mises à terre à
+   son propre Guerrier — l'inverse exact d'un jeu où le Guerrier existe
+   pour encaisser.
+2. **Les niveaux sont OUVERTS, pas pris.** Trois niveaux sur dix demandent
+   un choix définitif ; les prendre d'office volerait au joueur la seule
+   décision que la montée en niveau contient. `level_up_free()` encaisse
+   tout ce qui ne demande rien et s'arrête net devant le premier choix.
+
+Les seuils d'expérience sont calés sur les combats, pas tirés au hasard :
+une rencontre de cinq ennemis rapporte 75, le niveau 2 tombe pendant le
+premier combat, le 10 vers le seizième — trois expéditions environ.
 
 ### Phase 3 — Monde
 

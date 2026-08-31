@@ -1,31 +1,83 @@
 {
-  "_readme": "Montée en niveau des héros (§ 3.3). ATTENTION : le document donne les GAINS par niveau, mais PAS les seuils d'expérience ni les gains par action — ces chiffres-là sont de mon invention et seront réglés en T10.4. Ils visent le niveau 6 vers la fin de l'Acte II pour un héros qui survit.",
-  "max_level": 6,
+  "_readme": "Montée en niveau des héros (vision § 33 et § 34).\n\nLES SEUILS SONT CALÉS SUR LES COMBATS, pas tirés au hasard. Une rencontre compte 4 à 6 ennemis : elle rapporte donc 40 à 60 d'expérience de mise à terre, plus 25 pour la victoire, soit environ 75. Le niveau 2 tombe pendant le premier combat, le 3 au deuxième, le 5 vers le quatrième, et le 10 vers le seizième — trois expéditions environ. C'est ce rythme-là qu'il faut juger, pas les nombres eux-mêmes : si une expédition change de longueur, ce sont les seuils qui suivent.\n\nCE QU'UN NIVEAU DONNE. Chaque niveau ajoute des PV — c'est le gain qui se VOIT, sur la barre de vie, à chaque combat (§ 50, « le joueur doit sentir sa progression »). Un niveau sur deux ajoute un point à la statistique qui définit la classe. Et trois niveaux posent un CHOIX définitif : c'est l'amorce de l'arbre de compétences du § 34, et le seul endroit où deux Guerriers de même niveau cessent d'être interchangeables.\n\nLes gains nomment des champs du bloc de statistiques que lit Unit.from_stats. `primary` désigne la statistique de la classe, quelle qu'elle soit.",
+  "max_level": 10,
   "experience_to_reach": {
-    "2": 4,
-    "3": 10,
-    "4": 18,
-    "5": 28,
-    "6": 40
+    "2": 30,
+    "3": 80,
+    "4": 160,
+    "5": 260,
+    "6": 390,
+    "7": 550,
+    "8": 730,
+    "9": 940,
+    "10": 1170
   },
   "experience_awards": {
-    "_note": "Par combat gagné, par ennemi mis à terre, par expédition terminée.",
-    "enemy_downed": 1,
-    "combat_won": 2,
-    "expedition_completed": 3
+    "_note": "Par ennemi mis à terre, par combat gagné, par objectif de carte rempli.",
+    "enemy_downed": 10,
+    "combat_won": 25,
+    "objective_completed": 15
   },
-  "levels": {
-    "2": { "grants": { "hit_points": 1 } },
-    "3": { "choice": ["damage", "movement"] },
-    "4": { "grants": { "hit_points": 1 } },
-    "5": { "elevation": true },
-    "6": { "choice": ["range", "vitality"] }
+  "per_level": {
+    "_note": "Accordé à CHAQUE montée, sans choix ni condition.",
+    "hit_points": 8
+  },
+  "every_other_level": {
+    "_note": "Accordé aux niveaux pairs, en plus de per_level.",
+    "primary": 1
   },
   "choices": {
-    "_note": "Les options offertes aux niveaux 3 et 6. Le choix est définitif.",
-    "damage": { "name_key": "CHOICE_DAMAGE", "grants": { "damage": 1 } },
-    "movement": { "name_key": "CHOICE_MOVEMENT", "grants": { "movement": 1 } },
-    "range": { "name_key": "CHOICE_RANGE", "grants": { "range_max": 1 } },
-    "vitality": { "name_key": "CHOICE_VITALITY", "grants": { "hit_points": 2 } }
+    "_note": "Niveau → deux options, une seule retenue, définitivement. Les deux doivent être défendables : une option qui n'est jamais prise n'est pas un choix, c'est un piège.",
+    "3": [
+      "sturdy",
+      "sharp"
+    ],
+    "6": [
+      "swift",
+      "focused"
+    ],
+    "9": [
+      "deadly",
+      "armoured"
+    ]
+  },
+  "options": {
+    "sturdy": {
+      "name_key": "CHOICE_STURDY",
+      "grants": {
+        "hit_points": 15
+      }
+    },
+    "sharp": {
+      "name_key": "CHOICE_SHARP",
+      "grants": {
+        "primary": 2
+      }
+    },
+    "swift": {
+      "name_key": "CHOICE_SWIFT",
+      "grants": {
+        "movement_points": 1
+      }
+    },
+    "focused": {
+      "name_key": "CHOICE_FOCUSED",
+      "grants": {
+        "action_points": 1
+      },
+      "_note": "Un PA de plus vaut un tiers d'attaque de base par activation : c'est le gain le plus fort du tableau, et il fait face à un PM qui, lui, change où l'on peut se tenir."
+    },
+    "deadly": {
+      "name_key": "CHOICE_DEADLY",
+      "grants": {
+        "primary": 3
+      }
+    },
+    "armoured": {
+      "name_key": "CHOICE_ARMOURED",
+      "grants": {
+        "defence": 3
+      }
+    }
   }
 }

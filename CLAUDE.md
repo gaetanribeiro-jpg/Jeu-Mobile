@@ -234,9 +234,14 @@ dur : passer par `data/assets.json`.
 - **Phase courante : 1 — cœur tactique PA/PM.** Le pivot vers la vision
   Tiny Kingdoms a été acté le 2026-08-31.
 - **Phase 1 terminée.** T1.1 à T1.12 sont faites et testées.
-  **367 tests passent** sous Godot 4.6 en headless.
-- **Prochaine phase : 2 — RPG.** XP, niveaux, statistiques, arbre de
-  compétences, équipement, loot (§ 45).
+- **Phase courante : 2 — RPG.** T2.1 (le `Hero`) et T2.2 (XP et niveaux)
+  sont faites. **411 tests passent** sous Godot 4.6 en headless.
+- **Reste en Phase 2 :** équipement, butin, écran de compagnie, sauvegarde.
+
+**Le sens de la dépendance, à ne pas inverser :** `Hero` connaît `Unit`,
+jamais l'inverse. Le combat ignore ce qu'est un niveau. Toutes les
+modifications sont appliquées une seule fois, dans
+`Hero.effective_stats()` ; `Unit.from_stats` reçoit un bloc déjà calculé.
 
 **Le combat se joue, sur PC.** Écran de titre → composition de l'équipe →
 choix d'une des 8 cartes → placement → combat.

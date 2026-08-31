@@ -61,6 +61,12 @@ HUD_ACTIVE,"%d  %s  %d/%d PV"
 HUD_ABILITY,"%s · %d PA"
 HUD_ABILITY_COOLDOWN,"%s · %d r."
 HUD_TIMELINE,Ordre de jeu
+CHOICE_STURDY,Endurant
+CHOICE_SHARP,Aiguisé
+CHOICE_SWIFT,Preste
+CHOICE_FOCUSED,Concentré
+CHOICE_DEADLY,Redoutable
+CHOICE_ARMOURED,Cuirassé
 BOOT_PICK_MAP,Choisir un combat
 BOOT_TEMPORARY,Écran de test provisoire — le vrai menu viendra plus tard
 COMBAT_BACK,Retour
