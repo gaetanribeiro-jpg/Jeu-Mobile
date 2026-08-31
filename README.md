@@ -1,12 +1,19 @@
-# Reconquête
+# ⚔️ Tiny Kingdoms
 
-Jeu mobile Android : tactique au tour par tour + gestion de comté.
+Jeu mobile Android : Tactical RPG de gestion et d'exploration. Construis
+ton royaume, développe tes héros, explore un monde dangereux et mène
+toi-même tes compagnons dans des combats au tour par tour fondés sur les
+PA, les PM et le positionnement.
+
 Godot 4.6, GDScript, orientation paysage verrouillée.
 
+- **Vision fondatrice** → `docs/vision.md`
+- **État du chantier et plan de migration** → `docs/etat-des-lieux.md`
 - **Installer et exporter sur le téléphone** → `docs/installation.md`
-- **Conception complète** → `docs/conception.md`
 - **Règles de travail** → `CLAUDE.md`
 - **Licences des assets** → `CREDITS.md`
+- **Conception précédente (« Reconquête », caduque sauf son annexe
+  d'assets)** → `docs/conception.md`
 
 ## Démarrer
 

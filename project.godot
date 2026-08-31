@@ -6,7 +6,7 @@ config_version=5
 
 [application]
 
-config/name="Reconquête"
+config/name="Tiny Kingdoms"
 config/description="Tactique au tour par tour et gestion de comté."
 run/main_scene="res://scenes/ui/boot.tscn"
 config/features=PackedStringArray("4.6", "GL Compatibility")

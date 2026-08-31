@@ -1,3 +1,20 @@
+> ⚠️ **DOCUMENT CADUC — conception précédente, « Reconquête ».**
+>
+> La conception en vigueur est `docs/vision.md` (*Tiny Kingdoms*), et elle
+> prime sur tout ce qui suit. Ce fichier est conservé pour deux raisons :
+>
+> 1. **Son annexe § 16 — l'inventaire complet et vérifié du pack Tiny
+>    Swords — reste la référence du projet.** Rien ne la remplace.
+> 2. Plusieurs de ses analyses (le télégraphe, le ressenti du combat, le
+>    format des cartes) ont survécu au pivot ; `docs/etat-des-lieux.md`
+>    dit lesquelles.
+>
+> Tout le reste — l'Ordre, les blessures, les saisons, le comté, les
+> quatre classes, le modèle de tour — est **hors périmètre**. Voir
+> `plus-tard.md`.
+
+---
+
 # RECONQUÊTE
 ### Document de conception & plan de développement
 
