@@ -37,9 +37,8 @@ var experience: int = 0
 ## d'option. Définitifs.
 var choices: Dictionary = {}
 
-## Emplacement d'équipement → identifiant d'objet. Rempli en T2.4 ; les
-## bonus passent par `equipment_bonuses`, que cette classe se contente
-## d'additionner.
+## Emplacement d'équipement → identifiant d'objet. Un emplacement absent
+## est un emplacement vide.
 var equipment: Dictionary = {}
 
 
@@ -195,11 +194,51 @@ func effective_stats(bonuses: Dictionary = {}) -> Dictionary:
 	return stats
 
 
-## Somme des modificateurs de l'équipement porté. Vide tant que T2.4 n'a
-## pas déclaré d'objets ; la place est faite pour que rien n'ait à bouger
-## quand elle le sera.
+## Somme des modificateurs de tout l'équipement porté.
 func equipment_bonuses() -> Dictionary:
-	return {}
+	var out := {}
+	for slot: Variant in equipment.keys():
+		var item_id := StringName(equipment[slot])
+		if not Equipment.exists(item_id):
+			continue
+		for key: Variant in Equipment.grants(item_id).keys():
+			out[key] = int(out.get(key, 0)) + int(Equipment.grants(item_id)[key])
+	return out
+
+
+## Objet porté à cet emplacement, ou vide.
+func equipped(slot: StringName) -> StringName:
+	return StringName(equipment.get(String(slot), ""))
+
+
+## Ce héros peut-il porter cet objet ? Trois raisons de refuser : l'objet
+## n'existe pas, son emplacement n'existe pas, ou sa classe n'y a pas droit.
+func can_equip(item_id: StringName) -> bool:
+	if not Equipment.exists(item_id):
+		return false
+	if not Equipment.is_slot(Equipment.slot_of(item_id)):
+		return false
+	return Equipment.allows(item_id, class_id)
+
+
+## Équipe un objet. Renvoie ce qui occupait l'emplacement, ou une chaîne
+## vide — c'est au roster de décider ce qu'il en fait, pas au héros de le
+## jeter dans son dos.
+func equip(item_id: StringName) -> StringName:
+	if not can_equip(item_id):
+		push_error("Hero : « %s » ne peut pas être porté par un %s" % [item_id, class_id])
+		return &""
+	var slot := Equipment.slot_of(item_id)
+	var replaced := equipped(slot)
+	equipment[String(slot)] = String(item_id)
+	return replaced
+
+
+## Retire ce qui occupe l'emplacement, et le renvoie.
+func unequip(slot: StringName) -> StringName:
+	var removed := equipped(slot)
+	equipment.erase(String(slot))
+	return removed
 
 
 ## Ajoute un bloc de gains à un bloc de statistiques. `primary` y est

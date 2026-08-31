@@ -340,8 +340,8 @@ de la Phase 5.
 |---|---|---|
 | **T2.1** | `Hero` : identité persistante, niveau, choix, fabrique son `Unit` | ✅ |
 | **T2.2** | XP, seuils, montée en niveau, récompenses de rencontre | ✅ |
-| **T2.3** | Équipement : armes, armures, accessoires, raretés | ⏳ |
-| **T2.4** | Butin : ce qu'une rencontre laisse tomber | ⏳ |
+| **T2.3** | Équipement : armes, armures, accessoires, raretés | ✅ |
+| **T2.4** | Butin : ce qu'une rencontre laisse tomber | ✅ |
 | **T2.5** | Écran de fiche de héros et de compagnie | ⏳ |
 | **T2.6** | Sauvegarde de la compagnie | ⏳ |
 
@@ -372,6 +372,40 @@ branchera l'expédition et la Phase 4 le butin.
 Les seuils d'expérience sont calés sur les combats, pas tirés au hasard :
 une rencontre de cinq ennemis rapporte 75, le niveau 2 tombe pendant le
 premier combat, le 10 vers le seizième — trois expéditions environ.
+
+### L'équipement : le budget est la règle (T2.3)
+
+Trente objets, cinq emplacements, cinq raretés. Le problème d'un système
+d'objets est qu'il **n'a pas d'instrument** : on ne simule pas mille
+combats pour un anneau, et un légendaire inventé un soir de fatigue casse
+le jeu sans que rien ne le signale.
+
+D'où la règle : chaque rareté vaut un nombre de points, et les gains d'un
+objet doivent le valoir **exactement**. Le barème est en données — 5 PV
+valent un point, un point de statistique deux, un PM cinq, un PA sept — et
+`tools/verify_items.gd` refuse tout écart. Les trente objets y passent.
+
+Le barème dit aussi ce qui est cher, et donc ce qui est intéressant : un
+seul objet du jeu donne un PA, c'est l'Amulette de concentration, et elle
+est légendaire. Un tiers d'attaque de base par activation vaut ce prix.
+
+Les **armes sont réservées à leur classe** — c'est ce qui les rend
+identitaires. Le reste est ouvert à tous : sur-restreindre laisserait des
+emplacements morts sur deux classes, et `verify_items` vérifie aussi que
+chaque classe peut remplir chacun de ses cinq emplacements.
+
+### Le butin, et le levier du § 29 (T2.4)
+
+Deux fils qui ne servent pas à la même chose. L'**or** est le fil sûr : il
+tombe toujours, proportionnellement à ce qu'on a abattu, et c'est lui qui
+alimentera le royaume. L'**équipement** est le fil incertain. Une défaite
+laisse quand même une chance de butin — le § 41 refuse la punition absolue.
+
+Le paramètre `depth` est la place que la Phase 3 viendra occuper : plus le
+joueur enchaîne les rencontres sans rentrer, plus l'or grossit, plus les
+objets tombent, et **plus le commun cesse de sortir**. C'est ce qui rend
+« je rentre ou je continue ? » tentant plutôt que seulement risqué. Il
+vaut zéro aujourd'hui et ne change rien ; les tests le vérifient déjà.
 
 ### Phase 3 — Monde
 

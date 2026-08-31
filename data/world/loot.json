@@ -1,0 +1,21 @@
+{
+  "_readme": "Ce qu'une rencontre laisse tomber (vision § 30 et § 32).\n\nL'OR est le fil sûr : il tombe toujours, proportionnellement à ce qu'on a abattu. L'ÉQUIPEMENT est le fil incertain : il ne tombe pas à chaque fois, et sa rareté se tire aux poids déclarés dans equipment.json. Un joueur qui perd repart quand même avec quelque chose — le § 41 dit que mourir est une conséquence, pas une punition absolue.\n\nLA PROFONDEUR EST LE LEVIER DU § 29. Plus le joueur enchaîne les rencontres sans rentrer, plus `depth` monte, et plus le butin grossit : c'est ce qui rend la question « je rentre ou je continue ? » réelle. La Phase 3 branchera l'expédition sur ce paramètre ; ici, il vaut zéro par défaut et ne change rien.\n\nTOUT PASSE PAR LA GRAINE. Un butin qui ne se rejoue pas à l'identique interdit de reproduire un bogue, et le roguelite en dépend.",
+  "gold": {
+    "_note": "Or par ennemi abattu, plus une prime de victoire. variance donne la fourchette : 0.25 signifie plus ou moins un quart.",
+    "per_enemy": 8,
+    "victory_bonus": 25,
+    "variance": 0.25
+  },
+  "drop": {
+    "_note": "Probabilité qu'un objet tombe. Une défaite laisse quand même une chance : le § 41 refuse la punition absolue.",
+    "on_victory": 0.7,
+    "on_defeat": 0.2,
+    "max_items": 1
+  },
+  "depth": {
+    "_note": "Effet d'une rencontre de plus dans la même expédition (§ 29). L'or croît linéairement, la chance d'objet aussi, et le tirage de rareté se décale d'un cran tous les `rarity_step` niveaux de profondeur.",
+    "gold_per_step": 0.15,
+    "drop_per_step": 0.06,
+    "rarity_step": 3
+  }
+}

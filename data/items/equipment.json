@@ -1,0 +1,376 @@
+{
+  "_readme": "L'équipement (vision § 30 et § 31). Cinq emplacements — arme, bouclier, casque, armure, accessoire — et cinq raretés.\n\nLE BUDGET EST LA RÈGLE. Chaque rareté vaut un nombre de points, et les gains d'un objet doivent le valoir EXACTEMENT. Le barème est dans `costs` : 5 PV valent un point, un point de statistique en vaut deux, un PM en vaut cinq et un PA en vaut sept. Sans cette règle, un légendaire inventé un soir de fatigue casse le jeu sans que rien ne le signale ; avec elle, tools/verify_items.gd le dit.\n\nLes ARMES sont réservées à leur classe : c'est ce qui les rend identitaires. Le reste est ouvert à tous — sur-restreindre laisserait des emplacements morts.\n\nLES ICÔNES SONT UNE HYPOTHÈSE. Le pack ne dessine aucun équipement ; les douze icônes de l'UI servent de tenant-lieu et n'ont PAS été regardées une à une. À confirmer à l'œil.",
+  "costs": {
+    "hit_points": 0.2,
+    "strength": 2,
+    "agility": 2,
+    "intelligence": 2,
+    "defence": 2,
+    "critical": 1,
+    "movement_points": 5,
+    "action_points": 7
+  },
+  "slots": [
+    "weapon",
+    "shield",
+    "helmet",
+    "armour",
+    "accessory"
+  ],
+  "rarities": {
+    "common": {
+      "name_key": "RARITY_COMMON",
+      "budget": 2,
+      "weight": 55,
+      "color": [
+        0.82,
+        0.82,
+        0.8,
+        1.0
+      ]
+    },
+    "uncommon": {
+      "name_key": "RARITY_UNCOMMON",
+      "budget": 4,
+      "weight": 25,
+      "color": [
+        0.45,
+        0.85,
+        0.45,
+        1.0
+      ]
+    },
+    "rare": {
+      "name_key": "RARITY_RARE",
+      "budget": 6,
+      "weight": 13,
+      "color": [
+        0.4,
+        0.7,
+        1.0,
+        1.0
+      ]
+    },
+    "epic": {
+      "name_key": "RARITY_EPIC",
+      "budget": 9,
+      "weight": 5,
+      "color": [
+        0.75,
+        0.5,
+        1.0,
+        1.0
+      ]
+    },
+    "legendary": {
+      "name_key": "RARITY_LEGENDARY",
+      "budget": 13,
+      "weight": 2,
+      "color": [
+        1.0,
+        0.65,
+        0.2,
+        1.0
+      ]
+    }
+  },
+  "items": {
+    "rusty_sword": {
+      "slot": "weapon",
+      "rarity": "common",
+      "grants": {
+        "strength": 1
+      },
+      "icon": "icon_01",
+      "classes": [
+        "warrior"
+      ]
+    },
+    "hunting_bow": {
+      "slot": "weapon",
+      "rarity": "common",
+      "grants": {
+        "agility": 1
+      },
+      "icon": "icon_02",
+      "classes": [
+        "archer"
+      ]
+    },
+    "apprentice_staff": {
+      "slot": "weapon",
+      "rarity": "common",
+      "grants": {
+        "intelligence": 1
+      },
+      "icon": "icon_03",
+      "classes": [
+        "mage"
+      ]
+    },
+    "iron_sword": {
+      "slot": "weapon",
+      "rarity": "uncommon",
+      "grants": {
+        "strength": 2
+      },
+      "icon": "icon_01",
+      "classes": [
+        "warrior"
+      ]
+    },
+    "yew_bow": {
+      "slot": "weapon",
+      "rarity": "uncommon",
+      "grants": {
+        "agility": 2
+      },
+      "icon": "icon_02",
+      "classes": [
+        "archer"
+      ]
+    },
+    "oak_staff": {
+      "slot": "weapon",
+      "rarity": "uncommon",
+      "grants": {
+        "intelligence": 2
+      },
+      "icon": "icon_03",
+      "classes": [
+        "mage"
+      ]
+    },
+    "knight_blade": {
+      "slot": "weapon",
+      "rarity": "rare",
+      "grants": {
+        "strength": 2,
+        "critical": 2
+      },
+      "icon": "icon_01",
+      "classes": [
+        "warrior"
+      ]
+    },
+    "longbow": {
+      "slot": "weapon",
+      "rarity": "rare",
+      "grants": {
+        "agility": 2,
+        "critical": 2
+      },
+      "icon": "icon_02",
+      "classes": [
+        "archer"
+      ]
+    },
+    "runed_staff": {
+      "slot": "weapon",
+      "rarity": "rare",
+      "grants": {
+        "intelligence": 3
+      },
+      "icon": "icon_03",
+      "classes": [
+        "mage"
+      ]
+    },
+    "sunder": {
+      "slot": "weapon",
+      "rarity": "epic",
+      "grants": {
+        "strength": 3,
+        "defence": 1,
+        "critical": 1
+      },
+      "icon": "icon_01",
+      "classes": [
+        "warrior"
+      ]
+    },
+    "windpiercer": {
+      "slot": "weapon",
+      "rarity": "epic",
+      "grants": {
+        "agility": 4,
+        "critical": 1
+      },
+      "icon": "icon_02",
+      "classes": [
+        "archer"
+      ]
+    },
+    "emberstaff": {
+      "slot": "weapon",
+      "rarity": "epic",
+      "grants": {
+        "intelligence": 4,
+        "hit_points": 5
+      },
+      "icon": "icon_03",
+      "classes": [
+        "mage"
+      ]
+    },
+    "kingmaker": {
+      "slot": "weapon",
+      "rarity": "legendary",
+      "grants": {
+        "strength": 5,
+        "defence": 1,
+        "hit_points": 5
+      },
+      "icon": "icon_01",
+      "classes": [
+        "warrior"
+      ]
+    },
+    "wooden_shield": {
+      "slot": "shield",
+      "rarity": "common",
+      "grants": {
+        "defence": 1
+      },
+      "icon": "icon_04"
+    },
+    "iron_shield": {
+      "slot": "shield",
+      "rarity": "uncommon",
+      "grants": {
+        "defence": 2
+      },
+      "icon": "icon_04"
+    },
+    "tower_shield": {
+      "slot": "shield",
+      "rarity": "rare",
+      "grants": {
+        "defence": 2,
+        "hit_points": 10
+      },
+      "icon": "icon_04"
+    },
+    "bulwark": {
+      "slot": "shield",
+      "rarity": "epic",
+      "grants": {
+        "defence": 3,
+        "hit_points": 15
+      },
+      "icon": "icon_04"
+    },
+    "leather_cap": {
+      "slot": "helmet",
+      "rarity": "common",
+      "grants": {
+        "hit_points": 10
+      },
+      "icon": "icon_05"
+    },
+    "iron_helm": {
+      "slot": "helmet",
+      "rarity": "uncommon",
+      "grants": {
+        "hit_points": 10,
+        "defence": 1
+      },
+      "icon": "icon_05"
+    },
+    "crowned_helm": {
+      "slot": "helmet",
+      "rarity": "rare",
+      "grants": {
+        "hit_points": 20,
+        "defence": 1
+      },
+      "icon": "icon_05"
+    },
+    "padded_coat": {
+      "slot": "armour",
+      "rarity": "common",
+      "grants": {
+        "hit_points": 10
+      },
+      "icon": "icon_06"
+    },
+    "chainmail": {
+      "slot": "armour",
+      "rarity": "uncommon",
+      "grants": {
+        "hit_points": 20
+      },
+      "icon": "icon_06"
+    },
+    "plate": {
+      "slot": "armour",
+      "rarity": "rare",
+      "grants": {
+        "hit_points": 20,
+        "defence": 1
+      },
+      "icon": "icon_06"
+    },
+    "dragonscale": {
+      "slot": "armour",
+      "rarity": "epic",
+      "grants": {
+        "hit_points": 25,
+        "defence": 2
+      },
+      "icon": "icon_06"
+    },
+    "copper_ring": {
+      "slot": "accessory",
+      "rarity": "common",
+      "grants": {
+        "critical": 2
+      },
+      "icon": "icon_07"
+    },
+    "hunters_charm": {
+      "slot": "accessory",
+      "rarity": "uncommon",
+      "grants": {
+        "agility": 2
+      },
+      "icon": "icon_07"
+    },
+    "sages_pendant": {
+      "slot": "accessory",
+      "rarity": "uncommon",
+      "grants": {
+        "intelligence": 2
+      },
+      "icon": "icon_07"
+    },
+    "swift_boots": {
+      "slot": "accessory",
+      "rarity": "rare",
+      "grants": {
+        "movement_points": 1,
+        "critical": 1
+      },
+      "icon": "icon_08"
+    },
+    "warding_band": {
+      "slot": "accessory",
+      "rarity": "epic",
+      "grants": {
+        "defence": 2,
+        "hit_points": 25
+      },
+      "icon": "icon_07"
+    },
+    "amulet_of_focus": {
+      "slot": "accessory",
+      "rarity": "legendary",
+      "grants": {
+        "action_points": 1,
+        "hit_points": 25,
+        "critical": 1
+      },
+      "icon": "icon_08"
+    }
+  }
+}

@@ -234,14 +234,22 @@ dur : passer par `data/assets.json`.
 - **Phase courante : 1 — cœur tactique PA/PM.** Le pivot vers la vision
   Tiny Kingdoms a été acté le 2026-08-31.
 - **Phase 1 terminée.** T1.1 à T1.12 sont faites et testées.
-- **Phase courante : 2 — RPG.** T2.1 (le `Hero`) et T2.2 (XP et niveaux)
-  sont faites. **411 tests passent** sous Godot 4.6 en headless.
-- **Reste en Phase 2 :** équipement, butin, écran de compagnie, sauvegarde.
+- **Phase courante : 2 — RPG.** T2.1 à T2.4 sont faites : le `Hero`, les
+  niveaux, l'équipement, le butin. **445 tests passent** sous Godot 4.6 en
+  headless.
+- **Reste en Phase 2 :** écran de fiche et de compagnie, sauvegarde.
 
 **Le sens de la dépendance, à ne pas inverser :** `Hero` connaît `Unit`,
 jamais l'inverse. Le combat ignore ce qu'est un niveau. Toutes les
 modifications sont appliquées une seule fois, dans
 `Hero.effective_stats()` ; `Unit.from_stats` reçoit un bloc déjà calculé.
+
+**L'équilibrage d'un objet n'a pas d'instrument.** On ne simule pas mille
+combats pour un anneau. La règle qui remplace la mesure : chaque rareté
+vaut un budget de points, et les gains d'un objet doivent le valoir
+exactement. Le barème est dans `data/items/equipment.json`, et
+`verify_items` refuse tout écart. **Ne jamais ajouter un objet sans le
+faire passer par là.**
 
 **Le combat se joue, sur PC.** Écran de titre → composition de l'équipe →
 choix d'une des 8 cartes → placement → combat.
@@ -283,6 +291,7 @@ godot --headless --path . -s tools/verify_assets.gd     # 535 entrées
 godot --headless --path . -s tools/verify_audio.gd      # 30 entrées
 godot --headless --path . -s tools/verify_font.gd       # 140 glyphes
 godot --headless --path . -s tools/verify_maps.gd       # 8 cartes
+godot --headless --path . -s tools/verify_items.gd      # 30 objets
 godot --headless --path . -s tools/simulate_combats.gd  # équilibrage
 ```
 

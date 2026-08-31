@@ -74,3 +74,43 @@ BOOT_SQUAD,Équipe — toucher pour changer de classe
 HUD_BEGIN_COMBAT,Commencer
 HUD_DEPLOY,"Placez votre équipe — %d à poser"
 HUD_DEPLOY_READY,Équipe en place
+ITEM_RUSTY_SWORD,Épée rouillée
+ITEM_HUNTING_BOW,Arc de chasse
+ITEM_APPRENTICE_STAFF,Bâton d'apprenti
+ITEM_IRON_SWORD,Épée de fer
+ITEM_YEW_BOW,Arc d'if
+ITEM_OAK_STAFF,Bâton de chêne
+ITEM_KNIGHT_BLADE,Lame de chevalier
+ITEM_LONGBOW,Arc long
+ITEM_RUNED_STAFF,Bâton runique
+ITEM_SUNDER,Fendoir
+ITEM_WINDPIERCER,Perce-vent
+ITEM_EMBERSTAFF,Bâton de braise
+ITEM_KINGMAKER,Faiseur de rois
+ITEM_WOODEN_SHIELD,Bouclier de bois
+ITEM_IRON_SHIELD,Bouclier de fer
+ITEM_TOWER_SHIELD,Pavois
+ITEM_BULWARK,Rempart
+ITEM_LEATHER_CAP,Coiffe de cuir
+ITEM_IRON_HELM,Heaume de fer
+ITEM_CROWNED_HELM,Heaume couronné
+ITEM_PADDED_COAT,Gambison
+ITEM_CHAINMAIL,Cotte de mailles
+ITEM_PLATE,Harnois
+ITEM_DRAGONSCALE,Écailles de dragon
+ITEM_COPPER_RING,Anneau de cuivre
+ITEM_HUNTERS_CHARM,Charme du chasseur
+ITEM_SAGES_PENDANT,Pendentif du sage
+ITEM_SWIFT_BOOTS,Bottes lestes
+ITEM_WARDING_BAND,Bague de garde
+ITEM_AMULET_OF_FOCUS,Amulette de concentration
+RARITY_COMMON,Commun
+RARITY_UNCOMMON,Peu commun
+RARITY_RARE,Rare
+RARITY_EPIC,Épique
+RARITY_LEGENDARY,Légendaire
+SLOT_WEAPON,Arme
+SLOT_SHIELD,Bouclier
+SLOT_HELMET,Casque
+SLOT_ARMOUR,Armure
+SLOT_ACCESSORY,Accessoire
