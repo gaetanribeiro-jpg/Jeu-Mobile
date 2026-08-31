@@ -468,7 +468,7 @@ jeu après quelques images et rend la main.
 xvfb-run -a godot --path . --resolution 1280x720 -- --capture /tmp/x.png
 ```
 
-### Phase 3 — Monde ⏳ *en cours*
+### Phase 3 — Monde ✅
 
 | Tâche | Contenu | État |
 |---|---|---|
@@ -477,7 +477,7 @@ xvfb-run -a godot --path . --resolution 1280x720 -- --capture /tmp/x.png
 | **T3.3** | Évènements du § 40 : autel, village, ruines, embuscade, coffre | ✅ |
 | **T3.4** | Le marchand : ce qu'on achète est à l'abri | ✅ |
 | **T3.5** | Écran d'expédition : la route, la besace, rentrer ou continuer | ✅ |
-| **T3.6** | Écran de carte du monde : choisir sa région et son équipe | ⏳ |
+| **T3.6** | Écran de carte du monde, et la boucle branchée de bout en bout | ✅ |
 
 ### Les régions, et l'escalade sans toucher aux chiffres (T3.1)
 
@@ -658,6 +658,53 @@ faut le connaître par cœur pour le remarquer.
 Un test qui disparaît est pire qu'un test qui échoue. `verify_scripts`
 couvre donc maintenant `res://tests` comme le reste — c'est exactement le
 défaut qu'il avait lui-même en T3.1, à un dossier près.
+
+### La carte du monde, et la boucle branchée (T3.6)
+
+Le § 28 met les décisions avant le départ. Une seule est réelle au MVP —
+l'équipe — puisqu'une seule région est ouverte. **Les cinq autres sont
+affichées et lisibles**, verrouillées : une carte qui ne montrerait que les
+Terres Vertes ne serait pas une carte du monde, ce serait un bouton. Le
+verrou dit qu'il y a une suite, et il ne coûte rien.
+
+**L'équipe se compose ici et pas dans l'expédition.** Une fois partie, elle
+ne change plus : c'est ce qui fait de sa composition une décision, et d'une
+déroute une conséquence de cette décision-là.
+
+`boot.gd` devient un menu : expédition, compagnie, et **le banc d'essai des
+huit cartes, qui reste**. Ce n'est pas un reliquat. Je ne peux pas jouer au
+jeu ; pouvoir ouvrir une carte précise en deux clics est la seule façon de
+vérifier un combat sans traverser une sortie entière. Il est nommé pour ce
+qu'il est.
+
+**L'expédition fait partie de la sauvegarde**, et la reprise passe avant
+tout le reste à l'écran comme sur le disque : sans ça on repartirait de
+zéro sans s'apercevoir qu'on vient de perdre une sortie de six étapes.
+
+### Ce que les captures ont montré, encore (T3.6)
+
+Quatre défauts, dont deux qu'aucun test n'aurait vus.
+
+1. **Le résumé de région sortait une lettre par ligne.** Un
+   `ScrollContainer` qui autorise le défilement horizontal laisse son
+   enfant à sa largeur minimale, et l'autowrap s'effondre.
+2. **Les barres de vie étaient grises sur gris.** C'est LE chiffre de la
+   décision du § 29 ; il doit se lire sans être lu. Vert, ambre, rouge.
+3. **Les options d'évènement ne disaient pas leurs termes.** « Le forcer à
+   l'épaule » ne dit rien ; « Le forcer à l'épaule — −10 % PV, un objet de
+   valeur » dit tout. C'est le télégraphe du combat appliqué aux
+   évènements : un ennemi annonce ses dégâts chiffrés avant de frapper, et
+   on ne décide pas de ce qu'on ignore.
+4. **L'étal ne disait pas ce que ses objets font.** « Pavois, rare, 132 »
+   ne permet pas de savoir si c'est mieux que ce qu'on porte, donc pas de
+   comparer l'achat au fait de ne pas acheter.
+
+Pour les voir, `Capture` sait maintenant **naviguer** : `--press` presse
+des boutons par leur texte, dans l'ordre. Un écran qu'on n'atteint qu'en
+naviguant se photographie donc tel que le joueur l'atteint, et pas monté à
+la main dans un banc d'essai — c'était précisément la leçon de T2.7. Une
+pression qui échoue **n'enregistre pas d'image** : elle montrerait l'écran
+précédent, et on en conclurait que la navigation marche.
 
 ### Un outil de vérification qui mentait (T3.1)
 

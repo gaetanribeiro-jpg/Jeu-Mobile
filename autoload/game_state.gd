@@ -20,6 +20,13 @@ var campaign_seed: int = 0
 ## sur le disque.
 var company := Company.new()
 
+## L'expédition en cours, ou null si le joueur est au royaume.
+##
+## ELLE FAIT PARTIE DE LA SAUVEGARDE. Sur mobile l'application meurt en
+## pleine sortie, et perdre une expédition pour cette raison serait la pire
+## des punitions — précisément celle que le § 41 refuse pour la mort.
+var expedition: Expedition = null
+
 
 func _ready() -> void:
 	if campaign_seed == 0:
@@ -31,14 +38,18 @@ func start_new_campaign(seed_value: int) -> void:
 	campaign_seed = seed_value
 	rng.seed = seed_value
 	company = Company.new()
+	expedition = null
 
 
 ## Tout ce qu'il faut écrire pour retrouver la partie où on l'a laissée.
 func to_save() -> Dictionary:
-	return {
+	var data := {
 		"seed": campaign_seed,
 		"company": company.to_dictionary(),
 	}
+	if expedition != null:
+		data["expedition"] = expedition.to_dictionary()
+	return data
 
 
 ## Restaure une partie sauvegardée. Une sauvegarde vide laisse l'état tel
@@ -49,6 +60,9 @@ func from_save(data: Dictionary) -> bool:
 	campaign_seed = int(data.get("seed", campaign_seed))
 	rng.seed = campaign_seed
 	company = Company.from_dictionary(data.get("company", {}))
+	expedition = null
+	if data.has("expedition"):
+		expedition = Expedition.from_dictionary(data["expedition"])
 	return true
 
 

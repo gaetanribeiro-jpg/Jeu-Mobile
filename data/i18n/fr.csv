@@ -194,3 +194,25 @@ EXPEDITION_LOG_GOLD,%+d or
 EXPEDITION_LOG_LOST,%d or perdu
 EXPEDITION_LOG_DOWNED,%s est tombé
 EXPEDITION_LOG_AMBUSHED,Ils vous coupent la route.
+WORLD_TITLE,Le monde
+WORLD_ACT,Acte %d
+WORLD_LOCKED,Verrouillée
+WORLD_LOCKED_TEXT,Vous n'avez pas encore de quoi y aller.
+WORLD_LENGTH,Une sortie de %d à %d étapes.
+WORLD_ENDS_ON_BOSS,Elle se termine sur un boss.
+WORLD_NO_HEALING,Rien ne se soigne entre deux rencontres.
+WORLD_SQUAD,Votre équipe
+WORLD_DEPART,Partir pour %s
+BOOT_EXPEDITION,Partir en expédition
+BOOT_RESUME,Reprendre l'expédition
+BOOT_TESTBENCH,Combat seul — banc d'essai
+EFFECT_GOLD,%+d or
+EFFECT_HEALTH,%+d %% PV
+EFFECT_ITEM_ONE,un objet
+EFFECT_ITEM,%d objets
+EFFECT_ITEM_FINE_ONE,un objet de valeur
+EFFECT_ITEM_FINE,%d objets de valeur
+EFFECT_SATCHEL,−%d %% de la besace
+EFFECT_COMBAT,un combat
+EFFECT_NOTHING,rien
+EVENT_OR_ELSE,%s   ·   sinon %s

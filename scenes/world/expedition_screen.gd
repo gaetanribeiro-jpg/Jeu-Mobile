@@ -35,7 +35,11 @@ const BADGE_PX := 118
 
 var _run: Expedition
 var _company: Company
+## Le générateur de l'étape en cours. Il est renouvelé quand l'étape
+## change, et jamais autrement : le rappeler à chaque tirage repartirait du
+## début de la séquence, et l'autel rendrait le même verdict trois fois.
 var _rng: CombatRng
+var _rng_step: int = -1
 var _journal := ""
 
 @onready var _title: Label = %Title
@@ -53,10 +57,16 @@ func _ready() -> void:
 
 
 ## À appeler avant d'ajouter la scène à l'arbre.
-func configure(run: Expedition, company: Company, rng: CombatRng) -> void:
+func configure(run: Expedition, company: Company) -> void:
 	_run = run
 	_company = company
-	_rng = rng
+	_sync_rng()
+
+
+func _sync_rng() -> void:
+	if _run != null and _rng_step != _run.index:
+		_rng_step = _run.index
+		_rng = _run.step_rng()
 
 
 func expedition() -> Expedition:
@@ -66,6 +76,7 @@ func expedition() -> Expedition:
 func refresh() -> void:
 	if _run == null or not is_node_ready():
 		return
+	_sync_rng()
 	# Le stock et l'évènement se tirent à l'arrivée. Les tirer ici, au
 	# moment d'afficher l'étape, est le seul endroit qui garantisse que le
 	# joueur les découvre en même temps que l'écran les montre.
@@ -169,12 +180,29 @@ func _build_squad() -> void:
 		bar.max_value = unit.max_hit_points
 		bar.value = unit.hit_points
 		bar.show_percentage = false
+		# Teintée : c'est le chiffre qui décide si l'on continue, et il doit
+		# se lire sans être lu. Gris sur gris ne dit rien de plus qu'une
+		# ligne de texte, et prend la place d'une information.
+		var fill := StyleBoxFlat.new()
+		fill.bg_color = _health_colour(float(unit.hit_points) / maxf(float(unit.max_hit_points), 1.0))
+		fill.set_corner_radius_all(3)
+		bar.add_theme_stylebox_override("fill", fill)
 		row.add_child(bar)
 
 		var pv := Label.new()
 		pv.add_theme_font_size_override("font_size", 18)
 		pv.text = "%d / %d" % [unit.hit_points, unit.max_hit_points]
 		row.add_child(pv)
+
+
+## Vert tant que ça va, ambre quand ça se discute, rouge quand la question
+## ne se pose plus.
+func _health_colour(ratio: float) -> Color:
+	if ratio > 0.6:
+		return Color(0.40, 0.72, 0.36)
+	if ratio > 0.3:
+		return Color(0.90, 0.72, 0.28)
+	return Color(0.82, 0.32, 0.28)
 
 
 # --- L'étape en cours ------------------------------------------------------
@@ -208,7 +236,7 @@ func _heading(text: String, size: int = 28) -> void:
 
 func _action(text: String, handler: Callable, enabled: bool = true) -> Button:
 	var button := Button.new()
-	button.custom_minimum_size = Vector2(420, 64)
+	button.custom_minimum_size = Vector2(420, 72)
 	button.add_theme_font_size_override("font_size", 22)
 	button.text = text
 	button.disabled = not enabled
@@ -252,13 +280,47 @@ func _build_event() -> void:
 		var label := tr(ExpeditionEvent.option_label(event_id, index))
 		if ExpeditionEvent.option_gambles(event_id, index):
 			label += "   %d %%" % int(round(ExpeditionEvent.option_chance(event_id, index) * 100.0))
-		var cost := ExpeditionEvent.option_gold_cost(event_id, index)
-		if cost > 0:
-			label += "   −%d" % cost
+		label += "\n%s" % _terms(event_id, index)
 		# Une option qu'on ne peut pas payer reste PROPOSÉE, grisée :
 		# savoir ce qu'on ne peut pas s'offrir fait partie de la décision.
 		var affordable := ExpeditionEvent.can_afford(event_id, index, _company.gold)
 		_action(label, _choose.bind(event_id, index), affordable)
+
+
+## Ce que l'option donne et ce qu'elle prend, écrit sous son intitulé.
+##
+## C'EST LE TÉLÉGRAPHE, APPLIQUÉ AUX ÉVÈNEMENTS. Un ennemi annonce ses
+## dégâts chiffrés avant de frapper ; une option qui ne dirait pas ses
+## termes demanderait au joueur de parier sur une phrase d'ambiance. Le
+## § 40 réclame une décision, et on ne décide pas de ce qu'on ignore.
+func _terms(event_id: StringName, index: int) -> String:
+	var option := ExpeditionEvent.option(event_id, index)
+	var line := _effects_text(option.get("success", {}))
+	if ExpeditionEvent.option_gambles(event_id, index):
+		line = tr("EVENT_OR_ELSE") % [line, _effects_text(option.get("failure", {}))]
+	return line
+
+
+func _effects_text(effects: Dictionary) -> String:
+	var pieces := PackedStringArray()
+	var gold := int(effects.get("gold", 0))
+	if gold != 0:
+		pieces.append(tr("EFFECT_GOLD") % gold)
+	var health := float(effects.get("health", 0.0))
+	if not is_zero_approx(health):
+		pieces.append(tr("EFFECT_HEALTH") % int(round(health * 100.0)))
+	var items := int(effects.get("items", 0))
+	if items > 0:
+		var key := "EFFECT_ITEM_FINE" if int(effects.get("rarity_bonus", 0)) > 0 else "EFFECT_ITEM"
+		pieces.append(tr(key) % items if items > 1 else tr(key + "_ONE"))
+	var kept := float(effects.get("satchel_kept", 1.0))
+	if kept < 1.0:
+		pieces.append(tr("EFFECT_SATCHEL") % int(round((1.0 - kept) * 100.0)))
+	if bool(effects.get("combat", false)):
+		pieces.append(tr("EFFECT_COMBAT"))
+	if pieces.is_empty():
+		return tr("EFFECT_NOTHING")
+	return " · ".join(pieces)
 
 
 func _choose(event_id: StringName, index: int) -> void:
@@ -277,10 +339,15 @@ func _build_merchant() -> void:
 		var item_id := stock[slot]
 		var price := Merchant.price_of(item_id)
 		var sold := _run.sold_slots().has(slot)
-		var label := "%s   %s   %d" % [
+		var label := "%s   %s   %d\n%s" % [
 			tr(Equipment.name_key(item_id)),
 			tr(Equipment.rarity_name_key(Equipment.rarity_of(item_id))),
 			price,
+			# Un nom et un prix ne suffisent pas à décider : « Pavois, rare,
+			# 132 » ne dit pas si c'est mieux que ce qu'on porte. Ce que
+			# l'objet accorde est la seule information qui rende l'achat
+			# comparable à ne pas acheter.
+			_grants_text(item_id),
 		]
 		if sold:
 			label = tr("EXPEDITION_SOLD") % tr(Equipment.name_key(item_id))
@@ -289,6 +356,16 @@ func _build_merchant() -> void:
 	_action(tr("EXPEDITION_LEAVE_SHOP"), func() -> void:
 		_run.resolve_event({}, _rng, _company)
 		_after_step())
+
+
+func _grants_text(item_id: StringName) -> String:
+	var pieces := PackedStringArray()
+	var grants := Equipment.grants(item_id)
+	for key: Variant in grants.keys():
+		pieces.append("%s %+d" % [
+			tr("STAT_%s" % String(key).to_upper()), int(grants[key])
+		])
+	return ", ".join(pieces)
 
 
 func _purchase(slot: int) -> void:

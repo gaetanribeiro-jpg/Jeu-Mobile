@@ -237,14 +237,13 @@ dur : passer par `data/assets.json`.
 - **Phase 2 terminée.** T2.1 à T2.7 : le `Hero`, les niveaux,
   l'équipement, le butin, la `Company`, la sauvegarde, l'écran de
   compagnie.
-- **Phase 3 en cours.** T3.1 (`Region`), T3.2 (`Expedition`), T3.3 (les
-  évènements du § 40), T3.4 (le marchand) et T3.5 (l'écran d'expédition)
-  sont faites. **575 tests passent** sous Godot 4.6 en headless. Reste
-  T3.6, la carte du monde, qui donnera au joueur accès à tout cela.
-- **La boucle du § 3 tourne, en court-circuit :** compagnie → combat →
-  expérience et butin → compagnie → sauvegarde. Il manque le royaume
-  (Phase 4), et les écrans du monde (T3.4, T3.5) qui donneront au joueur
-  accès à l'expédition.
+- **Phase 3 terminée.** T3.1 à T3.6 : `Region`, `Expedition`, les
+  évènements du § 40, le marchand, l'écran d'expédition et la carte du
+  monde. **582 tests passent** sous Godot 4.6 en headless.
+- **La boucle du § 3 tourne, sauf le royaume :** carte du monde →
+  expédition → combat → butin et expérience → compagnie → sauvegarde. Il
+  manque 🏰 ROYAUME, qui est la Phase 4 et qui se branchera au même
+  endroit — sur `boot.gd` et sur l'or de la compagnie.
 
 **Le sens de la dépendance, à ne pas inverser :** `Hero` connaît `Unit`,
 jamais l'inverse. Le combat ignore ce qu'est un niveau. Toutes les
@@ -258,10 +257,13 @@ exactement. Le barème est dans `data/items/equipment.json`, et
 `verify_items` refuse tout écart. **Ne jamais ajouter un objet sans le
 faire passer par là.**
 
-**Le combat se joue, sur PC.** Écran de titre → composition de l'équipe →
-choix d'une des 8 cartes → placement → combat.
+**L'expédition se joue, sur PC.** Écran de titre → carte du monde →
+composition de l'équipe → départ → route du § 28 (combats, évènements,
+marchand, mini-boss, boss) → rentrer ou continuer.
 `pointing/emulate_touch_from_mouse` est actif, donc la souris se comporte
-comme un doigt.
+comme un doigt. **Le banc d'essai des 8 cartes reste sur l'écran de
+titre** : ouvrir une carte précise en deux clics est la seule façon de
+vérifier un combat sans traverser une sortie entière.
 
 **Les huit cartes sont au format 12 × 9** et se jouent en 3 à 7 rondes.
 
@@ -279,10 +281,13 @@ Conséquences, et elles sont limitées :
 ```bash
 # Le JEU RÉEL, autoloads compris. À préférer, toujours.
 xvfb-run -a godot --path . --resolution 1280x720 -- --capture /tmp/x.png
+# --press navigue : il presse des boutons par leur texte, dans l'ordre.
+xvfb-run -a godot --path . --resolution 1280x720 -- --capture /tmp/x.png \
+  --press "Partir en expédition|Partir pour"
 xvfb-run -a godot --path . --resolution 1280x720 \
   -s tools/dev/combat_storyboard.gd -- /tmp/planche vallee_03
 ```
-**Huit défauts n'ont été trouvés que comme ça**, dont trois vrais bugs.
+**Douze défauts n'ont été trouvés que comme ça**, dont trois vrais bugs.
 
 **Un script lancé par `-s` ne reçoit AUCUN autoload**, et l'identifiant
 `GameState` est résolu à la COMPILATION : un écran qui lit la partie

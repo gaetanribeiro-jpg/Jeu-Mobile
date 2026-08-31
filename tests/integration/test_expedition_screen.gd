@@ -51,7 +51,7 @@ func before_each() -> void:
 func _mount() -> void:
 	var packed: PackedScene = load("res://scenes/world/expedition_screen.tscn")
 	_screen = packed.instantiate()
-	_screen.configure(_run, _company, CombatRng.new(4242))
+	_screen.configure(_run, _company)
 	add_child_autofree(_screen)
 	_screen.changed.connect(func() -> void: _changes += 1)
 	_screen.finished.connect(func(state: int) -> void: _ended = state)
@@ -174,7 +174,7 @@ func test_une_etape_de_combat_demande_un_plateau() -> void:
 func test_un_evenement_propose_ses_options() -> void:
 	assert_true(_advance_to(&"event"), "la chaîne n'a pas d'évènement")
 	await wait_process_frames(1)
-	var event_id := _run.reveal_event(CombatRng.new(4242))
+	var event_id := _run.reveal_event(_run.step_rng())
 	assert_false(event_id.is_empty())
 	assert_eq(_step_buttons().size(), ExpeditionEvent.options(event_id).size())
 
@@ -193,7 +193,7 @@ func test_le_pari_est_annonce_avant_d_etre_couru() -> void:
 	# évènement doit dire sa chance avant qu'on la coure.
 	assert_true(_advance_to(&"event"))
 	await wait_process_frames(1)
-	var event_id := _run.reveal_event(CombatRng.new(4242))
+	var event_id := _run.reveal_event(_run.step_rng())
 	for index in ExpeditionEvent.options(event_id).size():
 		if not ExpeditionEvent.option_gambles(event_id, index):
 			continue
@@ -204,7 +204,7 @@ func test_le_pari_est_annonce_avant_d_etre_couru() -> void:
 func test_une_option_trop_chere_est_grisee_mais_montree() -> void:
 	assert_true(_advance_to(&"event"))
 	await wait_process_frames(1)
-	var event_id := _run.reveal_event(CombatRng.new(4242))
+	var event_id := _run.reveal_event(_run.step_rng())
 	var costly := -1
 	for index in ExpeditionEvent.options(event_id).size():
 		if ExpeditionEvent.option_gold_cost(event_id, index) > 0:
@@ -224,7 +224,7 @@ func test_le_marchand_vend_et_l_objet_est_a_l_abri() -> void:
 		pass_test("cette chaîne n'a pas de marchand")
 		return
 	await wait_process_frames(1)
-	var stock := _run.reveal_stock(CombatRng.new(4242))
+	var stock := _run.reveal_stock(_run.step_rng())
 	assert_false(stock.is_empty())
 	var before := _company.gold
 

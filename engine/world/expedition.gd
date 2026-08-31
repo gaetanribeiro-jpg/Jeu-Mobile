@@ -43,6 +43,16 @@ const KIND_MERCHANT := &"merchant"
 var region_id: StringName = &""
 var state: int = State.ONGOING
 
+## Graine de la sortie, fixée au départ et sauvegardée.
+##
+## TOUS LES TIRAGES D'UNE ÉTAPE EN DÉCOULENT, par `step_rng()`. Deux
+## raisons, et la seconde est celle qui compte : une expédition rechargée
+## reprend exactement où elle en était, sans qu'on ait eu à écrire sur le
+## disque la position d'un générateur ; et l'étape 5 tire les mêmes nombres
+## qu'on y soit arrivé en une heure ou en trois jours, parce que sa graine
+## ne dépend pas de ce qui s'est tiré avant elle.
+var seed_value: int = 0
+
 ## La route, du départ à la fin : { kind, map }. `map` est vide pour une
 ## étape qui ne se joue pas sur un plateau.
 var steps: Array[Dictionary] = []
@@ -73,6 +83,7 @@ static func depart(region: StringName, heroes: Array[int], rng: CombatRng) -> Ex
 
 	var run := Expedition.new()
 	run.region_id = region
+	run.seed_value = rng.seed_value if rng != null else 0
 	run.squad_ids = heroes.duplicate()
 	run.steps = _build_chain(region, rng)
 	if run.steps.is_empty():
@@ -155,6 +166,13 @@ func current_map() -> StringName:
 ## Vrai si l'étape en cours se joue sur un plateau.
 func current_is_combat() -> bool:
 	return not current_map().is_empty()
+
+
+## Le générateur de l'étape en cours. Une seule instance par étape, tenue
+## par l'appelant le temps de la résoudre : la rappeler repartirait du
+## début de la séquence.
+func step_rng() -> CombatRng:
+	return CombatRng.new(hash([seed_value, index]))
 
 
 func step_kind(step_index: int) -> StringName:
@@ -558,6 +576,7 @@ func to_dictionary() -> Dictionary:
 		items.append(String(item_id))
 	return {
 		"region": String(region_id),
+		"seed": seed_value,
 		"state": state,
 		"index": index,
 		"steps": steps.duplicate(true),
@@ -574,6 +593,7 @@ static func from_dictionary(data: Dictionary) -> Expedition:
 		return null
 	var run := Expedition.new()
 	run.region_id = StringName(data.get("region", ""))
+	run.seed_value = int(data.get("seed", 0))
 	run.state = int(data.get("state", State.ONGOING))
 	run.index = int(data.get("index", 0))
 	for step: Variant in data.get("steps", []):
