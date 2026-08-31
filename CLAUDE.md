@@ -233,11 +233,10 @@ dur : passer par `data/assets.json`.
 
 - **Phase courante : 1 — cœur tactique PA/PM.** Le pivot vers la vision
   Tiny Kingdoms a été acté le 2026-08-31.
-- **Phase 1 terminée.** T1.1 à T1.11 sont faites et testées.
-  **354 tests passent** sous Godot 4.6 en headless.
-- **Reste avant la Phase 2 :** T1.12 — rien n'endommage le décor, donc le
-  feu du Torch Goblin et la destruction d'un pont sont déclarés en données
-  et jamais appliqués.
+- **Phase 1 terminée.** T1.1 à T1.12 sont faites et testées.
+  **367 tests passent** sous Godot 4.6 en headless.
+- **Prochaine phase : 2 — RPG.** XP, niveaux, statistiques, arbre de
+  compétences, équipement, loot (§ 45).
 
 **Le combat se joue, sur PC.** Écran de titre → composition de l'équipe →
 choix d'une des 8 cartes → placement → combat.

@@ -212,7 +212,7 @@ Suit l'ordre du § 45, adapté à ce qui existe déjà.
 | **T1.9** | HUD : jauges PA/PM, timeline, barre de compétences, portée et zone | ✅ |
 | **T1.10** | Les 8 cartes réécrites en 12 × 9 | ✅ |
 | **T1.11** | Équilibrage : le combat coûte quelque chose | ✅ |
-| **T1.12** | Rien n'endommage le décor : `damage_structure` n'est appelé nulle part | ⏳ |
+| **T1.12** | Le décor encaisse, et le feu brûle | ✅ |
 | **T1.13** | `tools/verify_scripts.gd` : né du constat que `--quit` ne voit pas les scripts chargés à l'exécution | ✅ |
 
 **État au 2026-08-31 : la Phase 1 est terminée.** T1.1 à T1.11 sont
@@ -301,13 +301,38 @@ appartient à Gaetan. Trois pistes :
 3. **Assumer** : l'Archer est fort au MVP, et l'équilibrage viendra avec
    l'équipement et les classes suivantes (Phase 2).
 
-**T1.12, trouvé en écrivant les cartes.** `Tile.damage_structure` existe,
-est testée, et **n'est appelée par personne**. Aucune compétence
-n'endommage le décor. Conséquence directe : un objectif « protéger une
-structure » ne peut jamais échouer, et `vallee_05` protège donc un
-villageois plutôt qu'un pont. Le `leaves_terrain: "fire"` du Torch Goblin
-est dans le même cas : déclaré en données, jamais appliqué. Les deux vont
-ensemble — c'est le § 19, « le terrain doit avoir un véritable impact ».
+**T1.12 est faite.** Deux choses étaient déclarées en données et jamais
+appliquées : les points de vie d'un pont, et le `leaves_terrain` du Torch
+Goblin. C'est le § 19 — « le terrain doit avoir un véritable impact » —
+et il est tenu :
+
+- une compétence qui touche une case VIDE portant un décor destructible
+  frappe le décor. Casser le pont de `vallee_02` coupe le seul passage de
+  la carte : c'est un coup qui vaut une activation entière. Une case
+  occupée ne compte pas — on frappe qui se tient sur le pont, pas le pont
+  sous ses pieds, sinon une Boule de feu dans une mêlée noierait tout le
+  monde sans prévenir.
+- une attaque à cible unique peut donc viser une case vide s'il y a
+  quelque chose à casser, et seulement dans ce cas.
+- le **feu** existe : il recouvre la case quelques rondes, brûle qui
+  commence son activation dessus, puis s'éteint et **rend le terrain qu'il
+  a remplacé**. Sans cette dernière règle, un incendie transformerait
+  durablement une forêt en prairie et la carte ne serait plus celle que
+  l'auteur a écrite.
+- il ne prend ni sur l'eau ni sur la pierre.
+
+Un défaut de rendu trouvé en capture d'écran : **le feu était invisible**.
+La première image d'une bande d'animation de flamme n'est qu'une étincelle
+de quelques pixels, illisible sur une case de 64 — un terrain qui inflige
+des dégâts sans se voir est pire qu'inutile. Les décors peuvent maintenant
+choisir leur image, et tout terrain qui blesse porte une teinte franche :
+la teinte dit la case, le sprite dit ce que c'est.
+
+**Ce qui reste ouvert.** Un objectif « protéger une STRUCTURE » ne peut
+toujours pas échouer, pour une autre raison : l'IA ne vise que des unités,
+jamais un décor. `vallee_05` protège donc encore un villageois. Faire
+viser une structure par l'IA relève de la défense du royaume (§ 38), donc
+de la Phase 5.
 
 ### Phase 2 — RPG
 

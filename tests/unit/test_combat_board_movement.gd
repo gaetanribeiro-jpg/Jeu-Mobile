@@ -226,7 +226,7 @@ func test_le_pont_detruit_coupe_le_passage() -> void:
 		"........",
 	])
 	var unit := _hero(board, &"warrior", Vector2i(1, 1))
-	board.tile_at(Vector2i(2, 1)).damage_structure(2)
+	board.tile_at(Vector2i(2, 1)).damage_structure(9999)
 	assert_false(board.reachable_cells(unit).has(Vector2i(3, 1)), "le pont a cédé")
 
 

@@ -253,9 +253,34 @@ func targetable_cells(unit: Unit, ability: Ability) -> Array[Vector2i]:
 func can_target(unit: Unit, ability: Ability, cell: Vector2i) -> bool:
 	if not targetable_cells(unit, ability).has(cell):
 		return false
-	if ability.needs_occupant() and affected_units(unit, ability, cell).is_empty():
-		return false
-	return true
+	if not ability.needs_occupant():
+		return true
+	if not affected_units(unit, ability, cell).is_empty():
+		return true
+	# Une case vide portant un décor destructible reste une cible légitime :
+	# casser le pont est un coup qu'on porte exprès, et il faut pouvoir le
+	# viser avec une Frappe comme avec autre chose.
+	return not breakable_cells(unit, ability, cell).is_empty()
+
+
+## Décors destructibles que la compétence frapperait.
+##
+## Une case occupée n'y figure pas : on frappe ce qui se tient sur le pont,
+## pas le pont sous ses pieds. Sans cette règle, une Boule de feu lancée
+## dans une mêlée sur un pont ferait tomber tout le monde à l'eau, et le
+## joueur n'aurait rien vu venir.
+func breakable_cells(unit: Unit, ability: Ability, target: Vector2i) -> Array[Vector2i]:
+	var out: Array[Vector2i] = []
+	if ability == null or not ability.is_attack():
+		return out
+	for cell: Vector2i in affected_cells(unit, ability, target):
+		var occupant := unit_at(cell)
+		if occupant != null and occupant.is_active():
+			continue
+		var tile := tile_at(cell)
+		if tile != null and tile.is_destructible() and tile.structure_hp > 0:
+			out.append(cell)
+	return out
 
 
 ## Cases effectivement TOUCHÉES si l'unité vise `target`. C'est ce que le
@@ -343,6 +368,25 @@ func resolve_ability(attacker: Unit, ability: Ability, target: Vector2i) -> Dict
 			"downed": downed,
 			"status": String(ability.status_id),
 		})
+	# Le décor encaisse ce qui ne touche personne.
+	var broken: Array[Vector2i] = []
+	for cell: Vector2i in breakable_cells(attacker, ability, target):
+		var amount := ability.damage
+		if not ability.scaling.is_empty():
+			amount += attacker.stat(ability.scaling)
+		if tile_at(cell).damage_structure(maxi(amount, 1)):
+			broken.append(cell)
+
+	# Puis le terrain que la compétence laisse derrière elle — le feu du
+	# Torch Goblin. Après la casse : un pont détruit devient de l'eau, et
+	# l'eau ne brûle pas.
+	var burned: Array[Vector2i] = []
+	if not ability.leaves_terrain.is_empty():
+		for cell: Vector2i in affected_cells(attacker, ability, target):
+			var tile := tile_at(cell)
+			if tile != null and tile.cover_with(ability.leaves_terrain):
+				burned.append(cell)
+
 	return {
 		"caster_id": attacker.id,
 		"ability": String(ability.id),
@@ -350,6 +394,8 @@ func resolve_ability(attacker: Unit, ability: Ability, target: Vector2i) -> Dict
 		"cells": affected_cells(attacker, ability, target),
 		"hits": hits,
 		"downed_ids": downed_ids,
+		"broken": broken,
+		"burned": burned,
 	}
 
 

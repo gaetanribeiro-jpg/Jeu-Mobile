@@ -50,6 +50,7 @@ func _draw() -> void:
 		var origin := Vector2(cell.x * _tile_size, cell.y * _tile_size)
 		if _is_land(cell):
 			_draw_land(cell, tile, origin)
+		_draw_hazard(tile, origin)
 		_draw_decoration(tile, origin)
 
 	# Falaises en second passage : elles débordent sur la case du dessous,
@@ -124,6 +125,21 @@ func _draw_cliff(cell: Vector2i) -> void:
 	)
 
 
+## Une teinte franche sous tout terrain qui blesse celui qui s'y arrête.
+##
+## Le sprite seul ne suffit pas : une flamme du pack est étroite et laisse
+## voir l'herbe autour, si bien qu'on ne sait pas où la case commence ni où
+## elle finit. Or c'est exactement ce qu'il faut savoir avant de poser le
+## pied. La teinte dit la CASE, le sprite dit ce que c'est.
+func _draw_hazard(tile: Tile, origin: Vector2) -> void:
+	if tile == null or tile.damage_per_activation() <= 0:
+		return
+	var rect := Rect2(origin, Vector2(_tile_size, _tile_size))
+	draw_rect(rect, ViewSettings.color(&"hazard"))
+	draw_rect(rect, ViewSettings.color(&"hazard_border"), false,
+		ViewSettings.size_of(&"border_width_px"))
+
+
 func _draw_decoration(tile: Tile, origin: Vector2) -> void:
 	var texture: Texture2D = _decorations.get(String(tile.terrain_id), null)
 	if texture == null:
@@ -155,8 +171,10 @@ func _load_decorations() -> void:
 		match StringName(declared["kind"]):
 			AssetTable.KIND_STRIP:
 				var frames := SpriteFrameFactory.for_sprite(entry["category"], entry["key"])
-				if frames != null and frames.get_frame_count(&"default") > 0:
-					texture = frames.get_frame_texture(&"default", 0)
+				var count := frames.get_frame_count(&"default") if frames != null else 0
+				if count > 0:
+					var wanted: int = clampi(int(entry.get("frame", 0)), 0, count - 1)
+					texture = frames.get_frame_texture(&"default", wanted)
 			AssetTable.KIND_ATLAS:
 				texture = _atlas_cell(declared, entry.get("cell", Vector2i(1, 1)))
 			_:

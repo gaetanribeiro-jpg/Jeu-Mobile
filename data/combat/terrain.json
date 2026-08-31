@@ -1,5 +1,5 @@
 {
-  "_readme": "Types de tuiles de combat (vision § 19). walkable vaut pour les héros ; les unités aquatiques ont leur propre règle de franchissement. move_cost est le nombre de PM que coûte l'entrée sur la case : c'est ce que le système PM apporte et que l'ancien modèle ne pouvait pas exprimer — la boue coûte 2. damage_taken s'ajoute aux dégâts subis par l'occupant : -1 pour la forêt qui protège, +1 pour la ruine qui expose. symbol : le caractère qui représente ce terrain dans une carte écrite à la main.",
+  "_readme": "Types de tuiles de combat (vision § 19). walkable vaut pour les héros ; les unités aquatiques ont leur propre règle de franchissement. move_cost est le nombre de PM que coûte l'entrée sur la case — la boue coûte 2. damage_taken s'ajoute aux dégâts subis par l'occupant : -1 pour la forêt qui protège, +1 pour la ruine qui expose. symbol : le caractère qui représente ce terrain dans une carte écrite à la main.\n\nTERRAIN DESTRUCTIBLE : destructible, hit_points et becomes_when_destroyed. Une compétence qui touche une case vide portant un décor destructible frappe le décor. Casser le pont de vallee_02 coupe le seul passage de la carte : c'est un coup qui vaut une activation entière.\n\nTERRAIN TEMPORAIRE : damage_per_activation, duration et reverts_to. Le feu que laisse le Torch Goblin brûle celui qui commence son activation dessus, puis s'éteint. flammable dit quelles cases peuvent prendre feu — ni l'eau, ni la pierre.",
   "grass": {
     "symbol": ".",
     "walkable": true,
@@ -9,7 +9,8 @@
     "move_cost": 1,
     "damage_taken": 0,
     "ranged_range_bonus": 0,
-    "ranged_damage_bonus": 0
+    "ranged_damage_bonus": 0,
+    "flammable": true
   },
   "water": {
     "symbol": "~",
@@ -20,7 +21,8 @@
     "move_cost": 1,
     "damage_taken": 0,
     "ranged_range_bonus": 0,
-    "ranged_damage_bonus": 0
+    "ranged_damage_bonus": 0,
+    "flammable": false
   },
   "forest": {
     "symbol": "f",
@@ -31,7 +33,8 @@
     "move_cost": 1,
     "damage_taken": -1,
     "ranged_range_bonus": 0,
-    "ranged_damage_bonus": 0
+    "ranged_damage_bonus": 0,
+    "flammable": true
   },
   "hill": {
     "symbol": "^",
@@ -42,7 +45,8 @@
     "move_cost": 1,
     "damage_taken": 0,
     "ranged_range_bonus": 1,
-    "ranged_damage_bonus": 1
+    "ranged_damage_bonus": 1,
+    "flammable": true
   },
   "rock": {
     "symbol": "#",
@@ -53,7 +57,8 @@
     "move_cost": 1,
     "damage_taken": 0,
     "ranged_range_bonus": 0,
-    "ranged_damage_bonus": 0
+    "ranged_damage_bonus": 0,
+    "flammable": false
   },
   "bridge": {
     "symbol": "=",
@@ -66,8 +71,9 @@
     "ranged_range_bonus": 0,
     "ranged_damage_bonus": 0,
     "destructible": true,
-    "hit_points": 2,
-    "becomes_when_destroyed": "water"
+    "hit_points": 40,
+    "becomes_when_destroyed": "water",
+    "flammable": false
   },
   "ruin": {
     "symbol": "r",
@@ -78,7 +84,8 @@
     "move_cost": 1,
     "damage_taken": 1,
     "ranged_range_bonus": 0,
-    "ranged_damage_bonus": 0
+    "ranged_damage_bonus": 0,
+    "flammable": true
   },
   "mud": {
     "symbol": "b",
@@ -89,6 +96,23 @@
     "move_cost": 2,
     "damage_taken": 0,
     "ranged_range_bonus": 0,
-    "ranged_damage_bonus": 0
+    "ranged_damage_bonus": 0,
+    "flammable": false
+  },
+  "fire": {
+    "symbol": "!",
+    "walkable": true,
+    "swimmable": false,
+    "lethal": false,
+    "blocks_sight": false,
+    "move_cost": 1,
+    "damage_taken": 0,
+    "ranged_range_bonus": 0,
+    "ranged_damage_bonus": 0,
+    "flammable": false,
+    "damage_per_activation": 12,
+    "duration": 2,
+    "reverts_to": "grass",
+    "_note": "12 dégâts, soit un dixième des PV du Guerrier et un sixième de ceux du Mage : assez pour qu'on refuse d'y rester, pas assez pour tuer. reverts_to n'est qu'un défaut — le feu rend la case au terrain qu'il a remplacé."
   }
 }

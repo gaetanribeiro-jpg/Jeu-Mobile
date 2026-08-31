@@ -171,6 +171,11 @@ func targets_self() -> bool:
 	return range_max <= 0
 
 
+## Terrain que la compétence laisse derrière elle, s'il y en a un.
+func leaves_terrain_id() -> StringName:
+	return leaves_terrain
+
+
 ## Cette compétence exige-t-elle une victime sur la case visée ?
 ##
 ## Une attaque à cible unique, oui : tirer sur du terrain vide coûterait

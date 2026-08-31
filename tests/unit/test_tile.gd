@@ -52,10 +52,14 @@ func test_la_ruine_expose() -> void:
 func test_le_pont_cede_et_devient_de_l_eau() -> void:
 	var tile := Tile.new(Vector2i(0, 0), &"bridge")
 	assert_true(tile.is_destructible())
-	assert_eq(tile.structure_hp, 2, "un pont tient 2 dégâts")
+	# Les PV du pont sont une donnée : un test qui les recopie casse au
+	# premier réglage d'équilibrage, sans rien avoir attrapé.
+	var total := int(CombatRules.terrain_property(&"bridge", &"hit_points", 0))
+	assert_eq(tile.structure_hp, total)
+	assert_gt(total, 1, "un pont doit encaisser plus d'un coup")
 	assert_true(tile.is_walkable())
 
-	assert_false(tile.damage_structure(1), "un dégât ne suffit pas")
+	assert_false(tile.damage_structure(total - 1), "il en reste un point")
 	assert_eq(tile.structure_hp, 1)
 	assert_true(tile.is_walkable(), "le pont tient encore")
 
@@ -111,7 +115,9 @@ func test_tous_les_terrains_declares_sont_complets() -> void:
 func test_aller_retour_de_serialisation() -> void:
 	var tile := Tile.new(Vector2i(4, 2), &"bridge")
 	tile.occupant_id = 3
-	tile.damage_structure(1)
+	tile.damage_structure(
+		int(CombatRules.terrain_property(&"bridge", &"hit_points", 0)) - 1
+	)
 	var restored := Tile.from_dictionary(tile.to_dictionary())
 	assert_eq(restored.cell, Vector2i(4, 2))
 	assert_eq(restored.terrain_id, &"bridge")

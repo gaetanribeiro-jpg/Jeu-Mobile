@@ -5,8 +5,15 @@ extends RefCounted
 ##
 ## Les propriétés du terrain ne sont pas recopiées ici — elles sont lues
 ## dans `data/combat/terrain.json` à chaque question. Une tuile ne stocke
-## que ce qui lui est propre : son type, qui l'occupe, et les points de
-## vie d'un décor destructible.
+## que ce qui lui est propre : son type, qui l'occupe, les points de vie
+## d'un décor destructible, et le compte à rebours d'un terrain
+## temporaire.
+##
+## LE TERRAIN TEMPORAIRE (§ 19). Le feu que laisse le Torch Goblin ne
+## remplace pas l'herbe pour toujours : il la recouvre quelques rondes,
+## puis s'éteint et la rend. C'est pour ça que la tuile retient le terrain
+## d'AVANT — sans lui, un incendie transformerait durablement une forêt en
+## prairie, et la carte ne serait plus celle que l'auteur a écrite.
 
 ## Aucune unité n'occupe la case.
 const NO_OCCUPANT := -1
@@ -18,6 +25,13 @@ var occupant_id: int = NO_OCCUPANT
 ## Points de vie du décor destructible (un pont). -1 s'il n'y en a pas.
 var structure_hp: int = -1
 
+## Rondes restantes avant que le terrain temporaire ne s'éteigne. 0 quand
+## le terrain est permanent.
+var terrain_turns_left: int = 0
+
+## Terrain que le temporaire recouvre, et auquel la case reviendra.
+var terrain_before: StringName = &""
+
 
 func _init(at: Vector2i, terrain: StringName) -> void:
 	cell = at
@@ -27,10 +41,61 @@ func _init(at: Vector2i, terrain: StringName) -> void:
 ## Change le terrain et remet à jour les points de vie du décor.
 func set_terrain(terrain: StringName) -> void:
 	terrain_id = terrain
+	terrain_turns_left = 0
+	terrain_before = &""
 	if is_destructible():
 		structure_hp = int(CombatRules.terrain_property(terrain_id, &"hit_points", 0))
 	else:
 		structure_hp = -1
+
+
+## Cette case peut-elle prendre feu ? Ni l'eau, ni la pierre.
+func is_flammable() -> bool:
+	return bool(CombatRules.terrain_property(terrain_id, &"flammable", false))
+
+
+## Dégâts que subit celui qui commence son activation ici.
+func damage_per_activation() -> int:
+	return int(CombatRules.terrain_property(terrain_id, &"damage_per_activation", 0))
+
+
+func is_temporary() -> bool:
+	return terrain_turns_left > 0
+
+
+## Recouvre la case d'un terrain qui s'éteindra. Refuse si la case ne peut
+## pas le porter — on n'allume pas un feu sur l'eau.
+##
+## Recouvrir une case DÉJÀ recouverte ne fait que rallumer le compteur :
+## sinon deux torches d'affilée feraient perdre le terrain d'origine, et
+## la case resterait en cendres pour toujours.
+func cover_with(terrain: StringName, duration: int = -1) -> bool:
+	if duration == 0 or not is_flammable():
+		return false
+	var before := terrain_before if is_temporary() else terrain_id
+	var turns := duration
+	if turns < 0:
+		turns = int(CombatRules.terrain_property(terrain, &"duration", 0))
+	if turns <= 0:
+		return false
+	set_terrain(terrain)
+	terrain_before = before
+	terrain_turns_left = turns
+	return true
+
+
+## Fait passer une ronde au terrain temporaire. Renvoie true s'il s'éteint.
+func tick_terrain() -> bool:
+	if not is_temporary():
+		return false
+	terrain_turns_left -= 1
+	if terrain_turns_left > 0:
+		return false
+	var back := terrain_before
+	if back.is_empty():
+		back = StringName(CombatRules.terrain_property(terrain_id, &"reverts_to", &"grass"))
+	set_terrain(back)
+	return true
 
 
 func is_occupied() -> bool:
@@ -108,6 +173,8 @@ func to_dictionary() -> Dictionary:
 		"terrain": String(terrain_id),
 		"occupant": occupant_id,
 		"structure_hp": structure_hp,
+		"terrain_turns_left": terrain_turns_left,
+		"terrain_before": String(terrain_before),
 	}
 
 
@@ -118,4 +185,6 @@ static func from_dictionary(data: Dictionary) -> Tile:
 	)
 	tile.occupant_id = int(data.get("occupant", NO_OCCUPANT))
 	tile.structure_hp = int(data.get("structure_hp", -1))
+	tile.terrain_turns_left = int(data.get("terrain_turns_left", 0))
+	tile.terrain_before = StringName(data.get("terrain_before", ""))
 	return tile

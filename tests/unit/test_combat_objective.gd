@@ -117,7 +117,7 @@ func test_proteger_perdu_si_la_structure_cede() -> void:
 	var objective := CombatObjective.from_dictionary({
 		"kind": "protect", "turns": 4, "protected_cells": [[3, 1]],
 	})
-	board.tile_at(Vector2i(3, 1)).damage_structure(2)
+	board.tile_at(Vector2i(3, 1)).damage_structure(9999)
 	assert_eq(objective.evaluate(board, 1), CombatObjective.Outcome.DEFEAT)
 	assert_eq(objective.evaluate(board, 4), CombatObjective.Outcome.DEFEAT,
 		"la structure détruite ne se répare pas au tour limite")

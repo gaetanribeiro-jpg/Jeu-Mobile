@@ -207,6 +207,18 @@
       0.45,
       0.4,
       1.0
+    ],
+    "hazard": [
+      1.0,
+      0.45,
+      0.12,
+      0.34
+    ],
+    "hazard_border": [
+      1.0,
+      0.72,
+      0.25,
+      0.8
     ]
   },
   "sizes": {
@@ -256,10 +268,12 @@
     "rock": "land",
     "ruin": "land",
     "bridge": "land",
-    "hill": "hill"
+    "hill": "hill",
+    "fire": "land",
+    "mud": "land"
   },
   "terrain_decorations": {
-    "_note": "Sprite pose par-dessus la tuile de base : [categorie, cle] de data/assets.json, plus [colonne, rangee] pour une entree de type atlas. Le pack ne fournit ni pont ni ruine : la palissade sert de planches, les ossements de ruine.",
+    "_note": "Sprite posé par-dessus la tuile de base : [catégorie, clé] de data/assets.json. Une troisième valeur choisit l'image d'une bande d'animation — la première image d'un feu n'est qu'une étincelle de quelques pixels, invisible sur une case de 64. Une quatrième et une cinquième donnent [colonne, rangée] pour une entrée de type atlas. Le pack ne fournit ni pont ni ruine : la palissade sert de planches, les ossements de ruine. La boue n'a AUCUN sprite : elle se dessine comme de l'herbe, ce qui est un piège — aucune carte ne l'utilise pour l'instant, et il faudra une teinte avant qu'une carte le fasse.",
     "forest": [
       "resources",
       "tree3"
@@ -277,6 +291,11 @@
       "wooden_fence_wooden_fence_64x64_tile",
       1,
       0
+    ],
+    "fire": [
+      "fx",
+      "fire_01",
+      4
     ]
   }
 }

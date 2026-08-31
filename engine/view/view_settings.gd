@@ -143,7 +143,12 @@ static func terrain_decoration(terrain_id: StringName) -> Dictionary:
 		return {}
 	var pair: Array = raw
 	var out := {"category": StringName(pair[0]), "key": StringName(pair[1])}
-	# Une entrée d'atlas peut préciser la cellule voulue : [cat, clé, col, rangée].
-	if pair.size() >= 4:
+	# Trois valeurs : l'image voulue dans une bande d'animation. La première
+	# image d'un feu n'est qu'une étincelle de quelques pixels — invisible
+	# sur une case de 64, donc mensongère pour un terrain qui blesse.
+	if pair.size() == 3:
+		out["frame"] = int(pair[2])
+	# Quatre : la cellule voulue d'un atlas, [cat, clé, colonne, rangée].
+	elif pair.size() >= 4:
 		out["cell"] = Vector2i(int(pair[2]), int(pair[3]))
 	return out

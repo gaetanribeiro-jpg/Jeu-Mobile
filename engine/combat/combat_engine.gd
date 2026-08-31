@@ -136,6 +136,11 @@ func _open_current(log: Array[Dictionary]) -> bool:
 		"event": "activation_started", "unit_id": unit.id,
 		"side": unit.side, "round": order.round_index,
 	})
+	var burn := _burn(unit)
+	if not burn.is_empty():
+		log.append(burn)
+		if not unit.is_active():
+			return false
 	if unit.is_hero():
 		return true
 	_run_enemy(unit, log)
@@ -150,6 +155,27 @@ func _begin_activation(unit: Unit) -> void:
 	# Une provocation ne dure que jusqu'au retour de son auteur.
 	_taunting.erase(unit.id)
 	_undo_stack.clear()
+
+
+## Ce que le terrain retire à celui qui commence son activation dessus :
+## le feu brûle (§ 19). Renvoie le compte rendu, ou {} s'il ne se passe
+## rien — appelé APRÈS `_begin_activation`, pour que les dégâts s'appliquent
+## à une unité qui a déjà retrouvé ses points.
+func _burn(unit: Unit) -> Dictionary:
+	var tile := board.tile_at(unit.cell)
+	if tile == null:
+		return {}
+	var amount := tile.damage_per_activation()
+	if amount <= 0:
+		return {}
+	var downed := unit.take_damage(amount)
+	if downed:
+		board.remove_from_board(unit)
+		order.remove(unit.id)
+	return {
+		"event": "terrain_burned", "unit_id": unit.id, "cell": unit.cell,
+		"terrain": String(tile.terrain_id), "damage": amount, "downed": downed,
+	}
 
 
 # --- La timeline ----------------------------------------------------------
@@ -588,6 +614,7 @@ func _drain(log: Array[Dictionary]) -> void:
 			_settle(log)
 			return
 		if order.round_index != previous_round:
+			_tick_terrain(log)
 			log.append({"event": "round_started", "round": order.round_index})
 			if _settle(log):
 				return
@@ -595,6 +622,14 @@ func _drain(log: Array[Dictionary]) -> void:
 			return
 		if _settle(log):
 			return
+
+
+## Fait passer une ronde aux terrains temporaires : les feux s'éteignent.
+func _tick_terrain(log: Array[Dictionary]) -> void:
+	for cell: Vector2i in board.grid.cells():
+		var tile := board.tile_at(cell)
+		if tile != null and tile.tick_terrain():
+			log.append({"event": "terrain_cleared", "cell": cell})
 
 
 ## Une activation d'ennemi : il exécute ce qu'il avait annoncé, PUIS se
