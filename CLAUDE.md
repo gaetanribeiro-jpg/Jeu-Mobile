@@ -238,9 +238,9 @@ dur : passer par `data/assets.json`.
   l'équipement, le butin, la `Company`, la sauvegarde, l'écran de
   compagnie.
 - **Phase 3 en cours.** T3.1 (`Region`), T3.2 (`Expedition`), T3.3 (les
-  évènements du § 40) et T3.4 (le marchand) sont faites. **562 tests
-  passent** sous Godot 4.6 en headless. Restent les deux écrans, T3.5 et
-  T3.6 : sans eux, tout ce qui précède est invisible au joueur.
+  évènements du § 40), T3.4 (le marchand) et T3.5 (l'écran d'expédition)
+  sont faites. **575 tests passent** sous Godot 4.6 en headless. Reste
+  T3.6, la carte du monde, qui donnera au joueur accès à tout cela.
 - **La boucle du § 3 tourne, en court-circuit :** compagnie → combat →
   expérience et butin → compagnie → sauvegarde. Il manque le royaume
   (Phase 4), et les écrans du monde (T3.4, T3.5) qui donneront au joueur
@@ -300,7 +300,7 @@ sur un « Method/function failed » qui ne désigne rien.
 
 **Outils de vérification, à relancer après toute modification :**
 ```bash
-godot --headless --path . -s tools/verify_scripts.gd    # 35 scripts
+godot --headless --path . -s tools/verify_scripts.gd    # engine, scenes, tools, tests
 godot --headless --path . -s tools/verify_assets.gd     # 535 entrées
 godot --headless --path . -s tools/verify_audio.gd      # 30 entrées
 godot --headless --path . -s tools/verify_font.gd       # 140 glyphes

@@ -168,3 +168,29 @@ EVENT_CHEST,Un coffre
 EVENT_CHEST_TEXT,Ferré et fermé. Personne alentour pour en réclamer la clé.
 EVENT_CHEST_FORCE,Le forcer à l'épaule
 EVENT_CHEST_PICK,Le crocheter
+STEP_COMBAT,Combat
+STEP_MINIBOSS,Mini-boss
+STEP_BOSS,Boss
+STEP_EVENT,Événement
+STEP_MERCHANT,Marchand
+STEP_REWARD,Récompense
+EXPEDITION_STEP_OF,étape %d sur %d
+EXPEDITION_SATCHEL,Besace : %d or · %d objets
+EXPEDITION_SQUAD,Votre équipe
+EXPEDITION_RETREAT,Rentrer
+EXPEDITION_FIGHT,Engager le combat
+EXPEDITION_CONTINUE,Poursuivre
+EXPEDITION_TAKE,Prendre la récompense
+EXPEDITION_REWARD_TEXT,Le mini-boss ne gardait pas ces caisses pour rien.
+EXPEDITION_MERCHANT_GOLD,Il déballe son étal. Vous avez %d pièces.
+EXPEDITION_LEAVE_SHOP,Reprendre la route
+EXPEDITION_SOLD,%s — acheté
+EXPEDITION_BOUGHT,%s rejoint la réserve.
+EXPEDITION_RETREATED,Vous rentrez avec ce que vous avez.
+EXPEDITION_HOME,Rentré au royaume.
+EXPEDITION_COMPLETE,Le boss est tombé. La région est à vous.
+EXPEDITION_LOST,L'équipe est tombée. Une partie de la besace est perdue.
+EXPEDITION_LOG_GOLD,%+d or
+EXPEDITION_LOG_LOST,%d or perdu
+EXPEDITION_LOG_DOWNED,%s est tombé
+EXPEDITION_LOG_AMBUSHED,Ils vous coupent la route.

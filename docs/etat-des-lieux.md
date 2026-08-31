@@ -476,7 +476,7 @@ xvfb-run -a godot --path . --resolution 1280x720 -- --capture /tmp/x.png
 | **T3.2** | `Expedition` : la chaîne du § 28, la décision du § 29 | ✅ |
 | **T3.3** | Évènements du § 40 : autel, village, ruines, embuscade, coffre | ✅ |
 | **T3.4** | Le marchand : ce qu'on achète est à l'abri | ✅ |
-| **T3.5** | Écran d'expédition : la route, la besace, rentrer ou continuer | ⏳ |
+| **T3.5** | Écran d'expédition : la route, la besace, rentrer ou continuer | ✅ |
 | **T3.6** | Écran de carte du monde : choisir sa région et son équipe | ⏳ |
 
 ### Les régions, et l'escalade sans toucher aux chiffres (T3.1)
@@ -619,6 +619,45 @@ figeait vide pour de bon.
 C'est une variance qu'on garde : une sortie sans boutique est une sortie
 différente, et savoir qu'elle est possible donne du prix à celle qui
 l'offre.
+
+### L'écran d'expédition : les trois termes ensemble (T3.5)
+
+« Rentrer maintenant, ou continuer ? » n'est une question que si les trois
+termes de la décision sont à l'écran **en même temps** :
+
+| | ce que ça répond |
+|---|---|
+| la **route** | ce qui reste — combien de combats, où est le boss |
+| la **besace** | ce qu'on perdrait |
+| l'**équipe** | ce avec quoi on continuerait |
+
+Les séparer sur trois écrans reviendrait à demander au joueur d'en retenir
+deux pendant qu'il regarde le troisième : il choisirait au sentiment, et la
+mécanique fondamentale du § 29 deviendrait un bouton. Ils tiennent donc sur
+une seule page, quitte à ce qu'aucun ne soit détaillé — la route est une
+rangée de badges, l'équipe trois barres de vie.
+
+**Le pari est annoncé avant d'être couru.** C'est le télégraphe du combat
+appliqué aux évènements : les ennemis disent leurs dégâts avant de frapper,
+un évènement dit sa chance avant qu'on la coure. Et une option trop chère
+reste affichée, grisée : savoir ce qu'on ne peut pas s'offrir fait partie
+de la décision.
+
+Comme l'écran de compagnie, il **ne sauvegarde pas lui-même** : il émet
+`changed` et l'appelant décide. Sans cette frontière il serait intestable
+hors d'une partie chargée.
+
+### GUT n'échoue pas sur un test cassé — il l'ignore (T3.5)
+
+Le fichier de test de cet écran est parti avec une erreur d'analyse. GUT ne
+l'a pas signalée comme un échec : il a **ignoré le fichier**, avec un
+avertissement noyé dans son journal, et annoncé « tous les tests passent »
+avec treize tests de moins. Le compte total était le seul indice, et il
+faut le connaître par cœur pour le remarquer.
+
+Un test qui disparaît est pire qu'un test qui échoue. `verify_scripts`
+couvre donc maintenant `res://tests` comme le reste — c'est exactement le
+défaut qu'il avait lui-même en T3.1, à un dossier près.
 
 ### Un outil de vérification qui mentait (T3.1)
 

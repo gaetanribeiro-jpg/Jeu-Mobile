@@ -1,0 +1,100 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scenes/world/expedition_screen.gd" id="1_expedition"]
+
+[node name="ExpeditionScreen" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_expedition")
+
+[node name="Background" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.06, 0.07, 0.06, 1)
+
+[node name="Margin" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 24
+theme_override_constants/margin_top = 16
+theme_override_constants/margin_right = 24
+theme_override_constants/margin_bottom = 16
+
+[node name="Column" type="VBoxContainer" parent="Margin"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="Top" type="HBoxContainer" parent="Margin/Column"]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="Title" type="Label" parent="Margin/Column/Top"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 30
+
+[node name="Spacer" type="Control" parent="Margin/Column/Top"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Satchel" type="Label" parent="Margin/Column/Top"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 22
+
+[node name="Retreat" type="Button" parent="Margin/Column/Top"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 22
+
+[node name="RouteScroll" type="ScrollContainer" parent="Margin/Column"]
+layout_mode = 2
+custom_minimum_size = Vector2(0, 104)
+horizontal_scroll_mode = 2
+vertical_scroll_mode = 0
+
+[node name="Route" type="HBoxContainer" parent="Margin/Column/RouteScroll"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="Middle" type="HBoxContainer" parent="Margin/Column"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 20
+
+[node name="StepScroll" type="ScrollContainer" parent="Margin/Column/Middle"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Step" type="VBoxContainer" parent="Margin/Column/Middle/StepScroll"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 12
+
+[node name="SquadScroll" type="ScrollContainer" parent="Margin/Column/Middle"]
+layout_mode = 2
+custom_minimum_size = Vector2(320, 0)
+
+[node name="Squad" type="VBoxContainer" parent="Margin/Column/Middle/SquadScroll"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="Journal" type="Label" parent="Margin/Column"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 20

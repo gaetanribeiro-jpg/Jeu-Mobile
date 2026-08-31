@@ -30,7 +30,9 @@ extends SceneTree
 ## les scripts compilent » juste après avoir affiché l'erreur. C'est le
 ## défaut que cet outil existait pour ne pas laisser passer.
 
-const ROOTS: Array[String] = ["res://engine", "res://scenes", "res://tools"]
+const ROOTS: Array[String] = [
+	"res://engine", "res://scenes", "res://tools", "res://tests",
+]
 
 var _broken: Array[String] = []
 var _skipped: Array[String] = []
