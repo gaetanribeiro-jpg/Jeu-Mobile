@@ -1,0 +1,17 @@
+{
+  "_readme": "Les règles d'une expédition (§ 28, § 29, § 41).\n\nLA QUESTION DU § 29 — « je rentre ou je continue ? » — n'existe que si trois choses sont vraies en même temps :\n  1. continuer RAPPORTE plus (c'est `depth` dans loot.json) ;\n  2. continuer COÛTE quelque chose (c'est `healing`, ci-dessous) ;\n  3. échouer PERD quelque chose (c'est `wipe`).\nEnlever n'importe laquelle des trois et la décision devient automatique.\n\nRIEN NE SE SOIGNE ENTRE DEUX RENCONTRES. C'est la courbe d'usure mesurée en T1.11 : une rencontre coûte 13 % des PV de l'équipe, il en reste 49 % après cinq. Le levier existe quand même — `between_steps` est une fraction des PV maximums rendue après chaque étape — parce que c'est le premier chiffre qu'il faudra bouger si l'usure se révèle trop dure à l'usage. Il vaut zéro aujourd'hui.\n\nLA BESACE. Ce qu'une expédition ramasse ne rejoint la compagnie qu'AU RETOUR. Sans cela, continuer ne risquerait rien : le butin serait déjà à l'abri.",
+  "healing": {
+    "_note": "Fraction des PV maximums rendue à chaque héros. `between_steps` après chaque étape franchie, `on_reward_step` en plus sur l'étape de récompense du § 28 — c'est la seule respiration de la chaîne.\n\n`downed_recovery` est la lecture du § 25 et du § 41 réunis : un héros mis à terre n'est PAS perdu, et il ne repart pas non plus intact. Il se relève à un dixième de ses PV — assez pour agir, assez peu pour que le joueur y pense. À zéro, il repartirait à terre au combat suivant, ce qui serait une mort définitive déguisée.",
+    "between_steps": 0.0,
+    "on_reward_step": 0.25,
+    "downed_recovery": 0.1
+  },
+  "wipe": {
+    "_note": "§ 41 : « mourir est une conséquence, pas une punition absolue. Une partie de l'expédition actuelle peut être perdue. » Une part de la besace revient donc quand même — assez pour que la sortie ait servi à quelque chose, pas assez pour qu'on s'y jette.",
+    "satchel_kept": 0.4
+  },
+  "retreat": {
+    "_note": "Rentrer n'est possible qu'une fois la première étape passée : partir pour faire demi-tour aussitôt n'est pas une décision, et l'ouvrir inviterait à farmer le départ.",
+    "min_steps": 1
+  }
+}

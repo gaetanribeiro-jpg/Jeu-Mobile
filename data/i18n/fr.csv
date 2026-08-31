@@ -135,3 +135,15 @@ STAT_AGILITY,Agi
 STAT_INTELLIGENCE,Int
 STAT_DEFENCE,Déf
 STAT_CRITICAL,Crit
+REGION_GREENLANDS,Les Terres Vertes
+REGION_GREENLANDS_DESC,Prairies et bosquets. Gobelins et gnomes y pillent les fermes isolées.
+REGION_BURNING_DUNES,Les Dunes Ardentes
+REGION_BURNING_DUNES_DESC,Un désert sans ombre. On n'y va pas encore.
+REGION_FROZEN_MOUNTAINS,Les Montagnes Gelées
+REGION_FROZEN_MOUNTAINS_DESC,Des cols pris par la glace. On n'y va pas encore.
+REGION_BROKEN_LANDS,Les Terres Brisées
+REGION_BROKEN_LANDS_DESC,Ce qu'il reste après la faille. On n'y va pas encore.
+REGION_CURSED_LANDS,Les Terres Maudites
+REGION_CURSED_LANDS_DESC,Rien n'y meurt tout à fait. On n'y va pas encore.
+REGION_BLACK_EMPIRE,L'Empire Noir
+REGION_BLACK_EMPIRE_DESC,La source de tout ceci. On n'y va pas encore.

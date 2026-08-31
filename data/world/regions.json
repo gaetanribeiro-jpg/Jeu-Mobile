@@ -1,0 +1,64 @@
+{
+  "_readme": "Les régions du monde (§ 26). Une seule est jouable au MVP : les Terres Vertes. Les cinq autres sont DÉCLARÉES ET VERROUILLÉES — la carte du monde a ainsi quelque chose à montrer, et le joueur voit où il ira, sans qu'on ait inventé leur contenu.\n\nL'ORDRE DE `encounter_maps` EST L'ORDRE DE DIFFICULTÉ, du plus facile au plus dur. C'est de lui que vient l'escalade du § 29 : le tirage d'une rencontre ne pioche pas dans toutes les cartes, mais dans une FENÊTRE qui glisse avec la profondeur. Plus le joueur s'enfonce, plus les cartes faciles cessent de sortir. Aucun chiffre de combat n'est touché — c'est la sélection qui monte, pas les ennemis.\n\nLa carte de mini-boss et celle de boss sont hors de la fenêtre : elles ne peuvent tomber qu'à leur place dans la chaîne.\n\nLA CHAÎNE SUIT LE § 28 : Départ → Combat → Événement → Combat → Marchand → Combat → Mini-boss → Récompense → Boss. `pattern` est le corps, répété jusqu'à la longueur tirée ; `tail` est la fin, toujours identique. Une expédition courte n'est donc pas une expédition tronquée : elle a moins de corps, mais elle a sa fin.",
+  "regions": {
+    "greenlands": {
+      "name_key": "REGION_GREENLANDS",
+      "description_key": "REGION_GREENLANDS_DESC",
+      "act": 1,
+      "unlocked": true,
+      "encounter_maps": [
+        "vallee_01",
+        "vallee_02",
+        "vallee_03",
+        "vallee_04",
+        "vallee_05",
+        "vallee_06"
+      ],
+      "miniboss_map": "vallee_07",
+      "boss_map": "vallee_08",
+      "map_window": {
+        "_note": "`size` cartes tirables à la fois ; la fenêtre avance de `slide` carte par rencontre déjà passée. Avec six cartes, une fenêtre de trois et un pas d'une demie, la profondeur 6 ne laisse plus que les trois dernières.",
+        "size": 3,
+        "slide": 0.5
+      },
+      "chain": {
+        "pattern": ["combat", "event", "combat", "merchant"],
+        "tail": ["miniboss", "reward", "boss"],
+        "body": {
+          "min": 3,
+          "max": 6
+        }
+      }
+    },
+    "burning_dunes": {
+      "name_key": "REGION_BURNING_DUNES",
+      "description_key": "REGION_BURNING_DUNES_DESC",
+      "act": 2,
+      "unlocked": false
+    },
+    "frozen_mountains": {
+      "name_key": "REGION_FROZEN_MOUNTAINS",
+      "description_key": "REGION_FROZEN_MOUNTAINS_DESC",
+      "act": 3,
+      "unlocked": false
+    },
+    "broken_lands": {
+      "name_key": "REGION_BROKEN_LANDS",
+      "description_key": "REGION_BROKEN_LANDS_DESC",
+      "act": 4,
+      "unlocked": false
+    },
+    "cursed_lands": {
+      "name_key": "REGION_CURSED_LANDS",
+      "description_key": "REGION_CURSED_LANDS_DESC",
+      "act": 5,
+      "unlocked": false
+    },
+    "black_empire": {
+      "name_key": "REGION_BLACK_EMPIRE",
+      "description_key": "REGION_BLACK_EMPIRE_DESC",
+      "act": 6,
+      "unlocked": false
+    }
+  }
+}

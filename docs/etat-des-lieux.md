@@ -468,10 +468,105 @@ jeu après quelques images et rend la main.
 xvfb-run -a godot --path . --resolution 1280x720 -- --capture /tmp/x.png
 ```
 
-### Phase 3 — Monde
+### Phase 3 — Monde ⏳ *en cours*
 
-Carte du monde, régions, exploration, rencontres, coffres, expéditions,
-choix rentrer/continuer, mini-boss et boss.
+| Tâche | Contenu | État |
+|---|---|---|
+| **T3.1** | `Region` : les six régions du § 26, une seule ouverte | ✅ |
+| **T3.2** | `Expedition` : la chaîne du § 28, la décision du § 29 | ✅ |
+| **T3.3** | Évènements du § 40 : marchand, autel, village, embuscade, ruines | ⏳ |
+| **T3.4** | Écran d'expédition : la route, la besace, rentrer ou continuer | ⏳ |
+| **T3.5** | Écran de carte du monde : choisir sa région et son équipe | ⏳ |
+
+### Les régions, et l'escalade sans toucher aux chiffres (T3.1)
+
+Six régions déclarées (§ 26), **une seule ouverte**. Les cinq autres
+existent pour que la carte du monde ait quelque chose à montrer et que le
+joueur voie où il ira ; elles n'ont ni cartes ni chaîne, et rien dans le
+code n'a le droit de leur en réclamer. `verify_world` s'arrête d'ailleurs
+au nom pour une région verrouillée : exiger d'elle un contenu qu'on a
+délibérément remis à plus tard ferait échouer une vérification pour une
+décision, pas pour un défaut.
+
+**L'escalade du § 29 ne touche à aucun chiffre de combat.**
+`encounter_maps` est rangée du plus facile au plus dur, et le tirage d'une
+rencontre pioche dans une **fenêtre qui glisse** avec la profondeur : trois
+cartes sur six, `vallee_01..03` au départ, `vallee_04..06` au fond. Plus le
+joueur s'enfonce, plus les cartes faciles cessent de sortir.
+
+C'est délibérément la SÉLECTION qui monte, pas les ennemis. Gonfler les PV
+ou les dégâts avec la profondeur aurait invalidé tout l'équilibrage de
+T1.11 — les 13 % par rencontre, le télégraphe qui laisse une ronde, le
+gobelin lancier qui retire 35 % des PV du Guerrier — et il aurait fallu le
+refaire pour chaque palier. Ici, un combat profond reste un combat mesuré ;
+c'est juste un combat plus dur du même catalogue.
+
+Le mini-boss et le boss sont **hors de la fenêtre**, sans quoi le boss
+pourrait tomber au milieu de la chaîne. `vallee_08` (le Troll) est le boss
+des Terres Vertes ; `vallee_07`, la carte d'extraction à six ennemis et la
+plus dure des ordinaires, tient le rôle de mini-boss. **Une carte de
+mini-boss dédiée reste à écrire** : c'est du dessin de carte, pas du
+moteur, et la chaîne du § 28 est déjà tenue sans elle.
+
+### L'expédition : trois choses font la décision (T3.2)
+
+« Rentrer maintenant, ou continuer ? » est la mécanique fondamentale du
+§ 29, et elle n'existe que si **trois** choses sont vraies en même temps :
+
+| | où c'est réglé |
+|---|---|
+| continuer **rapporte** plus | `depth` passé à `Loot.roll` — +15 % d'or par rencontre, et le commun cesse de sortir |
+| continuer **coûte** | rien ne se soigne : l'usure de T1.11 s'accumule d'une étape à l'autre |
+| échouer **perd** | la besace ne rejoint la compagnie qu'au retour ; une déroute en laisse 40 % |
+
+Enlever n'importe laquelle des trois rend la réponse automatique. Les
+tests de `test_expedition.gd` sont rangés sous ces trois titres exactement,
+et `verify_world` refuse qu'un de ces trois chiffres tombe à zéro : c'est
+la seule chose qui dirait qu'on vient de supprimer la mécanique.
+
+**La chaîne est tirée en entier au départ**, pas rencontre par rencontre.
+Une route qui se découvre pas à pas ne demande rien au joueur, elle se
+subit ; le § 28 la dessine d'ailleurs comme une suite qu'on lit d'un bout
+à l'autre. Le corps (`combat, event, combat, merchant`, répété 3 à 6 fois)
+est tiré, la fin (`miniboss, reward, boss`) est toujours la même : une
+expédition courte n'est pas une expédition tronquée, elle a moins de corps
+mais elle a son boss.
+
+**Un héros mis à terre se relève à 10 % de ses PV.** C'est le § 25 et le
+§ 41 lus ensemble : pas de mort définitive, mais mourir reste une
+conséquence. À zéro, il repartirait à terre au combat suivant — une mort
+définitive déguisée, et `verify_world` le refuse nommément.
+
+**L'étape de récompense est la seule respiration de la chaîne** (25 % des
+PV). Le levier `healing.between_steps` existe et vaut zéro : c'est le
+premier chiffre à bouger si l'usure se révèle trop dure à l'usage, et il
+est écrit plutôt que sous-entendu.
+
+`Expedition` se sérialise. Sur mobile l'application meurt en pleine
+sortie, et perdre une expédition pour cette raison serait la pire des
+punitions — celle-là même que le § 41 refuse.
+
+### Un outil de vérification qui mentait (T3.1)
+
+`tools/verify_scripts.gd` annonçait « tous les scripts compilent »
+**juste après avoir affiché l'erreur de compilation de `boot.gd`**. Un
+script qui ne compile pas revient quand même de `load()` comme un GDScript
+valide, source chargée et analyse en échec ; le test `script == null` ne
+voyait rien. C'est exactement le défaut que cet outil existait pour ne pas
+laisser passer.
+
+Deux corrections : l'échec se mesure à `can_instantiate()`, et les scripts
+qui **citent un singleton** sont exclus **nommément** — un script lancé par
+`-s` ne reçoit aucun autoload et l'identifiant est résolu à la
+compilation, donc leur échec n'est pas un défaut du script. La liste des
+singletons est lue dans les réglages du projet, jamais écrite dans
+l'outil : un autoload ajouté un jour et oublié là rouvrirait le trou. Les
+commentaires ne comptent pas — trois fichiers citent un singleton pour
+expliquer qu'ils ne s'en servent pas, et les exclure pour ça reviendrait à
+ne plus vérifier les scripts les mieux documentés.
+
+Aujourd'hui : 44 scripts vérifiés, 1 nommé comme non vérifiable
+(`boot.gd`), et un script cassé volontairement est bien détecté.
 
 ### Phase 4 — Royaume
 
