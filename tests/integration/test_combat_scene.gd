@@ -210,6 +210,56 @@ func test_la_couche_de_surbrillance_suit_le_personnage_actif() -> void:
 	)
 
 
+func test_chaque_unite_a_son_sprite_a_sa_case() -> void:
+	# Invariant de la couche de rendu, et le seul moyen de le vérifier
+	# autrement qu'à l'œil : une capture d'écran ne dit pas si un sprite
+	# manque ou s'il est simplement caché derrière un autre.
+	await _deploy_and_start()
+	var engine := _engine()
+	var tile := AssetTable.tile_size()
+	for i in 6:
+		if engine.is_finished():
+			break
+		engine.end_activation()
+		_scene._sync_views()
+		for unit: Unit in engine.board.units():
+			if not unit.is_active():
+				continue
+			var view: Node2D = _scene._views.get(unit.id, null)
+			assert_not_null(view, "l'unité %d n'a pas de sprite" % unit.id)
+			if view == null:
+				continue
+			assert_true(view.visible, "le sprite de l'unité %d est caché" % unit.id)
+			assert_eq(
+				view.position, engine.board.grid.to_world_center(unit.cell, tile),
+				"le sprite de l'unité %d n'est pas sur sa case" % unit.id
+			)
+
+
+func test_la_case_mise_en_avant_est_celle_du_personnage_actif() -> void:
+	# La question du § 16 — qui joue maintenant ? — doit avoir une réponse
+	# visuelle exacte : le cadre est sur le personnage, jamais à côté.
+	await _deploy_and_start()
+	var engine := _engine()
+	var overlay: Node2D = _scene._overlay
+	for i in 6:
+		if engine.is_finished():
+			break
+		_scene._refresh_all()
+		var active := engine.current_unit()
+		if active != null and active.is_hero():
+			assert_eq(
+				overlay.selected_cell, active.cell,
+				"le cadre désigne %s, le personnage actif est en %s"
+					% [overlay.selected_cell, active.cell]
+			)
+			assert_not_null(
+				engine.board.unit_at(overlay.selected_cell),
+				"le cadre est posé sur une case vide"
+			)
+		engine.end_activation()
+
+
 func test_le_fantome_ne_parait_que_sur_un_deplacement() -> void:
 	await _deploy_and_start()
 	var hero := _engine().current_unit()

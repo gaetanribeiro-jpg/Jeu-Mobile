@@ -234,7 +234,7 @@ dur : passer par `data/assets.json`.
 - **Phase courante : 1 — cœur tactique PA/PM.** Le pivot vers la vision
   Tiny Kingdoms a été acté le 2026-08-31.
 - **Dernière tâche terminée :** T1.1 à T1.8 — le cœur PA/PM et la timeline
-  d'initiative. **338 tests passent** sous Godot 4.6 en headless.
+  d'initiative. **340 tests passent** sous Godot 4.6 en headless.
 - **Reste en Phase 1 :** T1.9 (HUD : jauges PA/PM, timeline, barre de
   compétences), T1.10 (les 8 cartes à réécrire en 12 × 9), T1.11
   (équilibrage).

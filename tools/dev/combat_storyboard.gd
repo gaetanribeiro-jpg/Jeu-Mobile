@@ -4,9 +4,9 @@ extends SceneTree
 ##
 ##     xvfb-run -a godot --path . -s tools/dev/combat_storyboard.gd -- <dossier> [carte]
 ##
-## Sert à VOIR ce que le joueur verra : sélection, cases valides,
-## prévisualisation, validation, tour ennemi. C'est le seul moyen que j'ai
-## de vérifier le rendu et l'enchaînement sans jouer.
+## Sert à VOIR ce que le joueur verra : placement, cases valides,
+## prévisualisation, validation, activations ennemies. C'est le seul moyen
+## que j'ai de vérifier le rendu et l'enchaînement sans jouer.
 
 var _scene: Node2D
 var _out: String = "/tmp"
@@ -46,19 +46,16 @@ func _init() -> void:
 	await _settle()
 	await _shot("03_combat_lance")
 
-	var heroes := engine.board.active_units(Unit.Side.HEROES)
-	if heroes.is_empty():
+	# Le personnage que la timeline désigne : c'est lui, et lui seul, que
+	# le joueur pilote maintenant.
+	var active := engine.current_unit()
+	if active == null or not active.is_hero():
 		quit(1)
 		return
-	var warrior: Unit = heroes[0]
-
-	# Tap sur le guerrier : ses cases de déplacement et d'attaque s'allument.
-	_scene.handle_tap(warrior.cell)
-	await _settle()
-	await _shot("04_selection")
+	await _shot("04_personnage_actif")
 
 	# Tap sur une case valide : fantôme de prévisualisation.
-	var destination := _far_reachable(engine, warrior)
+	var destination := _far_reachable(engine, active)
 	_scene.handle_tap(destination)
 	await _settle()
 	await _shot("05_previsualisation")
@@ -68,27 +65,44 @@ func _init() -> void:
 	await _wait(1.2)
 	await _shot("06_deplacement_valide")
 
-	# Fin de tour : les ennemis avancent et annoncent.
+	# Fin d'activation : la timeline avance, les ennemis jouent.
 	_scene._on_end_turn()
 	await _wait(3.0)
-	await _shot("07_apres_tour_ennemi")
+	await _shot("07_apres_les_ennemis")
 
-	# Deuxième tour : on s'approche encore, puis on regarde le télégraphe.
-	for i in 3:
-		for hero: Unit in engine.board.active_units(Unit.Side.HEROES):
-			var target := _nearest_enemy(engine, hero)
-			if target != null and engine.board.can_attack(hero, target):
-				engine.attack(hero, target)
-			elif hero.movement_points > 0:
-				var step := _step_toward(engine, hero, target)
-				if step != hero.cell:
-					engine.move(hero, step)
+	# On laisse tourner quelques activations : chaque personnage avance
+	# vers l'ennemi le plus proche et vide ses PA dessus.
+	for i in 8:
+		if engine.is_finished():
+			break
+		var hero := engine.current_unit()
+		if hero != null and hero.is_hero():
+			_drive(engine, hero)
 		_scene._on_end_turn()
-		await _wait(3.0)
+		await _wait(1.5)
 	await _shot("08_melee")
 
 	print("storyboard terminé : %d captures dans %s" % [_step, _out])
 	quit(0)
+
+
+## Pilote un personnage : s'approcher, puis frapper tant qu'il reste des PA.
+func _drive(engine: CombatEngine, hero: Unit) -> void:
+	var target := _nearest_enemy(engine, hero)
+	if target == null:
+		return
+	var basic := hero.basic_ability()
+	if basic.is_empty():
+		return
+	if not engine.targetable_cells(hero, basic).has(target.cell):
+		var step := _step_toward(engine, hero, target)
+		if step != hero.cell:
+			engine.move(hero, step)
+	while target.is_active() and engine.can_use(hero, basic):
+		if not engine.targetable_cells(hero, basic).has(target.cell):
+			break
+		if engine.use_ability(hero, basic, target.cell).is_empty():
+			break
 
 
 func _far_reachable(engine: CombatEngine, unit: Unit) -> Vector2i:
