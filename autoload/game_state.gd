@@ -15,6 +15,11 @@ var rng := RandomNumberGenerator.new()
 ## Graine de la partie. Fixée à la création, sauvegardée, jamais retirée.
 var campaign_seed: int = 0
 
+## La compagnie du joueur : ses héros, son or, sa réserve. C'est le seul
+## état qui traverse les rencontres, et donc le seul qu'il faille écrire
+## sur le disque.
+var company := Company.new()
+
 
 func _ready() -> void:
 	if campaign_seed == 0:
@@ -25,6 +30,37 @@ func _ready() -> void:
 func start_new_campaign(seed_value: int) -> void:
 	campaign_seed = seed_value
 	rng.seed = seed_value
+	company = Company.new()
+
+
+## Tout ce qu'il faut écrire pour retrouver la partie où on l'a laissée.
+func to_save() -> Dictionary:
+	return {
+		"seed": campaign_seed,
+		"company": company.to_dictionary(),
+	}
+
+
+## Restaure une partie sauvegardée. Une sauvegarde vide laisse l'état tel
+## quel : mieux vaut une partie neuve qu'une partie à moitié effacée.
+func from_save(data: Dictionary) -> bool:
+	if data.is_empty():
+		return false
+	campaign_seed = int(data.get("seed", campaign_seed))
+	rng.seed = campaign_seed
+	company = Company.from_dictionary(data.get("company", {}))
+	return true
+
+
+## Sauvegarde la partie. À appeler après chaque action significative :
+## sur mobile, l'application peut être tuée à tout moment sans prévenir.
+func save() -> bool:
+	return SaveManager.save_now(to_save())
+
+
+## Recharge la partie depuis le disque. Renvoie false s'il n'y a rien.
+func load_saved() -> bool:
+	return from_save(SaveManager.load_game())
 
 
 ## Générateur d'un combat : journalisé, rejouable, indépendant du reste.

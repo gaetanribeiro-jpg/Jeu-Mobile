@@ -342,8 +342,9 @@ de la Phase 5.
 | **T2.2** | XP, seuils, montée en niveau, récompenses de rencontre | ✅ |
 | **T2.3** | Équipement : armes, armures, accessoires, raretés | ✅ |
 | **T2.4** | Butin : ce qu'une rencontre laisse tomber | ✅ |
-| **T2.5** | Écran de fiche de héros et de compagnie | ⏳ |
-| **T2.6** | Sauvegarde de la compagnie | ⏳ |
+| **T2.5** | `Company` : les héros, l'or, la réserve | ✅ |
+| **T2.6** | Sauvegarde et rechargement de la partie | ✅ |
+| **T2.7** | Écran de fiche de héros et de compagnie | ⏳ |
 
 **Le sens de la dépendance est la décision structurante :** `Hero` connaît
 `Unit`, jamais l'inverse. Le combat ne sait pas ce qu'est un niveau, et
@@ -406,6 +407,25 @@ joueur enchaîne les rencontres sans rentrer, plus l'or grossit, plus les
 objets tombent, et **plus le commun cesse de sortir**. C'est ce qui rend
 « je rentre ou je continue ? » tentant plutôt que seulement risqué. Il
 vaut zéro aujourd'hui et ne change rien ; les tests le vérifient déjà.
+
+### La compagnie et la sauvegarde (T2.5, T2.6)
+
+`Company` tient les héros, l'or et la réserve — le seul état qui traverse
+les rencontres, et donc le seul à écrire sur le disque. Une règle la
+gouverne : **rien ne se perd**. Un objet remplacé retourne à la réserve,
+un héros qui quitte la compagnie rend son équipement, et une sauvegarde
+qui a vu ses données changer se charge quand même en oubliant l'objet
+disparu — perdre un anneau vaut mieux que perdre la partie.
+
+`GameState.to_save()` et `from_save()` sont la frontière : `SaveManager` ne
+sait rien du jeu, il écrit un dictionnaire, le versionne, et garde une
+copie de secours. **La graine fait partie de la sauvegarde** — sans elle,
+une partie rechargée ne serait plus la même partie, et la règle 4 tomberait
+avec elle.
+
+Un détail qui n'en est pas un : `_next_id` est sauvegardé. Sans lui, un
+rechargement réattribuerait l'identifiant d'un héros vivant au recrutement
+suivant, et la sauvegarde en écraserait un.
 
 ### Phase 3 — Monde
 

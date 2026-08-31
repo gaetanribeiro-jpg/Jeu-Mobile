@@ -5,7 +5,9 @@ extends Node
 ## RÈGLE DURE : on sauvegarde après chaque action significative. Sur mobile
 ## l'application peut être tuée à tout moment sans prévenir.
 ##
-## Squelette F0.7 : l'écriture et la migration réelles arrivent en H2.10.
+## Cette classe ne connaît RIEN du jeu : elle écrit et relit un
+## dictionnaire, elle le versionne, et elle garde une copie de secours.
+## Ce qu'on y met est l'affaire de `GameState.to_save()`.
 
 const SAVE_PATH := "user://save_0.json"
 const BACKUP_PATH := "user://save_0.bak"
