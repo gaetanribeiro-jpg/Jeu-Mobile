@@ -1,14 +1,17 @@
 {
-  "_note": "La leçon de l'eau. Un canal traverse la carte : pousser coûte moins cher que tuer, et la carte le dit sans un mot de texte.",
+  "_note": "La lecon de l'eau. Un canal coupe la carte de haut en bas, et un seul pont la traverse. Le Guerrier doit passer par la ou tout le monde passe ; l'Archer et le Mage tirent par-dessus sans y penser. La carte enseigne en une image que la portee vaut du terrain.",
   "act": 1,
   "name_key": "MAP_VALLEE_02",
   "rows": [
-    "...~....",
-    "...~....",
-    "...=....",
-    "...~....",
-    "...~....",
-    "........"
+    ".....~......",
+    ".....~......",
+    ".....~......",
+    ".....~......",
+    ".....=......",
+    ".....~......",
+    ".....~......",
+    ".....~......",
+    ".....~......"
   ],
   "objective": {
     "kind": "eliminate"
@@ -16,14 +19,6 @@
   "deployment_cells": [
     [
       0,
-      1
-    ],
-    [
-      0,
-      2
-    ],
-    [
-      0,
       3
     ],
     [
@@ -31,12 +26,8 @@
       4
     ],
     [
-      1,
-      1
-    ],
-    [
-      1,
-      2
+      0,
+      5
     ],
     [
       1,
@@ -45,28 +36,44 @@
     [
       1,
       4
+    ],
+    [
+      1,
+      5
+    ],
+    [
+      2,
+      3
+    ],
+    [
+      2,
+      4
+    ],
+    [
+      2,
+      5
     ]
   ],
   "enemies": [
     {
       "type": "spear_goblin",
       "cell": [
-        5,
-        1
+        8,
+        3
       ]
     },
     {
       "type": "spear_goblin",
       "cell": [
-        5,
-        3
+        8,
+        5
       ]
     },
     {
       "type": "gnome",
       "cell": [
-        6,
-        2
+        9,
+        4
       ]
     }
   ]

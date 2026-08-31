@@ -210,15 +210,24 @@ Suit l'ordre du § 45, adapté à ce qui existe déjà.
 | **T1.7** | `Damage` : base + statistique − défense, terrain compris | ✅ |
 | **T1.8** | IA ennemie qui gère un budget PA/PM | ✅ |
 | **T1.9** | HUD : jauges PA/PM, timeline, barre de compétences, portée et zone | ⏳ |
-| **T1.10** | Les 8 cartes réécrites en 12 × 9 | ⏳ |
+| **T1.10** | Les 8 cartes réécrites en 12 × 9 | ✅ |
 | **T1.11** | Équilibrage : les ennemis meurent avant d'avoir frappé | ⏳ |
+| **T1.12** | Rien n'endommage le décor : `damage_structure` n'est appelé nulle part | ⏳ |
 
-**État au 2026-08-31 :** T1.1 à T1.8 sont faites et testées, 338 tests
-passent. Le moteur PA/PM tourne de bout en bout — placement, timeline
-entremêlée, compétences à zone, télégraphe, annulation, IA. Ce qui manque
-est ce qui se voit : le HUD ne donne accès qu'à l'attaque de base (T1.9),
-les cartes sont encore à l'ancienne taille (T1.10), et les ennemis sont
-trop faibles pour que le combat ait un enjeu (T1.11).
+**État au 2026-08-31 :** T1.1 à T1.8 et T1.10 sont faites et testées,
+340 tests passent. Le moteur PA/PM tourne de bout en bout — placement,
+timeline entremêlée, compétences à zone, télégraphe, annulation, IA — et
+les huit cartes sont au format 12 × 9. Ce qui manque : le HUD ne donne
+accès qu'à l'attaque de base (T1.9), et les ennemis sont trop faibles pour
+que le combat ait un enjeu (T1.11).
+
+**T1.12, trouvé en écrivant les cartes.** `Tile.damage_structure` existe,
+est testée, et **n'est appelée par personne**. Aucune compétence
+n'endommage le décor. Conséquence directe : un objectif « protéger une
+structure » ne peut jamais échouer, et `vallee_05` protège donc un
+villageois plutôt qu'un pont. Le `leaves_terrain: "fire"` du Torch Goblin
+est dans le même cas : déclaré en données, jamais appliqué. Les deux vont
+ensemble — c'est le § 19, « le terrain doit avoir un véritable impact ».
 
 ### Phase 2 — RPG
 

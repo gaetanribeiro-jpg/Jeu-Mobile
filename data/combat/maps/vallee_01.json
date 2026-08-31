@@ -1,14 +1,17 @@
 {
-  "_note": "Tutoriel. Terrain nu, ennemis faibles : on apprend à bouger et à frapper. Rien d'autre.",
+  "_note": "Tutoriel. Terrain nu, ennemis faibles : on apprend a se deplacer avec ses PM, a frapper avec ses PA, et a finir son activation. Rien d'autre. La distance de depart — sept a huit cases — tient en deux rondes de marche : le joueur a le temps de voir la timeline tourner avant le premier contact.",
   "act": 1,
   "name_key": "MAP_VALLEE_01",
   "rows": [
-    "........",
-    "........",
-    "..f.....",
-    "........",
-    ".....f..",
-    "........"
+    "............",
+    "............",
+    "....f.......",
+    "............",
+    "............",
+    "............",
+    ".......f....",
+    "............",
+    "............"
   ],
   "objective": {
     "kind": "eliminate"
@@ -16,14 +19,6 @@
   "deployment_cells": [
     [
       0,
-      1
-    ],
-    [
-      0,
-      2
-    ],
-    [
-      0,
       3
     ],
     [
@@ -31,12 +26,8 @@
       4
     ],
     [
-      1,
-      1
-    ],
-    [
-      1,
-      2
+      0,
+      5
     ],
     [
       1,
@@ -45,28 +36,44 @@
     [
       1,
       4
+    ],
+    [
+      1,
+      5
+    ],
+    [
+      2,
+      3
+    ],
+    [
+      2,
+      4
+    ],
+    [
+      2,
+      5
     ]
   ],
   "enemies": [
     {
       "type": "gnome",
       "cell": [
-        6,
-        2
+        9,
+        3
       ]
     },
     {
       "type": "gnome",
       "cell": [
-        6,
-        3
+        9,
+        5
       ]
     },
     {
       "type": "spear_goblin",
       "cell": [
-        7,
-        2
+        10,
+        4
       ]
     }
   ]

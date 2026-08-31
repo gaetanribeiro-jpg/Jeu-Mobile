@@ -91,25 +91,55 @@ func _play_activation(engine: CombatEngine, hero: Unit) -> void:
 	var goal := _goal_for(engine, hero)
 	if goal != Vector2i(-1, -1):
 		_walk_toward(engine, hero, goal, 0)
+		# Les PA ne se gardent pas d'une activation à l'autre : marcher vers
+		# un objectif n'empêche pas de frapper ce qui barre la route. Sans
+		# cette ligne, une carte à couloir se solde par une file de héros
+		# bloqués derrière un gobelin qu'ils ne songent jamais à écarter —
+		# et l'outil mesure alors sa propre bêtise, pas la carte.
+		_spend_action_points(engine, hero)
 		return
 
-	var enemies := engine.board.active_units(Unit.Side.ENEMIES)
-	if enemies.is_empty():
+	var target := _nearest_enemy(engine, hero)
+	if target == null:
 		return
-	var target := enemies[0]
-	for candidate: Unit in enemies:
-		if engine.board.grid.distance(hero.cell, candidate.cell) \
-				< engine.board.grid.distance(hero.cell, target.cell):
-			target = candidate
-
 	if not _can_hit(engine, hero, target):
 		_walk_toward(engine, hero, target.cell, _closest_range(hero))
-	# Vider ses PA sur la cible : la compétence la plus chère d'abord.
-	while target.is_active():
+	_spend_action_points(engine, hero)
+
+
+## Vide les PA du personnage sur l'ennemi le plus proche qu'il peut
+## atteindre, la compétence la plus chère d'abord.
+func _spend_action_points(engine: CombatEngine, hero: Unit) -> void:
+	while true:
+		var target := _nearest_reachable_enemy(engine, hero)
+		if target == null:
+			return
 		var ability := _best_ability(engine, hero, target)
 		if ability == null:
-			break
-		engine.use_ability(hero, ability.id, target.cell)
+			return
+		if engine.use_ability(hero, ability.id, target.cell).is_empty():
+			return
+
+
+func _nearest_enemy(engine: CombatEngine, hero: Unit) -> Unit:
+	var best: Unit = null
+	for candidate: Unit in engine.board.active_units(Unit.Side.ENEMIES):
+		if best == null or engine.board.grid.distance(hero.cell, candidate.cell) \
+				< engine.board.grid.distance(hero.cell, best.cell):
+			best = candidate
+	return best
+
+
+## Le plus proche ennemi que ce personnage peut frapper là où il se tient.
+func _nearest_reachable_enemy(engine: CombatEngine, hero: Unit) -> Unit:
+	var best: Unit = null
+	for candidate: Unit in engine.board.active_units(Unit.Side.ENEMIES):
+		if _best_ability(engine, hero, candidate) == null:
+			continue
+		if best == null or engine.board.grid.distance(hero.cell, candidate.cell) \
+				< engine.board.grid.distance(hero.cell, best.cell):
+			best = candidate
+	return best
 
 
 ## La compétence la plus chère que ce personnage peut porter maintenant.

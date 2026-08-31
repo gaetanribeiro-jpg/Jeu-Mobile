@@ -1,83 +1,97 @@
 {
-  "_note": "Protéger le pont 4 tours. Le Torch Goblin vient le brûler : il faut choisir entre le tuer et tenir la ligne. Protéger le pont 4 tours. La zone de déploiement est AUTOUR du pont, pas sur un bord : c'est la carte qui dit où est l'enjeu.",
+  "_note": "Proteger le villageois du gue pendant 4 rondes. Il se tient au pied du pont, il ne sait pas se battre, et le Torch Goblin vient droit sur lui. La zone de placement l'entoure sans le recouvrir : on choisit qui fait ecran.\n\nATTENTION : l'objectif porte sur le VILLAGEOIS, pas sur le pont. Rien dans le moteur n'endommage encore le decor (T1.12), donc une protection de structure ne pourrait pas echouer — une carte dont l'objectif ne peut pas etre perdu n'est pas une carte.",
   "act": 1,
   "name_key": "MAP_VALLEE_05",
   "rows": [
-    "..~~~~..",
-    "..~~~~..",
-    "...==...",
-    "........",
-    "........",
-    "........"
+    "....~~~~....",
+    "....~~~~....",
+    "....~~~~....",
+    ".....==.....",
+    "............",
+    "............",
+    "............",
+    "............",
+    "............"
   ],
   "objective": {
     "kind": "protect",
     "turns": 4,
-    "protected_cells": [
-      [
-        3,
-        2
-      ],
-      [
-        4,
-        2
-      ]
+    "subject_ids": [
+      100
     ]
   },
   "deployment_cells": [
     [
-      2,
-      3
-    ],
-    [
-      3,
-      3
-    ],
-    [
-      4,
-      3
-    ],
-    [
-      5,
-      3
-    ],
-    [
-      2,
-      4
-    ],
-    [
-      3,
-      4
-    ],
-    [
       4,
       4
     ],
     [
-      5,
+      6,
       4
+    ],
+    [
+      7,
+      4
+    ],
+    [
+      4,
+      5
+    ],
+    [
+      5,
+      5
+    ],
+    [
+      6,
+      5
+    ],
+    [
+      7,
+      5
+    ],
+    [
+      4,
+      6
+    ],
+    [
+      5,
+      6
+    ],
+    [
+      6,
+      6
     ]
+  ],
+  "allies": [
+    {
+      "type": "mage",
+      "cell": [
+        5,
+        4
+      ],
+      "_note": "Le villageois. Devrait etre un Pawn — le pack fournit le sprite et le paragraphe 9 donne une population au royaume. En attendant qu'un PNJ non combattant existe, c'est un Mage."
+    }
   ],
   "enemies": [
     {
       "type": "torch_goblin",
       "cell": [
-        1,
-        1
+        10,
+        3
       ]
     },
     {
       "type": "spear_goblin",
       "cell": [
-        6,
-        1
+        10,
+        5
       ]
     },
     {
       "type": "gnome",
       "cell": [
-        0,
-        0
+        9,
+        4
       ]
     }
   ]

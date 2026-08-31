@@ -1,14 +1,17 @@
 {
-  "_note": "Le gardien. Le Troll frappe sur deux cases en ligne et à 4 dégâts : rester groupé est puni. Les collines valent le détour pour l'archer.",
+  "_note": "Le gardien. Le Troll frappe deux cases en ligne : rester groupe est puni, et il joue toujours en dernier — on sait ce qui arrive. Il encaisse 180 PV derriere 6 de defense, donc on ne le tombe pas en une ronde : c'est la premiere carte ou il faut tenir plusieurs rondes. Les deux collines valent le detour pour l'Archer.",
   "act": 1,
   "name_key": "MAP_VALLEE_08",
   "rows": [
-    "..^.....",
-    "........",
-    "...#....",
-    "....#...",
-    "........",
-    ".....^.."
+    "..^.........",
+    "............",
+    ".....#......",
+    "......#.....",
+    "............",
+    "............",
+    ".......^....",
+    "............",
+    "..^........."
   ],
   "objective": {
     "kind": "eliminate"
@@ -16,14 +19,6 @@
   "deployment_cells": [
     [
       0,
-      1
-    ],
-    [
-      0,
-      2
-    ],
-    [
-      0,
       3
     ],
     [
@@ -31,8 +26,8 @@
       4
     ],
     [
-      1,
-      2
+      0,
+      5
     ],
     [
       1,
@@ -41,28 +36,44 @@
     [
       1,
       4
+    ],
+    [
+      1,
+      5
+    ],
+    [
+      2,
+      3
+    ],
+    [
+      2,
+      4
+    ],
+    [
+      2,
+      5
     ]
   ],
   "enemies": [
     {
       "type": "troll",
       "cell": [
-        6,
-        3
+        9,
+        4
       ]
     },
     {
       "type": "spear_goblin",
       "cell": [
-        7,
-        1
+        10,
+        2
       ]
     },
     {
       "type": "gnome",
       "cell": [
-        7,
-        4
+        10,
+        6
       ]
     }
   ]

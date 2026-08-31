@@ -1,14 +1,17 @@
 {
-  "_note": "Escorter un pion jusqu'au bord opposé. Il ne se défend pas ; le Voleur, lui, vise l'arrière. La zone de placement entoure le pion sans le recouvrir : le protéger devant ou derrière est le premier choix de la carte.",
+  "_note": "Escorter un villageois jusqu'au bord oppose. Onze cases a traverser, quatre PM par ronde : c'est trois rondes de marche sans un seul detour. Le Voleur joue avant tout le monde et vise l'arriere. La zone de placement entoure le villageois sans le recouvrir : on choisit qui marche devant et qui ferme la file.",
   "act": 1,
   "name_key": "MAP_VALLEE_06",
   "rows": [
-    "........",
-    "..f..f..",
-    "........",
-    "........",
-    "..f..f..",
-    "........"
+    "............",
+    "............",
+    "...f....f...",
+    "............",
+    "............",
+    "............",
+    "...f....f...",
+    "............",
+    "............"
   ],
   "objective": {
     "kind": "escort",
@@ -17,23 +20,27 @@
     ],
     "cells": [
       [
-        7,
-        2
+        11,
+        3
       ],
       [
-        7,
-        3
+        11,
+        4
+      ],
+      [
+        11,
+        5
       ]
     ]
   },
   "deployment_cells": [
     [
-      1,
-      1
+      0,
+      3
     ],
     [
-      1,
-      2
+      0,
+      5
     ],
     [
       1,
@@ -44,12 +51,8 @@
       4
     ],
     [
-      2,
-      1
-    ],
-    [
-      2,
-      2
+      1,
+      5
     ],
     [
       2,
@@ -58,6 +61,10 @@
     [
       2,
       4
+    ],
+    [
+      2,
+      5
     ]
   ],
   "allies": [
@@ -65,31 +72,31 @@
       "type": "mage",
       "cell": [
         0,
-        3
+        4
       ],
-      "_note": "Le protégé devrait être un Pawn — le pack fournit le sprite et le § 9 donne une population au royaume. En attendant qu'un PNJ non combattant existe, c'est un Mage."
+      "_note": "Le villageois escorte. Meme reserve que vallee_05 : ce devrait etre un Pawn."
     }
   ],
   "enemies": [
     {
       "type": "thief",
       "cell": [
-        6,
-        1
+        9,
+        2
       ]
     },
     {
       "type": "spear_goblin",
       "cell": [
-        5,
-        3
+        8,
+        4
       ]
     },
     {
       "type": "gnome",
       "cell": [
-        6,
-        4
+        9,
+        6
       ]
     }
   ]

@@ -1,42 +1,37 @@
 {
-  "_note": "Saisir avant le tour 5. Le chemin direct passe sous le tir du gnome à fronde : on peut foncer et encaisser, ou contourner et manquer le délai. Saisir avant le tour 5. La zone couvre tout le bord gauche : partir haut, bas ou au centre change entièrement le couloir emprunté.",
+  "_note": "Saisir la position avant la ronde 6. Deux eperons rocheux laissent trois passages : celui du milieu est droit et court, et les deux frondes le couvrent entierement ; ceux des bords sont libres de tout tir mais font presque le double du chemin. Foncer et encaisser, ou contourner et courir apres le delai.\n\nLes frondes sont posees a (8,3) et (8,5) pour une raison precise : leur portee de 2 a 4 atteint tout le couloir du milieu et rien des bords. Deplacez-les d'une case et le choix disparait.",
   "act": 1,
   "name_key": "MAP_VALLEE_04",
   "rows": [
-    "........",
-    ".##.##..",
-    "........",
-    "........",
-    ".##.##..",
-    "........"
+    "............",
+    "............",
+    "....###.....",
+    "....###.....",
+    "............",
+    "....###.....",
+    "....###.....",
+    "............",
+    "............"
   ],
   "objective": {
     "kind": "seize",
     "cells": [
       [
-        7,
-        2
+        11,
+        3
       ],
       [
-        7,
-        3
+        11,
+        4
+      ],
+      [
+        11,
+        5
       ]
     ],
-    "deadline": 5
+    "deadline": 6
   },
   "deployment_cells": [
-    [
-      0,
-      0
-    ],
-    [
-      0,
-      1
-    ],
-    [
-      0,
-      2
-    ],
     [
       0,
       3
@@ -48,28 +43,52 @@
     [
       0,
       5
+    ],
+    [
+      1,
+      3
+    ],
+    [
+      1,
+      4
+    ],
+    [
+      1,
+      5
+    ],
+    [
+      2,
+      3
+    ],
+    [
+      2,
+      4
+    ],
+    [
+      2,
+      5
     ]
   ],
   "enemies": [
     {
       "type": "slingshot_gnome",
       "cell": [
-        5,
-        0
+        8,
+        3
       ]
     },
     {
       "type": "slingshot_gnome",
       "cell": [
-        5,
+        8,
         5
       ]
     },
     {
       "type": "spear_goblin",
       "cell": [
-        6,
-        2
+        9,
+        4
       ]
     }
   ]

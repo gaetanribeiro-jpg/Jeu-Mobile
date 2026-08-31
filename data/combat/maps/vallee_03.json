@@ -1,14 +1,17 @@
 {
-  "_note": "Tenir 4 tours. Les ennemis restent sur le terrain à la fin : on apprend que gagner n'est pas toujours nettoyer.",
+  "_note": "Tenir 4 rondes. Les ennemis restent sur le terrain a la fin : on apprend que gagner n'est pas toujours nettoyer. La crete boisee coupe la vue et protege d'un degat ; les deux collines qui l'encadrent rendent un point de portee et un point de degats a qui tire. Se percher ou se cacher est la question de la carte.",
   "act": 1,
   "name_key": "MAP_VALLEE_03",
   "rows": [
-    "#.......",
-    "..^.....",
-    "..f.....",
-    "..f.....",
-    "..^.....",
-    "#......."
+    "#...........",
+    "#..^........",
+    "...^f.......",
+    "...ff.......",
+    "...ff.......",
+    "...ff.......",
+    "...^f.......",
+    "#..^........",
+    "#..........."
   ],
   "objective": {
     "kind": "survive",
@@ -24,8 +27,16 @@
       3
     ],
     [
-      1,
-      1
+      0,
+      4
+    ],
+    [
+      0,
+      5
+    ],
+    [
+      0,
+      6
     ],
     [
       1,
@@ -38,42 +49,50 @@
     [
       1,
       4
+    ],
+    [
+      1,
+      5
+    ],
+    [
+      1,
+      6
     ]
   ],
   "enemies": [
     {
       "type": "spear_goblin",
       "cell": [
-        7,
+        10,
         1
       ]
     },
     {
       "type": "spear_goblin",
       "cell": [
-        7,
-        4
+        10,
+        7
       ]
     },
     {
       "type": "gnome",
       "cell": [
-        6,
-        2
-      ]
-    },
-    {
-      "type": "gnome",
-      "cell": [
-        6,
+        9,
         3
+      ]
+    },
+    {
+      "type": "gnome",
+      "cell": [
+        9,
+        5
       ]
     },
     {
       "type": "slingshot_gnome",
       "cell": [
-        7,
-        2
+        10,
+        4
       ]
     }
   ]

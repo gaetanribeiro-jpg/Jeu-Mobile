@@ -1,55 +1,50 @@
 {
-  "_note": "Extraire. La cache est au fond des ruines, à l'opposé de la sortie : il faut traverser la carte, ramasser, et refaire le chemin en sens inverse avec les ennemis réveillés. Les ruines exposent (+1 dégât subi), et le gnome à fronde tient le couloir du retour.",
+  "_note": "Extraire. La cache est au fond des ruines, a l'oppose de la sortie : il faut traverser la carte, ramasser en passant — le ramassage ne coute pas de PA, seulement le detour — et refaire le chemin en sens inverse avec tout le monde reveille dans le dos. Les ruines ajoutent un degat a qui s'y tient : la cache est un mauvais endroit ou trainer.",
   "act": 1,
   "name_key": "MAP_VALLEE_07",
   "rows": [
-    "........",
-    ".#....rr",
-    "......rr",
-    "........",
-    ".^..#...",
-    "........"
+    "............",
+    ".#.......rr.",
+    ".........rr.",
+    "............",
+    "............",
+    "....#.......",
+    "...^........",
+    "............",
+    "............"
   ],
   "objective": {
     "kind": "extract",
     "pickup_cells": [
       [
-        6,
+        9,
         1
       ],
       [
-        7,
+        10,
         1
       ],
       [
-        6,
+        9,
         2
       ],
       [
-        7,
+        10,
         2
       ]
     ],
     "cells": [
       [
         0,
-        2
+        4
       ],
       [
         0,
-        3
+        5
       ]
     ]
   },
   "deployment_cells": [
-    [
-      0,
-      1
-    ],
-    [
-      0,
-      2
-    ],
     [
       0,
       3
@@ -59,8 +54,8 @@
       4
     ],
     [
-      1,
-      2
+      0,
+      5
     ],
     [
       1,
@@ -68,6 +63,14 @@
     ],
     [
       1,
+      4
+    ],
+    [
+      1,
+      5
+    ],
+    [
+      2,
       4
     ]
   ],
@@ -75,22 +78,22 @@
     {
       "type": "spear_goblin",
       "cell": [
-        5,
-        2
+        7,
+        3
       ]
     },
     {
       "type": "slingshot_gnome",
       "cell": [
-        3,
-        5
+        5,
+        7
       ]
     },
     {
       "type": "thief",
       "cell": [
-        5,
-        4
+        7,
+        5
       ]
     }
   ]
