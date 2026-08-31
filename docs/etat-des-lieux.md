@@ -492,8 +492,23 @@ décision, pas pour un défaut.
 **L'escalade du § 29 ne touche à aucun chiffre de combat.**
 `encounter_maps` est rangée du plus facile au plus dur, et le tirage d'une
 rencontre pioche dans une **fenêtre qui glisse** avec la profondeur : trois
-cartes sur six, `vallee_01..03` au départ, `vallee_04..06` au fond. Plus le
-joueur s'enfonce, plus les cartes faciles cessent de sortir.
+cartes sur six. Plus le joueur s'enfonce, plus les cartes faciles cessent
+de sortir.
+
+**L'ordre est MESURÉ, pas supposé** — et rangé à l'œil, il était faux.
+`simulate_combats` donne ce qu'une carte coûte à l'équipe sur cinquante
+graines, et c'est l'instrument établi en T1.11 :
+
+| carte | 01 | 05 | 06 | 02 | 03 | 04 |
+|---|---|---|---|---|---|---|
+| coût en PV | 0 % | 7 % | 12 % | 14 % | 14 % | 24 % |
+
+Le numéro de carte disait l'inverse pour `vallee_05` et `vallee_02`, si
+bien que la fenêtre du fond proposait une rencontre **plus facile** que
+celle du départ. Une fois rangée sur la mesure : 6 % en moyenne au départ,
+17 % au fond. L'escalade est réelle, et elle est chiffrée. Un ordre mesuré
+est un ordre qui périme : à relancer après toute modification d'une carte
+ou d'un ennemi.
 
 C'est délibérément la SÉLECTION qui monte, pas les ennemis. Gonfler les PV
 ou les dégâts avec la profondeur aurait invalidé tout l'équilibrage de
