@@ -147,3 +147,24 @@ REGION_CURSED_LANDS,Les Terres Maudites
 REGION_CURSED_LANDS_DESC,Rien n'y meurt tout à fait. On n'y va pas encore.
 REGION_BLACK_EMPIRE,L'Empire Noir
 REGION_BLACK_EMPIRE_DESC,La source de tout ceci. On n'y va pas encore.
+EVENT_ALTAR,L'autel de pierre
+EVENT_ALTAR_TEXT,Une dalle usée au milieu des herbes. Quelque chose y a été promis avant vous.
+EVENT_ALTAR_BLOOD,Offrir votre sang
+EVENT_ALTAR_GOLD,Offrir votre or
+EVENT_ALTAR_LEAVE,S'éloigner et souffler
+EVENT_VILLAGE,Un hameau
+EVENT_VILLAGE_TEXT,Une douzaine de toits. On vous reconnaît et on vous ouvre.
+EVENT_VILLAGE_REST,Passer la nuit
+EVENT_VILLAGE_SMITH,Payer le forgeron
+EVENT_RUINS,Des ruines
+EVENT_RUINS_TEXT,Un mur debout et le reste par terre. Ça tient mal.
+EVENT_RUINS_SEARCH,Fouiller les décombres
+EVENT_RUINS_STONES,Emporter les pierres taillées
+EVENT_AMBUSH,Une embuscade
+EVENT_AMBUSH_TEXT,Ils étaient là avant vous. Ils vous ont vus les premiers.
+EVENT_AMBUSH_CHARGE,Charger
+EVENT_AMBUSH_FLEE,Fuir en lâchant du lest
+EVENT_CHEST,Un coffre
+EVENT_CHEST_TEXT,Ferré et fermé. Personne alentour pour en réclamer la clé.
+EVENT_CHEST_FORCE,Le forcer à l'épaule
+EVENT_CHEST_PICK,Le crocheter

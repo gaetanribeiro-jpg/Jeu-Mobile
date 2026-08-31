@@ -1,0 +1,88 @@
+{
+  "_readme": "Les évènements du § 40 : marchand, autel, village, embuscade, ruines. Le coffre vient du § 27.\n\nLA LIGNE QUI GOUVERNE TOUT LE FICHIER : « les événements doivent créer des décisions ». Un évènement qui donne trente pièces d'or n'est pas un évènement, c'est une récompense déguisée en texte. CHAQUE ÉVÈNEMENT D'ICI OFFRE AU MOINS DEUX OPTIONS QUI S'EXCLUENT, et l'outil `verify_world` refuse celui qui n'en aurait qu'une, ou dont une option serait meilleure que l'autre sur toute la ligne.\n\nLES QUATRE MONNAIES DE L'ÉCHANGE, et il en faut plusieurs pour qu'un choix soit un choix : les PV (que rien ne rend, § 29), l'or (dont le royaume aura besoin, § 32), la besace (qui n'est pas encore à l'abri) et le risque (une chance déclarée). Un évènement qui n'échange que de l'or contre de l'or ne demande rien.\n\nLE VOCABULAIRE DES EFFETS est fermé, et court exprès :\n  gold          or versé ou dépensé, sur la bourse de la compagnie\n  health        fraction des PV maximums, signée, pour toute l'équipe\n  items         nombre d'objets tirés à la profondeur courante\n  rarity_bonus  crans de rareté en plus sur ces objets-là\n  satchel_kept  fraction de la besace conservée — fuir coûte\n  combat        une rencontre s'intercale ici\n\nUne option avec `chance` a deux issues : `success` et `failure`. Sans `chance`, seul `success` s'applique. Une option dont le coût dépasse la bourse est proposée grisée, jamais cachée : savoir ce qu'on ne peut pas s'offrir fait partie de la décision.",
+  "events": {
+    "altar": {
+      "name_key": "EVENT_ALTAR",
+      "text_key": "EVENT_ALTAR_TEXT",
+      "weight": 20,
+      "options": [
+        {
+          "label_key": "EVENT_ALTAR_BLOOD",
+          "success": { "health": -0.25, "items": 1, "rarity_bonus": 2 }
+        },
+        {
+          "label_key": "EVENT_ALTAR_GOLD",
+          "success": { "gold": -60, "items": 1, "rarity_bonus": 1 }
+        },
+        {
+          "label_key": "EVENT_ALTAR_LEAVE",
+          "success": { "health": 0.05 }
+        }
+      ]
+    },
+    "village": {
+      "name_key": "EVENT_VILLAGE",
+      "text_key": "EVENT_VILLAGE_TEXT",
+      "weight": 25,
+      "options": [
+        {
+          "label_key": "EVENT_VILLAGE_REST",
+          "success": { "health": 0.35 }
+        },
+        {
+          "label_key": "EVENT_VILLAGE_SMITH",
+          "success": { "gold": -80, "items": 1, "rarity_bonus": 1 }
+        }
+      ]
+    },
+    "ruins": {
+      "name_key": "EVENT_RUINS",
+      "text_key": "EVENT_RUINS_TEXT",
+      "weight": 20,
+      "options": [
+        {
+          "label_key": "EVENT_RUINS_SEARCH",
+          "chance": 0.6,
+          "success": { "items": 1, "rarity_bonus": 1 },
+          "failure": { "health": -0.15 }
+        },
+        {
+          "label_key": "EVENT_RUINS_STONES",
+          "success": { "gold": 45 }
+        }
+      ]
+    },
+    "ambush": {
+      "name_key": "EVENT_AMBUSH",
+      "text_key": "EVENT_AMBUSH_TEXT",
+      "weight": 15,
+      "options": [
+        {
+          "label_key": "EVENT_AMBUSH_CHARGE",
+          "success": { "health": -0.1, "combat": true }
+        },
+        {
+          "label_key": "EVENT_AMBUSH_FLEE",
+          "success": { "satchel_kept": 0.7 }
+        }
+      ]
+    },
+    "chest": {
+      "name_key": "EVENT_CHEST",
+      "text_key": "EVENT_CHEST_TEXT",
+      "weight": 20,
+      "options": [
+        {
+          "label_key": "EVENT_CHEST_FORCE",
+          "success": { "health": -0.1, "items": 1, "rarity_bonus": 1 }
+        },
+        {
+          "label_key": "EVENT_CHEST_PICK",
+          "chance": 0.5,
+          "success": { "items": 1, "rarity_bonus": 2 },
+          "failure": { "health": -0.15 }
+        }
+      ]
+    }
+  }
+}

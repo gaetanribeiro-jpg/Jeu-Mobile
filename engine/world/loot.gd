@@ -12,9 +12,9 @@ extends RefCounted
 ##
 ## LA PROFONDEUR est le levier du § 29. Plus le joueur enchaîne les
 ## rencontres sans rentrer, plus `depth` monte, et plus le butin grossit :
-## c'est ce qui rend « je rentre ou je continue ? » une vraie question. La
-## Phase 3 branchera l'expédition dessus ; ici il vaut zéro et ne change
-## rien.
+## c'est ce qui rend « je rentre ou je continue ? » une vraie question.
+## `Expedition` la fait monter d'une étape à l'autre ; hors expédition elle
+## vaut zéro et ne change rien.
 ##
 ## TOUT PASSE PAR LA GRAINE. Un butin qui ne se rejoue pas à l'identique
 ## interdit de reproduire un bogue, et le roguelite en dépend.
@@ -86,6 +86,21 @@ static func _roll_gold(rng: CombatRng, downed: int, victory: bool, deeper: float
 	return maxi(int(round(base * swing)), 0)
 
 
+## Tire un nombre voulu d'objets, sans passer par une rencontre. C'est ce
+## dont un évènement ou un coffre a besoin : ils donnent un objet sans
+## qu'aucun ennemi ne soit tombé. `rarity_bonus` relève le plancher de
+## rareté — un autel paie mieux qu'un tas de gravats.
+static func draw_items(rng: CombatRng, count: int, depth: int, rarity_bonus: int = 0) -> Array[StringName]:
+	var out: Array[StringName] = []
+	if rng == null:
+		return out
+	for i in maxi(count, 0):
+		var item_id := _roll_item(rng, depth, rarity_bonus)
+		if not item_id.is_empty():
+			out.append(item_id)
+	return out
+
+
 static func _roll_items(rng: CombatRng, victory: bool, depth: int) -> Array[StringName]:
 	var out: Array[StringName] = []
 	var chance := number(&"drop", &"on_victory" if victory else &"on_defeat", 0.0)
@@ -104,15 +119,17 @@ static func _roll_items(rng: CombatRng, victory: bool, depth: int) -> Array[Stri
 ## Tire une rareté aux poids déclarés, puis un objet de cette rareté.
 ##
 ## La profondeur décale le tirage d'un cran tous les `rarity_step` : au
-## fond d'une expédition, le commun cesse de sortir.
-static func _roll_item(rng: CombatRng, depth: int) -> StringName:
+## fond d'une expédition, le commun cesse de sortir. `rarity_bonus` décale
+## en plus, pour une source qui paie mieux qu'une rencontre.
+static func _roll_item(rng: CombatRng, depth: int, rarity_bonus: int = 0) -> StringName:
 	var ladder := _rarity_ladder()
 	if ladder.is_empty():
 		return &""
 	var step := int(number(&"depth", &"rarity_step", 0))
-	var floor_index := 0
+	var floor_index := maxi(rarity_bonus, 0)
 	if step > 0:
-		floor_index = mini(int(maxi(depth, 0) / step), ladder.size() - 1)
+		floor_index += int(maxi(depth, 0) / step)
+	floor_index = mini(floor_index, ladder.size() - 1)
 
 	var pool: Array[StringName] = ladder.slice(floor_index)
 	var total := 0

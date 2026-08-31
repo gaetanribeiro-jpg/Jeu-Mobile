@@ -237,8 +237,9 @@ dur : passer par `data/assets.json`.
 - **Phase 2 terminée.** T2.1 à T2.7 : le `Hero`, les niveaux,
   l'équipement, le butin, la `Company`, la sauvegarde, l'écran de
   compagnie.
-- **Phase 3 en cours.** T3.1 (`Region`) et T3.2 (`Expedition`) sont
-  faites. **524 tests passent** sous Godot 4.6 en headless.
+- **Phase 3 en cours.** T3.1 (`Region`), T3.2 (`Expedition`) et T3.3 (les
+  évènements du § 40) sont faites. **545 tests passent** sous Godot 4.6 en
+  headless.
 - **La boucle du § 3 tourne, en court-circuit :** compagnie → combat →
   expérience et butin → compagnie → sauvegarde. Il manque le royaume
   (Phase 4), et les écrans du monde (T3.4, T3.5) qui donneront au joueur
@@ -304,7 +305,7 @@ godot --headless --path . -s tools/verify_audio.gd      # 30 entrées
 godot --headless --path . -s tools/verify_font.gd       # 140 glyphes
 godot --headless --path . -s tools/verify_maps.gd       # 8 cartes
 godot --headless --path . -s tools/verify_items.gd      # 30 objets
-godot --headless --path . -s tools/verify_world.gd      # 6 régions
+godot --headless --path . -s tools/verify_world.gd      # 6 régions, 5 évènements
 godot --headless --path . -s tools/simulate_combats.gd  # équilibrage
 ```
 

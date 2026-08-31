@@ -474,9 +474,10 @@ xvfb-run -a godot --path . --resolution 1280x720 -- --capture /tmp/x.png
 |---|---|---|
 | **T3.1** | `Region` : les six régions du § 26, une seule ouverte | ✅ |
 | **T3.2** | `Expedition` : la chaîne du § 28, la décision du § 29 | ✅ |
-| **T3.3** | Évènements du § 40 : marchand, autel, village, embuscade, ruines | ⏳ |
-| **T3.4** | Écran d'expédition : la route, la besace, rentrer ou continuer | ⏳ |
-| **T3.5** | Écran de carte du monde : choisir sa région et son équipe | ⏳ |
+| **T3.3** | Évènements du § 40 : autel, village, ruines, embuscade, coffre | ✅ |
+| **T3.4** | Le marchand : la boutique de mi-parcours | ⏳ |
+| **T3.5** | Écran d'expédition : la route, la besace, rentrer ou continuer | ⏳ |
+| **T3.6** | Écran de carte du monde : choisir sa région et son équipe | ⏳ |
 
 ### Les régions, et l'escalade sans toucher aux chiffres (T3.1)
 
@@ -545,6 +546,43 @@ est écrit plutôt que sous-entendu.
 `Expedition` se sérialise. Sur mobile l'application meurt en pleine
 sortie, et perdre une expédition pour cette raison serait la pire des
 punitions — celle-là même que le § 41 refuse.
+
+### Les évènements : une seule règle, et elle est vérifiable (T3.3)
+
+Le § 40 tient en une phrase : **« les événements doivent créer des
+décisions »**. C'est la seule règle qu'un fichier de données peut violer
+sans que rien ne plante — un évènement à une option, ou dont une option
+est meilleure que l'autre sur toute la ligne, se joue parfaitement. Il ne
+demande simplement plus rien.
+
+`verify_world` la vérifie donc littéralement : il calcule l'**espérance**
+de chaque option sur chacune des monnaies de l'échange, et refuse tout
+évènement dont une option en **domine** une autre sur tous les axes à la
+fois. Ça a servi tout de suite : le coffre avait une option « crocheter »
+strictement meilleure que « forcer » — moins chère en PV, plus généreuse
+en objets, plus généreuse en or. La table est passée de deux options à un
+seul vrai choix sans que personne ne s'en aperçoive.
+
+**Quatre monnaies, et il en faut plusieurs.** Les PV (que rien ne rend),
+l'or (dont le royaume aura besoin, § 32), la besace (qui n'est pas encore
+à l'abri) et le risque (une chance déclarée). Un évènement qui n'échange
+que de l'or contre de l'or ne demande rien à personne.
+
+**L'évènement se tire à l'arrivée, pas au départ.** La route est connue —
+c'est ce qui permet de décider si l'on rentre — mais elle dit « un
+évènement », pas lequel. Le § 40 les appelle aléatoires ; les afficher
+trois rencontres à l'avance leur retirerait le seul effet que ce mot
+décrit. Une fois tiré, il est retenu : une partie rechargée retrouve celui
+qu'elle avait déjà découvert.
+
+**Un évènement ne tue jamais.** L'autel fait payer en sang, et le plancher
+est à un PV. Mourir se fait sur un plateau, où le joueur peut agir ; pas
+dans un menu, où il ne peut que regarder.
+
+**L'embuscade intercale un vrai combat** dans la chaîne. Elle rallonge la
+route, ce qui est déjà un prix, et la carte se tire comme les autres. Fuir
+coûte 30 % de la besace : c'est le même levier qu'une déroute, à un tarif
+choisi plutôt que subi.
 
 ### Un outil de vérification qui mentait (T3.1)
 

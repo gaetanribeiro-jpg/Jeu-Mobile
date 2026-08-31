@@ -217,29 +217,118 @@ func resolve_combat(summary: Dictionary, hero_units: Array[Unit], rng: CombatRng
 	}
 
 
-## Encaisse une étape qui ne se joue pas sur un plateau : récompense,
-## évènement, marchand.
+## L'évènement qui attend sur cette étape. Il se tire À L'ARRIVÉE, une
+## seule fois, et se retient : la route dit « un évènement », pas lequel
+## (§ 40 les appelle aléatoires), mais une partie rechargée doit retrouver
+## celui qu'elle avait déjà découvert.
+func reveal_event(rng: CombatRng) -> StringName:
+	if not is_ongoing() or current_is_combat():
+		return &""
+	var step := steps[index]
+	var known := StringName(step.get("event", ""))
+	if not known.is_empty():
+		return known
+
+	var seen: Array = []
+	for past: Dictionary in steps:
+		var past_event := String(past.get("event", ""))
+		if not past_event.is_empty():
+			seen.append(past_event)
+	var drawn := ExpeditionEvent.draw(rng, seen)
+	step["event"] = String(drawn)
+	return drawn
+
+
+## Encaisse une étape qui ne se joue pas sur un plateau : évènement ou
+## récompense.
 ##
-## `outcome` décrit ce que l'étape donne — { gold, items, heal } — et vient
-## des données, jamais d'ici. L'étape de récompense du § 28 tire son butin
-## toute seule si l'appelant ne lui en donne pas.
-func resolve_event(outcome: Dictionary, rng: CombatRng) -> Dictionary:
+## `effects` vient de `ExpeditionEvent.resolve`, donc des données — le dé
+## y a déjà été jeté. L'étape de récompense du § 28 tire son butin toute
+## seule si l'appelant ne lui donne rien.
+##
+## `purse` est la bourse de la compagnie, parce que le § 40 fait payer :
+## une expédition dépense l'or du royaume, elle n'en a pas un second.
+## Renvoie ce qu'il faut montrer, `gold` compris — négatif si l'étape a
+## coûté.
+func resolve_event(effects: Dictionary, rng: CombatRng, company: Company = null) -> Dictionary:
 	if not is_ongoing():
 		return {}
-	var gained := outcome
-	if gained.is_empty() and current_kind() == KIND_REWARD:
-		gained = Loot.roll(rng, {"victory": true, "enemies_downed": 0}, depth())
-	_gather(gained)
+	var applied := effects.duplicate()
+	if applied.is_empty() and current_kind() == KIND_REWARD:
+		applied = Loot.roll(rng, {"victory": true, "enemies_downed": 0}, depth())
 
-	var extra := float(gained.get("heal", 0.0))
-	if current_kind() == KIND_REWARD:
-		extra += ExpeditionRules.healing_on_reward_step()
-	_advance(extra)
-	return {
-		"gold": int(gained.get("gold", 0)),
-		"items": gained.get("items", []),
+	# L'or d'un évènement passe par la bourse, pas par la besace : ce qu'on
+	# dépense est déjà à soi, et ce qu'on gagne ici n'est pas un butin
+	# qu'une déroute pourrait reprendre.
+	var gold := int(applied.get("gold", 0))
+	if company != null and gold != 0:
+		company.gold = maxi(company.gold + gold, 0)
+	elif gold > 0:
+		satchel_gold += gold
+
+	# `items` se lit de deux façons, et c'est voulu : un évènement déclare
+	# COMBIEN d'objets il donne et les fait tirer ici, tandis qu'une étape
+	# de récompense arrive avec la liste déjà tirée par `Loot.roll`.
+	var found: Array[StringName] = []
+	var wanted: Variant = applied.get("items", 0)
+	if wanted is Array:
+		found = _as_items(wanted)
+	else:
+		found = Loot.draw_items(
+			rng, int(wanted), depth(), int(applied.get("rarity_bonus", 0))
+		)
+	_gather({"items": found})
+
+	# Fuir coûte une part de la besace. C'est le même levier qu'une déroute,
+	# à un tarif choisi par le joueur plutôt que subi.
+	var kept := float(applied.get("satchel_kept", 1.0))
+	var forfeited := {}
+	if kept < 1.0:
+		forfeited = _shed_satchel(kept, rng)
+
+	var ambushed := bool(applied.get("combat", false))
+	_advance(float(applied.get("health", 0.0)) + _reward_healing())
+	if ambushed:
+		_insert_combat(rng)
+
+	var report := {
+		"gold": gold,
+		"items": found,
+		"combat": ambushed,
 		"state": state,
 	}
+	report.merge(forfeited)
+	return report
+
+
+func _reward_healing() -> float:
+	if current_kind() != KIND_REWARD:
+		return 0.0
+	return ExpeditionRules.healing_on_reward_step()
+
+
+## Intercale une rencontre ici. C'est ce que fait une embuscade : elle
+## rallonge la route, ce qui est déjà un prix, et le combat qu'elle amène
+## se tire comme les autres.
+func _insert_combat(rng: CombatRng) -> void:
+	var previous := &""
+	if index > 0:
+		previous = StringName(steps[index - 1].get("map", ""))
+	var map_id := Region.draw_map(region_id, depth(), rng, previous)
+	if map_id.is_empty():
+		return
+	steps.insert(index, {"kind": String(KIND_COMBAT), "map": String(map_id)})
+	# La chaîne s'est rallongée : une expédition qu'on croyait finie ne
+	# l'est plus.
+	if state == State.RETURNED and index < steps.size():
+		state = State.ONGOING
+
+
+func _as_items(raw: Array) -> Array[StringName]:
+	var out: Array[StringName] = []
+	for item_id: Variant in raw:
+		out.append(StringName(item_id))
+	return out
 
 
 func _gather(gained: Dictionary) -> void:
@@ -252,9 +341,9 @@ func _gather(gained: Dictionary) -> void:
 			satchel_items.append(wanted)
 
 
-func _advance(extra_healing: float = 0.0) -> void:
+func _advance(health_change: float = 0.0) -> void:
 	index += 1
-	_heal(ExpeditionRules.healing_between_steps() + extra_healing)
+	_change_health(ExpeditionRules.healing_between_steps() + health_change)
 	if index >= steps.size():
 		state = State.RETURNED
 
@@ -266,21 +355,7 @@ func _wipe(rng: CombatRng, downed: Array[int]) -> Dictionary:
 	var lost_gold := satchel_gold - int(floor(float(satchel_gold) * kept))
 	satchel_gold -= lost_gold
 
-	var keep_count := int(floor(float(satchel_items.size()) * kept))
-	var lost_items: Array[StringName] = []
-	if keep_count < satchel_items.size():
-		# Le tirage décide de ce qui reste, pas la valeur : garder les
-		# meilleurs annulerait la perte, garder les pires la doublerait.
-		var order: Array = satchel_items
-		if rng != null:
-			order = rng.shuffled(satchel_items, &"wipe_satchel")
-		var survivors: Array[StringName] = []
-		for i in order.size():
-			if i < keep_count:
-				survivors.append(StringName(order[i]))
-			else:
-				lost_items.append(StringName(order[i]))
-		satchel_items = survivors
+	var lost_items := _shed_items(kept, rng)
 
 	return {
 		"gold": 0,
@@ -290,6 +365,36 @@ func _wipe(rng: CombatRng, downed: Array[int]) -> Dictionary:
 		"lost_items": lost_items,
 		"state": state,
 	}
+
+
+## Abandonne une part de la besace, or et objets. C'est le prix d'une
+## déroute, et aussi celui d'une fuite : le même levier, subi dans un cas,
+## choisi dans l'autre.
+func _shed_satchel(kept: float, rng: CombatRng) -> Dictionary:
+	var safe := clampf(kept, 0.0, 1.0)
+	var lost_gold := satchel_gold - int(floor(float(satchel_gold) * safe))
+	satchel_gold -= lost_gold
+	return {"lost_gold": lost_gold, "lost_items": _shed_items(safe, rng)}
+
+
+func _shed_items(kept: float, rng: CombatRng) -> Array[StringName]:
+	var keep_count := int(floor(float(satchel_items.size()) * clampf(kept, 0.0, 1.0)))
+	var lost_items: Array[StringName] = []
+	if keep_count >= satchel_items.size():
+		return lost_items
+	# Le tirage décide de ce qui reste, pas la valeur : garder les meilleurs
+	# annulerait la perte, garder les pires la doublerait.
+	var order: Array = satchel_items
+	if rng != null:
+		order = rng.shuffled(satchel_items, &"shed_satchel")
+	var survivors: Array[StringName] = []
+	for i in order.size():
+		if i < keep_count:
+			survivors.append(StringName(order[i]))
+		else:
+			lost_items.append(StringName(order[i]))
+	satchel_items = survivors
+	return lost_items
 
 
 # --- Les PV que l'équipe traîne derrière elle ------------------------------
@@ -314,15 +419,20 @@ func _absorb_health(hero_units: Array[Unit]) -> Array[int]:
 	return downed
 
 
-func _heal(fraction: float) -> void:
-	if fraction <= 0.0 or carried.is_empty():
+## Rend ou retire une fraction des PV maximums à toute l'équipe.
+##
+## LE PLANCHER EST À UN PV, JAMAIS ZÉRO. Un autel du § 40 fait payer en
+## sang ; il ne tue pas. Mourir dans le jeu se fait sur un plateau, où le
+## joueur peut agir — pas dans un menu, où il ne peut que regarder.
+func _change_health(fraction: float) -> void:
+	if is_zero_approx(fraction) or carried.is_empty():
 		return
 	for hero_id: int in carried.keys():
 		var maximum := int(_max_health.get(hero_id, 0))
 		if maximum <= 0:
 			continue
-		var gain := int(round(float(maximum) * fraction))
-		carried[hero_id] = mini(int(carried[hero_id]) + gain, maximum)
+		var delta := int(round(float(maximum) * fraction))
+		carried[hero_id] = clampi(int(carried[hero_id]) + delta, 1, maximum)
 
 
 ## PV maximums relevés au dernier passage : soigner une fraction demande de
@@ -354,6 +464,11 @@ func squad_units(company: Company) -> Array[Unit]:
 		_max_health[hero_id] = unit.max_hit_points
 		if carried.has(hero_id):
 			unit.hit_points = clampi(int(carried[hero_id]), 0, unit.max_hit_points)
+		else:
+			# Un héros croisé pour la première fois part au complet, et il
+			# entre dans la table tout de suite : sans ça, un évènement
+			# rencontré avant son premier combat ne lui coûterait rien.
+			carried[hero_id] = unit.hit_points
 	return units
 
 
