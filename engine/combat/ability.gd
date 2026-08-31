@@ -171,6 +171,18 @@ func targets_self() -> bool:
 	return range_max <= 0
 
 
+## Cette compétence exige-t-elle une victime sur la case visée ?
+##
+## Une attaque à cible unique, oui : tirer sur du terrain vide coûterait
+## 3 PA pour rien, et le joueur n'aurait aucun moyen de comprendre ce qui
+## vient de se passer. Une compétence de zone, non — viser entre deux
+## ennemis pour les attraper tous les deux est précisément son usage.
+## Un déplacement ou une Provocation non plus : leur cible n'est pas une
+## victime, c'est une case.
+func needs_occupant() -> bool:
+	return is_attack() and shape == SHAPE_SINGLE
+
+
 ## La distance est-elle dans la fourchette de portée ?
 func is_distance_in_range(distance: int) -> bool:
 	return distance >= range_min and distance <= range_max

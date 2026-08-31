@@ -315,6 +315,81 @@ func test_la_provocation_ne_porte_pas_a_distance() -> void:
 	)
 
 
+# --- Ce qu'un tir a le droit de viser -------------------------------------
+
+func test_une_attaque_a_cible_unique_ne_part_pas_sur_du_vide() -> void:
+	# Sinon l'Archer dépense 3 PA pour rien et n'a aucun moyen de
+	# comprendre ce qui vient de se passer.
+	var board := _plain()
+	var archer := _hero(board, &"archer", Vector2i(1, 3))
+	_enemy(board, &"gnome", Vector2i(6, 3))
+	var engine := _engine(board)
+
+	assert_true(
+		board.targetable_cells(archer, Ability.of(&"shot")).has(Vector2i(4, 3)),
+		"la case vide est bien dans la portée affichée"
+	)
+	assert_false(
+		engine.can_aim(archer, &"shot", Vector2i(4, 3)),
+		"mais le tir n'y est pas légal"
+	)
+	assert_true(engine.use_ability(archer, &"shot", Vector2i(4, 3)).is_empty())
+	assert_eq(archer.action_points, archer.max_action_points, "aucun PA perdu")
+
+
+func test_une_attaque_a_cible_unique_part_sur_un_ennemi() -> void:
+	var board := _plain()
+	var archer := _hero(board, &"archer", Vector2i(1, 3))
+	_enemy(board, &"gnome", Vector2i(4, 3))
+	var engine := _engine(board)
+	assert_true(engine.can_aim(archer, &"shot", Vector2i(4, 3)))
+
+
+func test_une_attaque_a_cible_unique_ne_part_pas_sur_un_allie() -> void:
+	# Sans tir ami, elle ne toucherait personne : c'est le même gâchis.
+	var board := _plain()
+	var archer := _hero(board, &"archer", Vector2i(1, 3), 1)
+	_hero(board, &"warrior", Vector2i(4, 3), 2)
+	_enemy(board, &"gnome", Vector2i(8, 3))
+	var engine := _engine(board)
+	assert_false(engine.can_aim(archer, &"shot", Vector2i(4, 3)))
+
+
+func test_une_competence_de_zone_se_lance_sur_du_vide() -> void:
+	# Viser entre deux ennemis pour les attraper tous les deux est
+	# précisément l'usage d'une Boule de feu (§ 18).
+	var board := _plain()
+	var mage := _hero(board, &"mage", Vector2i(1, 3))
+	var first := _enemy(board, &"gnome", Vector2i(4, 2), 90)
+	var second := _enemy(board, &"gnome", Vector2i(4, 4), 91)
+	var engine := _engine(board)
+
+	assert_true(
+		engine.can_aim(mage, &"fireball", Vector2i(4, 3)),
+		"la case du milieu est vide, et c'est là qu'il faut viser"
+	)
+	engine.use_ability(mage, &"fireball", Vector2i(4, 3))
+	assert_lt(first.hit_points, first.max_hit_points)
+	assert_lt(second.hit_points, second.max_hit_points)
+
+
+func test_le_bond_se_lance_sur_une_case_vide() -> void:
+	var board := _plain()
+	var archer := _hero(board, &"archer", Vector2i(4, 3))
+	_enemy(board, &"gnome", Vector2i(8, 3))
+	var engine := _engine(board)
+	assert_true(engine.can_aim(archer, &"hop_back", Vector2i(2, 3)))
+
+
+func test_la_provocation_ne_vise_que_sa_propre_case() -> void:
+	var board := _plain()
+	var warrior := _hero(board, &"warrior", Vector2i(3, 3))
+	_enemy(board, &"gnome", Vector2i(4, 3))
+	var engine := _engine(board)
+	assert_true(engine.can_aim(warrior, &"taunt", warrior.cell))
+	assert_false(engine.can_aim(warrior, &"taunt", Vector2i(4, 3)))
+
+
 func test_toute_competence_est_annulable() -> void:
 	# Rien n'est irréversible avant la validation de l'activation.
 	var board := _plain()

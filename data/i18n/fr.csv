@@ -33,6 +33,12 @@ RESULT_DEFEAT,Défaite
 CLASS_WARRIOR,Guerrier
 CLASS_ARCHER,Archer
 CLASS_MAGE,Mage
+ENEMY_SPEAR_GOBLIN,Gobelin lancier
+ENEMY_TORCH_GOBLIN,Gobelin torche
+ENEMY_GNOME,Gnome
+ENEMY_SLINGSHOT_GNOME,Gnome à fronde
+ENEMY_THIEF,Voleur
+ENEMY_TROLL,Troll
 CLASS_LANCER,Lancier
 CLASS_MONK,Moine
 ABILITY_STRIKE,Frappe
@@ -48,8 +54,12 @@ ABILITY_COOLING_DOWN,En recharge
 ABILITY_NOT_ENOUGH_AP,Pas assez de PA
 ABILITY_NOT_ENOUGH_MP,Pas assez de PM
 ABILITY_ALREADY_MOVED,A déjà bougé
-HUD_ACTION_POINTS,PA %d/%d
-HUD_MOVEMENT_POINTS,PM %d/%d
+ABILITY_UNKNOWN,Indisponible
+HUD_AP,PA
+HUD_MP,PM
+HUD_ACTIVE,"%d  %s  %d/%d PV"
+HUD_ABILITY,"%s · %d PA"
+HUD_ABILITY_COOLDOWN,"%s · %d r."
 HUD_TIMELINE,Ordre de jeu
 BOOT_PICK_MAP,Choisir un combat
 BOOT_TEMPORARY,Écran de test provisoire — le vrai menu viendra plus tard

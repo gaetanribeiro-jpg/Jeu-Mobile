@@ -12,16 +12,14 @@ extends Node2D
 ##
 ## GRAMMAIRE D'INTERACTION, et la règle absolue qui la gouverne : rien
 ## n'est irréversible avant la validation de l'activation.
-##   tap sur une case valide → prévisualiser (fantôme)
+##   tap sur une compétence  → la choisir ; sa portée s'allume (§ 17)
+##   tap sur une case valide → prévisualiser : la zone touchée et les
+##                             dégâts s'affichent (§ 18)
 ##   tap sur la même case    → valider
 ##   glissement              → caméra
 ##   pincement               → zoom
 ## Le double tap n'est pas une coquetterie : il évite 90 % des erreurs de
 ## gros doigts, et il coûte un état de plus dans la machine.
-##
-## PROVISOIRE : le joueur ne dispose ici que de l'attaque de base de son
-## personnage. La barre de compétences, les jauges de PA et de PM et la
-## timeline sont la tâche T1.9.
 
 signal combat_finished(victory: bool)
 
@@ -45,6 +43,11 @@ var _selection: int = Selection.NONE
 var _selected: Unit = null
 var _preview_cell: Vector2i = Vector2i(-1, -1)
 var _preview_target: Unit = null
+
+## La visée en cours porte-t-elle sur une compétence, ou sur un simple
+## déplacement ? Une Boule de feu sur du terrain vide ne touche personne :
+## `_preview_target` à null ne suffit donc plus à distinguer les deux.
+var _preview_is_ability := false
 var _resolving := false
 
 var _touch_start: Vector2 = Vector2.ZERO
@@ -121,13 +124,18 @@ func _build_scene() -> void:
 	_camera.set_script(load("res://scenes/combat/combat_camera.gd"))
 	add_child(_camera)
 	_camera.make_current()
-	_camera.frame_board(engine.board.grid, _tile_size, get_viewport_rect().size)
 
 	_hud = CanvasLayer.new()
 	_hud.set_script(load("res://scenes/combat/combat_hud.gd"))
 	add_child(_hud)
 	_hud.end_turn_pressed.connect(_on_end_turn)
 	_hud.undo_pressed.connect(_on_undo)
+	_hud.ability_selected.connect(_on_ability_selected)
+
+	# Le plateau se cadre dans ce que le HUD laisse libre, jamais dans le
+	# plein écran : sinon les rangées du bas passent sous la barre de
+	# compétences et le joueur perd des cases sans savoir lesquelles.
+	_frame_board()
 
 	for unit: Unit in engine.board.units():
 		_spawn_view(unit)
@@ -237,26 +245,41 @@ func _handle_deployment_tap(cell: Vector2i) -> void:
 		_spawn_view(next)
 
 
+## Cadre la grille dans la zone que le HUD laisse libre.
+func _frame_board() -> void:
+	var viewport := get_viewport_rect().size
+	# Type explicite : le HUD reçoit son script par `set_script`, donc son
+	# type statique est CanvasLayer et l'inférence ne peut rien en tirer.
+	var safe: Rect2 = Rect2(Vector2.ZERO, viewport)
+	if _hud != null:
+		safe = _hud.safe_area(viewport)
+	_camera.frame_board(engine.board.grid, _tile_size, safe, viewport)
+
+
 func _on_tap(world_position: Vector2) -> void:
 	handle_tap(engine.board.grid.to_cell(world_position, _tile_size))
 
 
-## Deuxième tap : on montre ce qui va se passer, sans rien appliquer.
+## Premier tap sur une case : on montre ce qui va s'y passer, sans rien
+## appliquer.
+##
+## Une case visable l'emporte sur une case atteignable. Sans cette
+## priorité, une Boule de feu lancée à trois cases sur du terrain vide
+## deviendrait un déplacement — le joueur viserait un sort et marcherait.
 func _try_preview(cell: Vector2i) -> void:
 	if _selected == null:
 		_clear_selection()
 		return
 
-	var occupant := engine.board.unit_at(cell)
-	var basic := _basic_ability()
-
-	if occupant != null and not occupant.is_hero() and _can_hit(occupant):
-		_preview_target = occupant
+	if _can_aim_at(cell):
+		_preview_is_ability = true
 		_preview_cell = cell
+		_preview_target = _first_victim(cell)
 		_selection = Selection.PREVIEW
 		return
 
-	if occupant == null and engine.move_cost(_selected, cell) >= 0:
+	if engine.board.unit_at(cell) == null and engine.move_cost(_selected, cell) >= 0:
+		_preview_is_ability = false
 		_preview_target = null
 		_preview_cell = cell
 		_selection = Selection.PREVIEW
@@ -265,29 +288,63 @@ func _try_preview(cell: Vector2i) -> void:
 	_clear_selection()
 
 
-## L'attaque de base du personnage actif : la première de sa liste.
-func _basic_ability() -> StringName:
-	return _selected.basic_ability() if _selected != null else &""
+## La première unité que la compétence toucherait. Sert à l'animation —
+## le sprite doit se tourner vers quelqu'un — pas à la règle : c'est la
+## CASE qui est visée, et une compétence qui ne touche personne part quand
+## même.
+func _first_victim(cell: Vector2i) -> Unit:
+	var ability := Ability.of(_current_ability())
+	if ability == null:
+		return null
+	var touched := engine.board.affected_units(_selected, ability, cell)
+	return touched[0] if not touched.is_empty() else null
 
 
-## Le personnage actif peut-il frapper cette cible avec son attaque de
-## base, PA et recharge comprises ?
-func _can_hit(target: Unit) -> bool:
-	var basic := _basic_ability()
-	if basic.is_empty() or not engine.can_use(_selected, basic):
-		return false
-	return engine.targetable_cells(_selected, basic).has(target.cell)
+## La compétence choisie dans la barre, ou l'attaque de base à défaut.
+func _current_ability() -> StringName:
+	if _selected == null:
+		return &""
+	var chosen: StringName = _hud.selected_ability() if _hud != null else &""
+	if chosen.is_empty() or not _selected.has_ability(chosen):
+		chosen = _selected.basic_ability()
+		if _hud != null:
+			_hud.set_selected_ability(chosen)
+	return chosen
 
 
-## Troisième tap sur la même case : on valide.
+## Cette case peut-elle être visée par la compétence choisie, PA et
+## recharge comprises ?
+func _can_aim_at(cell: Vector2i) -> bool:
+	var ability := _current_ability()
+	return not ability.is_empty() and engine.can_aim(_selected, ability, cell)
+
+
+## Le joueur a choisi une compétence dans la barre : on repart d'une visée
+## vierge, sinon la prévisualisation de la précédente resterait affichée
+## avec la portée de la nouvelle.
+func _on_ability_selected(_ability_id: StringName) -> void:
+	_selection = Selection.NONE
+	_preview_cell = Vector2i(-1, -1)
+	_preview_target = null
+	_refresh_all()
+
+
+## Second tap sur la même case : on valide.
 func _confirm() -> void:
 	if _selected == null:
 		return
-	if _preview_target != null:
+	if _preview_is_ability:
 		var target := _preview_target
-		var report := engine.use_ability(_selected, _basic_ability(), target.cell)
+		var caster := _selected
+		var aimed := _preview_cell
+		var report := engine.use_ability(caster, _current_ability(), aimed)
 		if not report.is_empty():
-			_play_attack(_selected, target, report)
+			# Un déplacement déguisé — le Bond de l'Archer — se joue comme un
+			# déplacement, pas comme un coup : le sprite doit glisser.
+			if report.has("from"):
+				_animate_move(caster, report["from"], caster.cell)
+			elif target != null:
+				_play_attack(caster, target, report)
 	else:
 		var from := _selected.cell
 		if engine.move(_selected, _preview_cell):
@@ -308,6 +365,7 @@ func _clear_selection() -> void:
 	_selected = null
 	_preview_cell = Vector2i(-1, -1)
 	_preview_target = null
+	_preview_is_ability = false
 	_refresh_ghost()
 
 
@@ -320,7 +378,7 @@ func _refresh_ghost() -> void:
 	var showing := (
 		_selection == Selection.PREVIEW
 		and _selected != null
-		and _preview_target == null
+		and not _preview_is_ability
 		and engine.board.grid.contains(_preview_cell)
 	)
 	_ghost.visible = showing
@@ -489,7 +547,7 @@ func _refresh_overlay() -> void:
 	_overlay.attack_cells.clear()
 	_overlay.deployment_cells.clear()
 	_overlay.objective_cells = engine.objective.cells.duplicate()
-	_overlay.warded_cells.clear()
+	_overlay.area_cells.clear()
 
 	if engine.is_deploying():
 		_refresh_deployment_overlay()
@@ -505,12 +563,18 @@ func _refresh_overlay() -> void:
 		for cell: Vector2i in engine.board.reachable_cells(_selected).keys():
 			if cell != _selected.cell:
 				_overlay.move_cells.append(cell)
-		var basic := _selected.basic_ability()
-		if not basic.is_empty() and engine.can_use(_selected, basic):
-			for cell: Vector2i in engine.targetable_cells(_selected, basic):
-				var occupant := engine.board.unit_at(cell)
-				if occupant != null and occupant.is_active() and not occupant.is_hero():
-					_overlay.attack_cells.append(cell)
+		# La PORTÉE de la compétence choisie (§ 17) : toutes les cases
+		# visables, occupées ou non. Une Boule de feu se lance sur du vide
+		# pour attraper deux voisins — n'allumer que les cases occupées
+		# cacherait la moitié des coups possibles.
+		var ability_id := _current_ability()
+		if not ability_id.is_empty() and engine.can_use(_selected, ability_id):
+			_overlay.attack_cells = engine.targetable_cells(_selected, ability_id)
+			# La ZONE (§ 18) : ce que le tir visé toucherait vraiment.
+			if _preview_is_ability and engine.board.grid.contains(_preview_cell):
+				_overlay.area_cells = engine.affected_cells(
+					_selected, ability_id, _preview_cell
+				)
 	else:
 		_overlay.selected_cell = Vector2i(-1, -1)
 
@@ -522,14 +586,19 @@ func _refresh_overlay() -> void:
 			threat[cell] = int(threat.get(cell, 0)) + int(entry["damage"][i])
 	# Dégâts que porterait l'attaque en cours de prévisualisation. Le joueur
 	# doit lire le chiffre AVANT de valider, comme il lit ceux du télégraphe.
+	# Dégâts que porterait le tir en cours de visée, sur CHAQUE case touchée.
+	# Le joueur doit lire les chiffres avant de valider, comme il lit ceux du
+	# télégraphe — et une Boule de feu en annonce jusqu'à cinq.
 	_overlay.preview_damage.clear()
-	if _preview_target != null and _selected != null:
-		var basic := _selected.basic_ability()
-		var ability := Ability.of(basic) if not basic.is_empty() else null
-		if ability != null:
-			_overlay.preview_damage[_preview_target.cell] = engine.board.predicted_damage(
-				_selected, ability, _preview_target
-			)
+	if _preview_is_ability and _selected != null:
+		var aimed := Ability.of(_current_ability())
+		if aimed != null:
+			for victim: Unit in engine.board.affected_units(
+				_selected, aimed, _preview_cell
+			):
+				_overlay.preview_damage[victim.cell] = engine.board.predicted_damage(
+					_selected, aimed, victim
+				)
 
 	_overlay.threat = threat
 	_refresh_ghost()

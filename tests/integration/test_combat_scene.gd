@@ -260,6 +260,152 @@ func test_la_case_mise_en_avant_est_celle_du_personnage_actif() -> void:
 		engine.end_activation()
 
 
+# --- Le HUD de combat (T1.9) ----------------------------------------------
+
+func test_la_barre_montre_les_competences_du_personnage_actif() -> void:
+	await _deploy_and_start()
+	var hero := _engine().current_unit()
+	var hud: CanvasLayer = _scene._hud
+	assert_eq(
+		hud._ability_buttons.keys().size(), hero.abilities.size(),
+		"un bouton par compétence"
+	)
+	for ability_id: StringName in hero.abilities:
+		assert_true(
+			hud._ability_buttons.has(ability_id),
+			"la compétence %s n'a pas de bouton" % ability_id
+		)
+
+
+func test_un_bouton_de_competence_dit_son_cout_en_pa() -> void:
+	# Exigence du § 48 : le joueur doit savoir ce qu'une action coûte AVANT
+	# de la choisir.
+	await _deploy_and_start()
+	var hero := _engine().current_unit()
+	var hud: CanvasLayer = _scene._hud
+	for ability_id: StringName in hero.abilities:
+		var ability := Ability.of(ability_id)
+		var button: Button = hud._ability_buttons[ability_id]
+		assert_true(
+			button.text.contains(str(ability.action_points)),
+			"« %s » ne dit pas son coût de %d PA" % [button.text, ability.action_points]
+		)
+
+
+func test_une_competence_sans_pa_est_grisee_et_dit_pourquoi() -> void:
+	await _deploy_and_start()
+	var hero := _engine().current_unit()
+	var hud: CanvasLayer = _scene._hud
+	hero.spend_action_points(hero.action_points)
+	hud.refresh(_engine())
+	for ability_id: StringName in hero.abilities:
+		var button: Button = hud._ability_buttons[ability_id]
+		assert_true(button.disabled, "%s devrait être grisée" % ability_id)
+		assert_ne(button.tooltip_text, "", "%s ne dit pas pourquoi" % ability_id)
+
+
+func test_les_jauges_suivent_les_pa_et_les_pm() -> void:
+	await _deploy_and_start()
+	var hero := _engine().current_unit()
+	var hud: CanvasLayer = _scene._hud
+	assert_eq(hud._action_pips.filled, hero.action_points)
+	assert_eq(hud._action_pips.total, hero.max_action_points)
+	assert_eq(hud._movement_pips.filled, hero.movement_points)
+
+	hero.spend_action_points(3)
+	hud.refresh(_engine())
+	assert_eq(hud._action_pips.filled, hero.action_points, "la jauge a suivi")
+
+
+func test_la_timeline_montre_qui_joue_et_qui_suit() -> void:
+	await _deploy_and_start()
+	var hud: CanvasLayer = _scene._hud
+	assert_eq(
+		hud._timeline.get_child_count(), _engine().timeline().size(),
+		"un badge par activation annoncée"
+	)
+	assert_gt(hud._timeline.get_child_count(), 1, "on voit au-delà du tour en cours")
+
+
+func test_choisir_une_competence_change_la_portee_affichee() -> void:
+	# § 17 : la portée doit être affichée dès qu'une compétence est
+	# sélectionnée — et changer de compétence doit changer ce qu'on voit.
+	await _deploy_and_start()
+	var engine := _engine()
+	var hero := engine.current_unit()
+	if hero.abilities.size() < 2:
+		pending("ce personnage n'a qu'une compétence")
+		return
+	var overlay: Node2D = _scene._overlay
+	var counts := {}
+	for ability_id: StringName in hero.abilities:
+		if not engine.can_use(hero, ability_id):
+			continue
+		_scene._hud.set_selected_ability(ability_id)
+		_scene._refresh_all()
+		counts[ability_id] = overlay.attack_cells.size()
+	assert_gt(counts.size(), 1, "au moins deux compétences disponibles")
+	var seen := {}
+	for value: int in counts.values():
+		seen[value] = true
+	assert_gt(seen.size(), 1, "deux compétences allument le même nombre de cases")
+
+
+func test_viser_une_zone_montre_ce_qu_elle_touchera() -> void:
+	# § 18 : les zones doivent être très lisibles. La portée dit où l'on
+	# peut viser, la zone dit ce que ça touchera — ce n'est pas la même
+	# information, et les confondre promet au joueur ce qu'il n'aura pas.
+	await _deploy_and_start()
+	var engine := _engine()
+
+	# On laisse la timeline tourner jusqu'à ce que le Mage joue : la scène
+	# réimpose le personnage désigné à chaque rafraîchissement, donc lui
+	# forcer la main ne servirait à rien.
+	var mage: Unit = null
+	for i in 10:
+		var active := engine.current_unit()
+		if active != null and active.has_ability(&"fireball"):
+			mage = active
+			break
+		engine.end_activation()
+	if mage == null:
+		pending("le Mage n'a pas joué dans les dix premières activations")
+		return
+
+	var overlay: Node2D = _scene._overlay
+	_scene._hud.set_selected_ability(&"fireball")
+	var aimed := engine.targetable_cells(mage, &"fireball")
+	if aimed.is_empty():
+		pending("aucune case à portée depuis le placement")
+		return
+	_scene._preview_is_ability = true
+	_scene._preview_cell = aimed[0]
+	_scene._refresh_overlay()
+	assert_eq(
+		overlay.area_cells,
+		engine.affected_cells(mage, &"fireball", aimed[0]),
+		"la zone dessinée est celle que le moteur touchera"
+	)
+	assert_lt(
+		overlay.area_cells.size(), overlay.attack_cells.size(),
+		"une Boule de feu vise loin et ne touche que cinq cases"
+	)
+
+
+func test_le_plateau_ne_passe_pas_sous_le_hud() -> void:
+	# Défaut vu en capture d'écran : la liste d'équipe recouvrait le
+	# terrain. La caméra cadre désormais dans la zone que le HUD laisse.
+	var hud: CanvasLayer = _scene._hud
+	var viewport := Vector2(1280, 720)
+	var safe: Rect2 = hud.safe_area(viewport)
+	assert_gt(safe.position.y, 0.0, "le bandeau haut est réservé")
+	assert_lt(
+		safe.position.y + safe.size.y, viewport.y,
+		"le bandeau bas aussi"
+	)
+	assert_gt(safe.size.y, viewport.y * 0.5, "il reste plus de la moitié pour le plateau")
+
+
 func test_le_fantome_ne_parait_que_sur_un_deplacement() -> void:
 	await _deploy_and_start()
 	var hero := _engine().current_unit()

@@ -209,14 +209,45 @@ Suit l'ordre du § 45, adapté à ce qui existe déjà.
 | **T1.6** | `CombatEngine` : boucle d'activation, dépense de PA/PM, annulation | ✅ |
 | **T1.7** | `Damage` : base + statistique − défense, terrain compris | ✅ |
 | **T1.8** | IA ennemie qui gère un budget PA/PM | ✅ |
-| **T1.9** | HUD : jauges PA/PM, timeline, barre de compétences, portée et zone | ⏳ |
+| **T1.9** | HUD : jauges PA/PM, timeline, barre de compétences, portée et zone | ✅ |
 | **T1.10** | Les 8 cartes réécrites en 12 × 9 | ✅ |
 | **T1.11** | Équilibrage : le combat coûte quelque chose | ✅ |
 | **T1.12** | Rien n'endommage le décor : `damage_structure` n'est appelé nulle part | ⏳ |
+| **T1.13** | `tools/verify_scripts.gd` : né du constat que `--quit` ne voit pas les scripts chargés à l'exécution | ✅ |
 
-**État au 2026-08-31 :** T1.1 à T1.8, T1.10 et T1.11 sont faites et
-testées, 340 tests passent. Il ne reste que **T1.9, le HUD** : le joueur
-n'a accès qu'à l'attaque de base du personnage que la timeline désigne.
+**État au 2026-08-31 : la Phase 1 est terminée.** T1.1 à T1.11 sont
+faites et testées, **354 tests passent**. Le combat se joue de bout en
+bout : placement, timeline entremêlée, PA/PM, neuf compétences
+atteignables au doigt, portées et zones affichées, télégraphe, annulation.
+Reste T1.12, qui n'est pas un défaut de combat mais un manque de terrain.
+
+### Ce que T1.9 a apporté
+
+Le moteur savait déjà tout faire ; c'est le HUD qui ne le donnait pas. Le
+§ 48 en fait une exigence chiffrée, et elle est maintenant tenue :
+
+- **une barre de compétences**, une par capacité, avec son coût en PA
+  écrit dessus. Un bouton indisponible est grisé et dit pourquoi — pas
+  assez de PA, en recharge, a déjà bougé.
+- **des jauges en pastilles** plutôt qu'en barres. Huit pastilles se
+  comptent d'un coup d'œil et disent « deux attaques à trois, il m'en
+  reste deux » ; une barre pleine à 62 % ne dit rien de tel.
+- **la timeline**, un badge par activation à venir, celle en cours cerclée.
+  Elle déborde sur la ronde suivante, sinon elle se viderait en fin de
+  ronde — au moment précis où le joueur a le plus besoin de voir venir.
+- **la portée et la zone séparées** (§ 17 et § 18). Ce ne sont pas la même
+  information : une Boule de feu vise vingt cases et n'en touche que cinq.
+  Les confondre promettrait au joueur ce qu'il n'aura pas.
+
+Deux défauts trouvés en capture d'écran et corrigés :
+
+1. **Le plateau passait sous le HUD.** La caméra cadrait sur le plein
+   écran ; elle cadre maintenant dans la zone que le HUD laisse libre, et
+   `safe_area()` est la seule source de cette mesure.
+2. **Une attaque à cible unique partait sur du terrain vide** : l'Archer
+   dépensait 3 PA pour rien, sans aucun moyen de comprendre pourquoi. Une
+   attaque à cible unique exige désormais une victime ; une compétence de
+   zone, non — viser entre deux ennemis est son usage même.
 
 ### Ce que T1.11 a corrigé, et pourquoi
 

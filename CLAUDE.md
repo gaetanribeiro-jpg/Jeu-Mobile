@@ -233,21 +233,16 @@ dur : passer par `data/assets.json`.
 
 - **Phase courante : 1 — cœur tactique PA/PM.** Le pivot vers la vision
   Tiny Kingdoms a été acté le 2026-08-31.
-- **Dernière tâche terminée :** T1.11 — l'équilibrage. **340 tests passent**
-  sous Godot 4.6 en headless.
-- **Reste en Phase 1 :** T1.9 (HUD : jauges PA/PM, timeline, barre de
-  compétences), et T1.12 (rien n'endommage le décor).
+- **Phase 1 terminée.** T1.1 à T1.11 sont faites et testées.
+  **354 tests passent** sous Godot 4.6 en headless.
+- **Reste avant la Phase 2 :** T1.12 — rien n'endommage le décor, donc le
+  feu du Torch Goblin et la destruction d'un pont sont déclarés en données
+  et jamais appliqués.
 
 **Le combat se joue, sur PC.** Écran de titre → composition de l'équipe →
 choix d'une des 8 cartes → placement → combat.
 `pointing/emulate_touch_from_mouse` est actif, donc la souris se comporte
 comme un doigt.
-
-**Mais le HUD est en retard sur le moteur (T1.9).** Le joueur ne dispose
-pour l'instant que de l'attaque de base du personnage que la timeline
-désigne. Les huit autres compétences existent, sont testées, et ne sont
-pas atteignables au doigt. Ce n'est pas une régression : c'est la tâche
-suivante.
 
 **Les huit cartes sont au format 12 × 9** et se jouent en 3 à 7 rondes.
 
@@ -272,8 +267,14 @@ Cinq défauts n'ont été trouvés que comme ça, dont deux vrais bugs.
 
 **Toutes les valeurs de ressenti sont dans `data/combat/view.json`.**
 
+**Après toute modification de `data/i18n/fr.csv`, relancer `--import`.**
+Le moteur lit le `.translation` compilé, pas le CSV : une clé ajoutée sans
+réimport se renvoie elle-même, et un `tr("MA_CLE") % [...]` échoue alors
+sur un « Method/function failed » qui ne désigne rien.
+
 **Outils de vérification, à relancer après toute modification :**
 ```bash
+godot --headless --path . -s tools/verify_scripts.gd    # 35 scripts
 godot --headless --path . -s tools/verify_assets.gd     # 535 entrées
 godot --headless --path . -s tools/verify_audio.gd      # 30 entrées
 godot --headless --path . -s tools/verify_font.gd       # 140 glyphes

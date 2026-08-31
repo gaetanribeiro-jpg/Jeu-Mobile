@@ -418,6 +418,19 @@ func targetable_cells(unit: Unit, ability_id: StringName) -> Array[Vector2i]:
 	return board.targetable_cells(unit, ability)
 
 
+## Le tir est-il légal sur cette case ? Distinct de « à portée » : une
+## attaque à cible unique ne part pas sur du vide.
+func can_aim(unit: Unit, ability_id: StringName, cell: Vector2i) -> bool:
+	if not can_use(unit, ability_id):
+		return false
+	var ability := Ability.of(ability_id)
+	if ability == null:
+		return false
+	if ability.targets_self():
+		return cell == unit.cell
+	return board.can_target(unit, ability, cell)
+
+
 ## Cases que la compétence toucherait si on visait celle-ci. C'est ce que
 ## le HUD colore avant de valider (§ 18).
 func affected_cells(unit: Unit, ability_id: StringName, target: Vector2i) -> Array[Vector2i]:

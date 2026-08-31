@@ -3,10 +3,17 @@ extends Node2D
 ## Surbrillances (C1.16), télégraphe (C1.20) et prévisualisation (C1.18).
 ##
 ## Une seule couche qui dessine tout ce qui se superpose à la grille, dans
-## un ordre fixe : objectif, déplacement, attaque, menace, bénédiction,
+## un ordre fixe : objectif, déplacement, portée, zone d'effet, menace,
 ## sélection, fantôme. L'ordre compte — la menace doit rester lisible
 ## par-dessus les cases de déplacement, sinon le joueur perd l'information
 ## qui décide de son tour.
+##
+## Trois couches se ressemblent et ne disent pas la même chose (§ 17, § 18) :
+##   move_cells    où je peux ALLER avec mes PM
+##   attack_cells  où je peux VISER avec la compétence choisie
+##   area_cells    ce que ce tir TOUCHERA vraiment, zone comprise
+## Une Boule de feu a une portée de vingt cases visables et n'en touche que
+## cinq : confondre les deux, c'est promettre au joueur ce qu'il n'aura pas.
 
 var grid: Grid
 
@@ -14,7 +21,9 @@ var move_cells: Array[Vector2i] = []
 var attack_cells: Array[Vector2i] = []
 var objective_cells: Array[Vector2i] = []
 var deployment_cells: Array[Vector2i] = []
-var warded_cells: Array[Vector2i] = []
+## Cases que la compétence visée toucherait effectivement. Vide tant que le
+## joueur n'a pas désigné de cible.
+var area_cells: Array[Vector2i] = []
 var selected_cell: Vector2i = Vector2i(-1, -1)
 var ghost_cell: Vector2i = Vector2i(-1, -1)
 
@@ -42,6 +51,7 @@ func setup(combat_grid: Grid) -> void:
 func clear_selection() -> void:
 	move_cells.clear()
 	attack_cells.clear()
+	area_cells.clear()
 	selected_cell = Vector2i(-1, -1)
 	ghost_cell = Vector2i(-1, -1)
 	queue_redraw()
@@ -64,8 +74,8 @@ func _draw() -> void:
 	)
 	_fill(move_cells, ViewSettings.color(&"move"), ViewSettings.color(&"move_border"))
 	_fill(attack_cells, ViewSettings.color(&"attack"), ViewSettings.color(&"attack_border"))
+	_fill(area_cells, ViewSettings.color(&"area"), ViewSettings.color(&"area_border"))
 	_draw_threat()
-	_fill(warded_cells, ViewSettings.color(&"ward"), Color.TRANSPARENT)
 
 	if grid.contains(selected_cell):
 		_outline(selected_cell, ViewSettings.color(&"selection"))

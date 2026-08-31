@@ -159,6 +159,54 @@
       1.0,
       0.75,
       0.7
+    ],
+    "area": [
+      1.0,
+      0.62,
+      0.2,
+      0.42
+    ],
+    "area_border": [
+      1.0,
+      0.78,
+      0.35,
+      0.95
+    ],
+    "ap_pip": [
+      1.0,
+      0.86,
+      0.42,
+      1.0
+    ],
+    "mp_pip": [
+      0.45,
+      0.8,
+      1.0,
+      1.0
+    ],
+    "pip_empty": [
+      0.22,
+      0.2,
+      0.18,
+      0.9
+    ],
+    "timeline_now": [
+      1.0,
+      0.92,
+      0.55,
+      1.0
+    ],
+    "timeline_hero": [
+      0.55,
+      0.85,
+      0.55,
+      1.0
+    ],
+    "timeline_enemy": [
+      0.92,
+      0.45,
+      0.4,
+      1.0
     ]
   },
   "sizes": {
@@ -176,7 +224,10 @@
     "hill_cliff_height_px": 22.0,
     "slot_badge_radius_px": 13.0,
     "slot_badge_offset_px": -60.0,
-    "slot_font_size": 22
+    "slot_font_size": 22,
+    "pip_radius_px": 7.0,
+    "pip_spacing_px": 19.0,
+    "timeline_badge_px": 34.0
   },
   "idle_float": {
     "_note": "Flottement sinusoïdal des sprites au repos (§ 12). Trivial à coder, fort en impact.",

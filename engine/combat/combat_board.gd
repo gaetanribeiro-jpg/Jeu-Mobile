@@ -244,8 +244,18 @@ func targetable_cells(unit: Unit, ability: Ability) -> Array[Vector2i]:
 	return out
 
 
+## Cette case est-elle un tir LÉGAL pour cette compétence ?
+##
+## Ce n'est pas la même question que « est-elle à portée » : la portée
+## s'affiche (§ 17), le tir s'autorise. Une Frappe à portée d'une case
+## vide reste dessinée en rouge — c'est l'allonge du personnage — mais
+## elle ne part pas, parce qu'elle ne toucherait personne.
 func can_target(unit: Unit, ability: Ability, cell: Vector2i) -> bool:
-	return targetable_cells(unit, ability).has(cell)
+	if not targetable_cells(unit, ability).has(cell):
+		return false
+	if ability.needs_occupant() and affected_units(unit, ability, cell).is_empty():
+		return false
+	return true
 
 
 ## Cases effectivement TOUCHÉES si l'unité vise `target`. C'est ce que le

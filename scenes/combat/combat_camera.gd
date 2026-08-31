@@ -10,18 +10,36 @@ extends Camera2D
 var _bounds: Rect2 = Rect2()
 
 
-## Cadre la grille entière et fixe les limites de déplacement.
-func frame_board(grid: Grid, tile_size: int, viewport_size: Vector2) -> void:
+## Cadre la grille dans la zone que le HUD laisse libre.
+##
+## `safe` est ce rectangle EN PIXELS D'ÉCRAN, position comprise, et
+## `viewport` l'écran entier. La position est indispensable : une zone
+## sûre n'est presque jamais centrée — le bandeau des compétences est plus
+## haut que celui de l'objectif — et cadrer sur le centre de l'écran
+## ferait passer les dernières rangées sous les boutons.
+##
+## PIÈGE DU SIGNE : `offset` déplace la CAMÉRA, donc le contenu va en sens
+## inverse. Pour remonter le plateau de 50 pixels à l'écran, il faut
+## descendre la caméra de 50. Et `offset` s'exprime en unités de monde :
+## il se divise par le zoom.
+func frame_board(
+	grid: Grid, tile_size: int, safe: Rect2, viewport: Vector2 = Vector2.ZERO
+) -> void:
 	var span := Vector2(grid.width * tile_size, grid.height * tile_size)
 	var margin := ViewSettings.number(&"camera", &"edge_margin_tiles", 1.0) * float(tile_size)
 	_bounds = Rect2(-Vector2.ONE * margin, span + Vector2.ONE * margin * 2.0)
 
 	position = span * 0.5
-	if viewport_size.x > 0.0 and viewport_size.y > 0.0:
-		var fit := minf(viewport_size.x / span.x, viewport_size.y / span.y)
+	if safe.size.x > 0.0 and safe.size.y > 0.0:
+		var fit := minf(safe.size.x / span.x, safe.size.y / span.y)
 		set_zoom_level(clampf(fit, _min_zoom(), _max_zoom()))
 	else:
 		set_zoom_level(ViewSettings.number(&"camera", &"zoom_default", 1.0))
+
+	offset = Vector2.ZERO
+	if viewport.y > 0.0 and safe.size.y > 0.0:
+		var safe_centre := safe.position.y + safe.size.y * 0.5
+		offset.y = (viewport.y * 0.5 - safe_centre) / maxf(zoom.y, 0.001)
 	_clamp_position()
 
 
