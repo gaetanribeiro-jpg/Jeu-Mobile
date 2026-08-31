@@ -30,6 +30,7 @@ func _init() -> void:
 
 	print("-".repeat(76))
 	_check_events()
+	_check_merchant()
 	_check_expedition_rules()
 
 	if _problems.is_empty():
@@ -289,3 +290,47 @@ func _describe(value: Dictionary) -> String:
 	if not is_zero_approx(float(value["combat"])):
 		pieces.append("un combat")
 	return ", ".join(pieces)
+
+
+# --- Le marchand -----------------------------------------------------------
+
+func _check_merchant() -> void:
+	print("\nL'étal du marchand :\n")
+	print("%-12s %6s %8s" % ["rareté", "prix", "rachat"])
+	for rarity: StringName in Equipment.rarities():
+		var sample := &""
+		for item_id: StringName in Equipment.ids():
+			if Equipment.rarity_of(item_id) == rarity:
+				sample = item_id
+				break
+		if sample.is_empty():
+			continue
+		var price := Merchant.price_of(sample)
+		var resale := Merchant.resale_of(sample)
+		print("%-12s %6d %8d" % [rarity, price, resale])
+		if price <= 0:
+			_problems.append("un objet %s ne coûte rien" % rarity)
+		if resale >= price:
+			# Acheter puis revendre deviendrait gratuit, ou rentable : l'or
+			# et les objets seraient la même chose, et le choix du § 32 —
+			# vendre, ou équiper, ou bâtir — s'effondrerait.
+			_problems.append("revendre un objet %s rapporte autant qu'il coûte" % rarity)
+
+	if Merchant.stock_size() < 2:
+		_problems.append("l'étal ne propose pas de choix")
+	if Merchant.stock_size() > Equipment.ids().size():
+		_problems.append("l'étal veut plus d'objets qu'il n'en existe")
+
+	# Un étal qu'on vide avec l'or d'une seule rencontre n'est pas une
+	# décision, c'est une distribution.
+	var encounter_gold := (Loot.number(&"gold", &"per_enemy", 0.0) * 4.0
+		+ Loot.number(&"gold", &"victory_bonus", 0.0))
+	var cheapest := 0
+	for item_id: StringName in Equipment.ids():
+		var price := Merchant.price_of(item_id)
+		if cheapest == 0 or price < cheapest:
+			cheapest = price
+	print("\nune rencontre rapporte %.0f, l'objet le moins cher vaut %d"
+		% [encounter_gold, cheapest])
+	if float(cheapest) < encounter_gold * 0.5:
+		_problems.append("l'étal est trop bon marché pour qu'acheter soit un choix")

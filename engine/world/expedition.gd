@@ -38,6 +38,7 @@ const KIND_COMBAT := &"combat"
 const KIND_MINIBOSS := &"miniboss"
 const KIND_BOSS := &"boss"
 const KIND_REWARD := &"reward"
+const KIND_MERCHANT := &"merchant"
 
 var region_id: StringName = &""
 var state: int = State.ONGOING
@@ -239,8 +240,63 @@ func reveal_event(rng: CombatRng) -> StringName:
 	return drawn
 
 
-## Encaisse une étape qui ne se joue pas sur un plateau : évènement ou
-## récompense.
+## L'étal du marchand qui attend sur cette étape. Comme l'évènement, il se
+## tire à l'arrivée et se retient : un stock qui changerait à chaque
+## rechargement permettrait de le relancer jusqu'à voir un légendaire.
+func reveal_stock(rng: CombatRng) -> Array[StringName]:
+	if not is_ongoing() or current_kind() != KIND_MERCHANT:
+		return []
+	var step := steps[index]
+	if not step.has("stock"):
+		var drawn := Merchant.draw_stock(rng, depth())
+		if drawn.is_empty():
+			# Un étal vide ne se retient PAS. Le retenir figerait la boutique
+			# à jamais parce qu'on l'a interrogée une fois sans générateur.
+			return []
+		var listed: Array = []
+		for item_id: StringName in drawn:
+			listed.append(String(item_id))
+		step["stock"] = listed
+		step["sold"] = []
+	return stock()
+
+
+## Ce qui est en vitrine, sans rien tirer. Lire un étal ne doit jamais le
+## remplir.
+func stock() -> Array[StringName]:
+	if not is_ongoing():
+		return []
+	return _as_items(current().get("stock", []))
+
+
+## Ce qui a déjà été acheté sur cet étal, par rang d'étalage.
+func sold_slots() -> Array[int]:
+	var out: Array[int] = []
+	if not is_ongoing():
+		return out
+	for slot: Variant in current().get("sold", []):
+		out.append(int(slot))
+	return out
+
+
+## Achète le n-ième objet de l'étal. Renvoie l'objet acheté, ou rien.
+##
+## L'objet rejoint la RÉSERVE de la compagnie, pas la besace : une déroute
+## ne reprend pas ce qu'on a payé. L'or achète donc aussi de la sécurité,
+## et c'est ce qui fait du marchand une décision.
+func buy(slot: int, company: Company) -> StringName:
+	var listed := stock()
+	if slot < 0 or slot >= listed.size() or sold_slots().has(slot):
+		return &""
+	var item_id := listed[slot]
+	if not Merchant.buy(item_id, company):
+		return &""
+	(steps[index]["sold"] as Array).append(slot)
+	return item_id
+
+
+## Encaisse une étape qui ne se joue pas sur un plateau : évènement,
+## marchand ou récompense.
 ##
 ## `effects` vient de `ExpeditionEvent.resolve`, donc des données — le dé
 ## y a déjà été jeté. L'étape de récompense du § 28 tire son butin toute

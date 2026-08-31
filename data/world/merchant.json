@@ -1,0 +1,13 @@
+{
+  "_readme": "Le marchand du § 28, et ce qu'il change au § 32.\n\nCE QU'IL APPORTE QUI N'EST PAS UN AUTRE TAS DE BUTIN. Ce qu'on trouve va dans la besace et reste en jeu jusqu'au retour ; CE QU'ON ACHÈTE EST À L'ABRI TOUT DE SUITE. Une déroute ne reprend pas ce qui a été payé. L'or n'achète donc pas seulement un objet, il achète de la sécurité — et c'est ce qui fait du marchand une décision et pas une distribution.\n\nEN FACE, L'OR A DÉJÀ UN AUTRE USAGE : le § 32 le destine au royaume. Dépenser ici, c'est ne pas bâtir là-bas. C'est l'échange qui rend la boutique intéressante, et il sera d'autant plus vif que la Phase 4 avancera.\n\nLE PRIX SORT DU BARÈME DE L'ÉQUIPEMENT, jamais d'une liste à part. Un objet coûte son budget de rareté multiplié par `gold_per_point` — les mêmes points qui servent à vérifier qu'il est équilibré. Un objet ajouté un jour a donc son prix le jour même, et il est juste par construction.",
+  "stock": {
+    "_note": "Nombre d'objets proposés, et le coup de pouce de rareté qui les distingue d'une trouvaille ordinaire. Trois : assez pour choisir, assez peu pour que choisir coûte.",
+    "size": 3,
+    "rarity_bonus": 1
+  },
+  "prices": {
+    "_note": "`gold_per_point` multiplie le budget de rareté : commun 44, peu commun 88, rare 132, épique 198, légendaire 286. Une rencontre rapporte environ 65 pièces, donc un peu commun vaut un combat et demi.\n\n`buy_back` est ce que le marchand redonne d'un objet qu'on lui vend. Bas exprès : la réserve n'est pas un compte en banque, et revendre doit rester un aveu qu'on n'en avait pas l'usage.",
+    "gold_per_point": 22,
+    "buy_back": 0.35
+  }
+}

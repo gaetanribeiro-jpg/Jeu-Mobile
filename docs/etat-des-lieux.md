@@ -475,7 +475,7 @@ xvfb-run -a godot --path . --resolution 1280x720 -- --capture /tmp/x.png
 | **T3.1** | `Region` : les six régions du § 26, une seule ouverte | ✅ |
 | **T3.2** | `Expedition` : la chaîne du § 28, la décision du § 29 | ✅ |
 | **T3.3** | Évènements du § 40 : autel, village, ruines, embuscade, coffre | ✅ |
-| **T3.4** | Le marchand : la boutique de mi-parcours | ⏳ |
+| **T3.4** | Le marchand : ce qu'on achète est à l'abri | ✅ |
 | **T3.5** | Écran d'expédition : la route, la besace, rentrer ou continuer | ⏳ |
 | **T3.6** | Écran de carte du monde : choisir sa région et son équipe | ⏳ |
 
@@ -583,6 +583,42 @@ dans un menu, où il ne peut que regarder.
 route, ce qui est déjà un prix, et la carte se tire comme les autres. Fuir
 coûte 30 % de la besace : c'est le même levier qu'une déroute, à un tarif
 choisi plutôt que subi.
+
+### Le marchand : l'or achète de la sécurité (T3.4)
+
+Ce qui distingue le marchand d'un tas de butin de plus : **ce qu'on
+trouve va dans la besace et reste en jeu jusqu'au retour ; ce qu'on
+achète rejoint la réserve tout de suite**. Une déroute ne reprend pas ce
+qui a été payé. L'or n'achète donc pas seulement un objet, il achète de la
+sécurité — et en face, le § 32 lui a déjà donné un autre usage : dépenser
+ici, c'est ne pas bâtir là-bas. Deux tests se font écho pour tenir cette
+paire ; casser l'une casse le sens de l'autre.
+
+**Le prix sort du barème de l'équipement**, jamais d'une liste à part : le
+budget de rareté multiplié par `gold_per_point`. Ce sont les mêmes points
+qui servent à `verify_items` pour vérifier qu'un objet est équilibré. Un
+objet ajouté un jour a donc son prix le jour même, et il est juste par
+construction ; une table de prix séparée aurait dérivé du barème dès le
+deuxième objet ajouté, et personne ne l'aurait vu.
+
+Commun 44, peu commun 88, rare 132, épique 198, légendaire 286, pour une
+rencontre qui rapporte environ 57. Le rachat est à 35 % : revendre doit
+rester l'aveu qu'on n'avait pas l'usage d'un objet, pas une façon de faire
+de la monnaie. `verify_world` refuse d'ailleurs un rachat qui atteindrait
+le prix — acheter puis revendre deviendrait gratuit, et l'or et les objets
+seraient la même chose.
+
+**L'étal se tire à l'arrivée et ne change plus**, comme l'évènement. Un
+stock qui se retirerait à chaque rechargement permettrait de le relancer
+jusqu'à voir un légendaire. Et lire un étal ne le remplit pas : un bogue
+attrapé par les tests faisait qu'interroger la boutique sans générateur la
+figeait vide pour de bon.
+
+**La chaîne la plus courte n'a pas de marchand du tout.** Le corps fait 3
+à 6 étapes sur un motif de quatre ; à 3, la boutique tombe hors du compte.
+C'est une variance qu'on garde : une sortie sans boutique est une sortie
+différente, et savoir qu'elle est possible donne du prix à celle qui
+l'offre.
 
 ### Un outil de vérification qui mentait (T3.1)
 
