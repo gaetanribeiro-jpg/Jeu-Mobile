@@ -1,0 +1,162 @@
+{
+  "_readme": "Les bâtiments du royaume (§ 7, § 8).\n\nLA QUESTION QUE CHAQUE BÂTIMENT DOIT SAVOIR RÉPONDRE : « qu'est-ce que ça permet à mes héros ? » Aucun bâtiment décoratif — c'est une décision verrouillée. Un bâtiment qui n'accorde rien n'entre pas dans ce fichier, même si le pack le dessine.\n\nCE QUE LE MVP NE BÂTIT PAS, ET POURQUOI. La TOUR est dessinée par le pack et reste absente d'ici : elle sert à la défense, les invasions sont la Phase 5, et une tour sans invasion ne répond à rien. La FORGE, le MARCHÉ, la TAVERNE, l'ÉCURIE, le MUR et la PORTE du § 7 n'ont AUCUN sprite dans le pack. Les inventer coûterait du dessin qu'on n'a pas ; on conçoit avec ce que le pack sait dessiner.\n\nLE CHÂTEAU PLAFONNE TOUT LE RESTE. Aucun bâtiment ne dépasse son niveau. Sans cette règle, on monterait une caserne au niveau 5 dans un hameau, et la progression du royaume n'aurait plus de colonne vertébrale.\n\nLES COÛTS SONT ENGENDRÉS, PAS ÉCRITS. `base_cost` est le prix du premier niveau, multiplié par `cost_growth` à chaque niveau suivant. Vingt-cinq prix écrits à la main auraient dérivé les uns des autres dès la première retouche ; ici on en règle deux.\n\nLES GAINS, EUX, SONT ÉCRITS : c'est la conception, et elle ne se déduit d'aucune formule. Une entrée par niveau, dans l'ordre. Ils s'ADDITIONNENT — un bâtiment de niveau 3 accorde la somme des trois premières lignes.\n\nL'ÉCHELLE DES GAINS SUIT LA LEÇON DE T1.11 : les statistiques sont des modificateurs, pas des multiplicateurs, et elles tiennent de 1 à 8. Une caserne au maximum donne +2 Force et +24 PV à ses Guerriers — sensible, gagné sur des dizaines d'expéditions, et sans commune mesure avec le +60 % qui avait vidé le combat de son enjeu.",
+  "cost_growth": 1.6,
+  "buildings": {
+    "castle": {
+      "name_key": "BUILDING_CASTLE",
+      "description_key": "BUILDING_CASTLE_DESC",
+      "asset": "buildings/castle",
+      "starts_at": 1,
+      "max_level": 5,
+      "base_cost": {
+        "wood": 100,
+        "stone": 90,
+        "gold": 250
+      },
+      "grants": [
+        {
+          "population_cap": 1
+        },
+        {
+          "population_cap": 1
+        },
+        {
+          "population_cap": 1
+        },
+        {
+          "population_cap": 1
+        },
+        {
+          "population_cap": 1
+        }
+      ],
+      "_grants_note": "Le vrai pouvoir du château n'est pas dans cette colonne : c'est lui qui PLAFONNE le niveau de tous les autres bâtiments. Un habitant de plus par niveau est la prime, pas la fonction."
+    },
+    "houses": {
+      "name_key": "BUILDING_HOUSES",
+      "description_key": "BUILDING_HOUSES_DESC",
+      "_asset_note": "Le seul bâtiment dont le pack sait montrer l'évolution : trois maisons de plus en plus cossues. Le § 8 la réclame « quand c'est possible » — ici ça l'est, et c'est gratuit.",
+      "assets": [
+        "buildings/house1",
+        "buildings/house1",
+        "buildings/house2",
+        "buildings/house2",
+        "buildings/house3"
+      ],
+      "max_level": 5,
+      "base_cost": {
+        "wood": 60,
+        "gold": 40
+      },
+      "grants": [
+        {
+          "population_cap": 2
+        },
+        {
+          "population_cap": 1
+        },
+        {
+          "population_cap": 1
+        },
+        {
+          "population_cap": 1
+        },
+        {
+          "population_cap": 1
+        }
+      ]
+    },
+    "barracks": {
+      "name_key": "BUILDING_BARRACKS",
+      "description_key": "BUILDING_BARRACKS_DESC",
+      "asset": "buildings/barracks",
+      "hero_class": "warrior",
+      "max_level": 5,
+      "base_cost": {
+        "wood": 80,
+        "stone": 30,
+        "gold": 150
+      },
+      "grants": [
+        {
+          "hit_points": 6
+        },
+        {
+          "strength": 1
+        },
+        {
+          "hit_points": 8
+        },
+        {
+          "defence": 1
+        },
+        {
+          "hit_points": 10,
+          "strength": 1
+        }
+      ]
+    },
+    "archery": {
+      "name_key": "BUILDING_ARCHERY",
+      "description_key": "BUILDING_ARCHERY_DESC",
+      "asset": "buildings/archery",
+      "hero_class": "archer",
+      "max_level": 5,
+      "base_cost": {
+        "wood": 70,
+        "stone": 20,
+        "gold": 150
+      },
+      "grants": [
+        {
+          "hit_points": 5
+        },
+        {
+          "agility": 1
+        },
+        {
+          "critical": 3
+        },
+        {
+          "hit_points": 7
+        },
+        {
+          "agility": 1,
+          "critical": 4
+        }
+      ]
+    },
+    "monastery": {
+      "name_key": "BUILDING_MONASTERY",
+      "description_key": "BUILDING_MONASTERY_DESC",
+      "asset": "buildings/monastery",
+      "hero_class": "mage",
+      "max_level": 5,
+      "base_cost": {
+        "wood": 60,
+        "stone": 60,
+        "gold": 200
+      },
+      "_heal_note": "Le monastère est le SEUL bâtiment qui touche à l'expédition elle-même : il rend une fraction des PV entre deux rencontres, et c'est donc lui qui déplace la courbe d'usure mesurée en T1.11. C'est aussi la réponse la plus directe au § 45 — « connecter le royaume au RPG » — et le levier que Gaetan cherchera si les 13 % par rencontre se révèlent trop durs.",
+      "grants": [
+        {
+          "hit_points": 4,
+          "heal_between_steps": 0.02
+        },
+        {
+          "intelligence": 1
+        },
+        {
+          "heal_between_steps": 0.03
+        },
+        {
+          "hit_points": 6
+        },
+        {
+          "intelligence": 1,
+          "heal_between_steps": 0.03
+        }
+      ]
+    }
+  }
+}

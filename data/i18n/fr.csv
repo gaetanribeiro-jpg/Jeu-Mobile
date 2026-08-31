@@ -216,3 +216,21 @@ EFFECT_SATCHEL,−%d %% de la besace
 EFFECT_COMBAT,un combat
 EFFECT_NOTHING,rien
 EVENT_OR_ELSE,%s   ·   sinon %s
+RESOURCE_WOOD,Bois
+RESOURCE_STONE,Pierre
+RESOURCE_GOLD,Or
+RESOURCE_FOOD,Nourriture
+WORKSITE_LUMBER,Coupe de bois
+WORKSITE_QUARRY,Carrière
+WORKSITE_MINE,Mine d'or
+WORKSITE_PASTURE,Pâturage
+BUILDING_CASTLE,Château
+BUILDING_CASTLE_DESC,Le cœur du royaume. Son niveau plafonne tous les autres bâtiments.
+BUILDING_HOUSES,Maisons
+BUILDING_HOUSES_DESC,Des toits pour ceux qui viendront. Plus d'habitants, plus de bras aux chantiers.
+BUILDING_BARRACKS,Caserne
+BUILDING_BARRACKS_DESC,On y forme les Guerriers. Chaque niveau les rend plus durs à abattre.
+BUILDING_ARCHERY,Camp d'archers
+BUILDING_ARCHERY_DESC,On y forme les Archers. Chaque niveau affûte leur œil.
+BUILDING_MONASTERY,Monastère
+BUILDING_MONASTERY_DESC,On y forme les Mages — et on y soigne : l'équipe récupère entre deux rencontres.

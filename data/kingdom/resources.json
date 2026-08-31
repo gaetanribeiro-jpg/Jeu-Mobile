@@ -1,0 +1,29 @@
+{
+  "_readme": "Les quatre ressources du § 6 : bois, pierre, or, nourriture. Ne pas en ajouter dans le MVP — le § 6 le dit, et quatre suffisent déjà à rendre un coût de bâtiment intéressant.\n\nOÙ VIT CHAQUE RESSOURCE, ET POURQUOI CE N'EST PAS UNIFORME. L'OR vit avec la COMPAGNIE : ce sont les héros qui le gagnent sur la route et qui le dépensent chez le marchand, en pleine expédition, loin du royaume. Lui faire une seconde bourse au royaume obligerait à les synchroniser, et deux bourses qui doivent rester d'accord finissent toujours par ne plus l'être. Les trois autres vivent dans les RÉSERVES du royaume : personne ne transporte une carrière.\n\n`holder` dit donc où lire chaque ressource, et l'écran du royaume les montre côte à côte sans avoir à connaître la raison.\n\nL'ICÔNE DE LA PIERRE EST UN ROCHER DU DÉCOR. Le pack n'a pas d'icône de pierre — c'est un des manques relevés dans etat-des-lieux.md § 3. `Rock1` est ce qui s'en approche le plus et il est déjà dans la table des assets.",
+  "resources": {
+    "wood": {
+      "name_key": "RESOURCE_WOOD",
+      "holder": "kingdom",
+      "start": 40,
+      "asset": "resources/wood_resource"
+    },
+    "stone": {
+      "name_key": "RESOURCE_STONE",
+      "holder": "kingdom",
+      "start": 20,
+      "asset": "decorations/rock1"
+    },
+    "gold": {
+      "name_key": "RESOURCE_GOLD",
+      "holder": "company",
+      "start": 0,
+      "asset": "resources/gold_resource"
+    },
+    "food": {
+      "name_key": "RESOURCE_FOOD",
+      "holder": "kingdom",
+      "start": 30,
+      "asset": "resources/meat_resource"
+    }
+  }
+}

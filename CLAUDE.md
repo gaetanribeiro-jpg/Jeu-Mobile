@@ -239,7 +239,10 @@ dur : passer par `data/assets.json`.
   compagnie.
 - **Phase 3 terminée.** T3.1 à T3.6 : `Region`, `Expedition`, les
   évènements du § 40, le marchand, l'écran d'expédition et la carte du
-  monde. **582 tests passent** sous Godot 4.6 en headless.
+  monde.
+- **Phase 4 en cours.** T4.1 (`Kingdom` : ressources, habitants,
+  chantiers, cycle) et T4.2 (`Buildings`) sont faites. **628 tests
+  passent** sous Godot 4.6 en headless.
 - **La boucle du § 3 tourne, sauf le royaume :** carte du monde →
   expédition → combat → butin et expérience → compagnie → sauvegarde. Il
   manque 🏰 ROYAUME, qui est la Phase 4 et qui se branchera au même
@@ -312,6 +315,7 @@ godot --headless --path . -s tools/verify_font.gd       # 140 glyphes
 godot --headless --path . -s tools/verify_maps.gd       # 8 cartes
 godot --headless --path . -s tools/verify_items.gd      # 30 objets
 godot --headless --path . -s tools/verify_world.gd      # régions, évènements, étal
+godot --headless --path . -s tools/verify_kingdom.gd    # ressources, chantiers, bâtiments
 godot --headless --path . -s tools/simulate_combats.gd  # équilibrage
 ```
 

@@ -743,6 +743,103 @@ ne plus vérifier les scripts les mieux documentés.
 Aujourd'hui : 44 scripts vérifiés, 1 nommé comme non vérifiable
 (`boot.gd`), et un script cassé volontairement est bien détecté.
 
+### Phase 4 — Royaume ⏳ *en cours*
+
+| Tâche | Contenu | État |
+|---|---|---|
+| **T4.1** | `Kingdom` : ressources, habitants, chantiers, cycle de production | ✅ |
+| **T4.2** | `Buildings` : construction, niveaux, ce qu'ils accordent aux héros | ✅ |
+| **T4.3** | L'écran du royaume | ⏳ |
+| **T4.4** | Le branchement : le cycle sur l'expédition, les bonus sur les héros | ⏳ |
+
+### Le cycle est une expédition, pas une minute (T4.1)
+
+Aucun timer, aucune énergie — c'est une décision verrouillée, et le § 2
+refuse le free-to-play. Le royaume produit **une fois par sortie conclue**,
+quelle qu'en soit la longueur.
+
+Ce n'est pas un détail d'implémentation. C'est ce qui relie les deux
+moitiés de la boucle du § 3 : une sortie **courte** rapporte plus de
+cycles, une sortie **longue** rapporte plus de butin. Les deux se disputent
+le même temps, et « je rentre ou je continue ? » gagne un troisième terme
+sans qu'on ait rien ajouté à l'expédition.
+
+**Des chantiers, pas des bâtiments de production.** Le pack ne dessine ni
+ferme, ni scierie, ni mine — mais il dessine des arbres qu'on abat, un
+gisement d'or, des rochers, des moutons, et un Pawn avec quatre outils et
+une animation d'interaction pour chacun. Un bûcheron devant un arbre montre
+en plus la **population au travail**, que le § 9 réclame et qu'un bâtiment
+fermé ne montre jamais.
+
+Effet de bord heureux : il n'y a **pas d'animation de Pawn portant de la
+pierre** dans le pack (bois, or et viande seulement). Un chantier montre
+l'ouvrier *à la tâche*, pioche en main, pas son aller-retour — le manque ne
+se voit donc jamais.
+
+**Une bourse, pas deux.** L'or vit avec la compagnie, parce que ce sont les
+héros qui le gagnent sur la route et le dépensent chez le marchand, loin du
+royaume. Lui faire une seconde bourse au royaume obligerait à tenir les
+deux d'accord, et deux bourses qui doivent rester d'accord finissent
+toujours par ne plus l'être. `resources.json` déclare donc où vit chaque
+ressource, et c'est la seule chose que l'appelant a besoin de savoir.
+
+**Personne ne meurt de faim.** La réserve tombe à zéro, le royaume
+n'accueille plus, et c'est tout. Affamer un village pendant que le joueur
+est en expédition serait une punition qu'il n'était même pas là pour
+empêcher, et le § 41 les refuse.
+
+### Les bâtiments, et la question qu'ils doivent savoir répondre (T4.2)
+
+« Qu'est-ce que ça permet à mes héros ? » Cinq bâtiments y répondent :
+château, maisons, caserne, camp d'archers, monastère.
+
+**Ce que le MVP ne bâtit pas, et pourquoi.** La **tour** est dessinée par
+le pack et reste absente : elle sert à la défense, les invasions sont la
+Phase 5, et une tour sans invasion ne répond à rien — « aucun bâtiment
+décoratif » est une décision verrouillée. La **forge**, le **marché**, la
+**taverne**, l'**écurie**, le **mur** et la **porte** du § 7 n'ont aucun
+sprite dans le pack.
+
+**Le château plafonne tout le reste.** Sans cette règle on monterait une
+caserne au niveau 5 dans un hameau. C'est sa vraie fonction ; l'habitant
+qu'il ajoute par niveau n'est que la prime.
+
+**Les coûts sont engendrés, les gains sont écrits.** Vingt-cinq prix à la
+main auraient dérivé les uns des autres dès la première retouche ; les
+gains, eux, sont la conception et ne se déduisent d'aucune formule.
+
+**Le monastère est le seul bâtiment qui touche à l'expédition** : il rend
+des PV entre deux rencontres, et déplace donc la courbe d'usure mesurée en
+T1.11. C'est la réponse la plus directe au § 45 — « connecter le royaume au
+RPG » — et le levier que je chercherai si les 13 % par rencontre se
+révèlent trop durs.
+
+Le sens de la dépendance ne bouge pas : le royaume rend un bloc de
+modificateurs, `Hero.effective_stats` l'ajoute **comme il ajoute un
+anneau**, et ni `Hero` ni `Unit` ne savent qu'un royaume existe. Le crochet
+`bonuses` existait depuis T2.1 et attendait exactement ça.
+
+### Ce que `verify_kingdom` a trouvé le jour de sa naissance
+
+Une économie n'a pas plus d'instrument qu'un objet. On ne simule pas cent
+parties pour savoir si une caserne est trop chère — mais on peut exiger
+qu'elle soit **atteignable**, et dire en combien de cycles.
+
+Deux vrais défauts, tous deux invisibles à la lecture :
+
+1. **Un royaume plein ne pouvait pas se nourrir** : 42 nourriture produite
+   au mieux, 78 mangée. Le plafond de population était un mensonge.
+2. **Seize habitants sur vingt-six n'avaient nulle part où travailler.**
+   Un habitant au-delà du nombre de places n'est plus qu'une bouche. Le
+   plafond est descendu à 14 pour 12 places : il reste un ou deux bras
+   libres, donc affecter est un arbitrage et jamais un remplissage.
+
+Et un piège de moteur qui aurait pourri les gains en silence : **Godot
+analyse tout nombre JSON en flottant**, `6` comme `0.02`. Distinguer un
+gain fractionnaire par son TYPE ne pouvait pas marcher — tout était
+flottant, et la distinction était une illusion qui affichait « +600 % »
+pour six points de vie. On le distingue maintenant par sa clé.
+
 ### Phase 4 — Royaume
 
 Ressources (bois, pierre, or, nourriture), chantiers, construction,
