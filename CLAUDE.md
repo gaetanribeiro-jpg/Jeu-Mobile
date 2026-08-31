@@ -233,11 +233,10 @@ dur : passer par `data/assets.json`.
 
 - **Phase courante : 1 — cœur tactique PA/PM.** Le pivot vers la vision
   Tiny Kingdoms a été acté le 2026-08-31.
-- **Dernière tâche terminée :** T1.1 à T1.8 — le cœur PA/PM et la timeline
-  d'initiative. **340 tests passent** sous Godot 4.6 en headless.
+- **Dernière tâche terminée :** T1.11 — l'équilibrage. **340 tests passent**
+  sous Godot 4.6 en headless.
 - **Reste en Phase 1 :** T1.9 (HUD : jauges PA/PM, timeline, barre de
-  compétences), T1.10 (les 8 cartes à réécrire en 12 × 9), T1.11
-  (équilibrage).
+  compétences), et T1.12 (rien n'endommage le décor).
 
 **Le combat se joue, sur PC.** Écran de titre → composition de l'équipe →
 choix d'une des 8 cartes → placement → combat.
@@ -250,9 +249,7 @@ désigne. Les huit autres compétences existent, sont testées, et ne sont
 pas atteignables au doigt. Ce n'est pas une régression : c'est la tâche
 suivante.
 
-**Les huit cartes sont encore en 8 × 6** alors que la référence est
-12 × 9. Elles se chargent et se jouent ; `verify_maps` les liste à part
-sous « à réécrire (T1.10) ».
+**Les huit cartes sont au format 12 × 9** et se jouent en 3 à 7 rondes.
 
 **PAS DE TÉLÉPHONE ANDROID pour l'instant.** Les étapes F, G et H de
 `docs/installation.md` (SDK, préréglage d'export, déploiement) attendent.
@@ -284,14 +281,22 @@ godot --headless --path . -s tools/verify_maps.gd       # 8 cartes
 godot --headless --path . -s tools/simulate_combats.gd  # équilibrage
 ```
 
-**Ce qui saute aux yeux et qu'il faut régler (T1.11) :**
+**Comment on juge l'équilibrage (acquis en T1.11) :**
 
-`tools/compare_squads.gd` : **les 15 compositions gagnent à 100 %**, en
-2,8 à 3,2 rondes. Les ennemis meurent avant d'avoir frappé — un héros a
-8 ou 9 PA, donc deux à trois attaques par activation à ~30 dégâts, contre
-30 à 45 PV d'ennemi. Les valeurs des ennemis sont de mon invention, celles
-des héros suivent l'échelle du § 47. C'est T1.11, et les deux outils
-(`simulate_combats`, `compare_squads`) diront quand ce sera réglé.
+Le taux de victoire ne dit rien. Une rencontre du MVP est faite pour être
+gagnée ; le risque vit à l'échelle de l'**expédition** (§ 29). L'instrument
+est donc la colonne **PV** des deux outils : ce qu'il reste à l'équipe à la
+fin. Un combat coûte aujourd'hui **13 % en moyenne**, ce qui laisse 49 %
+après cinq rencontres — la courbe d'usure que le roguelite demande.
+
+**Les statistiques sont des modificateurs, pas des multiplicateurs.** Les
+dégâts du § 47 sont des chiffres finaux ; empiler une Force à 12 par-dessus
+une Frappe de 20 ajoutait 60 % et vidait le combat de son enjeu. Elles
+tiennent dans une fourchette de 1 à 8.
+
+**Ouvert : l'Archer domine le jeu de portée.** Une équipe entièrement à
+distance finit à 97 % de PV. Trois pistes dans `docs/etat-des-lieux.md`,
+la décision est à prendre.
 
 **Questions ouvertes, à trancher par Gaetan :**
 

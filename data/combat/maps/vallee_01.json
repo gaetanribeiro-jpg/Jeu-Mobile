@@ -58,15 +58,22 @@
     {
       "type": "gnome",
       "cell": [
-        9,
+        8,
         3
       ]
     },
     {
       "type": "gnome",
       "cell": [
-        9,
+        8,
         5
+      ]
+    },
+    {
+      "type": "gnome",
+      "cell": [
+        9,
+        4
       ]
     },
     {

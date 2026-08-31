@@ -211,15 +211,64 @@ Suit l'ordre du § 45, adapté à ce qui existe déjà.
 | **T1.8** | IA ennemie qui gère un budget PA/PM | ✅ |
 | **T1.9** | HUD : jauges PA/PM, timeline, barre de compétences, portée et zone | ⏳ |
 | **T1.10** | Les 8 cartes réécrites en 12 × 9 | ✅ |
-| **T1.11** | Équilibrage : les ennemis meurent avant d'avoir frappé | ⏳ |
+| **T1.11** | Équilibrage : le combat coûte quelque chose | ✅ |
 | **T1.12** | Rien n'endommage le décor : `damage_structure` n'est appelé nulle part | ⏳ |
 
-**État au 2026-08-31 :** T1.1 à T1.8 et T1.10 sont faites et testées,
-340 tests passent. Le moteur PA/PM tourne de bout en bout — placement,
-timeline entremêlée, compétences à zone, télégraphe, annulation, IA — et
-les huit cartes sont au format 12 × 9. Ce qui manque : le HUD ne donne
-accès qu'à l'attaque de base (T1.9), et les ennemis sont trop faibles pour
-que le combat ait un enjeu (T1.11).
+**État au 2026-08-31 :** T1.1 à T1.8, T1.10 et T1.11 sont faites et
+testées, 340 tests passent. Il ne reste que **T1.9, le HUD** : le joueur
+n'a accès qu'à l'attaque de base du personnage que la timeline désigne.
+
+### Ce que T1.11 a corrigé, et pourquoi
+
+Le défaut n'était pas dans les ennemis, il était dans la **formule de
+dégâts**. Les chiffres du § 47 — Frappe 20, Coup puissant 45 — sont des
+chiffres FINAUX. Je les avais pris pour des chiffres de base et j'avais
+empilé la statistique par-dessus : une Force à 12 ajoutait +60 % à une
+frappe de base, et l'escouade effaçait toute rencontre avant que le
+premier ennemi n'ait porté son coup annoncé.
+
+Les statistiques redeviennent des **modificateurs** (1 à 8, pas 12 à 14).
+Le Guerrier fait de nouveau 66 dégâts par activation, contre les 65 que le
+§ 47 prescrit. En face, les ennemis encaissent assez pour survivre à la
+ronde que le télégraphe leur offre, et frappent assez fort pour que ça
+compte : un gobelin lancier retire 35 % des PV du Guerrier, et **71 % de
+ceux du Mage**. Le positionnement du § 20 a enfin un prix.
+
+### La vraie mesure : l'expédition, pas la rencontre
+
+Une rencontre du MVP est faite pour être gagnée — la politique triviale du
+simulateur les gagne toutes. Ce n'est pas un défaut : le § 29 place le
+risque à l'échelle de l'**expédition**, pas du combat isolé. La question
+« je rentre ou je continue ? » n'a de sens que si l'usure s'accumule.
+
+| | coût moyen en PV |
+|---|---|
+| une rencontre | **13 %** |
+| après 3 rencontres | il reste 65 % |
+| après 5 rencontres | il reste 49 % |
+| après 7 rencontres | il reste 37 % |
+
+C'est la courbe d'usure que le roguelite demande, et c'est elle qu'il faut
+surveiller, pas le taux de victoire d'un combat pris seul. Les deux outils
+rendent maintenant cette colonne.
+
+### Ce qui reste ouvert après T1.11
+
+**L'Archer domine le jeu de portée.** Une équipe entièrement à distance
+finit ses combats à 97 % de PV : elle tire à 5 cases sur des ennemis qui
+avancent de 3 ou 4, et n'est jamais rattrapée. Donner au gnome à fronde la
+même portée et un PM de plus n'a rien changé — il est seul de son espèce et
+meurt le premier.
+
+Ce n'est plus un réglage, c'est une décision de conception, et elle
+appartient à Gaetan. Trois pistes :
+1. **Plus d'ennemis à distance** dans le bestiaire — le pack fournit des
+   sprites (arbalétriers gobelins, chamans).
+2. **Une réaction au mouvement** : une unité qui traverse la portée d'un
+   tireur se fait tirer dessus. C'est l'Élévation « Garde » de l'ancienne
+   conception, et elle punit le kiting sans toucher aux chiffres.
+3. **Assumer** : l'Archer est fort au MVP, et l'équilibrage viendra avec
+   l'équipement et les classes suivantes (Phase 2).
 
 **T1.12, trouvé en écrivant les cartes.** `Tile.damage_structure` existe,
 est testée, et **n'est appelée par personne**. Aucune compétence

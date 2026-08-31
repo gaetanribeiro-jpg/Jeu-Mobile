@@ -1,6 +1,5 @@
 {
   "_readme": "Les compétences, héros et ennemis (vision § 21). Format data-driven du § 47 : une compétence est entièrement décrite ici, aucun .gd ne connaît son nom.\n\nCHAMPS :\n- action_points : coût en PA (§ 13 : légère 2, base 3, moyenne 4, puissante 5-7)\n- movement_points : coût en PM, quand la compétence en consomme aussi\n- range_min / range_max : portée en distance de Manhattan. 0 = sur soi.\n- needs_line_of_sight : la forêt et les rochers bloquent-ils le tir ?\n- area : forme de la zone touchée. single = la case visée. cross = la case et ses voisines dans un rayon de Manhattan. line et cone viendront avec les classes suivantes.\n- damage : dégâts de base, avant statistique et défense\n- scaling : la statistique du lanceur qui s'ajoute aux dégâts\n- cooldown : nombre d'activations avant de pouvoir la relancer. 0 = pas de recharge.\n- requires_not_moved : ne part que si le lanceur n'a pas dépensé de PM ce tour\n\nAUCUNE de ces valeurs n'est équilibrée. T1.11.",
-
   "strike": {
     "class": "warrior",
     "kind": "attack",
@@ -8,7 +7,9 @@
     "range_min": 1,
     "range_max": 1,
     "needs_line_of_sight": true,
-    "area": { "shape": "single" },
+    "area": {
+      "shape": "single"
+    },
     "damage": 20,
     "scaling": "strength",
     "cooldown": 0,
@@ -22,7 +23,9 @@
     "range_min": 1,
     "range_max": 1,
     "needs_line_of_sight": true,
-    "area": { "shape": "single" },
+    "area": {
+      "shape": "single"
+    },
     "damage": 40,
     "scaling": "strength",
     "cooldown": 2,
@@ -36,13 +39,14 @@
     "range_min": 0,
     "range_max": 0,
     "needs_line_of_sight": false,
-    "area": { "shape": "single" },
+    "area": {
+      "shape": "single"
+    },
     "duration": 1,
     "cooldown": 3,
     "animation": "guard",
     "note": "Les ennemis adjacents doivent le cibler. Portée 0 : c'est l'adjacence à sa propre case qui compte. C'est le verbe « attirer » du Guerrier, et l'ouverture de tous les combos (§ 22)."
   },
-
   "shot": {
     "class": "archer",
     "kind": "attack",
@@ -50,7 +54,9 @@
     "range_min": 2,
     "range_max": 5,
     "needs_line_of_sight": true,
-    "area": { "shape": "single" },
+    "area": {
+      "shape": "single"
+    },
     "damage": 18,
     "scaling": "agility",
     "cooldown": 0,
@@ -64,7 +70,9 @@
     "range_min": 2,
     "range_max": 6,
     "needs_line_of_sight": true,
-    "area": { "shape": "single" },
+    "area": {
+      "shape": "single"
+    },
     "damage": 34,
     "scaling": "agility",
     "cooldown": 2,
@@ -79,13 +87,14 @@
     "range_min": 2,
     "range_max": 2,
     "needs_line_of_sight": true,
-    "area": { "shape": "single" },
+    "area": {
+      "shape": "single"
+    },
     "cooldown": 2,
     "animation": "run",
     "counts_as_movement": true,
     "note": "Se replace de deux cases sans dépenser un seul PM. Cela reste un déplacement — le Tir puissant ne part plus après un bond — mais c'est la seule façon de décrocher d'un corps-à-corps quand les PM sont épuisés."
   },
-
   "bolt": {
     "class": "mage",
     "kind": "attack",
@@ -93,12 +102,14 @@
     "range_min": 1,
     "range_max": 5,
     "needs_line_of_sight": true,
-    "area": { "shape": "single" },
-    "damage": 16,
+    "area": {
+      "shape": "single"
+    },
+    "damage": 12,
     "scaling": "intelligence",
     "cooldown": 0,
     "animation": "heal",
-    "note": "Pas de portée minimale : le Mage peut se défendre au contact, mal. Trois fois par tour avec 9 PA."
+    "note": "Pas de portée minimale : le Mage peut se défendre au contact, mal. Trois fois par tour avec 9 PA — et trois Traits font toujours moins qu'une activation de Guerrier : l'AoE est sa raison d'être, pas la cible unique."
   },
   "fireball": {
     "class": "mage",
@@ -107,7 +118,10 @@
     "range_min": 2,
     "range_max": 5,
     "needs_line_of_sight": true,
-    "area": { "shape": "cross", "radius": 1 },
+    "area": {
+      "shape": "cross",
+      "radius": 1
+    },
     "damage": 24,
     "scaling": "intelligence",
     "friendly_fire": true,
@@ -123,15 +137,19 @@
     "range_min": 1,
     "range_max": 4,
     "needs_line_of_sight": true,
-    "area": { "shape": "single" },
+    "area": {
+      "shape": "single"
+    },
     "damage": 8,
     "scaling": "intelligence",
     "cooldown": 1,
-    "status": { "id": "chilled", "duration": 1 },
+    "status": {
+      "id": "chilled",
+      "duration": 1
+    },
     "animation": "heal",
     "note": "Peu de dégâts, mais retire des PM à la cible au prochain tour. Le verbe « ralentir » : c'est ce qui met en place la Charge et la Provocation (§ 22)."
   },
-
   "goblin_spear": {
     "class": "spear_goblin",
     "kind": "attack",
@@ -139,7 +157,9 @@
     "range_min": 1,
     "range_max": 2,
     "needs_line_of_sight": true,
-    "area": { "shape": "single" },
+    "area": {
+      "shape": "single"
+    },
     "damage": 18,
     "scaling": "strength",
     "cooldown": 0,
@@ -152,7 +172,9 @@
     "range_min": 1,
     "range_max": 1,
     "needs_line_of_sight": true,
-    "area": { "shape": "single" },
+    "area": {
+      "shape": "single"
+    },
     "damage": 12,
     "scaling": "strength",
     "cooldown": 0
@@ -162,12 +184,15 @@
     "kind": "attack",
     "action_points": 3,
     "range_min": 2,
-    "range_max": 4,
+    "range_max": 5,
     "needs_line_of_sight": true,
-    "area": { "shape": "single" },
+    "area": {
+      "shape": "single"
+    },
     "damage": 14,
     "scaling": "agility",
-    "cooldown": 0
+    "cooldown": 0,
+    "note": "Porte aussi loin que l'Archer, et c'est délibéré : sans un ennemi capable de rendre le tir, une équipe entièrement à distance ne se fait jamais toucher — elle finissait ses combats à 98 % de PV. Le gnome à fronde est la réponse du bestiaire au jeu de portée."
   },
   "goblin_torch": {
     "class": "torch_goblin",
@@ -176,7 +201,9 @@
     "range_min": 1,
     "range_max": 1,
     "needs_line_of_sight": true,
-    "area": { "shape": "single" },
+    "area": {
+      "shape": "single"
+    },
     "damage": 18,
     "scaling": "strength",
     "cooldown": 0,
@@ -190,7 +217,9 @@
     "range_min": 1,
     "range_max": 1,
     "needs_line_of_sight": true,
-    "area": { "shape": "single" },
+    "area": {
+      "shape": "single"
+    },
     "damage": 20,
     "scaling": "agility",
     "cooldown": 0,
@@ -203,7 +232,10 @@
     "range_min": 1,
     "range_max": 1,
     "needs_line_of_sight": true,
-    "area": { "shape": "line", "length": 2 },
+    "area": {
+      "shape": "line",
+      "length": 2
+    },
     "damage": 40,
     "scaling": "strength",
     "cooldown": 1,

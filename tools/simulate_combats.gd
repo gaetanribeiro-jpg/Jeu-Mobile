@@ -1,19 +1,31 @@
 extends SceneTree
 
-## Simulateur de combats en masse — l'amorce de T10.2.
+## Simulateur de combats en masse.
 ##
 ##     godot --headless --path . -s tools/simulate_combats.gd
 ##     godot --headless --path . -s tools/simulate_combats.gd -- 200
 ##
 ## Joue chaque carte sur N graines avec une politique de joueur triviale,
-## et rend le taux de victoire et la durée moyenne. Les chiffres ne
-## disent pas si une carte est bonne — la politique ne joue pas bien —
-## mais ils disent si elle est jouable, si elle se termine, et de quel
-## ordre de grandeur est sa durée. C'est ce qu'il faut pour repérer une
-## carte impossible ou une carte qui se gagne toute seule.
+## et rend quatre chiffres. Les trois derniers comptent plus que le
+## premier :
 ##
-## Le § 4.1 vise 3 à 6 tours. Une carte qui sort largement de cette
-## fourchette est à revoir en T10.5.
+##   victoire   le taux de victoire. 100 % partout ne veut pas dire
+##              « équilibré », seulement « gagnable en pilote automatique ».
+##   rondes     la durée. La cible est 3 à 8 (rules.json, turns).
+##   PV         les points de vie qu'il RESTE à l'équipe à la fin, en
+##              pourcentage. C'est le vrai instrument : une victoire à
+##              98 % de PV est un combat qui ne s'est jamais joué.
+##   tombés     le nombre moyen de personnages mis hors de combat.
+##
+## Ce que l'on cherche pour T1.11 : des victoires, mais payées. Une
+## escarmouche de tutoriel peut finir à 85 % de PV ; un gardien ne devrait
+## pas se passer sans descendre sous 60 %, et devrait pouvoir coûter
+## quelqu'un.
+##
+## La politique ne joue pas bien — elle avance et vide ses PA sur le plus
+## proche. Les chiffres sont donc un PLANCHER : un vrai joueur fera mieux.
+## Une carte que ce pilote perd n'est pas forcément trop dure ; une carte
+## qu'il gagne sans une égratignure est forcément trop facile.
 
 const TURN_CAP := 30
 
@@ -25,35 +37,48 @@ func _init() -> void:
 		runs = maxi(1, arguments[0].to_int())
 
 	print("Simulation : %d graines par carte, politique de joueur triviale.\n" % runs)
-	print("%-14s %8s %8s %8s %8s" % ["carte", "victoire", "tours~", "min", "max"])
+	print("%-14s %9s %8s %7s %8s" % ["carte", "victoire", "rondes", "PV", "tombés"])
 	print("-".repeat(50))
 
 	var total_turns := 0
+	var total_health := 0.0
+	var total_downed := 0.0
 	var total_runs := 0
 	for id: StringName in CombatMap.map_ids():
 		var wins := 0
 		var turns_sum := 0
-		var shortest := TURN_CAP + 1
-		var longest := 0
+		var health_sum := 0.0
+		var downed_sum := 0.0
 		for i in runs:
 			var result := _run(id, 1000 + i * 7919)
 			if result.is_empty():
 				continue
 			if result["victory"]:
 				wins += 1
-			var turns: int = result["turns"]
-			turns_sum += turns
-			shortest = mini(shortest, turns)
-			longest = maxi(longest, turns)
-		var average := float(turns_sum) / float(runs)
+			turns_sum += int(result["turns"])
+			health_sum += float(result["health"])
+			downed_sum += float(result["downed"])
 		total_turns += turns_sum
+		total_health += health_sum
+		total_downed += downed_sum
 		total_runs += runs
-		print("%-14s %7d%% %8.1f %8d %8d"
-			% [id, int(round(100.0 * wins / runs)), average, shortest, longest])
+		print("%-14s %8d%% %8.1f %6d%% %8.2f" % [
+			id, int(round(100.0 * wins / runs)),
+			float(turns_sum) / float(runs),
+			int(round(100.0 * health_sum / float(runs))),
+			downed_sum / float(runs),
+		])
 
 	print("-".repeat(50))
-	print("Durée moyenne toutes cartes : %.1f rondes (cible : 3 à 8)"
-		% (float(total_turns) / float(maxi(total_runs, 1))))
+	print("Durée moyenne : %.1f rondes (cible : %d à %d)" % [
+		float(total_turns) / float(maxi(total_runs, 1)),
+		int(CombatRules.rule(&"turns", &"min_rounds", 3)),
+		int(CombatRules.rule(&"turns", &"max_rounds", 8)),
+	])
+	print("PV restants   : %d%% en moyenne, %.2f personnage tombé par combat" % [
+		int(round(100.0 * total_health / float(maxi(total_runs, 1)))),
+		total_downed / float(maxi(total_runs, 1)),
+	])
 	quit(0)
 
 
@@ -80,7 +105,23 @@ func _run(map_id: StringName, seed_value: int) -> Dictionary:
 			_play_activation(engine, hero)
 		engine.end_activation()
 		activations += 1
-	return {"victory": engine.is_victory(), "turns": engine.round_index()}
+	# Les PV restants, tombés compris : c'est ce que le combat a coûté.
+	var current := 0
+	var maximum := 0
+	var downed := 0
+	for unit: Unit in engine.board.units():
+		if not unit.is_hero():
+			continue
+		current += unit.hit_points
+		maximum += unit.max_hit_points
+		if unit.is_downed():
+			downed += 1
+	return {
+		"victory": engine.is_victory(),
+		"turns": engine.round_index(),
+		"health": float(current) / float(maxi(maximum, 1)),
+		"downed": downed,
+	}
 
 
 ## Le pilote automatique d'un personnage : il va vers son objectif s'il en

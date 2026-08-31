@@ -1,89 +1,101 @@
 {
-  "_readme": "Les six ennemis des Terres Vertes (vision § 26). Valeurs recalculées à l'échelle du § 47 : PV autour de 100 pour les héros, donc 30 à 180 pour les ennemis. Chaque ennemi doit poser une question tactique inédite, jamais « plus de dégâts ». AUCUNE de ces valeurs n'est équilibrée : c'est T1.11, et tools/simulate_combats.gd dira quand ce sera réglé.",
+  "_readme": "Les six ennemis des Terres Vertes (vision § 26). Deux contraintes gouvernent ces chiffres, et elles ne sont pas indépendantes :\n\n1. LES PV. Le télégraphe offre au joueur une ronde entière de coups gratuits — un ennemi annonce, il ne frappe qu'à son activation suivante. Si l'escouade efface tout le monde pendant cette ronde, personne ne frappe jamais et le combat n'a pas eu lieu. Les PV totaux d'une rencontre doivent donc dépasser ce qu'une escouade produit en une ronde, soit environ 220.\n\n2. LES DÉGÂTS. Ils ne frappent qu'une ou deux fois par combat : il faut que ça se sente. Un gobelin doit coûter un tiers des PV du Guerrier, et la moitié de ceux du Mage — c'est ce qui fait du positionnement une décision (§ 20).\n\nChaque ennemi doit poser une question tactique inédite, jamais « plus de dégâts ».",
   "spear_goblin": {
     "sprite": "spear_goblin",
     "role": "melee",
-    "hit_points": 45,
+    "hit_points": 75,
     "action_points": 6,
     "movement_points": 3,
     "initiative": 5,
-    "strength": 4,
+    "strength": 8,
     "agility": 3,
     "intelligence": 1,
-    "defence": 2,
-    "abilities": ["goblin_spear"],
+    "defence": 3,
+    "abilities": [
+      "goblin_spear"
+    ],
     "question": "La piétaille — mais sa lance porte à deux cases. On ne s'en débarrasse pas en tenant une ligne."
   },
   "gnome": {
     "sprite": "gnome",
     "role": "melee",
-    "hit_points": 30,
+    "hit_points": 40,
     "action_points": 6,
     "movement_points": 4,
     "initiative": 7,
-    "strength": 3,
+    "strength": 6,
     "agility": 4,
     "intelligence": 1,
     "defence": 1,
-    "abilities": ["gnome_claw"],
+    "abilities": [
+      "gnome_claw"
+    ],
     "question": "Rapide et fragile, en nombre. Oblige à choisir qui on ignore — et se regroupe, donc nourrit la Boule de feu."
   },
   "slingshot_gnome": {
     "sprite": "slingshot_gnome",
     "role": "skirmisher",
-    "hit_points": 30,
+    "hit_points": 45,
     "action_points": 6,
-    "movement_points": 3,
+    "movement_points": 4,
     "initiative": 6,
     "strength": 2,
-    "agility": 5,
+    "agility": 8,
     "intelligence": 1,
     "defence": 1,
-    "abilities": ["sling_stone"],
-    "question": "Recule si on l'approche. Oblige à le coincer ou à l'ignorer."
+    "abilities": [
+      "sling_stone"
+    ],
+    "question": "Recule si on l'approche, et tire aussi loin que l'Archer. C'est lui qui empêche une équipe entièrement à distance de gagner sans se salir : il faut aller le chercher, donc s'exposer."
   },
   "torch_goblin": {
     "sprite": "torch_goblin",
     "role": "melee",
-    "hit_points": 45,
+    "hit_points": 75,
     "action_points": 6,
     "movement_points": 3,
     "initiative": 5,
-    "strength": 4,
+    "strength": 8,
     "agility": 3,
     "intelligence": 1,
-    "defence": 2,
-    "abilities": ["goblin_torch"],
+    "defence": 3,
+    "abilities": [
+      "goblin_torch"
+    ],
     "question": "Laisse du feu sur la case. Rend le terrain gagné coûteux à tenir."
   },
   "thief": {
     "sprite": "thief",
     "role": "assassin",
     "prefers_class": "archer",
-    "hit_points": 40,
+    "hit_points": 65,
     "action_points": 8,
     "movement_points": 4,
     "initiative": 9,
     "strength": 3,
-    "agility": 6,
+    "agility": 10,
     "intelligence": 1,
     "defence": 2,
-    "abilities": ["thief_stab"],
+    "abilities": [
+      "thief_stab"
+    ],
     "moves_after_attack": true,
     "question": "Joue avant presque tout le monde, vise l'Archer et se replie avec ses PM restants. C'est lui qui punit un Archer resté immobile pour son Tir puissant."
   },
   "troll": {
     "sprite": "troll",
     "role": "brute",
-    "hit_points": 180,
+    "hit_points": 300,
     "action_points": 6,
     "movement_points": 2,
     "initiative": 2,
-    "strength": 8,
+    "strength": 12,
     "agility": 1,
     "intelligence": 1,
     "defence": 6,
-    "abilities": ["troll_smash"],
+    "abilities": [
+      "troll_smash"
+    ],
     "guardian": true,
     "question": "Joue toujours en dernier, donc on sait ce qui arrive. Windup, Attack, Recovery : trois animations distinctes, un boss sur trois temps entièrement dessiné."
   }

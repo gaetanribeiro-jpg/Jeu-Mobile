@@ -93,6 +93,27 @@
         9,
         4
       ]
+    },
+    {
+      "type": "gnome",
+      "cell": [
+        8,
+        7
+      ]
+    },
+    {
+      "type": "spear_goblin",
+      "cell": [
+        11,
+        4
+      ]
+    },
+    {
+      "type": "gnome",
+      "cell": [
+        8,
+        1
+      ]
     }
   ]
 }

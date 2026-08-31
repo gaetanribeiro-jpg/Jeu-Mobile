@@ -16,6 +16,11 @@ extends SceneTree
 ## veut voir, c'est un étalement — des compositions fortes sur certaines
 ## cartes et faibles sur d'autres.
 ##
+## La colonne qui compte est « PV » : ce qu'il reste à l'équipe à la fin.
+## Le taux de victoire seul ment — une escouade qui gagne tous ses combats
+## à 95 % de PV et une autre qui les gagne à 70 % ne jouent pas au même
+## jeu, et c'est la seconde qui rentrera à la maison en boitant.
+##
 ## La politique de joueur est triviale : elle vide ses PA sur la cible la
 ## plus proche. Les chiffres sont un plancher, pas un verdict.
 
@@ -35,13 +40,14 @@ func _init() -> void:
 	print("%d compositions × %d cartes × %d graines = %d combats\n"
 		% [compositions.size(), maps.size(), runs,
 		   compositions.size() * maps.size() * runs])
-	print("%-34s %9s %8s" % ["composition", "victoires", "tours~"])
-	print("-".repeat(54))
+	print("%-34s %9s %7s %6s" % ["composition", "victoires", "rondes", "PV"])
+	print("-".repeat(60))
 
 	var results: Array[Dictionary] = []
 	for composition: Array in compositions:
 		var wins := 0
 		var turns := 0
+		var health := 0.0
 		var total := 0
 		for map_id: StringName in maps:
 			for i in runs:
@@ -50,18 +56,22 @@ func _init() -> void:
 					continue
 				total += 1
 				turns += int(result["turns"])
+				health += float(result["health"])
 				if result["victory"]:
 					wins += 1
 		results.append({
 			"label": _label(composition),
 			"rate": 100.0 * float(wins) / float(maxi(total, 1)),
 			"turns": float(turns) / float(maxi(total, 1)),
+			"health": 100.0 * health / float(maxi(total, 1)),
 		})
 
 	results.sort_custom(func(a: Dictionary, b: Dictionary) -> bool:
 		return float(a["rate"]) > float(b["rate"]))
 	for entry: Dictionary in results:
-		print("%-34s %8.0f%% %8.1f" % [entry["label"], entry["rate"], entry["turns"]])
+		print("%-34s %8.0f%% %7.1f %5.0f%%" % [
+			entry["label"], entry["rate"], entry["turns"], entry["health"]
+		])
 
 	print("-".repeat(54))
 	var best := float(results[0]["rate"])
@@ -75,18 +85,22 @@ func _init() -> void:
 	print("Compositions qui gagnent presque toujours : %d sur %d."
 		% [flawless, results.size()])
 
-	# Ce qu'on cherche n'est pas un écart, c'est que peu de compositions
-	# soient sans risque. Tant que la moitié gagne à tous les coups, le
-	# choix n'engage à rien, quel que soit l'écart entre les extrêmes.
-	if flawless * 2 > results.size():
-		print("Plus de la moitié des compositions gagnent sans risque : le choix")
-		print("n'engage à rien. C'est un symptôme d'ennemis trop faibles (T1.11),")
-		print("pas de la composition d'équipe.")
-	elif best - worst < 10.0:
-		print("Trop resserré : toutes les compositions se valent, donc aucune")
-		print("n'est un choix.")
+	# Le taux de victoire ne suffit pas à juger : une rencontre du MVP est
+	# faite pour être gagnée, le risque vit à l'échelle de l'expédition
+	# (§ 29). Ce qu'on regarde, c'est ce que chaque composition PAIE.
+	var cheapest := 0.0
+	var dearest := 100.0
+	for entry: Dictionary in results:
+		cheapest = maxf(cheapest, float(entry["health"]))
+		dearest = minf(dearest, float(entry["health"]))
+	print("Écart de PV entre la composition la moins chère et la plus chère : %.0f points."
+		% (cheapest - dearest))
+
+	if cheapest - dearest < 5.0:
+		print("Trop resserré : toutes les compositions coûtent la même chose,")
+		print("donc aucune n'est un choix.")
 	else:
-		print("Étalement exploitable : les compositions ne se valent pas.")
+		print("Les compositions ne se valent pas : il y a un choix à faire.")
 	quit(0)
 
 
@@ -140,7 +154,18 @@ func _run(map_id: StringName, composition: Array, seed_value: int) -> Dictionary
 			_play_activation(engine, hero)
 		engine.end_activation()
 		activations += 1
-	return {"victory": engine.is_victory(), "turns": engine.round_index()}
+	var current := 0
+	var maximum := 0
+	for unit: Unit in engine.board.units():
+		if not unit.is_hero():
+			continue
+		current += unit.hit_points
+		maximum += unit.max_hit_points
+	return {
+		"victory": engine.is_victory(),
+		"turns": engine.round_index(),
+		"health": float(current) / float(maxi(maximum, 1)),
+	}
 
 
 ## Le pilote automatique d'un personnage : il va vers son objectif s'il en

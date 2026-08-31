@@ -98,6 +98,20 @@
         9,
         6
       ]
+    },
+    {
+      "type": "gnome",
+      "cell": [
+        7,
+        2
+      ]
+    },
+    {
+      "type": "spear_goblin",
+      "cell": [
+        10,
+        5
+      ]
     }
   ]
 }

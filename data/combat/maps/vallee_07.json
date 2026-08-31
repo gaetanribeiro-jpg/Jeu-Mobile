@@ -78,8 +78,15 @@
     {
       "type": "spear_goblin",
       "cell": [
-        7,
-        3
+        9,
+        1
+      ]
+    },
+    {
+      "type": "spear_goblin",
+      "cell": [
+        10,
+        2
       ]
     },
     {
@@ -93,6 +100,20 @@
       "type": "thief",
       "cell": [
         7,
+        5
+      ]
+    },
+    {
+      "type": "spear_goblin",
+      "cell": [
+        6,
+        3
+      ]
+    },
+    {
+      "type": "gnome",
+      "cell": [
+        6,
         5
       ]
     }

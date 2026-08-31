@@ -1,5 +1,5 @@
 {
-  "_readme": "Les trois classes du MVP (vision § 11). L'échelle des chiffres suit le § 47 : PV autour de 100, dégâts autour de 20 — l'équipement et le critique ont besoin de cette granularité. PA/PM : chaque personnage les retrouve intacts au début de son activation. initiative fixe la place dans la timeline (§ 16), la plus haute joue en premier. Les statistiques (§ 12) servent la formule de dégâts : base + statistique d'échelle du lanceur - défense de la cible. Le Lancier et le Moine sont rangés dans plus-tard.md ; le Mage utilise le sprite du Moine, voir docs/etat-des-lieux.md § 3.1. AUCUNE de ces valeurs n'est équilibrée : elles seront réglées en T1.11 avec tools/simulate_combats.gd.",
+  "_readme": "Les trois classes du MVP (vision § 11). L'échelle des chiffres suit le § 47 : PV autour de 100, dégâts autour de 20.\n\nLES STATISTIQUES SONT DES MODIFICATEURS, PAS DES MULTIPLICATEURS. Les dégâts du § 47 — Frappe 20, Coup puissant 45 — sont des chiffres FINAUX. Une Force à 12 ajoutée par-dessus faisait +60 % sur une frappe de base et vidait le combat de tout enjeu. Elles tiennent donc dans une fourchette de 1 à 8, ce qui laisse la compétence définir le coup et la statistique le nuancer — et rend un +2 d'équipement lisible.\n\nPA/PM : chaque personnage les retrouve intacts au début de son activation. initiative fixe la place dans la timeline (§ 16), la plus haute joue en premier. Le Mage utilise le sprite du Moine, voir docs/etat-des-lieux.md § 3.1.",
   "warrior": {
     "sprite": "warrior",
     "role_note": "Tank, mêlée, contrôle. Encaisse et fixe. Sa portée de 1 est sa faiblesse : il doit traverser le plateau pour servir.",
@@ -7,13 +7,17 @@
     "action_points": 8,
     "movement_points": 4,
     "initiative": 4,
-    "strength": 12,
-    "agility": 6,
-    "intelligence": 3,
-    "defence": 8,
+    "strength": 6,
+    "agility": 3,
+    "intelligence": 1,
+    "defence": 5,
     "critical": 0,
     "aquatic": false,
-    "abilities": ["strike", "heavy_strike", "taunt"]
+    "abilities": [
+      "strike",
+      "heavy_strike",
+      "taunt"
+    ]
   },
   "archer": {
     "sprite": "archer",
@@ -22,13 +26,17 @@
     "action_points": 8,
     "movement_points": 5,
     "initiative": 8,
-    "strength": 5,
-    "agility": 13,
-    "intelligence": 4,
-    "defence": 4,
+    "strength": 2,
+    "agility": 7,
+    "intelligence": 2,
+    "defence": 2,
     "critical": 0,
     "aquatic": false,
-    "abilities": ["shot", "power_shot", "hop_back"]
+    "abilities": [
+      "shot",
+      "power_shot",
+      "hop_back"
+    ]
   },
   "mage": {
     "sprite": "monk",
@@ -38,12 +46,16 @@
     "action_points": 9,
     "movement_points": 4,
     "initiative": 6,
-    "strength": 3,
-    "agility": 5,
-    "intelligence": 14,
-    "defence": 3,
+    "strength": 1,
+    "agility": 2,
+    "intelligence": 8,
+    "defence": 1,
     "critical": 0,
     "aquatic": false,
-    "abilities": ["bolt", "fireball", "frost"]
+    "abilities": [
+      "bolt",
+      "fireball",
+      "frost"
+    ]
   }
 }
