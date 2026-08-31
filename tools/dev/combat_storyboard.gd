@@ -79,10 +79,10 @@ func _init() -> void:
 			var target := _nearest_enemy(engine, hero)
 			if target != null and engine.board.can_attack(hero, target):
 				engine.attack(hero, target)
-			elif not hero.has_moved:
+			elif hero.movement_points > 0:
 				var step := _step_toward(engine, hero, target)
 				if step != hero.cell:
-					engine.move_hero(hero, step)
+					engine.move(hero, step)
 		_scene._on_end_turn()
 		await _wait(3.0)
 	await _shot("08_melee")
@@ -121,7 +121,7 @@ func _step_toward(engine: CombatEngine, unit: Unit, target: Unit) -> Vector2i:
 	var best_distance := engine.board.grid.distance(unit.cell, target.cell)
 	for cell: Vector2i in engine.board.reachable_cells(unit).keys():
 		var distance := engine.board.grid.distance(cell, target.cell)
-		if distance < best_distance and distance >= unit.range_min:
+		if distance < best_distance and distance >= 1:
 			best_distance = distance
 			best = cell
 	return best

@@ -199,19 +199,26 @@ Suit l'ordre du § 45, adapté à ce qui existe déjà.
 
 ### Phase 1 — Cœur tactique PA/PM ⏳ *en cours*
 
-| Tâche | Contenu |
-|---|---|
-| **T1.1** | Données : `classes.json` (3 classes, PA/PM/stats), `abilities.json` (9 compétences), `rules.json` |
-| **T1.2** | `Unit` : PA, PM, initiative, bloc de statistiques |
-| **T1.3** | `Ability` : coût en PA, portée, forme de zone, statistique d'échelle |
-| **T1.4** | `TurnOrder` : timeline d'initiative entremêlée |
-| **T1.5** | `CombatBoard` : déplacement au coût en PM, portée par compétence |
-| **T1.6** | `CombatEngine` : boucle d'activation, dépense de PA/PM, annulation |
-| **T1.7** | Formule de dégâts (base + statistique − défense) |
-| **T1.8** | IA ennemie qui gère un budget PA/PM |
-| **T1.9** | HUD : jauges PA/PM, timeline, barre de compétences, portée et zone |
-| **T1.10** | Les 8 cartes réécrites en 12 × 9 |
-| **T1.11** | Équilibrage : `simulate_combats.gd` remis en service |
+| Tâche | Contenu | État |
+|---|---|---|
+| **T1.1** | Données : `hero_classes.json` (3 classes, PA/PM/stats), `abilities.json` (15 compétences), `rules.json` | ✅ |
+| **T1.2** | `Unit` : PA, PM, initiative, bloc de statistiques, recharges, statuts | ✅ |
+| **T1.3** | `Ability` : coût en PA, portée, forme de zone, statistique d'échelle | ✅ |
+| **T1.4** | `TurnOrder` : timeline d'initiative entremêlée | ✅ |
+| **T1.5** | `CombatBoard` : déplacement au coût en PM, portée et zone par compétence | ✅ |
+| **T1.6** | `CombatEngine` : boucle d'activation, dépense de PA/PM, annulation | ✅ |
+| **T1.7** | `Damage` : base + statistique − défense, terrain compris | ✅ |
+| **T1.8** | IA ennemie qui gère un budget PA/PM | ✅ |
+| **T1.9** | HUD : jauges PA/PM, timeline, barre de compétences, portée et zone | ⏳ |
+| **T1.10** | Les 8 cartes réécrites en 12 × 9 | ⏳ |
+| **T1.11** | Équilibrage : les ennemis meurent avant d'avoir frappé | ⏳ |
+
+**État au 2026-08-31 :** T1.1 à T1.8 sont faites et testées, 338 tests
+passent. Le moteur PA/PM tourne de bout en bout — placement, timeline
+entremêlée, compétences à zone, télégraphe, annulation, IA. Ce qui manque
+est ce qui se voit : le HUD ne donne accès qu'à l'attaque de base (T1.9),
+les cartes sont encore à l'ancienne taille (T1.10), et les ennemis sont
+trop faibles pour que le combat ait un enjeu (T1.11).
 
 ### Phase 2 — RPG
 

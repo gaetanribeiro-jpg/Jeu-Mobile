@@ -52,14 +52,14 @@ func _init() -> void:
 			% [id, int(round(100.0 * wins / runs)), average, shortest, longest])
 
 	print("-".repeat(50))
-	print("Durée moyenne toutes cartes : %.1f tours (cible du § 4.1 : 3 à 6)"
+	print("Durée moyenne toutes cartes : %.1f rondes (cible : 3 à 8)"
 		% (float(total_turns) / float(maxi(total_runs, 1))))
 	quit(0)
 
 
 func _squad() -> Array[Unit]:
-	var wanted: Array = [&"warrior", &"archer", &"lancer", &"monk"]
-	return Unit.squad_from_classes(wanted.slice(0, CombatRules.squad_size()))
+	var wanted: Array = [&"warrior", &"archer", &"mage", &"warrior"]
+	return Unit.squad_from_classes(wanted.slice(0, CombatRules.team_size()))
 
 
 func _run(map_id: StringName, seed_value: int) -> Dictionary:
@@ -73,32 +73,74 @@ func _run(map_id: StringName, seed_value: int) -> Dictionary:
 	# laisser au joueur. On pose sur les premières cases libres.
 	engine.auto_deploy()
 	engine.begin_combat()
-	var turns := 0
-	while not engine.is_finished() and turns < TURN_CAP:
-		_play_turn(engine)
-		engine.end_player_turn()
-		turns += 1
-	return {"victory": engine.is_victory(), "turns": turns}
+	var activations := 0
+	while not engine.is_finished() and activations < TURN_CAP:
+		var hero := engine.current_unit()
+		if hero != null and hero.is_hero():
+			_play_activation(engine, hero)
+		engine.end_activation()
+		activations += 1
+	return {"victory": engine.is_victory(), "turns": engine.round_index()}
 
 
-func _play_turn(engine: CombatEngine) -> void:
-	for hero: Unit in engine.board.active_units(Unit.Side.HEROES):
-		var goal := _goal_for(engine, hero)
-		if goal != Vector2i(-1, -1):
-			_walk_toward(engine, hero, goal, 0)
+## Le pilote automatique d'un personnage : il va vers son objectif s'il en
+## a un, sinon il s'approche de l'ennemi le plus proche et vide ses PA
+## dessus. Ce n'est pas une bonne stratégie, c'est une stratégie
+## REPRODUCTIBLE — ce qu'il faut pour comparer deux réglages.
+func _play_activation(engine: CombatEngine, hero: Unit) -> void:
+	var goal := _goal_for(engine, hero)
+	if goal != Vector2i(-1, -1):
+		_walk_toward(engine, hero, goal, 0)
+		return
+
+	var enemies := engine.board.active_units(Unit.Side.ENEMIES)
+	if enemies.is_empty():
+		return
+	var target := enemies[0]
+	for candidate: Unit in enemies:
+		if engine.board.grid.distance(hero.cell, candidate.cell) \
+				< engine.board.grid.distance(hero.cell, target.cell):
+			target = candidate
+
+	if not _can_hit(engine, hero, target):
+		_walk_toward(engine, hero, target.cell, _closest_range(hero))
+	# Vider ses PA sur la cible : la compétence la plus chère d'abord.
+	while target.is_active():
+		var ability := _best_ability(engine, hero, target)
+		if ability == null:
+			break
+		engine.use_ability(hero, ability.id, target.cell)
+
+
+## La compétence la plus chère que ce personnage peut porter maintenant.
+func _best_ability(engine: CombatEngine, hero: Unit, target: Unit) -> Ability:
+	var best: Ability = null
+	for ability_id: StringName in hero.abilities:
+		var ability := Ability.of(ability_id)
+		if ability == null or not ability.is_attack():
 			continue
-		var enemies := engine.board.active_units(Unit.Side.ENEMIES)
-		if enemies.is_empty():
-			return
-		var target := enemies[0]
-		for candidate: Unit in enemies:
-			if engine.board.grid.distance(hero.cell, candidate.cell) \
-					< engine.board.grid.distance(hero.cell, target.cell):
-				target = candidate
-		if not engine.board.can_attack(hero, target):
-			_walk_toward(engine, hero, target.cell, hero.range_min)
-		if engine.board.can_attack(hero, target):
-			engine.attack(hero, target)
+		if not engine.can_use(hero, ability_id):
+			continue
+		if not engine.targetable_cells(hero, ability_id).has(target.cell):
+			continue
+		if best == null or ability.action_points > best.action_points:
+			best = ability
+	return best
+
+
+func _can_hit(engine: CombatEngine, hero: Unit, target: Unit) -> bool:
+	return _best_ability(engine, hero, target) != null
+
+
+## La portée minimale la plus basse dont dispose ce personnage : c'est la
+## distance à laquelle il doit s'arrêter d'avancer.
+func _closest_range(hero: Unit) -> int:
+	var closest := 99
+	for ability_id: StringName in hero.abilities:
+		var ability := Ability.of(ability_id)
+		if ability != null and ability.is_attack():
+			closest = mini(closest, ability.range_min)
+	return closest if closest < 99 else 1
 
 
 func _goal_for(engine: CombatEngine, hero: Unit) -> Vector2i:
@@ -128,4 +170,4 @@ func _walk_toward(engine: CombatEngine, hero: Unit, goal: Vector2i, keep: int) -
 			best_distance = distance
 			best = cell
 	if best != hero.cell:
-		engine.move_hero(hero, best)
+		engine.move(hero, best)

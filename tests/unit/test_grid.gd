@@ -7,15 +7,25 @@ extends GutTest
 
 func test_les_dimensions_de_combat_viennent_des_donnees() -> void:
 	var grid := Grid.for_combat()
-	assert_eq(grid.width, 8, "grille de combat 8 × 6 (§ 4.1)")
-	assert_eq(grid.height, 6)
-	assert_eq(grid.cell_count(), 48)
+	# La taille vient de rules.json : une grille est une valeur chiffrée,
+	# et aucune valeur chiffrée ne vit dans le code — pas même dans un test.
+	var width := int(CombatRules.rule(&"grid", &"combat_width", 0))
+	var height := int(CombatRules.rule(&"grid", &"combat_height", 0))
+	assert_eq(grid.width, width)
+	assert_eq(grid.height, height)
+	assert_eq(grid.cell_count(), width * height)
+	assert_gt(
+		grid.cell_count(), 100,
+		"assez grande pour qu'un arc à portée 4-7 ne couvre pas tout (§ 17)"
+	)
 
 
 func test_les_dimensions_de_siege() -> void:
 	var grid := Grid.for_siege()
-	assert_eq(grid.width, 10, "grille de siège 10 × 8 (§ 8.1)")
-	assert_eq(grid.height, 8)
+	assert_eq(grid.width, int(CombatRules.rule(&"grid", &"siege_width", 0)))
+	assert_eq(grid.height, int(CombatRules.rule(&"grid", &"siege_height", 0)))
+	assert_gt(grid.width, int(CombatRules.rule(&"grid", &"combat_width", 0)),
+		"un siège se joue plus large qu'une escarmouche")
 
 
 func test_les_bords_sont_etanches() -> void:

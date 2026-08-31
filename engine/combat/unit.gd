@@ -2,18 +2,20 @@ class_name Unit
 extends RefCounted
 
 ## Une unité engagée dans un combat : ses statistiques du moment, sa case,
-## son état de tour.
+## ses PA et ses PM.
 ##
 ## Une Unit est jetable — elle vit le temps d'un combat. Ce qui persiste
-## d'un combat à l'autre est le Hero (tâche H2.1), qui porte le nom, le
-## niveau, les blessures et l'équipement, et qui fabrique une Unit au
-## moment d'entrer sur la grille. Les bonus de niveau, de trait, d'objet
-## et de rang de l'Ordre sont donc déjà appliqués aux valeurs qu'on reçoit
-## ici : Unit ne les recalcule jamais.
+## d'un combat à l'autre est le Hero (Phase 2), qui porte le nom, le
+## niveau et l'équipement, et qui fabrique une Unit au moment d'entrer sur
+## la grille. Les bonus de niveau, d'objet et d'arbre de compétences sont
+## donc déjà appliqués aux valeurs qu'on reçoit ici : Unit ne les
+## recalcule jamais.
 ##
-## RÈGLE : tomber à 0 PV n'est pas mourir. L'unité est hors de combat pour
-## le reste de l'expédition, et c'est le niveau au-dessus qui décidera d'en
-## faire une blessure (§ 3.4).
+## LE MODÈLE DE TOUR (vision § 13) : un personnage a des Points d'Action
+## et des Points de Mouvement. Il les retrouve intacts au début de son
+## activation, et c'est lui qui décide comment les dépenser — deux
+## attaques, ou une compétence puissante et un repositionnement. C'est de
+## là que vient le choix à chaque tour (§ 50).
 
 const HERO_CLASSES_PATH := "res://data/units/hero_classes.json"
 const ENEMIES_PATH := "res://data/enemies/act1.json"
@@ -23,6 +25,14 @@ const ENEMIES_PATH := "res://data/enemies/act1.json"
 ## énumération déclarée dans la même classe nommée.
 enum Side { HEROES, ENEMIES }
 enum State { ACTIVE, DOWNED }
+
+## Les statistiques du § 12. Une compétence nomme celle qui met ses dégâts
+## à l'échelle ; `stat()` fait la traduction.
+const STAT_STRENGTH := &"strength"
+const STAT_AGILITY := &"agility"
+const STAT_INTELLIGENCE := &"intelligence"
+const STAT_DEFENCE := &"defence"
+const STAT_CRITICAL := &"critical"
 
 static var _hero_classes: Dictionary = {}
 static var _enemies: Dictionary = {}
@@ -34,33 +44,56 @@ var cell: Vector2i = Vector2i.ZERO
 
 var max_hit_points: int = 0
 var hit_points: int = 0
-var movement: int = 0
-var range_min: int = 0
-var range_max: int = 0
-var damage: int = 0
 
-## Circule dans l'eau, et n'y meurt pas. Vrai pour les trois créatures
+## Points d'Action et Points de Mouvement (§ 13). Les maxima viennent de
+## la classe ; les courants sont ce qu'il reste dans l'activation en cours.
+var max_action_points: int = 0
+var action_points: int = 0
+var max_movement_points: int = 0
+var movement_points: int = 0
+
+## Place dans la timeline (§ 16) : la plus haute joue en premier.
+var initiative: int = 0
+
+var strength: int = 0
+var agility: int = 0
+var intelligence: int = 0
+var defence: int = 0
+var critical: int = 0
+
+## Identifiants des compétences dont l'unité dispose, dans l'ordre de la
+## barre d'action. La première est son attaque de base.
+var abilities: Array[StringName] = []
+
+## Recharges en cours : identifiant de compétence → activations restantes.
+## Une entrée absente signifie que la compétence est prête.
+var cooldowns: Dictionary = {}
+
+## Effets de statut en cours : identifiant → activations restantes.
+var statuses: Dictionary = {}
+
+## Circule dans l'eau, et n'y meurt pas. Vrai pour les créatures
 ## aquatiques du bestiaire, faux pour tous les héros.
 var aquatic: bool = false
 
 ## Ignore le terrain : la chauve-souris et le bourdon passent au-dessus
-## des rochers, de l'eau et de la forêt (§ 4.4).
+## des rochers, de l'eau et de la forêt.
 var flying: bool = false
 
 ## Comportement d'IA. Vide pour un héros, que le joueur pilote.
 var role: StringName = &""
 
-## Numéro d'emplacement dans l'escouade, à partir de 1. Les doublons de
+## Numéro d'emplacement dans l'équipe, à partir de 1. Les doublons de
 ## classe étant autorisés, c'est la seule chose qui distingue deux
-## Guerriers tant que les héros n'ont pas de nom (H2.2).
+## Guerriers tant que les héros n'ont pas de nom.
 var slot: int = 0
 
 var state: int = State.ACTIVE
 
-## Remis à faux au début de chaque tour. Le Tir tendu de l'Archer donne
-## +2 dégâts s'il n'a pas bougé : c'est ce drapeau qui le sait.
+## Vrai dès que l'unité a dépensé un PM dans l'activation en cours. Le Tir
+## puissant de l'Archer ne part que si ce drapeau est faux : c'est ce qui
+## rend l'immobilité tentante, et donc le Voleur dangereux.
 var has_moved: bool = false
-var has_acted: bool = false
 
 
 static func reload() -> void:
@@ -69,9 +102,8 @@ static func reload() -> void:
 
 
 static func hero_classes() -> Dictionary:
-	if not _hero_classes.is_empty():
-		return _hero_classes
-	_hero_classes = _read_json(HERO_CLASSES_PATH)
+	if _hero_classes.is_empty():
+		_hero_classes = _read_json(HERO_CLASSES_PATH)
 	return _hero_classes
 
 
@@ -117,17 +149,13 @@ static func from_hero_class(
 	var stats := hero_class(class_to_use)
 	if stats.is_empty():
 		return null
-	var unit := Unit.from_stats(unit_id, class_to_use, Side.HEROES, at, stats)
-	return unit
+	return Unit.from_stats(unit_id, class_to_use, Side.HEROES, at, stats)
 
 
-## Escouade de combat, à partir d'une liste de classes.
+## Équipe de combat, à partir d'une liste de classes.
 ##
-## LES DOUBLONS SONT AUTORISÉS : deux Guerriers et un Moine est une
-## composition légale, trois Lanciers aussi. Avec 3 emplacements et 4
-## classes, cela fait 20 compositions au lieu d'une seule — c'est tout
-## l'intérêt de descendre à 3, et c'est pour ça que rien ici ne vérifie
-## l'unicité des classes.
+## LES DOUBLONS SONT AUTORISÉS : deux Guerriers et un Mage est une
+## composition légale. Rien ici ne vérifie l'unicité des classes.
 ##
 ## Les identifiants vont de 1 à n, dans l'ordre donné. Cet ordre est le
 ## numéro d'emplacement affiché en jeu : sans lui, deux Guerriers de la
@@ -136,7 +164,7 @@ static func squad_from_classes(class_ids: Array) -> Array[Unit]:
 	var out: Array[Unit] = []
 	var limit := CombatRules.max_heroes()
 	if class_ids.size() > limit:
-		push_error("Unit : escouade de %d héros, %d au plus" % [class_ids.size(), limit])
+		push_error("Unit : équipe de %d héros, %d au plus" % [class_ids.size(), limit])
 	for i in mini(class_ids.size(), limit):
 		var unit := Unit.from_hero_class(i + 1, StringName(class_ids[i]), Vector2i.ZERO)
 		if unit == null:
@@ -159,20 +187,27 @@ static func from_stats(
 	unit.cell = at
 	unit.max_hit_points = int(stats.get("hit_points", 0))
 	unit.hit_points = unit.max_hit_points
-	unit.movement = int(stats.get("movement", 0))
-	unit.range_min = int(stats.get("range_min", 1))
-	unit.range_max = int(stats.get("range_max", 1))
-	unit.damage = int(stats.get("damage", 0))
+	unit.max_action_points = int(stats.get("action_points", 0))
+	unit.action_points = unit.max_action_points
+	unit.max_movement_points = int(stats.get("movement_points", 0))
+	unit.movement_points = unit.max_movement_points
+	unit.initiative = int(stats.get("initiative", 0))
+	unit.strength = int(stats.get("strength", 0))
+	unit.agility = int(stats.get("agility", 0))
+	unit.intelligence = int(stats.get("intelligence", 0))
+	unit.defence = int(stats.get("defence", 0))
+	unit.critical = int(stats.get("critical", 0))
 	unit.aquatic = bool(stats.get("aquatic", false))
 	unit.flying = bool(stats.get("flying", false))
 	unit.role = StringName(stats.get("role", ""))
+	for ability_id: Variant in stats.get("abilities", []):
+		unit.abilities.append(StringName(ability_id))
 	return unit
 
 
 static func enemies() -> Dictionary:
-	if not _enemies.is_empty():
-		return _enemies
-	_enemies = _read_json(ENEMIES_PATH)
+	if _enemies.is_empty():
+		_enemies = _read_json(ENEMIES_PATH)
 	return _enemies
 
 
@@ -217,15 +252,108 @@ func is_enemy() -> bool:
 	return side == Side.ENEMIES
 
 
-## Frappe à distance : l'unité peut atteindre plus loin que sa case voisine.
-func is_ranged() -> bool:
-	return range_max > 1
+## Valeur d'une statistique nommée (§ 12). C'est par là que passe la
+## formule de dégâts : une compétence dit « je monte à la Force », elle
+## n'a pas besoin de savoir ce qu'est un Guerrier.
+func stat(stat_name: StringName) -> int:
+	match stat_name:
+		STAT_STRENGTH: return strength
+		STAT_AGILITY: return agility
+		STAT_INTELLIGENCE: return intelligence
+		STAT_DEFENCE: return defence
+		STAT_CRITICAL: return critical
+	return 0
 
 
-## Une unité qui doit s'écarter pour frapper : l'Archer ne peut pas tirer
-## sur son voisin immédiat.
-func has_minimum_range() -> bool:
-	return range_min > 1
+## Identifiant de l'attaque de base : la première de la liste.
+func basic_ability() -> StringName:
+	return abilities[0] if not abilities.is_empty() else &""
+
+
+func has_ability(ability_id: StringName) -> bool:
+	return abilities.has(ability_id)
+
+
+## Une compétence est prête si elle n'est pas en recharge.
+func is_ready(ability_id: StringName) -> bool:
+	return int(cooldowns.get(ability_id, 0)) <= 0
+
+
+func cooldown_left(ability_id: StringName) -> int:
+	return maxi(int(cooldowns.get(ability_id, 0)), 0)
+
+
+## Met une compétence en recharge pour `turns` activations.
+func start_cooldown(ability_id: StringName, turns: int) -> void:
+	if turns > 0:
+		cooldowns[ability_id] = turns
+
+
+func has_status(status_id: StringName) -> bool:
+	return int(statuses.get(status_id, 0)) > 0
+
+
+## Pose un statut, ou prolonge celui qui est déjà là.
+func apply_status(status_id: StringName, duration: int) -> void:
+	if duration <= 0:
+		return
+	statuses[status_id] = maxi(int(statuses.get(status_id, 0)), duration)
+
+
+func clear_status(status_id: StringName) -> void:
+	statuses.erase(status_id)
+
+
+## Reste-t-il de quoi lancer cette compétence ?
+func can_spend_action_points(cost: int) -> bool:
+	return action_points >= cost
+
+
+func spend_action_points(cost: int) -> bool:
+	if cost < 0 or action_points < cost:
+		return false
+	action_points -= cost
+	return true
+
+
+func spend_movement_points(cost: int) -> bool:
+	if cost < 0 or movement_points < cost:
+		return false
+	movement_points -= cost
+	has_moved = has_moved or cost > 0
+	return true
+
+
+## Début d'activation (§ 13) : les PA et les PM reviennent au maximum, les
+## recharges descendent d'un cran, les statuts vieillissent.
+##
+## `movement_penalty` est ce que les statuts retirent de PM — le Gel du
+## Mage en enlève 2. C'est le moteur qui le calcule, parce que c'est lui
+## qui lit `rules.json` : Unit ne connaît aucun chiffre.
+func begin_activation(movement_penalty: int = 0) -> void:
+	action_points = max_action_points
+	movement_points = maxi(max_movement_points - maxi(movement_penalty, 0), 0)
+	has_moved = false
+	_tick_down(cooldowns)
+	_tick_down(statuses)
+
+
+## Fait descendre d'un cran tous les compteurs d'un dictionnaire, et
+## retire ceux qui arrivent à zéro.
+func _tick_down(counters: Dictionary) -> void:
+	for key: Variant in counters.keys():
+		var left := int(counters[key]) - 1
+		if left <= 0:
+			counters.erase(key)
+		else:
+			counters[key] = left
+
+
+## L'unité a-t-elle encore quelque chose à faire ? Le moteur s'en sert
+## pour proposer de passer, jamais pour terminer l'activation d'office :
+## rien n'est irréversible tant que le joueur n'a pas validé.
+func is_spent() -> bool:
+	return action_points <= 0 and movement_points <= 0
 
 
 ## Applique des dégâts. Renvoie true si l'unité tombe hors de combat.
@@ -251,8 +379,7 @@ func down() -> bool:
 	return true
 
 
-## Soigne sans dépasser le maximum. Ne relève pas une unité tombée :
-## seule la Relève du Moine le fait, et elle passe par `revive`.
+## Soigne sans dépasser le maximum. Ne relève pas une unité tombée.
 func heal(amount: int) -> int:
 	if is_downed() or amount <= 0:
 		return 0
@@ -262,7 +389,6 @@ func heal(amount: int) -> int:
 
 
 ## Remet debout une unité tombée, avec le nombre de PV donné.
-## Réservé à la Relève du Moine (rang 3 de l'Ordre).
 func revive(with_hit_points: int) -> bool:
 	if not is_downed():
 		return false
@@ -271,18 +397,10 @@ func revive(with_hit_points: int) -> bool:
 	return true
 
 
-## Début de tour : l'unité peut à nouveau bouger et agir.
-func begin_turn() -> void:
-	has_moved = false
-	has_acted = false
-
-
-## L'unité a-t-elle encore quelque chose à faire ce tour ?
-func is_spent() -> bool:
-	return has_moved and has_acted
-
-
 func to_dictionary() -> Dictionary:
+	var ability_names: Array[String] = []
+	for ability_id: StringName in abilities:
+		ability_names.append(String(ability_id))
 	return {
 		"id": id,
 		"class": String(class_id),
@@ -291,17 +409,25 @@ func to_dictionary() -> Dictionary:
 		"y": cell.y,
 		"max_hit_points": max_hit_points,
 		"hit_points": hit_points,
-		"movement": movement,
-		"range_min": range_min,
-		"range_max": range_max,
-		"damage": damage,
+		"max_action_points": max_action_points,
+		"action_points": action_points,
+		"max_movement_points": max_movement_points,
+		"movement_points": movement_points,
+		"initiative": initiative,
+		"strength": strength,
+		"agility": agility,
+		"intelligence": intelligence,
+		"defence": defence,
+		"critical": critical,
+		"abilities": ability_names,
+		"cooldowns": cooldowns.duplicate(),
+		"statuses": statuses.duplicate(),
 		"aquatic": aquatic,
 		"flying": flying,
 		"role": String(role),
 		"slot": slot,
 		"state": int(state),
 		"has_moved": has_moved,
-		"has_acted": has_acted,
 	}
 
 
@@ -313,15 +439,24 @@ static func from_dictionary(data: Dictionary) -> Unit:
 	unit.cell = Vector2i(int(data.get("x", 0)), int(data.get("y", 0)))
 	unit.max_hit_points = int(data.get("max_hit_points", 0))
 	unit.hit_points = int(data.get("hit_points", 0))
-	unit.movement = int(data.get("movement", 0))
-	unit.range_min = int(data.get("range_min", 1))
-	unit.range_max = int(data.get("range_max", 1))
-	unit.damage = int(data.get("damage", 0))
+	unit.max_action_points = int(data.get("max_action_points", 0))
+	unit.action_points = int(data.get("action_points", 0))
+	unit.max_movement_points = int(data.get("max_movement_points", 0))
+	unit.movement_points = int(data.get("movement_points", 0))
+	unit.initiative = int(data.get("initiative", 0))
+	unit.strength = int(data.get("strength", 0))
+	unit.agility = int(data.get("agility", 0))
+	unit.intelligence = int(data.get("intelligence", 0))
+	unit.defence = int(data.get("defence", 0))
+	unit.critical = int(data.get("critical", 0))
+	for ability_id: Variant in data.get("abilities", []):
+		unit.abilities.append(StringName(ability_id))
+	unit.cooldowns = (data.get("cooldowns", {}) as Dictionary).duplicate()
+	unit.statuses = (data.get("statuses", {}) as Dictionary).duplicate()
 	unit.aquatic = bool(data.get("aquatic", false))
 	unit.flying = bool(data.get("flying", false))
 	unit.role = StringName(data.get("role", ""))
 	unit.slot = int(data.get("slot", 0))
 	unit.state = int(data.get("state", State.ACTIVE))
 	unit.has_moved = bool(data.get("has_moved", false))
-	unit.has_acted = bool(data.get("has_acted", false))
 	return unit

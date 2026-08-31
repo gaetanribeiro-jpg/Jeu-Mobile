@@ -233,14 +233,26 @@ dur : passer par `data/assets.json`.
 
 - **Phase courante : 1 — cœur tactique PA/PM.** Le pivot vers la vision
   Tiny Kingdoms a été acté le 2026-08-31.
-- **Dernière tâche terminée :** état des lieux et plan de migration.
-- L'ancien moteur de combat (déplacement + action, tour par camp) est
-  **jouable et testé** — c'est de là qu'on part, pas de zéro.
+- **Dernière tâche terminée :** T1.1 à T1.8 — le cœur PA/PM et la timeline
+  d'initiative. **338 tests passent** sous Godot 4.6 en headless.
+- **Reste en Phase 1 :** T1.9 (HUD : jauges PA/PM, timeline, barre de
+  compétences), T1.10 (les 8 cartes à réécrire en 12 × 9), T1.11
+  (équilibrage).
 
 **Le combat se joue, sur PC.** Écran de titre → composition de l'équipe →
 choix d'une des 8 cartes → placement → combat.
 `pointing/emulate_touch_from_mouse` est actif, donc la souris se comporte
 comme un doigt.
+
+**Mais le HUD est en retard sur le moteur (T1.9).** Le joueur ne dispose
+pour l'instant que de l'attaque de base du personnage que la timeline
+désigne. Les huit autres compétences existent, sont testées, et ne sont
+pas atteignables au doigt. Ce n'est pas une régression : c'est la tâche
+suivante.
+
+**Les huit cartes sont encore en 8 × 6** alors que la référence est
+12 × 9. Elles se chargent et se jouent ; `verify_maps` les liste à part
+sous « à réécrire (T1.10) ».
 
 **PAS DE TÉLÉPHONE ANDROID pour l'instant.** Les étapes F, G et H de
 `docs/installation.md` (SDK, préréglage d'export, déploiement) attendent.
@@ -271,6 +283,15 @@ godot --headless --path . -s tools/verify_font.gd       # 140 glyphes
 godot --headless --path . -s tools/verify_maps.gd       # 8 cartes
 godot --headless --path . -s tools/simulate_combats.gd  # équilibrage
 ```
+
+**Ce qui saute aux yeux et qu'il faut régler (T1.11) :**
+
+`tools/compare_squads.gd` : **les 15 compositions gagnent à 100 %**, en
+2,8 à 3,2 rondes. Les ennemis meurent avant d'avoir frappé — un héros a
+8 ou 9 PA, donc deux à trois attaques par activation à ~30 dégâts, contre
+30 à 45 PV d'ennemi. Les valeurs des ennemis sont de mon invention, celles
+des héros suivent l'échelle du § 47. C'est T1.11, et les deux outils
+(`simulate_combats`, `compare_squads`) diront quand ce sera réglé.
 
 **Questions ouvertes, à trancher par Gaetan :**
 

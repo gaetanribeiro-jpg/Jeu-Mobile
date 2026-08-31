@@ -1,5 +1,5 @@
 {
-  "_readme": "Types de tuiles de combat (§ 4.3). walkable vaut pour les héros ; les unités aquatiques ont leur propre règle de franchissement. damage_taken s'ajoute aux dégâts subis par l'occupant : -1 pour la forêt qui protège, +1 pour la ruine qui expose. symbol : le caractère qui représente ce terrain dans une carte écrite à la main.",
+  "_readme": "Types de tuiles de combat (vision § 19). walkable vaut pour les héros ; les unités aquatiques ont leur propre règle de franchissement. move_cost est le nombre de PM que coûte l'entrée sur la case : c'est ce que le système PM apporte et que l'ancien modèle ne pouvait pas exprimer — la boue coûte 2. damage_taken s'ajoute aux dégâts subis par l'occupant : -1 pour la forêt qui protège, +1 pour la ruine qui expose. symbol : le caractère qui représente ce terrain dans une carte écrite à la main.",
   "grass": {
     "symbol": ".",
     "walkable": true,
@@ -77,6 +77,17 @@
     "blocks_sight": false,
     "move_cost": 1,
     "damage_taken": 1,
+    "ranged_range_bonus": 0,
+    "ranged_damage_bonus": 0
+  },
+  "mud": {
+    "symbol": "b",
+    "walkable": true,
+    "swimmable": false,
+    "lethal": false,
+    "blocks_sight": false,
+    "move_cost": 2,
+    "damage_taken": 0,
     "ranged_range_bonus": 0,
     "ranged_damage_bonus": 0
   }

@@ -1,11 +1,15 @@
 extends GutTest
 
-## La scène de combat, pilotée comme le ferait un doigt (C1.17, C1.18).
+## La scène de combat, pilotée comme le ferait un doigt.
 ##
 ## Ces tests instancient la vraie scène et lui envoient des taps. Ils ne
 ## vérifient pas le rendu — je le contrôle en capture d'écran — mais la
-## grammaire d'interaction du § 11.2, qui est du code comme le reste et
-## qui casse aussi silencieusement.
+## grammaire d'interaction, qui est du code comme le reste et qui casse
+## aussi silencieusement.
+##
+## LA GRAMMAIRE A CHANGÉ AVEC LA TIMELINE : il n'y a plus de sélection à
+## faire, le moteur désigne qui joue (§ 16). Un tap vise, un second sur la
+## même case valide.
 
 
 var _scene: Node2D
@@ -64,36 +68,36 @@ func _first_hero() -> Unit:
 func test_la_scene_se_construit_sur_une_carte() -> void:
 	await _deploy_and_start()
 	assert_not_null(_engine(), "le moteur est monté")
-	assert_eq(_engine().turn_index, 1)
+	assert_eq(_engine().round_index(), 1)
 	assert_eq(
 		_engine().board.active_units(Unit.Side.HEROES).size(),
-		CombatRules.squad_size(),
-		"trois emplacements pour quatre classes : il faut choisir"
+		CombatRules.team_size(),
+		"toute l'équipe est sur le plateau"
 	)
 	assert_gt(_engine().board.active_units(Unit.Side.ENEMIES).size(), 0)
 
 
-func test_un_tap_sur_un_heros_le_selectionne() -> void:
+func test_la_timeline_designe_le_personnage_sans_qu_on_le_selectionne() -> void:
 	await _deploy_and_start()
-	var hero := _first_hero()
-	_scene.handle_tap(hero.cell)
-	assert_eq(_scene._selection, _scene.Selection.UNIT)
-	assert_eq(_scene._selected, hero)
+	var active := _engine().current_unit()
+	assert_not_null(active)
+	assert_true(active.is_hero())
+	_scene.handle_tap(_a_reachable_cell(active))
+	assert_eq(_scene._selected, active, "c'est lui qu'on pilote, pas un autre")
 
 
-func test_un_tap_dans_le_vide_ne_selectionne_rien() -> void:
+func test_un_tap_dans_le_vide_ne_vise_rien() -> void:
 	await _deploy_and_start()
-	_scene.handle_tap(Vector2i(4, 5))
+	_scene.handle_tap(_far_cell())
 	assert_eq(_scene._selection, _scene.Selection.NONE)
 
 
-func test_le_deuxieme_tap_previsualise_sans_rien_appliquer() -> void:
+func test_le_premier_tap_previsualise_sans_rien_appliquer() -> void:
 	# Toute la raison d'être du double tap : le premier montre, le second
-	# engage. 90 % des erreurs de gros doigts s'arrêtent là (§ 11.2).
+	# engage. 90 % des erreurs de gros doigts s'arrêtent là.
 	await _deploy_and_start()
-	var hero := _first_hero()
+	var hero := _engine().current_unit()
 	var start := hero.cell
-	_scene.handle_tap(start)
 	var destination := _a_reachable_cell(hero)
 	_scene.handle_tap(destination)
 	assert_eq(_scene._selection, _scene.Selection.PREVIEW)
@@ -101,23 +105,22 @@ func test_le_deuxieme_tap_previsualise_sans_rien_appliquer() -> void:
 	assert_eq(hero.cell, start, "rien n'a bougé")
 
 
-func test_le_troisieme_tap_sur_la_meme_case_valide() -> void:
+func test_le_second_tap_sur_la_meme_case_valide() -> void:
 	await _deploy_and_start()
-	var hero := _first_hero()
-	_scene.handle_tap(hero.cell)
+	var hero := _engine().current_unit()
 	var destination := _a_reachable_cell(hero)
 	_scene.handle_tap(destination)
 	_scene.handle_tap(destination)
 	await _settle()
 	assert_eq(hero.cell, destination, "le déplacement est appliqué")
 	assert_true(hero.has_moved)
-	assert_eq(_scene._selection, _scene.Selection.NONE, "la sélection se referme")
+	assert_eq(_scene._selection, _scene.Selection.NONE, "la visée se referme")
 
 
 func test_un_tap_sur_une_autre_case_deplace_la_previsualisation() -> void:
 	await _deploy_and_start()
-	var hero := _first_hero()
-	_scene.handle_tap(hero.cell)
+	var hero := _engine().current_unit()
+	var start := hero.cell
 	var cells := _reachable_cells(hero)
 	if cells.size() < 2:
 		pending("pas assez de cases atteignables sur cette carte")
@@ -125,33 +128,45 @@ func test_un_tap_sur_une_autre_case_deplace_la_previsualisation() -> void:
 	_scene.handle_tap(cells[0])
 	_scene.handle_tap(cells[1])
 	assert_eq(_scene._preview_cell, cells[1], "on vise ailleurs, on ne valide pas")
-	assert_eq(hero.cell, _first_hero().cell)
+	assert_eq(hero.cell, start)
 
 
-func test_un_tap_sur_un_autre_heros_change_de_selection() -> void:
+func test_les_pm_se_depensent_au_fil_des_pas() -> void:
+	# Ce que le modèle PM apporte à l'interaction : on peut bouger deux
+	# fois dans la même activation, et la seconde coûte moins cher.
 	await _deploy_and_start()
-	var heroes := _engine().board.active_units(Unit.Side.HEROES)
-	_scene.handle_tap(heroes[0].cell)
-	_scene.handle_tap(heroes[1].cell)
-	assert_eq(_scene._selected, heroes[1])
-	assert_eq(_scene._selection, _scene.Selection.UNIT)
+	var hero := _engine().current_unit()
+	var full := hero.movement_points
+	var destination := _a_reachable_cell(hero)
+	_scene.handle_tap(destination)
+	_scene.handle_tap(destination)
+	await _settle()
+	assert_lt(hero.movement_points, full, "des PM ont été dépensés")
 
 
-func test_on_ne_selectionne_pas_un_ennemi() -> void:
+func test_on_ne_pilote_pas_un_autre_heros_que_celui_qui_joue() -> void:
 	await _deploy_and_start()
-	var enemy: Unit = _engine().board.active_units(Unit.Side.ENEMIES)[0]
-	_scene.handle_tap(enemy.cell)
-	assert_eq(_scene._selection, _scene.Selection.NONE)
+	var active := _engine().current_unit()
+	var other: Unit = null
+	for unit: Unit in _engine().board.active_units(Unit.Side.HEROES):
+		if unit.id != active.id:
+			other = unit
+			break
+	assert_not_null(other)
+	var before := other.cell
+	_scene.handle_tap(other.cell)
+	_scene.handle_tap(other.cell)
+	await _settle()
+	assert_eq(other.cell, before, "ce n'est pas son tour")
 
 
 func test_le_hud_reflete_le_moteur() -> void:
 	await _deploy_and_start()
 	var hud: CanvasLayer = _scene._hud
 	assert_not_null(hud)
-	assert_true(hud._undo.disabled, "rien à annuler en début de tour")
-	var hero := _first_hero()
+	assert_true(hud._undo.disabled, "rien à annuler en début d'activation")
+	var hero := _engine().current_unit()
 	var destination := _a_reachable_cell(hero)
-	_scene.handle_tap(hero.cell)
 	_scene.handle_tap(destination)
 	_scene.handle_tap(destination)
 	await _settle()
@@ -161,10 +176,9 @@ func test_le_hud_reflete_le_moteur() -> void:
 
 func test_le_bouton_annuler_defait_le_deplacement() -> void:
 	await _deploy_and_start()
-	var hero := _first_hero()
+	var hero := _engine().current_unit()
 	var start := hero.cell
 	var destination := _a_reachable_cell(hero)
-	_scene.handle_tap(start)
 	_scene.handle_tap(destination)
 	_scene.handle_tap(destination)
 	await _settle()
@@ -172,25 +186,34 @@ func test_le_bouton_annuler_defait_le_deplacement() -> void:
 	_scene._on_undo()
 	assert_eq(hero.cell, start, "le héros est revenu")
 	assert_false(hero.has_moved)
+	assert_eq(hero.movement_points, hero.max_movement_points, "les PM sont rendus")
 
 
-func test_la_couche_de_surbrillance_suit_la_selection() -> void:
+func test_la_couche_de_surbrillance_suit_le_personnage_actif() -> void:
 	await _deploy_and_start()
-	var hero := _first_hero()
+	var hero := _engine().current_unit()
 	var overlay: Node2D = _scene._overlay
-	assert_eq(overlay.move_cells.size(), 0, "rien de sélectionné, rien d'allumé")
-	_scene.handle_tap(hero.cell)
-	assert_gt(overlay.move_cells.size(), 0, "les cases de déplacement s'allument")
+	assert_gt(
+		overlay.move_cells.size(), 0,
+		"les cases du personnage qui joue sont allumées sans rien toucher"
+	)
 	assert_eq(overlay.selected_cell, hero.cell)
-	_scene.handle_tap(Vector2i(7, 5))
-	assert_eq(overlay.move_cells.size(), 0, "et s'éteignent quand on désélectionne")
+
+	var before: int = overlay.move_cells.size()
+	var destination := _a_reachable_cell(hero)
+	_scene.handle_tap(destination)
+	_scene.handle_tap(destination)
+	await _settle()
+	assert_lt(
+		overlay.move_cells.size(), before,
+		"la zone rétrécit à mesure que les PM se dépensent"
+	)
 
 
 func test_le_fantome_ne_parait_que_sur_un_deplacement() -> void:
 	await _deploy_and_start()
-	var hero := _first_hero()
-	_scene.handle_tap(hero.cell)
-	assert_false(_scene._ghost.visible, "pas de fantôme sur une simple sélection")
+	var hero := _engine().current_unit()
+	assert_false(_scene._ghost.visible, "pas de fantôme tant qu'on ne vise rien")
 	var destination := _a_reachable_cell(hero)
 	_scene.handle_tap(destination)
 	assert_true(_scene._ghost.visible, "le fantôme montre QUI va bouger")
@@ -206,18 +229,24 @@ func test_le_telegraphe_de_la_couche_correspond_au_moteur() -> void:
 	# va prendre, et le pilier de l'information parfaite tombe.
 	await _deploy_and_start()
 	var engine := _engine()
-	for i in 3:
-		engine.end_player_turn()
-		_scene._refresh_all()
+	var overlay: Node2D = _scene._overlay
+	var seen := 0
+	# On laisse la timeline tourner : les ennemis mettent quelques
+	# activations à se mettre à portée, et tant qu'ils n'y sont pas la
+	# couche n'a rien à afficher.
+	for i in 20:
 		if engine.is_finished():
 			break
-	var overlay: Node2D = _scene._overlay
-	for cell: Vector2i in overlay.threat.keys():
-		assert_eq(
-			int(overlay.threat[cell]), engine.threat_on(cell),
-			"case %s : la couche annonce %d, le moteur %d"
-				% [cell, int(overlay.threat[cell]), engine.threat_on(cell)]
-		)
+		engine.end_activation()
+		_scene._refresh_all()
+		for cell: Vector2i in overlay.threat.keys():
+			assert_eq(
+				int(overlay.threat[cell]), engine.threat_on(cell),
+				"case %s : la couche annonce %d, le moteur %d"
+					% [cell, int(overlay.threat[cell]), engine.threat_on(cell)]
+			)
+			seen += 1
+	assert_gt(seen, 0, "aucune menace n'a jamais été affichée, le test ne prouve rien")
 
 
 ## Attend que la scène ait fini son animation.
@@ -245,6 +274,18 @@ func _a_reachable_cell(hero: Unit) -> Vector2i:
 	return cells[0] if not cells.is_empty() else hero.cell
 
 
+## Une case libre, loin de tout, où un tap ne vise rien.
+func _far_cell() -> Vector2i:
+	var grid := _engine().board.grid
+	for cell: Vector2i in grid.cells():
+		if _engine().board.unit_at(cell) != null:
+			continue
+		if _engine().board.move_cost_to(_engine().current_unit(), cell) >= 0:
+			continue
+		return cell
+	return Vector2i(-1, -1)
+
+
 func test_un_rocher_est_de_la_terre_pas_de_l_eau() -> void:
 	# Défaut vu en capture d'écran : les rochers apparaissaient au fond
 	# d'une mare. Le rendu du terrain demandait « peut-on marcher dessus »
@@ -265,7 +306,7 @@ func test_deux_heros_de_meme_classe_restent_distincts_a_l_ecran() -> void:
 	# Conséquence directe des doublons : sans numéro d'emplacement, deux
 	# Guerriers bleus sont le même sprite et le joueur ne sait pas lequel
 	# il vient de déplacer.
-	var squad := Unit.squad_from_classes([&"warrior", &"warrior", &"monk"])
+	var squad := Unit.squad_from_classes([&"warrior", &"warrior", &"mage"])
 	var slots := {}
 	for unit: Unit in squad:
 		assert_false(slots.has(unit.slot), "deux héros au même emplacement")
@@ -276,8 +317,10 @@ func test_deux_heros_de_meme_classe_restent_distincts_a_l_ecran() -> void:
 	var texts := {}
 	for unit: Unit in squad:
 		var name_ := tr("CLASS_%s" % String(unit.class_id).to_upper())
-		var line := "%d  %s  %d/%d" % [
-			unit.slot, name_, unit.hit_points, unit.max_hit_points
+		var line := "%d  %s  %d/%d   PA %d/%d  PM %d/%d" % [
+			unit.slot, name_, unit.hit_points, unit.max_hit_points,
+			unit.action_points, unit.max_action_points,
+			unit.movement_points, unit.max_movement_points,
 		]
 		assert_false(texts.has(line), "deux lignes de HUD identiques : %s" % line)
 		texts[line] = true

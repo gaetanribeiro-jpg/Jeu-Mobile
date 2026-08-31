@@ -1,11 +1,12 @@
 class_name EnemyAI
 extends RefCounted
 
-## Décide, pour un ennemi, où il va et ce qu'il annonce.
+## Décide, pour un ennemi, quelle compétence il annonce, sur qui, et où il
+## se place pour pouvoir la lancer.
 ##
 ## L'IA ne frappe jamais elle-même : elle produit un déplacement et une
-## intention, et c'est le tour suivant qui exécute l'intention. C'est ce
-## décalage qui fait le télégraphe du § 4.2, et il est structurel — l'IA
+## intention, et c'est l'activation suivante qui exécute l'intention.
+## C'est ce décalage qui fait le télégraphe, et il est structurel — l'IA
 ## n'a physiquement pas le moyen d'attaquer sans avoir prévenu.
 ##
 ## RÈGLE : toute décision est déterministe pour une graine donnée. Les
@@ -32,7 +33,7 @@ func _init(rng: CombatRng = null) -> void:
 	_rng = rng if rng != null else CombatRng.new(0)
 
 
-## Plan d'un ennemi pour ce tour : { move_to, intent, target_id }.
+## Plan d'un ennemi pour cette activation : { move_to, intent, target_id }.
 ## `move_to` vaut toujours une case légale — au pire celle de départ.
 func plan(board: CombatBoard, unit: Unit, taunting: Array[int] = []) -> Dictionary:
 	var empty := {
@@ -63,7 +64,7 @@ func plan(board: CombatBoard, unit: Unit, taunting: Array[int] = []) -> Dictiona
 ## C'est ce qu'il faut à l'ouverture du combat : les ennemis sont posés par
 ## la carte et annoncent de là. Utiliser `plan()["intent"]` à ce moment-là
 ## donnerait des décalages calculés depuis une case d'arrivée où l'ennemi
-## n'ira que le tour suivant — et le télégraphe désignerait des cases vides.
+## n'ira que plus tard — et le télégraphe désignerait des cases vides.
 func intent_here(board: CombatBoard, unit: Unit, taunting: Array[int] = []) -> CombatIntent:
 	if unit.is_downed():
 		return CombatIntent.none(unit.id)
@@ -73,12 +74,60 @@ func intent_here(board: CombatBoard, unit: Unit, taunting: Array[int] = []) -> C
 	return _intent_from_here(board, unit, target)
 
 
+## Compétences de l'unité, de la plus chère à la moins chère. L'ennemi
+## annonce le coup le plus fort qu'il puisse porter : c'est ce qui rend le
+## télégraphe utile — un chiffre bas ne vaudrait pas la peine d'être lu.
+func _abilities_of(unit: Unit) -> Array[Ability]:
+	var out: Array[Ability] = []
+	for ability_id: StringName in unit.abilities:
+		var ability := Ability.of(ability_id)
+		if ability != null and ability.is_attack():
+			out.append(ability)
+	out.sort_custom(func(a: Ability, b: Ability) -> bool:
+		if a.action_points != b.action_points:
+			return a.action_points > b.action_points
+		return a.id < b.id)
+	return out
+
+
+## La meilleure compétence utilisable sur cette cible depuis cette case,
+## ou null. `budget` est le nombre de PA supposé disponible : au moment de
+## choisir une case, l'ennemi raisonne sur son plein, pas sur ce qui lui
+## reste après le déplacement — les PM et les PA sont deux réserves
+## distinctes (§ 13).
+func _best_ability_from(
+	board: CombatBoard, unit: Unit, target: Unit, from: Vector2i, budget: int
+) -> Ability:
+	var distance := board.grid.distance(from, target.cell)
+	for ability: Ability in _abilities_of(unit):
+		if ability.action_points > budget:
+			continue
+		if not unit.is_ready(ability.id):
+			continue
+		if not ability.is_distance_in_range(distance):
+			continue
+		if ability.needs_line_of_sight and not board.has_line_of_sight(from, target.cell):
+			continue
+		return ability
+	return null
+
+
 func _intent_from_here(board: CombatBoard, unit: Unit, target: Unit) -> CombatIntent:
-	if not board.attackable_units(unit).has(target):
+	var ability := _best_ability_from(
+		board, unit, target, unit.cell, unit.max_action_points
+	)
+	if ability == null:
 		return CombatIntent.none(unit.id)
-	if unit.role == ROLE_BRUTE:
-		return _line_intent(board, unit, target)
-	return CombatIntent.attack_cell(unit.id, unit.cell, target.cell)
+	return CombatIntent.attack_cell(unit.id, ability.id, unit.cell, target.cell)
+
+
+## Dégâts que cet ennemi peut espérer porter à cette cible, au mieux.
+## Sert à repérer une cible qu'on peut mettre à terre d'un coup.
+func _best_damage_on(board: CombatBoard, unit: Unit, target: Unit) -> int:
+	var best := 0
+	for ability: Ability in _abilities_of(unit):
+		best = maxi(best, board.predicted_damage(unit, ability, target))
+	return best
 
 
 ## Cible retenue. Ordre de préférence, du plus fort au plus faible :
@@ -89,8 +138,8 @@ func _choose_target(board: CombatBoard, unit: Unit, taunting: Array[int]) -> Uni
 	if candidates.is_empty():
 		return null
 
-	# Provocation (§ 3.1) : un ennemi ADJACENT à un provocateur n'a pas le
-	# choix. C'est ce qui permet au Guerrier d'acheter un tour aux autres.
+	# Provocation : un ennemi ADJACENT à un provocateur n'a pas le choix.
+	# C'est ce qui permet au Guerrier d'acheter un tour aux autres.
 	if not taunting.is_empty():
 		var forced: Unit = null
 		for candidate: Unit in candidates:
@@ -113,19 +162,19 @@ func _choose_target(board: CombatBoard, unit: Unit, taunting: Array[int]) -> Uni
 		var score := 0.0
 		if not preferred.is_empty() and candidate.class_id == preferred:
 			score += 1000.0
-		# Une cible qu'on peut mettre à terre ce tour-ci vaut mieux qu'une
+		# Une cible qu'on peut mettre à terre maintenant vaut mieux qu'une
 		# cible qu'on entame.
-		if candidate.hit_points <= unit.damage:
+		if candidate.hit_points <= _best_damage_on(board, unit, candidate):
 			score += 100.0
 		score -= float(board.grid.distance(unit.cell, candidate.cell))
-		score -= float(candidate.hit_points) * 0.1
+		score -= float(candidate.hit_points) * 0.01
 		if score > best_score or (is_equal_approx(score, best_score) and _lower_id(candidate, best)):
 			best_score = score
 			best = candidate
 	return best
 
 
-## Case d'arrivée, selon le rôle.
+## Case d'arrivée, selon le rôle. Le budget est ce qu'il reste de PM.
 func _choose_cell(board: CombatBoard, unit: Unit, target: Unit) -> Vector2i:
 	if unit.role == ROLE_BLOCKER:
 		return unit.cell
@@ -145,21 +194,24 @@ func _choose_cell(board: CombatBoard, unit: Unit, target: Unit) -> Vector2i:
 
 func _score_cell(board: CombatBoard, unit: Unit, target: Unit, cell: Vector2i) -> float:
 	var distance := board.grid.distance(cell, target.cell)
-	var in_range := distance >= unit.range_min and distance <= unit.range_max
-	var sees := not unit.is_ranged() or board.has_line_of_sight(cell, target.cell)
+	var ability := _best_ability_from(board, unit, target, cell, unit.max_action_points)
 	var score := 0.0
 
 	# Pouvoir frapper prime sur tout le reste.
-	if in_range and sees:
+	if ability != null:
 		score += 1000.0
+		# À portée égale, le coup le plus fort.
+		score += float(board.predicted_damage(unit, ability, target)) * 0.1
 	else:
-		# Sinon, se rapprocher de la portée utile.
-		score -= float(absi(distance - unit.range_max)) * 10.0
+		# Sinon, se rapprocher de la portée utile de la meilleure
+		# compétence dont on dispose.
+		score -= float(absi(distance - _useful_range(unit))) * 10.0
 
 	var tile := board.tile_at(cell)
 	if tile != null:
-		score += float(tile.ranged_damage_bonus() if unit.is_ranged() else 0)
-		# La forêt protège de 1 dégât : à valeur égale, on s'y met.
+		if _is_ranged(unit):
+			score += float(tile.ranged_damage_bonus())
+		# La forêt protège : à valeur égale, on s'y met.
 		score -= float(tile.damage_taken_modifier())
 
 	if unit.role == ROLE_SKIRMISHER:
@@ -172,17 +224,18 @@ func _score_cell(board: CombatBoard, unit: Unit, target: Unit, cell: Vector2i) -
 	return score
 
 
-## Attaque en ligne de la brute : la case de la cible et les suivantes,
-## dans la même direction (§ 4.4, le Minotaure).
-func _line_intent(board: CombatBoard, unit: Unit, target: Unit) -> CombatIntent:
-	var length := int(Unit.enemy_stats(unit.class_id).get("line_attack", 1))
-	var step := board.grid.direction(unit.cell, target.cell)
-	if step == Vector2i.ZERO:
-		return CombatIntent.none(unit.id)
-	var offsets: Array[Vector2i] = []
-	for i in range(1, length + 1):
-		offsets.append(step * i)
-	return CombatIntent.attack(unit.id, offsets)
+## Portée maximale que cet ennemi sait exploiter, toutes compétences
+## confondues. C'est vers là qu'il se rapproche quand il ne peut pas
+## frapper.
+func _useful_range(unit: Unit) -> int:
+	var best := 1
+	for ability: Ability in _abilities_of(unit):
+		best = maxi(best, ability.range_max)
+	return best
+
+
+func _is_ranged(unit: Unit) -> bool:
+	return _useful_range(unit) > 1
 
 
 func _lower_id(candidate: Unit, current: Unit) -> bool:

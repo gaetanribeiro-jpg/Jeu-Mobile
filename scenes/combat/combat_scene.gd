@@ -1,20 +1,27 @@
 extends Node2D
 
-## La scène de combat (C1.15, C1.17, C1.18, C1.22).
+## La scène de combat.
 ##
 ## Elle ne décide rien du jeu : toute règle vit dans `CombatEngine`. Son
 ## travail est de montrer l'état, de traduire des doigts en actions, et de
-## rejouer le journal du tour ennemi.
+## rejouer le journal des activations ennemies.
 ##
-## GRAMMAIRE D'INTERACTION (§ 11.2), et la règle absolue qui la gouverne :
-## rien n'est irréversible avant la validation du tour.
-##   tap sur un héros        → le sélectionner, montrer ses cases
+## LE JOUEUR NE PILOTE QU'UN PERSONNAGE À LA FOIS : celui que la timeline
+## d'initiative désigne (§ 16). Il n'y a donc plus de sélection à faire,
+## le moteur l'a déjà faite.
+##
+## GRAMMAIRE D'INTERACTION, et la règle absolue qui la gouverne : rien
+## n'est irréversible avant la validation de l'activation.
 ##   tap sur une case valide → prévisualiser (fantôme)
 ##   tap sur la même case    → valider
 ##   glissement              → caméra
 ##   pincement               → zoom
 ## Le double tap n'est pas une coquetterie : il évite 90 % des erreurs de
 ## gros doigts, et il coûte un état de plus dans la machine.
+##
+## PROVISOIRE : le joueur ne dispose ici que de l'attaque de base de son
+## personnage. La barre de compétences, les jauges de PA et de PM et la
+## timeline sont la tâche T1.9.
 
 signal combat_finished(victory: bool)
 
@@ -65,14 +72,13 @@ func configure(combat_map_id: StringName, squad: Array[Unit], rng: CombatRng = n
 	engine.start()
 
 
-## Escouade de démonstration, quand la scène est lancée sans configuration.
-## Elle compte `squad_size` héros — trois pour quatre classes, donc un
-## choix à faire — et la composition par défaut porte volontairement un
-## doublon, pour que le cas des deux mêmes classes soit celui qu'on voit
-## tous les jours plutôt qu'un cas limite qu'on découvre tard.
+## Équipe de démonstration, quand la scène est lancée sans configuration.
+## La composition par défaut porte volontairement un doublon, pour que le
+## cas des deux mêmes classes soit celui qu'on voit tous les jours plutôt
+## qu'un cas limite qu'on découvre tard.
 func default_squad() -> Array[Unit]:
-	var wanted: Array = [&"warrior", &"archer", &"warrior", &"monk"]
-	return Unit.squad_from_classes(wanted.slice(0, CombatRules.squad_size()))
+	var wanted: Array = [&"warrior", &"archer", &"mage", &"warrior"]
+	return Unit.squad_from_classes(wanted.slice(0, CombatRules.team_size()))
 
 
 func _build_from_map() -> void:
@@ -199,16 +205,17 @@ func handle_tap(cell: Vector2i) -> void:
 		_refresh_all()
 		return
 
-	match _selection:
-		Selection.NONE:
-			_try_select(cell)
-		Selection.UNIT:
-			_try_preview(cell)
-		Selection.PREVIEW:
-			if cell == _preview_cell:
-				_confirm()
-			else:
-				_try_preview(cell)
+	# La timeline désigne qui joue : il n'y a rien à sélectionner.
+	_selected = engine.current_unit()
+	if _selected == null or not _selected.is_hero():
+		_clear_selection()
+		_refresh_all()
+		return
+
+	if _selection == Selection.PREVIEW and cell == _preview_cell:
+		_confirm()
+	else:
+		_try_preview(cell)
 	_refresh_all()
 
 
@@ -234,15 +241,6 @@ func _on_tap(world_position: Vector2) -> void:
 	handle_tap(engine.board.grid.to_cell(world_position, _tile_size))
 
 
-func _try_select(cell: Vector2i) -> void:
-	var unit := engine.board.unit_at(cell)
-	if unit == null or not unit.is_hero() or not unit.is_active():
-		_clear_selection()
-		return
-	_selected = unit
-	_selection = Selection.UNIT
-
-
 ## Deuxième tap : on montre ce qui va se passer, sans rien appliquer.
 func _try_preview(cell: Vector2i) -> void:
 	if _selected == null:
@@ -250,20 +248,15 @@ func _try_preview(cell: Vector2i) -> void:
 		return
 
 	var occupant := engine.board.unit_at(cell)
-	if occupant != null and occupant.is_hero() and occupant.is_active() and occupant != _selected:
-		_selected = occupant
-		_selection = Selection.UNIT
-		_preview_cell = Vector2i(-1, -1)
-		_preview_target = null
-		return
+	var basic := _basic_ability()
 
-	if occupant != null and not occupant.is_hero() and engine.board.can_attack(_selected, occupant):
+	if occupant != null and not occupant.is_hero() and _can_hit(occupant):
 		_preview_target = occupant
 		_preview_cell = cell
 		_selection = Selection.PREVIEW
 		return
 
-	if occupant == null and not _selected.has_moved and engine.board.can_move_to(_selected, cell):
+	if occupant == null and engine.move_cost(_selected, cell) >= 0:
 		_preview_target = null
 		_preview_cell = cell
 		_selection = Selection.PREVIEW
@@ -272,17 +265,32 @@ func _try_preview(cell: Vector2i) -> void:
 	_clear_selection()
 
 
+## L'attaque de base du personnage actif : la première de sa liste.
+func _basic_ability() -> StringName:
+	return _selected.basic_ability() if _selected != null else &""
+
+
+## Le personnage actif peut-il frapper cette cible avec son attaque de
+## base, PA et recharge comprises ?
+func _can_hit(target: Unit) -> bool:
+	var basic := _basic_ability()
+	if basic.is_empty() or not engine.can_use(_selected, basic):
+		return false
+	return engine.targetable_cells(_selected, basic).has(target.cell)
+
+
 ## Troisième tap sur la même case : on valide.
 func _confirm() -> void:
 	if _selected == null:
 		return
 	if _preview_target != null:
-		var report := engine.attack(_selected, _preview_target)
+		var target := _preview_target
+		var report := engine.use_ability(_selected, _basic_ability(), target.cell)
 		if not report.is_empty():
-			_play_attack(_selected, _preview_target, report)
+			_play_attack(_selected, target, report)
 	else:
 		var from := _selected.cell
-		if engine.move_hero(_selected, _preview_cell):
+		if engine.move(_selected, _preview_cell):
 			_animate_move(_selected, from, _selected.cell)
 	_clear_selection()
 
@@ -355,7 +363,7 @@ func _on_end_turn() -> void:
 	_resolve_enemy_turn()
 
 
-# --- Tour ennemi (C1.22) --------------------------------------------------
+# --- Activations ennemies --------------------------------------------------
 
 ## Rejoue le journal du moteur, un évènement à la fois.
 ##
@@ -365,7 +373,12 @@ func _on_end_turn() -> void:
 ## comprendre POURQUOI il a perdu quatre points de vie.
 func _resolve_enemy_turn() -> void:
 	_resolving = true
-	var log := engine.end_player_turn()
+	await _replay(engine.end_activation())
+
+
+## Rejoue un journal produit par le moteur.
+func _replay(log: Array[Dictionary]) -> void:
+	_resolving = true
 	var gap := ViewSettings.duration(&"enemy_step_gap")
 
 	for entry: Dictionary in log:
@@ -375,7 +388,7 @@ func _resolve_enemy_turn() -> void:
 		if not is_inside_tree():
 			return
 		match String(entry["event"]):
-			"attack_landed", "attack_missed", "attack_warded":
+			"attack_landed", "attack_missed":
 				var attacker: Unit = engine.board.unit_by_id(int(entry["attacker_id"]))
 				var view: Node2D = _views.get(attacker.id, null)
 				if view != null:
@@ -481,21 +494,25 @@ func _refresh_overlay() -> void:
 	if engine.is_deploying():
 		_refresh_deployment_overlay()
 		return
-	_overlay.selected_cell = _selected.cell if _selected != null else Vector2i(-1, -1)
 	_overlay.ghost_cell = _preview_cell
 
-	for cell: Vector2i in engine.board.grid.cells():
-		if engine.is_warded(cell):
-			_overlay.warded_cells.append(cell)
-
-	if _selected != null:
-		if not _selected.has_moved:
-			for cell: Vector2i in engine.board.reachable_cells(_selected).keys():
-				if cell != _selected.cell:
-					_overlay.move_cells.append(cell)
-		if not _selected.has_acted:
-			for target: Unit in engine.board.attackable_units(_selected):
-				_overlay.attack_cells.append(target.cell)
+	# Le personnage actif est celui de la timeline, pas celui qu'on a tapé.
+	_selected = engine.current_unit()
+	if _selected != null and _selected.is_hero():
+		_overlay.selected_cell = _selected.cell
+		# Les cases atteignables avec les PM QU'IL LUI RESTE : après un
+		# premier pas, la zone doit rétrécir sous les yeux du joueur.
+		for cell: Vector2i in engine.board.reachable_cells(_selected).keys():
+			if cell != _selected.cell:
+				_overlay.move_cells.append(cell)
+		var basic := _selected.basic_ability()
+		if not basic.is_empty() and engine.can_use(_selected, basic):
+			for cell: Vector2i in engine.targetable_cells(_selected, basic):
+				var occupant := engine.board.unit_at(cell)
+				if occupant != null and occupant.is_active() and not occupant.is_hero():
+					_overlay.attack_cells.append(cell)
+	else:
+		_overlay.selected_cell = Vector2i(-1, -1)
 
 	var threat := {}
 	for entry: Dictionary in engine.telegraph():
@@ -507,9 +524,12 @@ func _refresh_overlay() -> void:
 	# doit lire le chiffre AVANT de valider, comme il lit ceux du télégraphe.
 	_overlay.preview_damage.clear()
 	if _preview_target != null and _selected != null:
-		_overlay.preview_damage[_preview_target.cell] = engine.board.predicted_damage(
-			_selected, _preview_target.cell
-		)
+		var basic := _selected.basic_ability()
+		var ability := Ability.of(basic) if not basic.is_empty() else null
+		if ability != null:
+			_overlay.preview_damage[_preview_target.cell] = engine.board.predicted_damage(
+				_selected, ability, _preview_target
+			)
 
 	_overlay.threat = threat
 	_refresh_ghost()
@@ -528,13 +548,7 @@ func _refresh_deployment_overlay() -> void:
 		if not threatened.has(cell):
 			_overlay.deployment_cells.append(cell)
 
-	var threat := {}
-	for cell: Vector2i in threatened:
-		threat[cell] = 0
-		for enemy: Unit in engine.board.active_units(Unit.Side.ENEMIES):
-			if engine.board.attackable_cells(enemy).has(cell):
-				threat[cell] = int(threat[cell]) + engine.board.predicted_damage(enemy, cell)
-	_overlay.threat = threat
+	_overlay.threat = engine.deployment_threat()
 	_overlay.selected_cell = Vector2i(-1, -1)
 	_overlay.ghost_cell = Vector2i(-1, -1)
 	_refresh_ghost()

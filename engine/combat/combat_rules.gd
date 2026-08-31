@@ -75,18 +75,60 @@ static func terrain_for_symbol(symbol: String) -> StringName:
 	return &""
 
 
-## Nombre d'emplacements dont le joueur dispose au départ.
-## Trois, pour quatre classes : il ne peut pas prendre un exemplaire de
-## chaque, et doit donc choisir.
-static func squad_size() -> int:
-	return int(rule(&"sides", &"squad_size", 3))
+## Nombre de personnages que le joueur emmène (§ 23 : 4 au plus dans le MVP).
+static func team_size() -> int:
+	return int(rule(&"sides", &"team_size", 4))
 
 
-## Plafond dur, Caserne de niveau 3 comprise (§ 5.4, « +1 héros en
-## expédition »). C'est le nombre de cases de départ qu'une carte doit
-## prévoir, pas le nombre de héros du début de partie.
+## Plafond dur. C'est le nombre de cases de départ qu'une carte doit
+## prévoir, pas la taille de l'équipe du début de partie.
 static func max_heroes() -> int:
 	return int(rule(&"sides", &"max_heroes", 4))
+
+
+## --- PA, PM et initiative (§ 13 et § 16) ---
+
+## Coût en PM d'un pas, avant le surcoût du terrain.
+static func move_cost_per_cell() -> int:
+	return int(rule(&"movement_points", &"cost_per_cell", 1))
+
+
+static func pass_through_allies() -> bool:
+	return bool(rule(&"movement_points", &"pass_through_allies", true))
+
+
+static func pass_through_enemies() -> bool:
+	return bool(rule(&"movement_points", &"pass_through_enemies", false))
+
+
+## Comment départager deux combattants de même initiative.
+static func initiative_tie_break() -> String:
+	return String(rule(&"initiative", &"tie_break", "heroes_first"))
+
+
+## Nombre d'activations que le HUD montre dans la timeline.
+static func initiative_preview_length() -> int:
+	return int(rule(&"initiative", &"preview_length", 6))
+
+
+## Plancher de la formule de dégâts : une attaque qui passe fait toujours
+## au moins ça, quelle que soit la défense d'en face.
+static func damage_minimum() -> int:
+	return int(rule(&"damage", &"minimum", 1))
+
+
+## Bloc d'un effet de statut, tel qu'écrit dans `rules.json`.
+static func status(status_id: StringName) -> Dictionary:
+	var block: Dictionary = rules().get("statuses", {})
+	var found: Dictionary = block.get(String(status_id), {})
+	if found.is_empty():
+		push_error("CombatRules : statut inconnu « %s »" % status_id)
+	return found
+
+
+## PM retirés par un statut, en valeur positive. Le Gel en retire 2.
+static func status_movement_penalty(status_id: StringName) -> int:
+	return absi(int(status(status_id).get("movement_points", 0)))
 
 
 static func adjacency() -> String:

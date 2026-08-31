@@ -62,11 +62,12 @@
   ],
   "allies": [
     {
-      "type": "monk",
+      "type": "mage",
       "cell": [
         0,
         3
-      ]
+      ],
+      "_note": "Le protégé devrait être un Pawn — le pack fournit le sprite et le § 9 donne une population au royaume. En attendant qu'un PNJ non combattant existe, c'est un Mage."
     }
   ],
   "enemies": [

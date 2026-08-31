@@ -33,7 +33,7 @@ func _ready() -> void:
 func _reset_composition() -> void:
 	_composition.clear()
 	var classes := Unit.hero_class_ids()
-	for i in CombatRules.squad_size():
+	for i in CombatRules.team_size():
 		_composition.append(classes[i % classes.size()])
 
 

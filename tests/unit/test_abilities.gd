@@ -1,10 +1,12 @@
 extends GutTest
 
-## C1.24 — les quatre capacités du § 3.1.
+## T1.3 — les compétences.
 ##
-## Elles couvrent les quatre verbes tactiques : attirer, frapper à
-## distance, déplacer, annuler. Chacune est testée sur son effet, et sur
-## ce qu'elle refuse de faire.
+## Une compétence est décrite entièrement par ses données (§ 47). Ces
+## tests vérifient que le moteur les lit correctement, et surtout que les
+## contraintes qui font la tension du combat sont bien appliquées : le
+## coût en PA, la recharge, la portée minimale, l'immobilité du Tir
+## puissant, le tir ami de la Boule de feu.
 
 
 func before_each() -> void:
@@ -20,275 +22,309 @@ func _board(rows: Array) -> CombatBoard:
 
 
 func _plain() -> CombatBoard:
-	return _board(["........", "........", "........", "........", "........", "........"])
+	return _board([
+		"..........", "..........", "..........", "..........",
+		"..........", "..........", "..........",
+	])
 
 
 func _engine(board: CombatBoard) -> CombatEngine:
-	return CombatEngine.new(
-		board, CombatObjective.from_dictionary({"kind": "eliminate"}), CombatRng.new(77)
+	var engine := CombatEngine.new(
+		board, CombatObjective.from_dictionary({"kind": "eliminate"}), CombatRng.new(7)
 	)
+	engine.start()
+	return engine
 
 
-func _hero(board: CombatBoard, class_id: StringName, at: Vector2i, id: int) -> Unit:
+func _hero(board: CombatBoard, class_id: StringName, at: Vector2i, id: int = 1) -> Unit:
 	var unit := Unit.from_hero_class(id, class_id, at)
+	unit.initiative = 99 - id
 	board.place_unit(unit, at)
 	return unit
 
 
-func _enemy(board: CombatBoard, enemy_id: StringName, at: Vector2i, id: int) -> Unit:
+func _enemy(board: CombatBoard, enemy_id: StringName, at: Vector2i, id: int = 90) -> Unit:
 	var unit := Unit.from_enemy(id, enemy_id, at)
+	unit.initiative = 1
 	board.place_unit(unit, at)
 	return unit
 
 
-func test_chaque_classe_a_sa_capacite_et_son_verbe() -> void:
-	var expected := {
-		&"warrior": [&"taunt", "attirer"],
-		&"archer": [&"aimed_shot", "frapper à distance"],
-		&"lancer": [&"push_back", "déplacer"],
-		&"monk": [&"blessing", "annuler"],
-	}
-	for class_id: StringName in expected.keys():
-		var ability_id := Ability.first_of_class(class_id)
-		assert_eq(ability_id, expected[class_id][0], "capacité de %s" % class_id)
-		assert_eq(
-			Ability.get_ability(ability_id)["verb"], expected[class_id][1],
-			"verbe tactique de %s" % class_id
+# --- Les données ----------------------------------------------------------
+
+func test_chaque_classe_declare_des_competences_qui_existent() -> void:
+	for class_id: StringName in Unit.hero_class_ids():
+		var unit := Unit.from_hero_class(1, class_id, Vector2i.ZERO)
+		assert_false(unit.abilities.is_empty(), "%s n'a aucune compétence" % class_id)
+		for ability_id: StringName in unit.abilities:
+			var ability := Ability.of(ability_id)
+			assert_not_null(ability, "%s : compétence inconnue %s" % [class_id, ability_id])
+			assert_eq(ability.class_id, class_id, "%s appartient à une autre classe" % ability_id)
+
+
+func test_le_cout_en_pa_respecte_le_bareme() -> void:
+	# § 13 : légère 2, base 3, moyenne 4, puissante 5 à 7.
+	for ability_id: StringName in Ability.ids():
+		var ability := Ability.of(ability_id)
+		assert_between(
+			ability.action_points, 2, 7, "%s : coût hors barème" % ability_id
 		)
 
 
-func test_les_quatre_verbes_sont_tous_couverts_une_fois() -> void:
-	# « Toute la profondeur du combat vient de leurs combinaisons » (§ 3.1).
-	# Deux classes qui feraient le même verbe seraient redondantes.
-	var verbs := {}
-	for class_id: StringName in [&"warrior", &"archer", &"lancer", &"monk"]:
-		var verb: String = Ability.get_ability(Ability.first_of_class(class_id))["verb"]
-		assert_false(verbs.has(verb), "le verbe « %s » est doublé" % verb)
-		verbs[verb] = class_id
-	assert_eq(verbs.size(), 4)
+func test_toute_competence_qui_fait_des_degats_monte_a_une_statistique() -> void:
+	for ability_id: StringName in Ability.ids():
+		var ability := Ability.of(ability_id)
+		if ability.damage <= 0:
+			continue
+		assert_false(
+			ability.scaling.is_empty(), "%s ne monte à rien" % ability_id
+		)
 
 
-# --- Provocation ----------------------------------------------------------
+func test_une_competence_inconnue_ne_plante_pas() -> void:
+	assert_null(Ability.of(&"meteore"))
+	assert_push_error("compétence inconnue")
+
+
+# --- Disponibilité --------------------------------------------------------
+
+func test_une_competence_trop_chere_est_indisponible() -> void:
+	var unit := Unit.from_hero_class(1, &"warrior", Vector2i.ZERO)
+	var heavy := Ability.of(&"heavy_strike")
+	assert_true(heavy.is_available_to(unit))
+	unit.spend_action_points(unit.action_points - heavy.action_points + 1)
+	assert_false(heavy.is_available_to(unit))
+	assert_eq(heavy.unavailable_reason(unit), &"ability.not_enough_ap")
+
+
+func test_une_competence_en_recharge_est_indisponible() -> void:
+	var unit := Unit.from_hero_class(1, &"warrior", Vector2i.ZERO)
+	var heavy := Ability.of(&"heavy_strike")
+	unit.start_cooldown(heavy.id, heavy.cooldown)
+	assert_false(heavy.is_available_to(unit))
+	assert_eq(heavy.unavailable_reason(unit), &"ability.cooling_down")
+
+
+func test_le_tir_puissant_est_refuse_apres_un_deplacement() -> void:
+	# LA tension de l'Archer : rester immobile pour frapper fort, donc
+	# devenir une cible pour le Voleur.
+	var unit := Unit.from_hero_class(1, &"archer", Vector2i.ZERO)
+	var power := Ability.of(&"power_shot")
+	assert_true(power.is_available_to(unit))
+	unit.spend_movement_points(1)
+	assert_false(power.is_available_to(unit))
+	assert_eq(power.unavailable_reason(unit), &"ability.already_moved")
+
+
+func test_une_competence_qu_on_n_a_pas_est_indisponible() -> void:
+	var warrior := Unit.from_hero_class(1, &"warrior", Vector2i.ZERO)
+	assert_false(Ability.of(&"fireball").is_available_to(warrior))
+
+
+# --- Portée et zone -------------------------------------------------------
+
+func test_l_archer_ne_tire_pas_sur_son_voisin() -> void:
+	var shot := Ability.of(&"shot")
+	assert_false(shot.is_distance_in_range(1), "portée minimale 2")
+	assert_true(shot.is_distance_in_range(2))
+	assert_true(shot.is_distance_in_range(5))
+	assert_false(shot.is_distance_in_range(6))
+
+
+func test_une_zone_simple_ne_touche_qu_une_case() -> void:
+	var grid := Grid.new(8, 6, CombatRules.ADJACENCY_ORTHOGONAL)
+	var cells := Ability.of(&"strike").area_cells(grid, Vector2i(2, 2), Vector2i(3, 2))
+	assert_eq(cells, [Vector2i(3, 2)])
+
+
+func test_la_boule_de_feu_touche_la_case_et_ses_quatre_voisines() -> void:
+	var grid := Grid.new(8, 6, CombatRules.ADJACENCY_ORTHOGONAL)
+	var cells := Ability.of(&"fireball").area_cells(grid, Vector2i(1, 3), Vector2i(4, 3))
+	assert_eq(cells.size(), 5, "la case visée plus ses voisines")
+	for cell: Vector2i in [
+		Vector2i(4, 3), Vector2i(3, 3), Vector2i(5, 3), Vector2i(4, 2), Vector2i(4, 4)
+	]:
+		assert_true(cells.has(cell), "case manquante : %s" % cell)
+
+
+func test_une_zone_est_bornee_a_la_grille() -> void:
+	var grid := Grid.new(8, 6, CombatRules.ADJACENCY_ORTHOGONAL)
+	var cells := Ability.of(&"fireball").area_cells(grid, Vector2i(3, 3), Vector2i(0, 0))
+	for cell: Vector2i in cells:
+		assert_true(grid.contains(cell), "case hors grille : %s" % cell)
+	assert_eq(cells.size(), 3, "un coin ne touche que trois cases")
+
+
+func test_l_attaque_en_ligne_du_troll_suit_la_direction_du_coup() -> void:
+	var grid := Grid.new(8, 6, CombatRules.ADJACENCY_ORTHOGONAL)
+	var cells := Ability.of(&"troll_smash").area_cells(grid, Vector2i(2, 3), Vector2i(3, 3))
+	assert_eq(cells, [Vector2i(3, 3), Vector2i(4, 3)], "la cible et celui de derrière")
+
+
+# --- En jeu ---------------------------------------------------------------
+
+func test_lancer_une_competence_depense_ses_pa_et_arme_sa_recharge() -> void:
+	var board := _plain()
+	var warrior := _hero(board, &"warrior", Vector2i(2, 2))
+	_enemy(board, &"spear_goblin", Vector2i(3, 2))
+	var engine := _engine(board)
+	var heavy := Ability.of(&"heavy_strike")
+
+	var before := warrior.action_points
+	assert_false(engine.use_ability(warrior, &"heavy_strike", Vector2i(3, 2)).is_empty())
+	assert_eq(warrior.action_points, before - heavy.action_points)
+	assert_false(warrior.is_ready(&"heavy_strike"))
+
+
+func test_deux_frappes_dans_le_meme_tour() -> void:
+	# 8 PA, une Frappe à 3 : c'est le tour du § 14, et il doit passer.
+	var board := _plain()
+	var warrior := _hero(board, &"warrior", Vector2i(2, 2))
+	var goblin := _enemy(board, &"spear_goblin", Vector2i(3, 2))
+	var engine := _engine(board)
+	var before := goblin.hit_points
+
+	assert_false(engine.use_ability(warrior, &"strike", Vector2i(3, 2)).is_empty())
+	var after_first := goblin.hit_points
+	assert_lt(after_first, before, "le premier coup a porté")
+	assert_false(engine.use_ability(warrior, &"strike", Vector2i(3, 2)).is_empty())
+	assert_lt(goblin.hit_points, after_first, "le second aussi")
+	assert_eq(warrior.action_points, warrior.max_action_points - 6)
+
+
+func test_on_ne_lance_pas_sans_pa() -> void:
+	var board := _plain()
+	var warrior := _hero(board, &"warrior", Vector2i(2, 2))
+	_enemy(board, &"spear_goblin", Vector2i(3, 2))
+	var engine := _engine(board)
+
+	warrior.spend_action_points(warrior.action_points)
+	assert_true(engine.use_ability(warrior, &"strike", Vector2i(3, 2)).is_empty())
+
+
+func test_la_boule_de_feu_brule_plusieurs_ennemis_d_un_coup() -> void:
+	var board := _plain()
+	var mage := _hero(board, &"mage", Vector2i(1, 3))
+	var first := _enemy(board, &"gnome", Vector2i(4, 3), 90)
+	var second := _enemy(board, &"gnome", Vector2i(5, 3), 91)
+	var engine := _engine(board)
+
+	assert_false(engine.use_ability(mage, &"fireball", Vector2i(4, 3)).is_empty())
+	assert_lt(first.hit_points, first.max_hit_points, "la cible")
+	assert_lt(second.hit_points, second.max_hit_points, "et son voisin")
+
+
+func test_la_boule_de_feu_brule_aussi_les_allies() -> void:
+	# Sans tir ami, le positionnement du Mage ne coûterait rien (§ 20).
+	var board := _plain()
+	var mage := _hero(board, &"mage", Vector2i(1, 3), 1)
+	var friend := _hero(board, &"warrior", Vector2i(5, 3), 2)
+	_enemy(board, &"gnome", Vector2i(4, 3))
+	var engine := _engine(board)
+
+	engine.use_ability(mage, &"fireball", Vector2i(4, 3))
+	assert_lt(friend.hit_points, friend.max_hit_points, "le Guerrier a pris le sort")
+
+
+func test_la_boule_de_feu_n_atteint_pas_son_lanceur() -> void:
+	var board := _plain()
+	var mage := _hero(board, &"mage", Vector2i(3, 3))
+	_enemy(board, &"gnome", Vector2i(5, 3))
+	var engine := _engine(board)
+
+	engine.use_ability(mage, &"fireball", Vector2i(5, 3))
+	assert_eq(mage.hit_points, mage.max_hit_points)
+
+
+func test_la_frappe_ne_touche_pas_les_allies() -> void:
+	var board := _plain()
+	var warrior := _hero(board, &"warrior", Vector2i(2, 2), 1)
+	var friend := _hero(board, &"archer", Vector2i(3, 2), 2)
+	_enemy(board, &"gnome", Vector2i(6, 2))
+	var engine := _engine(board)
+
+	engine.use_ability(warrior, &"strike", Vector2i(3, 2))
+	assert_eq(friend.hit_points, friend.max_hit_points)
+
+
+func test_le_gel_retire_des_pm_a_la_prochaine_activation() -> void:
+	var board := _plain()
+	var mage := _hero(board, &"mage", Vector2i(2, 3))
+	var goblin := _enemy(board, &"gnome", Vector2i(5, 3))
+	var engine := _engine(board)
+
+	engine.use_ability(mage, &"frost", Vector2i(5, 3))
+	assert_true(goblin.has_status(&"chilled"))
+
+	goblin.begin_activation(CombatRules.status_movement_penalty(&"chilled"))
+	assert_eq(
+		goblin.movement_points,
+		goblin.max_movement_points - CombatRules.status_movement_penalty(&"chilled")
+	)
+
+
+func test_le_bond_de_l_archer_ne_coute_pas_de_pm() -> void:
+	var board := _plain()
+	var archer := _hero(board, &"archer", Vector2i(4, 3))
+	_enemy(board, &"gnome", Vector2i(8, 3))
+	var engine := _engine(board)
+
+	var before := archer.movement_points
+	assert_false(engine.use_ability(archer, &"hop_back", Vector2i(2, 3)).is_empty())
+	assert_eq(archer.cell, Vector2i(2, 3))
+	assert_eq(archer.movement_points, before, "aucun PM dépensé")
+	assert_true(archer.has_moved, "mais cela reste un déplacement")
+
+
+func test_le_bond_ne_pose_pas_l_archer_sur_quelqu_un() -> void:
+	var board := _plain()
+	var archer := _hero(board, &"archer", Vector2i(4, 3), 1)
+	_hero(board, &"warrior", Vector2i(2, 3), 2)
+	_enemy(board, &"gnome", Vector2i(8, 3))
+	var engine := _engine(board)
+
+	assert_true(engine.use_ability(archer, &"hop_back", Vector2i(2, 3)).is_empty())
+	assert_eq(archer.cell, Vector2i(4, 3))
+
 
 func test_la_provocation_redirige_un_ennemi_adjacent() -> void:
 	var board := _plain()
 	var warrior := _hero(board, &"warrior", Vector2i(3, 3), 1)
-	var archer := _hero(board, &"archer", Vector2i(3, 4), 2)
-	var goblin := _enemy(board, &"spear_goblin", Vector2i(3, 5), 3)
+	var archer := _hero(board, &"archer", Vector2i(3, 2), 2)
+	var goblin := _enemy(board, &"gnome", Vector2i(3, 1))
 	var engine := _engine(board)
-	engine.start()
-	# Le gobelin vise naturellement l'archer, plus proche et plus fragile.
-	assert_gt(engine.threat_on(archer.cell), 0)
 
-	# Le guerrier se met au contact et provoque.
-	engine.move_hero(warrior, Vector2i(2, 5))
-	engine.use_ability(warrior, &"taunt")
+	# Sans provocation, le gobelin vise l'Archer, qui est à sa portée.
+	assert_eq(engine.intent_of(goblin.id).target_cell(goblin.cell), archer.cell)
+
+	engine.use_ability(warrior, &"taunt", warrior.cell)
 	assert_true(engine.is_taunting(warrior.id))
-	assert_eq(engine.threat_on(archer.cell), 0, "l'archer n'est plus visé")
-	assert_gt(engine.threat_on(warrior.cell), 0, "c'est le guerrier qui prend")
-	assert_eq(goblin.id, 3)
 
 
 func test_la_provocation_ne_porte_pas_a_distance() -> void:
 	var board := _plain()
-	var warrior := _hero(board, &"warrior", Vector2i(0, 0), 1)
-	var archer := _hero(board, &"archer", Vector2i(4, 4), 2)
-	_enemy(board, &"spear_goblin", Vector2i(5, 4), 3)
+	var warrior := _hero(board, &"warrior", Vector2i(0, 5), 1)
+	var archer := _hero(board, &"archer", Vector2i(6, 1), 2)
+	var goblin := _enemy(board, &"gnome", Vector2i(6, 2))
 	var engine := _engine(board)
-	engine.start()
-	engine.use_ability(warrior, &"taunt")
-	assert_gt(engine.threat_on(archer.cell), 0, "le guerrier est trop loin pour couvrir")
+
+	engine.use_ability(warrior, &"taunt", warrior.cell)
+	assert_eq(
+		engine.intent_of(goblin.id).target_cell(goblin.cell), archer.cell,
+		"le gobelin est trop loin pour être provoqué"
+	)
 
 
-func test_la_provocation_ne_dure_qu_un_tour() -> void:
+func test_toute_competence_est_annulable() -> void:
+	# Rien n'est irréversible avant la validation de l'activation.
 	var board := _plain()
-	var warrior := _hero(board, &"warrior", Vector2i(3, 3), 1)
-	_enemy(board, &"spear_goblin", Vector2i(3, 4), 2)
+	var warrior := _hero(board, &"warrior", Vector2i(2, 2))
+	var goblin := _enemy(board, &"spear_goblin", Vector2i(3, 2))
 	var engine := _engine(board)
-	engine.start()
-	engine.use_ability(warrior, &"taunt")
-	assert_true(engine.is_taunting(warrior.id))
-	engine.end_player_turn()
-	assert_false(engine.is_taunting(warrior.id), "il faut la refaire chaque tour")
 
-
-# --- Tir tendu ------------------------------------------------------------
-
-func test_le_tir_tendu_ajoute_deux_degats() -> void:
-	var board := _plain()
-	var archer := _hero(board, &"archer", Vector2i(1, 3), 1)
-	var troll := _enemy(board, &"troll", Vector2i(4, 3), 2)
-	var engine := _engine(board)
-	engine.start()
-	var before := troll.hit_points
-	var report := engine.use_ability(archer, &"aimed_shot", troll)
-	assert_eq(report["damage"], 4, "2 de base, +2 pour être resté immobile")
-	assert_eq(before - troll.hit_points, 4)
-
-
-func test_le_tir_tendu_est_refuse_apres_un_deplacement() -> void:
-	# C'est ce qui rend l'immobilité tentante, et donc le Voleur dangereux.
-	var board := _plain()
-	var archer := _hero(board, &"archer", Vector2i(1, 3), 1)
-	var troll := _enemy(board, &"troll", Vector2i(4, 3), 2)
-	var engine := _engine(board)
-	engine.start()
-	engine.move_hero(archer, Vector2i(2, 3))
-	assert_eq(engine.use_ability(archer, &"aimed_shot", troll), {})
-	assert_eq(troll.hit_points, troll.max_hit_points)
-
-
-func test_le_tir_tendu_respecte_la_portee_minimale() -> void:
-	var board := _plain()
-	var archer := _hero(board, &"archer", Vector2i(3, 3), 1)
-	var goblin := _enemy(board, &"spear_goblin", Vector2i(4, 3), 2)
-	var engine := _engine(board)
-	engine.start()
-	assert_eq(engine.use_ability(archer, &"aimed_shot", goblin), {}, "trop près pour tirer")
-
-
-# --- Repousse -------------------------------------------------------------
-
-func test_la_repousse_deplace_d_une_case() -> void:
-	var board := _plain()
-	var lancer := _hero(board, &"lancer", Vector2i(3, 3), 1)
-	var goblin := _enemy(board, &"spear_goblin", Vector2i(4, 3), 2)
-	var engine := _engine(board)
-	engine.start()
-	var report := engine.use_ability(lancer, &"push_back", goblin)
-	assert_eq(report["ability"], "push_back")
-	assert_eq(goblin.cell, Vector2i(5, 3))
-
-
-func test_la_repousse_dans_l_eau_tue() -> void:
-	var board := _board([
-		"........", "........", "........", "....~...", "........", "........",
-	])
-	var lancer := _hero(board, &"lancer", Vector2i(2, 3), 1)
-	var goblin := _enemy(board, &"spear_goblin", Vector2i(3, 3), 2)
-	var engine := _engine(board)
-	engine.start()
-	var report := engine.use_ability(lancer, &"push_back", goblin)
-	assert_true(report["drowns"])
-	assert_true(goblin.is_downed())
-
-
-func test_la_repousse_ne_porte_pas_hors_de_portee() -> void:
-	var board := _plain()
-	var lancer := _hero(board, &"lancer", Vector2i(0, 3), 1)
-	var goblin := _enemy(board, &"spear_goblin", Vector2i(5, 3), 2)
-	var engine := _engine(board)
-	engine.start()
-	assert_eq(engine.use_ability(lancer, &"push_back", goblin), {})
-	assert_eq(goblin.cell, Vector2i(5, 3))
-
-
-# --- Bénédiction ----------------------------------------------------------
-
-func test_la_benediction_annule_une_attaque_telegraphiee() -> void:
-	var board := _plain()
-	var warrior := _hero(board, &"warrior", Vector2i(3, 3), 1)
-	var monk := _hero(board, &"monk", Vector2i(3, 2), 2)
-	_enemy(board, &"spear_goblin", Vector2i(4, 3), 3)
-	var engine := _engine(board)
-	engine.start()
-	assert_gt(engine.threat_on(warrior.cell), 0)
-
-	assert_false(engine.use_ability(monk, &"blessing", warrior.cell).is_empty())
-	assert_true(engine.is_warded(warrior.cell))
-
-	var before := warrior.hit_points
-	var log := engine.end_player_turn()
-	assert_eq(warrior.hit_points, before, "le coup est annulé")
-	var warded_events := 0
-	for entry: Dictionary in log:
-		if entry["event"] == "attack_warded":
-			warded_events += 1
-	assert_eq(warded_events, 1, "et le journal le dit")
-
-
-func test_la_benediction_ne_couvre_que_sa_case() -> void:
-	var board := _plain()
-	var warrior := _hero(board, &"warrior", Vector2i(3, 3), 1)
-	var monk := _hero(board, &"monk", Vector2i(3, 2), 2)
-	_enemy(board, &"spear_goblin", Vector2i(4, 3), 3)
-	var engine := _engine(board)
-	engine.start()
-	engine.use_ability(monk, &"blessing", Vector2i(0, 0))
-	var before := warrior.hit_points
-	engine.end_player_turn()
-	assert_lt(warrior.hit_points, before, "la mauvaise case n'a rien protégé")
-
-
-func test_la_benediction_respecte_sa_portee() -> void:
-	var board := _plain()
-	var monk := _hero(board, &"monk", Vector2i(0, 0), 1)
-	_enemy(board, &"spear_goblin", Vector2i(7, 5), 2)
-	var engine := _engine(board)
-	engine.start()
-	assert_eq(engine.use_ability(monk, &"blessing", Vector2i(7, 5)), {}, "hors de portée")
-	assert_eq(engine.use_ability(monk, &"blessing", Vector2i(0, 0)), {}, "pas sa propre case")
-
-
-func test_la_benediction_ne_dure_qu_un_tour() -> void:
-	var board := _plain()
-	var warrior := _hero(board, &"warrior", Vector2i(3, 3), 1)
-	var monk := _hero(board, &"monk", Vector2i(3, 2), 2)
-	_enemy(board, &"spear_goblin", Vector2i(4, 3), 3)
-	var engine := _engine(board)
-	engine.start()
-	engine.use_ability(monk, &"blessing", warrior.cell)
-	engine.end_player_turn()
-	assert_false(engine.is_warded(warrior.cell))
-
-
-# --- Règles communes ------------------------------------------------------
-
-func test_une_capacite_consomme_l_action_du_tour() -> void:
-	var board := _plain()
-	var warrior := _hero(board, &"warrior", Vector2i(3, 3), 1)
-	var goblin := _enemy(board, &"spear_goblin", Vector2i(4, 3), 2)
-	var engine := _engine(board)
-	engine.start()
-	engine.use_ability(warrior, &"taunt")
-	assert_true(warrior.has_acted)
-	assert_eq(engine.attack(warrior, goblin), {}, "on n'agit qu'une fois")
-
-
-func test_toute_capacite_est_annulable() -> void:
-	# Rien n'est irréversible avant validation (§ 11.2), les capacités
-	# comprises — c'est là qu'on essaie des combinaisons.
-	var board := _plain()
-	var lancer := _hero(board, &"lancer", Vector2i(3, 3), 1)
-	var goblin := _enemy(board, &"spear_goblin", Vector2i(4, 3), 2)
-	var engine := _engine(board)
-	engine.start()
-	engine.use_ability(lancer, &"push_back", goblin)
-	assert_eq(goblin.cell, Vector2i(5, 3))
-	engine.undo()
-	assert_eq(goblin.cell, Vector2i(4, 3))
-	assert_false(lancer.has_acted)
-
-
-func test_annuler_une_provocation_rend_l_annonce_d_origine() -> void:
-	var board := _plain()
-	var warrior := _hero(board, &"warrior", Vector2i(3, 4), 1)
-	var archer := _hero(board, &"archer", Vector2i(3, 3), 2)
-	_enemy(board, &"spear_goblin", Vector2i(3, 5), 3)
-	var engine := _engine(board)
-	engine.start()
-	var threat_before := engine.threat_on(archer.cell)
-	engine.use_ability(warrior, &"taunt")
-	engine.undo()
-	assert_false(engine.is_taunting(warrior.id))
-	assert_eq(engine.threat_on(archer.cell), threat_before, "l'annonce est revenue")
-
-
-func test_une_capacite_inconnue_ne_plante_pas() -> void:
-	var board := _plain()
-	var warrior := _hero(board, &"warrior", Vector2i(3, 3), 1)
-	_enemy(board, &"spear_goblin", Vector2i(4, 3), 2)
-	var engine := _engine(board)
-	engine.start()
-	assert_eq(engine.use_ability(warrior, &"boule_de_feu"), {})
-	assert_push_error("capacité inconnue")
+	engine.use_ability(warrior, &"heavy_strike", Vector2i(3, 2))
+	assert_lt(goblin.hit_points, goblin.max_hit_points)
+	assert_true(engine.undo())
+	assert_eq(goblin.hit_points, goblin.max_hit_points, "la vie est revenue")
+	assert_eq(warrior.action_points, warrior.max_action_points, "les PA aussi")
+	assert_true(warrior.is_ready(&"heavy_strike"), "et la recharge")

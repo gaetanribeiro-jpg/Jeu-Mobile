@@ -2314,7 +2314,7 @@
     }
   },
   "portraits": {
-    "_readme": "Les 25 portraits humains, verifies a l'oeil le 2026-08-29 en comparant chaque portrait a la premiere image du sprite Idle correspondant. Index = color_order.index(couleur) * 5 + class_order.index(classe) + 1, a lire dans ui.avatars_NN. ATTENTION : color_order n'est PAS meta.colors — les portraits mettent Yellow avant Purple, l'inverse du reste du pack. Confondre les deux donne un portrait violet a un heros jaune.",
+    "_readme": "Les 25 portraits humains, verifies a l'oeil le 2026-08-29 en comparant chaque portrait a la premiere image du sprite Idle correspondant. Index = color_order.index(couleur) * 5 + class_order.index(classe) + 1, a lire dans ui.avatars_NN. ATTENTION : color_order n'est PAS meta.colors — les portraits mettent Yellow avant Purple, l'inverse du reste du pack. Confondre les deux donne un portrait violet a un heros jaune. ALIAS : une classe de jeu qui emprunte le sprite d'une autre emprunte aussi son portrait. Le Mage utilise le Moine (voir docs/etat-des-lieux.md § 3.1), donc aliases fait la traduction. class_order reste la liste des CINQ ARCHÉTYPES DESSINÉS, pas celle des classes jouables.",
     "class_order": [
       "warrior",
       "lancer",
@@ -2329,6 +2329,9 @@
       "Purple",
       "Black"
     ],
-    "key_template": "avatars_{index:02}"
+    "key_template": "avatars_{index:02}",
+    "aliases": {
+      "mage": "monk"
+    }
   }
 }

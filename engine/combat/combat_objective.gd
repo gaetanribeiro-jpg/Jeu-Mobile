@@ -52,7 +52,7 @@ static func from_dictionary(data: Dictionary) -> CombatObjective:
 		return objective
 	objective.kind = KIND_NAMES[name_]
 	objective.turns = int(data.get(
-		"turns", CombatRules.rule(&"objectives", &"survive_default_turns", 0)
+		"turns", CombatRules.rule(&"objectives", &"survive_default_rounds", 0)
 	))
 	objective.deadline = int(data.get("deadline", 0))
 	objective.cells = _cells_from(data.get("cells", []))
@@ -65,7 +65,7 @@ static func from_dictionary(data: Dictionary) -> CombatObjective:
 	return objective
 
 
-## Où en est le combat. `turn_index` est le numéro du tour de joueur qui
+## Où en est le combat. `turn_index` est le numéro de la RONDE en cours —
 ## vient de s'achever, à partir de 1.
 func evaluate(board: CombatBoard, turn_index: int) -> int:
 	# Défaite universelle : plus personne debout.

@@ -172,12 +172,19 @@ static func building(building_id: StringName, color: String) -> Dictionary:
 ## `meta.colors`. Les portraits mettent Yellow avant Purple, l'inverse du
 ## reste du pack. C'est pour ça que cette fonction existe au lieu d'un
 ## calcul d'indice recopié à chaque appel.
+##
+## `class_order` liste les cinq ARCHÉTYPES DESSINÉS, pas les classes
+## jouables. Une classe qui emprunte le sprite d'une autre emprunte aussi
+## son portrait, et `aliases` fait la traduction : le Mage passe par le
+## Moine, faute de mage dans le pack.
 static func portrait(class_id: StringName, color: String) -> Dictionary:
 	var block: Dictionary = table().get("portraits", {})
 	var classes: Array = block.get("class_order", [])
 	var colors_order: Array = block.get("color_order", [])
+	var aliases: Dictionary = block.get("aliases", {})
 
-	var class_index := classes.find(String(class_id))
+	var wanted := String(aliases.get(String(class_id), String(class_id)))
+	var class_index := classes.find(wanted)
 	if class_index < 0:
 		push_error("AssetTable : aucun portrait pour la classe « %s »" % class_id)
 		return {}

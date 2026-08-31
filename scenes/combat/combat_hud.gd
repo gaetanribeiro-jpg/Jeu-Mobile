@@ -140,9 +140,9 @@ func refresh(engine: CombatEngine) -> void:
 		# validation d'un tour (§ 11.2).
 		_undo.disabled = _placed_count(engine) == 0
 	else:
-		_turn.text = tr("HUD_TURN") % engine.turn_index
+		_turn.text = tr("HUD_ROUND") % engine.round_index()
 		_end_turn.text = tr("HUD_END_TURN")
-		_end_turn.disabled = engine.phase != CombatEngine.Phase.PLAYER_TURN
+		_end_turn.disabled = not engine.is_player_turn()
 		_undo.disabled = not engine.can_undo()
 	_refresh_squad(engine)
 
@@ -174,14 +174,25 @@ func _refresh_squad(engine: CombatEngine) -> void:
 			_squad.add_child(row)
 		var name_ := tr("CLASS_%s" % String(unit.class_id).to_upper())
 		# Le numéro d'emplacement d'abord : avec les doublons de classe,
-		# « Guerrier 8/8 » deux fois de suite ne désigne personne.
-		row.text = "%d  %s  %d/%d" % [
-			unit.slot, name_, unit.hit_points, unit.max_hit_points
+		# « Guerrier 120/120 » deux fois de suite ne désigne personne.
+		# Les PA et les PM ensuite : le § 48 en fait une exigence — le
+		# joueur doit toujours savoir combien il lui en reste.
+		row.text = "%d  %s  %d/%d   PA %d/%d  PM %d/%d" % [
+			unit.slot, name_, unit.hit_points, unit.max_hit_points,
+			unit.action_points, unit.max_action_points,
+			unit.movement_points, unit.max_movement_points,
 		]
+		var active := engine.current_unit()
 		if pending.has(unit):
 			row.modulate = Color(0.62, 0.7, 0.62)
+		elif not unit.is_active():
+			row.modulate = Color(0.5, 0.4, 0.4)
+		elif active != null and active.id == unit.id:
+			# Celui que la timeline désigne, mis en avant : c'est LA
+			# question du § 16, qui joue maintenant ?
+			row.modulate = Color(1, 0.92, 0.55)
 		else:
-			row.modulate = Color(1, 1, 1) if unit.is_active() else Color(0.5, 0.4, 0.4)
+			row.modulate = Color(1, 1, 1)
 
 
 func show_result(victory: bool) -> void:

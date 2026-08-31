@@ -1,43 +1,77 @@
 {
   "_readme": "Règles chiffrées du combat. Aucune de ces valeurs ne doit apparaître dans un .gd.",
   "grid": {
-    "combat_width": 8,
-    "combat_height": 6,
-    "siege_width": 10,
-    "siege_height": 8,
-    "_adjacency": "orthogonal = 4 voisins et distance de Manhattan. diagonal = 8 voisins et distance de Chebyshev. TRANCHE le 2026-08-29 : orthogonal. En diagonal, sur 8 x 6, le Moine atteint les 48 cases en un deplacement et le Guerrier 42 sur 48 : le placement cesse d'etre une decision. Les 8 directions du Lancier et du Canon servent a l'orientation de l'attaque — en distance de Manhattan une case en diagonale est a distance 2, donc portee 1-2 l'atteint.",
+    "_size": "12 x 9 = 108 cases, soit 768 x 576 pixels : cela tient dans les 1280 x 720 de référence avec la place du HUD. Justifié dans docs/etat-des-lieux.md § 4.2 — avec un arc qui porte à 4-7 et 4 a 5 PM, une grille plus petite fait disparaitre le positionnement. Ce sont des valeurs d'AUTORITE pour l'écriture des cartes : la taille réelle d'un combat vient des lignes de la carte.",
+    "combat_width": 12,
+    "combat_height": 9,
+    "siege_width": 14,
+    "siege_height": 10,
+    "_adjacency": "orthogonal = 4 voisins et distance de Manhattan. diagonal = 8 voisins et distance de Chebyshev. TRANCHE le 2026-08-29, reconfirme le 2026-08-31 : orthogonal. 1 case = 1 PM n'a de sens que si toutes les cases voisines coutent la meme chose. Les 8 directions dessinees servent a l'orientation de l'attaque — en distance de Manhattan une case en diagonale est a distance 2.",
     "adjacency": "orthogonal"
   },
-  "turns": {
-    "min_turns": 3,
-    "max_turns": 6
+  "action_points": {
+    "_readme": "Points d'Action (§ 13). Chaque personnage les retrouve intacts au debut de son activation. Une compétence en coute entre 2 et 7.",
+    "refill_each_activation": true,
+    "leftover_to_defence": 0,
+    "_leftover": "Conversion des PA restants en défense temporaire (§ 15). 0 = désactivée. Le § 15 la dit optionnelle dans le MVP ; le champ existe pour pouvoir l'essayer sans toucher au code."
+  },
+  "movement_points": {
+    "_readme": "Points de Mouvement (§ 13). 1 case = 1 PM, plus le surcout du terrain. Une case de boue coute 2 : c'est ce que le systeme PM apporte et que l'ancien modele ne pouvait pas exprimer.",
+    "refill_each_activation": true,
+    "cost_per_cell": 1,
+    "pass_through_allies": true,
+    "pass_through_enemies": false,
+    "_pass": "Traverser n'est pas s'arreter : on ne finit jamais son deplacement sur une case occupee, quel que soit le reglage."
+  },
+  "initiative": {
+    "_readme": "Timeline d'initiative entremelee (§ 16). La plus haute initiative joue en premier. La timeline est recalculee a chaque ronde, pour qu'un bonus d'initiative se voie tout de suite.",
+    "tie_break": "heroes_first",
+    "_tie_break": "heroes_first = a initiative egale, un heros passe avant un ennemi, puis c'est l'identifiant qui departage. Le joueur ne perd jamais un echange par un tirage.",
+    "preview_length": 6,
+    "_preview": "Nombre d'activations affichees dans la timeline du HUD. Le § 16 demande qui joue maintenant ET qui joue ensuite."
+  },
+  "damage": {
+    "_formula": "degats = degats de base de la competence + statistique d'echelle du lanceur - defense de la cible, borne a minimum. Le modificateur de terrain de la case de la cible s'ajoute avant la borne.",
+    "minimum": 1,
+    "critical_multiplier": 2,
+    "_critical": "Le critique est declare (§ 12) mais n'est pas encore tire : toutes les classes ont 0 de critique. Il entrera avec l'equipement, en Phase 2."
+  },
+  "statuses": {
+    "_readme": "Effets de statut appliques par les competences (§ 15). duration se compte en activations de la cible.",
+    "chilled": {
+      "movement_points": -2,
+      "note": "Gel du Mage. Retire 2 PM a la prochaine activation de la cible."
+    },
+    "taunted": {
+      "note": "Doit cibler le provocateur si elle le peut. Pose par la Provocation du Guerrier."
+    }
   },
   "sides": {
-    "_readme": "squad_size est le nombre d'emplacements dont le joueur dispose au depart : 3, pour 4 classes. Il ne peut donc PAS prendre un exemplaire de chaque, et doit choisir. Les doublons sont autorises — 2 Guerriers + 1 Moine, ou 3 Lanciers — ce qui donne 20 compositions possibles au lieu d'une seule. Decision de Gaetan, 2026-08-29. max_heroes est le plafond dur : la Caserne de niveau 3 offre +1 emplacement (§ 5.4), ce qui fait 4. Les cartes de combat doivent donc prevoir max_heroes cases de depart.",
-    "squad_size": 3,
+    "_readme": "team_size est le nombre de personnages que le joueur emmene (§ 23 : 4 au maximum dans le MVP). max_heroes est le plafond dur que les cartes doivent prevoir en cases de depart.",
+    "team_size": 4,
     "max_heroes": 4,
     "min_enemies": 3,
     "max_enemies": 7
   },
+  "turns": {
+    "_readme": "Une ronde = une activation de chaque combattant vivant. Bornes indicatives pour l'ecriture des rencontres.",
+    "min_rounds": 3,
+    "max_rounds": 8
+  },
   "push": {
-    "_blocked": "Ce qui arrive quand une poussée est bloquée par un décor, une unité ou le bord. 0 = il ne se passe rien, le pousseur a gâché son coup.",
+    "_blocked": "Ce qui arrive quand une poussee est bloquee par un decor, une unite ou le bord. 0 = il ne se passe rien, le pousseur a gache son coup.",
     "blocked_damage": 0,
     "distance": 1
   },
-  "movement": {
-    "_readme": "Traverser n'est pas s'arrêter : on ne finit jamais son déplacement sur une case occupée, quel que soit le réglage.",
-    "pass_through_allies": true,
-    "pass_through_enemies": false
-  },
   "objectives": {
-    "_readme": "Les six types d'objectif du § 4.5. Chaque carte de combat en choisit un et fournit ses parametres. La defaite par escouade entierement hors de combat s'applique a TOUS les types, en plus de la defaite propre a l'objectif.",
-    "survive_default_turns": 4,
-    "protect_default_hit_points": 2,
-    "max_turns_before_draw": 12
+    "_readme": "Types d'objectif d'une rencontre. Chaque carte en choisit un et fournit ses parametres. La defaite par equipe entierement hors de combat s'applique a TOUS les types, en plus de la defaite propre a l'objectif.",
+    "survive_default_rounds": 4,
+    "protect_default_hit_points": 40,
+    "max_rounds_before_draw": 15
   },
   "deployment": {
-    "_readme": "Le joueur PLACE ses heros avant le premier tour, sur les cases que la carte propose. Il y en a plus que de heros : c'est ce qui fait du placement une decision. Decision de Gaetan, 2026-08-29. min et max encadrent ce qu'une carte a le droit de proposer — trop peu et le choix disparait, trop et il se dilue.",
+    "_readme": "Le joueur PLACE ses personnages avant le premier tour, sur les cases que la carte propose. Il y en a plus que de personnages : c'est ce qui fait du placement une decision (§ 20).",
     "cells_min": 6,
-    "cells_max": 10
+    "cells_max": 12
   }
 }

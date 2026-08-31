@@ -69,13 +69,13 @@ func test_survivre_quatre_tours() -> void:
 
 func test_survivre_prend_son_defaut_dans_les_donnees() -> void:
 	var objective := CombatObjective.from_dictionary({"kind": "survive"})
-	assert_eq(objective.turns, int(CombatRules.rule(&"objectives", &"survive_default_turns", 0)))
+	assert_eq(objective.turns, int(CombatRules.rule(&"objectives", &"survive_default_rounds", 0)))
 
 
 func test_escorter_un_pion_jusqu_au_bord() -> void:
 	var board := _plain()
 	_hero(board, Vector2i(1, 1), 1)
-	var pawn := Unit.from_hero_class(2, &"monk", Vector2i(1, 3))
+	var pawn := Unit.from_hero_class(2, &"mage", Vector2i(1, 3))
 	board.place_unit(pawn, Vector2i(1, 3))
 	var objective := CombatObjective.from_dictionary({
 		"kind": "escort", "subject_ids": [2], "cells": [[7, 3], [7, 4]],
@@ -88,7 +88,7 @@ func test_escorter_un_pion_jusqu_au_bord() -> void:
 func test_escorter_perdu_si_l_escorte_tombe() -> void:
 	var board := _plain()
 	_hero(board, Vector2i(1, 1), 1)
-	var pawn := Unit.from_hero_class(2, &"monk", Vector2i(1, 3))
+	var pawn := Unit.from_hero_class(2, &"mage", Vector2i(1, 3))
 	board.place_unit(pawn, Vector2i(1, 3))
 	var objective := CombatObjective.from_dictionary({
 		"kind": "escort", "subject_ids": [2], "cells": [[7, 3]],

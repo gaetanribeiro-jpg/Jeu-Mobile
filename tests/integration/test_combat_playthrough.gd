@@ -8,10 +8,10 @@ extends GutTest
 ## partie — et c'est le genre de panne qu'on ne découvre qu'en jouant.
 ##
 ## Le « joueur » ici est une politique triviale : avancer vers l'ennemi le
-## plus proche et frapper si possible. Elle ne joue pas bien, et ce n'est
-## pas le sujet. C'est aussi l'amorce du simulateur de T10.2.
+## plus proche et vider ses PA dessus. Elle ne joue pas bien, et ce n'est
+## pas le sujet.
 
-const TURN_CAP := 30
+const ACTIVATION_CAP := 200
 
 
 func before_each() -> void:
@@ -21,35 +21,64 @@ func before_each() -> void:
 
 
 func _squad() -> Array[Unit]:
-	var wanted: Array = [&"warrior", &"archer", &"lancer", &"monk"]
-	return Unit.squad_from_classes(wanted.slice(0, CombatRules.squad_size()))
+	var wanted: Array = [&"warrior", &"archer", &"mage", &"warrior"]
+	return Unit.squad_from_classes(wanted.slice(0, CombatRules.team_size()))
 
 
-## Politique de joueur bête : chaque héros avance vers l'ennemi le plus
-## proche et frappe s'il le peut — sauf les unités que l'objectif charge
-## d'aller quelque part, qui vont là-bas. Elle ne joue pas bien, et ce
-## n'est pas le sujet : elle sert à faire avancer le combat jusqu'au bout.
-func _play_turn(engine: CombatEngine) -> void:
-	for hero: Unit in engine.board.active_units(Unit.Side.HEROES):
-		var goal := _goal_for(engine, hero)
-		if goal != Vector2i(-1, -1):
-			_walk_toward(engine, hero, goal, 0)
+## Politique de joueur bête : le personnage que la timeline désigne avance
+## vers l'ennemi le plus proche et vide ses PA dessus — sauf les unités que
+## l'objectif charge d'aller quelque part, qui vont là-bas. Elle ne joue
+## pas bien, et ce n'est pas le sujet : elle sert à faire avancer le
+## combat jusqu'au bout.
+func _play_activation(engine: CombatEngine, hero: Unit) -> void:
+	var goal := _goal_for(engine, hero)
+	if goal != Vector2i(-1, -1):
+		_walk_toward(engine, hero, goal, 0)
+		return
+
+	var enemies := engine.board.active_units(Unit.Side.ENEMIES)
+	if enemies.is_empty():
+		return
+	var target := enemies[0]
+	for candidate: Unit in enemies:
+		if engine.board.grid.distance(hero.cell, candidate.cell) \
+				< engine.board.grid.distance(hero.cell, target.cell):
+			target = candidate
+
+	if _best_ability(engine, hero, target) == null:
+		_walk_toward(engine, hero, target.cell, _closest_range(hero))
+	while target.is_active():
+		var ability := _best_ability(engine, hero, target)
+		if ability == null:
+			break
+		engine.use_ability(hero, ability.id, target.cell)
+
+
+## La compétence la plus chère que ce personnage peut porter maintenant.
+func _best_ability(engine: CombatEngine, hero: Unit, target: Unit) -> Ability:
+	var best: Ability = null
+	for ability_id: StringName in hero.abilities:
+		var ability := Ability.of(ability_id)
+		if ability == null or not ability.is_attack():
 			continue
+		if not engine.can_use(hero, ability_id):
+			continue
+		if not engine.targetable_cells(hero, ability_id).has(target.cell):
+			continue
+		if best == null or ability.action_points > best.action_points:
+			best = ability
+	return best
 
-		var enemies := engine.board.active_units(Unit.Side.ENEMIES)
-		if enemies.is_empty():
-			return
-		var target := enemies[0]
-		for candidate: Unit in enemies:
-			if engine.board.grid.distance(hero.cell, candidate.cell) \
-					< engine.board.grid.distance(hero.cell, target.cell):
-				target = candidate
 
-		if not engine.board.can_attack(hero, target):
-			_walk_toward(engine, hero, target.cell, hero.range_min)
-
-		if engine.board.can_attack(hero, target):
-			engine.attack(hero, target)
+## La portée minimale la plus basse dont dispose ce personnage : c'est la
+## distance à laquelle il doit s'arrêter d'avancer.
+func _closest_range(hero: Unit) -> int:
+	var closest := 99
+	for ability_id: StringName in hero.abilities:
+		var ability := Ability.of(ability_id)
+		if ability != null and ability.is_attack():
+			closest = mini(closest, ability.range_min)
+	return closest if closest < 99 else 1
 
 
 ## Case que l'objectif demande à cette unité d'atteindre, ou (-1, -1).
@@ -80,7 +109,7 @@ func _walk_toward(engine: CombatEngine, hero: Unit, goal: Vector2i, keep: int) -
 			best_distance = distance
 			best = cell
 	if best != hero.cell:
-		engine.move_hero(hero, best)
+		engine.move(hero, best)
 
 
 func _run(map_id: StringName, seed_value: int) -> Dictionary:
@@ -94,12 +123,18 @@ func _run(map_id: StringName, seed_value: int) -> Dictionary:
 	# laisser au joueur. On pose sur les premières cases libres.
 	engine.auto_deploy()
 	engine.begin_combat()
-	var turns := 0
-	while not engine.is_finished() and turns < TURN_CAP:
-		_play_turn(engine)
-		engine.end_player_turn()
-		turns += 1
-	return {"finished": engine.is_finished(), "victory": engine.is_victory(), "turns": turns}
+	var activations := 0
+	while not engine.is_finished() and activations < ACTIVATION_CAP:
+		var hero := engine.current_unit()
+		if hero != null and hero.is_hero():
+			_play_activation(engine, hero)
+		engine.end_activation()
+		activations += 1
+	return {
+		"finished": engine.is_finished(),
+		"victory": engine.is_victory(),
+		"rounds": engine.round_index(),
+	}
 
 
 func test_les_huit_cartes_se_chargent() -> void:
@@ -122,10 +157,10 @@ func test_chaque_carte_va_jusqu_a_une_conclusion() -> void:
 		var result := _run(id, 1000)
 		assert_true(
 			result.get("finished", false),
-			"%s ne se termine pas en %d tours" % [id, TURN_CAP]
+			"%s ne se termine pas en %d activations" % [id, ACTIVATION_CAP]
 		)
-		summary.append("%s : %d tours, %s" % [
-			id, result["turns"], "victoire" if result["victory"] else "défaite",
+		summary.append("%s : %d rondes, %s" % [
+			id, result["rounds"], "victoire" if result["victory"] else "défaite",
 		])
 	gut.p("\n".join(summary))
 
@@ -161,33 +196,108 @@ func test_le_combat_ne_depend_pas_du_hasard() -> void:
 
 
 func test_le_telegraphe_ne_ment_jamais_sur_une_partie_entiere() -> void:
-	# La propriété la plus importante du jeu, vérifiée à chaque tour de
-	# chaque carte : ce que le télégraphe annonce sur une case est
-	# exactement ce que cette case encaisse.
+	# La propriété la plus importante du jeu, vérifiée sur chaque coup
+	# porté de chaque carte : le chiffre qu'un ennemi annonce sur une case
+	# est exactement le chiffre que cette case encaisse quand il frappe.
+	#
+	# La comparaison se fait PAR ATTAQUANT, et pas en additionnant tout ce
+	# que le télégraphe affiche. Avec une timeline entremêlée, un ennemi
+	# qui vient de jouer a déjà réannoncé pour sa PROCHAINE activation :
+	# son annonce est visible à l'écran mais ne partira pas dans cette
+	# fenêtre-ci. Additionner les deux reviendrait à tester la timeline, ce
+	# que fait test_turn_order.gd, pas l'honnêteté du télégraphe.
+	var checked := 0
 	for id: StringName in CombatMap.map_ids():
 		var map := CombatMap.load_map(id, CombatRules.ADJACENCY_ORTHOGONAL)
 		var engine := map.to_engine(_squad(), CombatRng.new(555))
 		engine.start()
 		engine.auto_deploy()
 		engine.begin_combat()
-		var turns := 0
-		while not engine.is_finished() and turns < TURN_CAP:
-			_play_turn(engine)
 
+		var activations := 0
+		while not engine.is_finished() and activations < ACTIVATION_CAP:
+			var hero := engine.current_unit()
+			if hero != null and hero.is_hero():
+				_play_activation(engine, hero)
+
+			# { attaquant → { case → dégâts annoncés } }
 			var announced := {}
-			for hero: Unit in engine.board.active_units(Unit.Side.HEROES):
-				announced[hero.id] = [engine.threat_on(hero.cell), hero.hit_points]
+			for entry: Dictionary in engine.telegraph():
+				var per_cell := {}
+				var cells: Array = entry["cells"]
+				for i in cells.size():
+					per_cell[cells[i]] = int(entry["damage"][i])
+				announced[int(entry["attacker_id"])] = per_cell
 
-			engine.end_player_turn()
-
-			for hero_id: int in announced.keys():
-				var hero := engine.board.unit_by_id(hero_id)
-				var expected: int = announced[hero_id][0]
-				var before: int = announced[hero_id][1]
-				var taken: int = before - hero.hit_points
-				assert_eq(
-					taken, expected,
-					"%s tour %d : %d dégâts annoncés sur le héros %d, %d subis"
-						% [id, turns + 1, expected, hero_id, taken]
+			for event: Dictionary in engine.end_activation():
+				if String(event["event"]) != "attack_landed":
+					continue
+				var attacker_id := int(event["attacker_id"])
+				var cell: Vector2i = event["cell"]
+				assert_true(
+					announced.has(attacker_id),
+					"%s : le héros %d a frappé sans avoir rien annoncé"
+						% [id, attacker_id]
 				)
-			turns += 1
+				var per_cell: Dictionary = announced.get(attacker_id, {})
+				assert_true(
+					per_cell.has(cell),
+					"%s : l'ennemi %d a frappé une case qu'il n'avait pas annoncée"
+						% [id, attacker_id]
+				)
+				assert_eq(
+					int(event["damage"]), int(per_cell.get(cell, -1)),
+					"%s : l'ennemi %d annonçait %s sur %s, il a infligé %d"
+						% [id, attacker_id, per_cell.get(cell, -1), cell, int(event["damage"])]
+				)
+				checked += 1
+			activations += 1
+	assert_gt(checked, 0, "aucun coup n'a été porté, le test ne prouve rien")
+
+
+func test_le_telegraphe_ne_ment_pas_sur_un_joueur_qui_ne_fait_rien() -> void:
+	# Le test précédent ne contrôle que les coups qui partent, et pour
+	# l'instant les héros expédient les ennemis avant qu'ils n'aient
+	# l'occasion de frapper (c'est le déséquilibre de T1.11). Celui-ci
+	# garantit qu'au moins un scénario met le télégraphe à l'épreuve : un
+	# héros planté qui ne fait rien, et trois gobelins qui le trouvent.
+	var board := CombatBoard.from_rows(PackedStringArray([
+		"..........", "..........", "..........",
+		"..........", "..........", "..........",
+	]), CombatRules.ADJACENCY_ORTHOGONAL)
+	var hero := Unit.from_hero_class(1, &"warrior", Vector2i(1, 2))
+	hero.max_hit_points = 9999
+	hero.hit_points = 9999
+	board.place_unit(hero, hero.cell)
+	for i in 3:
+		var goblin := Unit.from_enemy(90 + i, &"spear_goblin", Vector2i(6, i + 1))
+		board.place_unit(goblin, goblin.cell)
+
+	var engine := CombatEngine.new(
+		board, CombatObjective.from_dictionary({"kind": "eliminate"}), CombatRng.new(9)
+	)
+	engine.start()
+
+	var landed := 0
+	for activation in 40:
+		if engine.is_finished():
+			break
+		var announced := {}
+		for entry: Dictionary in engine.telegraph():
+			var per_cell := {}
+			var cells: Array = entry["cells"]
+			for i in cells.size():
+				per_cell[cells[i]] = int(entry["damage"][i])
+			announced[int(entry["attacker_id"])] = per_cell
+
+		for event: Dictionary in engine.end_activation():
+			if String(event["event"]) != "attack_landed":
+				continue
+			var per_cell: Dictionary = announced.get(int(event["attacker_id"]), {})
+			assert_eq(
+				int(event["damage"]), int(per_cell.get(event["cell"], -1)),
+				"l'ennemi %d n'a pas frappé comme il l'avait annoncé"
+					% int(event["attacker_id"])
+			)
+			landed += 1
+	assert_gt(landed, 0, "les gobelins n'ont jamais frappé")

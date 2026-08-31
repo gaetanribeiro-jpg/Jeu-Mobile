@@ -45,6 +45,17 @@ n'est à réécrire le jour où on les ressort.
 - **Les murs et les portes du royaume** — aucune tuile. La défense
   s'appuie sur les tours et le relief. (2026-08-31)
 
+## Perdu dans la refonte du combat, à récupérer
+
+- **La Bénédiction du Moine** — annulait une attaque télégraphiée sur une
+  case. C'était la troisième réponse au télégraphe (sortir de la case,
+  abattre l'ennemi, ou annuler le coup), et elle disparaît avec le Moine.
+  Le Mage pourrait la reprendre sous un autre nom. (2026-08-31)
+- **La Repousse du Lancier** — la deuxième réponse au télégraphe :
+  déplacer l'attaquant pour dévier sa menace. Le moteur sait toujours
+  pousser (`CombatBoard.push`), plus personne ne sait le déclencher.
+  À rendre à une classe dès qu'on en ajoute une. (2026-08-31)
+
 ## Idées en attente
 
 *(vide — à remplir au fil des sessions)*

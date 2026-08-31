@@ -1,5 +1,5 @@
 keys,fr
-GAME_TITLE,Reconquête
+GAME_TITLE,Tiny Kingdoms
 BOOT_SUBTITLE,Chargement…
 ACCENT_TEST_UPPER,ÀÂÄÇÉÈÊËÎÏÔÖÙÛÜŸÆŒ
 ACCENT_TEST_LOWER,àâäçéèêëîïôöùûüÿæœ
@@ -7,8 +7,8 @@ ACCENT_TEST_PUNCT,« ­— … ’ »
 FONT_TEST_TITLE,Contrôle de la police
 FONT_TEST_SAMPLE_CARD,"Vous apercevez un puits, mais il n'y a pas d'eau au fond. Il y a en revanche des marches, qui descendent plus bas que la vallée ne devrait aller…"
 FONT_TEST_PROMPT,Que souhaitez-vous faire ?
-FONT_TEST_STATS,Aldric — Guerrier · nv 4 · PV 9 · Dépl. 3 · Portée 1 · Dégâts 3
-FONT_TEST_RESOURCES,Menace 7 · Bois 24 · Or 51 · Vivres 12 · Renom 4
+FONT_TEST_STATS,Aldric — Guerrier · nv 4 · PV 120 · PA 8 · PM 4 · Portée 1 · Dégâts 32
+FONT_TEST_RESOURCES,Bois 24 · Pierre 18 · Or 51 · Nourriture 12
 FONT_TEST_NO_FONT,Aucune police dans assets/fonts/ — affichage avec la police par défaut de Godot.
 FONT_TEST_HINT,Toucher l'écran pour passer à la police suivante.
 MAP_VALLEE_01,Le sentier des bergers
@@ -19,29 +19,42 @@ MAP_VALLEE_05,Le pont de bois
 MAP_VALLEE_06,La route basse
 MAP_VALLEE_07,Les ruines noyées
 MAP_VALLEE_08,La tanière
-HUD_TURN,Tour %d
+HUD_ROUND,Ronde %d
 HUD_END_TURN,Fin de tour
 HUD_UNDO,Annuler
 OBJECTIVE_ELIMINATE,Éliminer tous les ennemis
-OBJECTIVE_SURVIVE,Tenir %d tours
+OBJECTIVE_SURVIVE,Tenir %d rondes
 OBJECTIVE_ESCORT,Mener le protégé à l'autre bord
-OBJECTIVE_PROTECT,Protéger la structure %d tours
-OBJECTIVE_SEIZE,Atteindre la position avant le tour %d
+OBJECTIVE_PROTECT,Protéger la structure %d rondes
+OBJECTIVE_SEIZE,Atteindre la position avant la ronde %d
 OBJECTIVE_EXTRACT,Récupérer la cache et ressortir
 RESULT_VICTORY,Victoire
 RESULT_DEFEAT,Défaite
 CLASS_WARRIOR,Guerrier
 CLASS_ARCHER,Archer
+CLASS_MAGE,Mage
 CLASS_LANCER,Lancier
 CLASS_MONK,Moine
+ABILITY_STRIKE,Frappe
+ABILITY_HEAVY_STRIKE,Coup puissant
 ABILITY_TAUNT,Provocation
-ABILITY_AIMED_SHOT,Tir tendu
-ABILITY_PUSH_BACK,Repousse
-ABILITY_BLESSING,Bénédiction
+ABILITY_SHOT,Tir
+ABILITY_POWER_SHOT,Tir puissant
+ABILITY_HOP_BACK,Bond
+ABILITY_BOLT,Trait ardent
+ABILITY_FIREBALL,Boule de feu
+ABILITY_FROST,Gel
+ABILITY_COOLING_DOWN,En recharge
+ABILITY_NOT_ENOUGH_AP,Pas assez de PA
+ABILITY_NOT_ENOUGH_MP,Pas assez de PM
+ABILITY_ALREADY_MOVED,A déjà bougé
+HUD_ACTION_POINTS,PA %d/%d
+HUD_MOVEMENT_POINTS,PM %d/%d
+HUD_TIMELINE,Ordre de jeu
 BOOT_PICK_MAP,Choisir un combat
-BOOT_TEMPORARY,Écran de test provisoire — le vrai menu viendra en A9.1
+BOOT_TEMPORARY,Écran de test provisoire — le vrai menu viendra plus tard
 COMBAT_BACK,Retour
-BOOT_SQUAD,Escouade — toucher pour changer de classe
+BOOT_SQUAD,Équipe — toucher pour changer de classe
 HUD_BEGIN_COMBAT,Commencer
-HUD_DEPLOY,"Placez votre escouade — %d à poser"
-HUD_DEPLOY_READY,Escouade en place
+HUD_DEPLOY,"Placez votre équipe — %d à poser"
+HUD_DEPLOY_READY,Équipe en place

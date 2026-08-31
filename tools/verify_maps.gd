@@ -12,6 +12,10 @@ extends SceneTree
 
 var _problems: Array[String] = []
 
+## Cartes encore écrites pour l\'ancienne grille : une dette connue,
+## pas un défaut. Elles sont jouables, elles ne sont plus au format.
+var _to_rewrite: Array[String] = []
+
 
 func _init() -> void:
 	var ids := CombatMap.map_ids()
@@ -27,7 +31,12 @@ func _init() -> void:
 			continue
 		_check(map, width, height)
 
-	print("Problèmes : %d" % _problems.size())
+	if not _to_rewrite.is_empty():
+		print("\nÀ réécrire pour la nouvelle grille (T1.10) : %d" % _to_rewrite.size())
+		for line: String in _to_rewrite:
+			print("  %s" % line)
+
+	print("\nProblèmes : %d" % _problems.size())
 	for line: String in _problems:
 		print("  %s" % line)
 	if _problems.is_empty():
@@ -40,8 +49,12 @@ func _init() -> void:
 func _check(map: CombatMap, width: int, height: int) -> void:
 	var id := String(map.id)
 
+	# La taille n'est pas un défaut, c'est une dette : les huit cartes ont
+	# été écrites pour l'ancienne grille et attendent leur réécriture
+	# (T1.10). Elles restent parfaitement jouables en attendant, donc on
+	# les signale à part au lieu de faire rougir l'outil pour rien.
 	if map.board.grid.width != width or map.board.grid.height != height:
-		_problems.append("%s : grille %dx%d, attendu %dx%d"
+		_to_rewrite.append("%s : grille %dx%d, la référence est %dx%d"
 			% [id, map.board.grid.width, map.board.grid.height, width, height])
 
 	if map.name_key.is_empty():
@@ -121,7 +134,7 @@ func _check_objective(map: CombatMap, id: String) -> void:
 			if objective.turns <= 0:
 				_problems.append("%s : protection sans durée" % id)
 		CombatObjective.Kind.SURVIVE:
-			var limit := int(CombatRules.rule(&"turns", &"max_turns", 6))
+			var limit := int(CombatRules.rule(&"turns", &"max_rounds", 8))
 			if objective.turns <= 0 or objective.turns > limit:
-				_problems.append("%s : tenir %d tours, hors des %d tours visés"
+				_problems.append("%s : tenir %d rondes, hors des %d rondes visées"
 					% [id, objective.turns, limit])

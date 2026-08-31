@@ -34,7 +34,7 @@ func _engine(board: CombatBoard, squad: Array[Unit], cells: Array[Vector2i]) -> 
 
 
 func _squad() -> Array[Unit]:
-	return Unit.squad_from_classes([&"warrior", &"archer", &"monk"])
+	return Unit.squad_from_classes([&"warrior", &"archer", &"mage"])
 
 
 func _zone() -> Array[Vector2i]:
@@ -84,8 +84,8 @@ func test_on_choisit_qui_l_on_pose() -> void:
 	_with_enemy(board, Vector2i(7, 2))
 	var squad := _squad()
 	var engine := _engine(board, squad, _zone())
-	assert_true(engine.deploy(Vector2i(0, 1), squad[2]), "le moine d'abord")
-	assert_eq(engine.board.unit_at(Vector2i(0, 1)).class_id, &"monk")
+	assert_true(engine.deploy(Vector2i(0, 1), squad[2]), "le Mage d'abord")
+	assert_eq(engine.board.unit_at(Vector2i(0, 1)).class_id, &"mage")
 	assert_eq(engine.pending_heroes().size(), 2)
 
 
@@ -159,8 +159,8 @@ func test_le_combat_ne_commence_pas_avant_que_tous_soient_poses() -> void:
 	assert_true(engine.can_begin_combat())
 	assert_true(engine.begin_combat())
 	assert_false(engine.is_deploying())
-	assert_eq(engine.phase, CombatEngine.Phase.PLAYER_TURN)
-	assert_eq(engine.turn_index, 1)
+	assert_eq(engine.phase, CombatEngine.Phase.ACTIVE)
+	assert_eq(engine.round_index(), 1)
 
 
 func test_le_telegraphe_n_existe_qu_une_fois_le_combat_commence() -> void:
@@ -213,7 +213,7 @@ func test_sans_zone_le_combat_s_ouvre_directement() -> void:
 	)
 	engine.start()
 	assert_false(engine.is_deploying())
-	assert_eq(engine.phase, CombatEngine.Phase.PLAYER_TURN)
+	assert_eq(engine.phase, CombatEngine.Phase.ACTIVE)
 
 
 func test_les_huit_cartes_proposent_un_choix_de_placement() -> void:

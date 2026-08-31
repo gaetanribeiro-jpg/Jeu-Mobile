@@ -4,15 +4,14 @@ extends RefCounted
 ## Le plateau : la grille, les tuiles et les unités qui les occupent.
 ##
 ## Il répond aux quatre questions du combat qui ne dépendent que de l'état
-## présent, sans rien décider du tour ni de l'IA :
-##   C1.4 — où cette unité peut-elle aller ?
-##   C1.5 — que peut-elle voir et atteindre ?
-##   C1.6 — que se passe-t-il si elle frappe ici ?
-##   C1.7 — où atterrit une unité qu'on pousse ?
+## présent, sans rien décider de la timeline ni de l'IA :
+##   — jusqu'où cette unité peut-elle aller avec ses PM ?
+##   — que peut-elle voir et viser avec telle compétence ?
+##   — quelles cases cette compétence touche-t-elle, et pour combien ?
+##   — où atterrit une unité qu'on pousse ?
 ##
 ## Aucun nœud, aucune valeur chiffrée : tout vient de `data/combat/`.
-## La machine à états du tour (C1.8), le télégraphe (C1.9) et l'IA (C1.10)
-## se poseront par-dessus.
+## La timeline (TurnOrder), le télégraphe et l'IA se posent par-dessus.
 
 var grid: Grid
 
@@ -118,7 +117,7 @@ func move_unit(unit: Unit, to: Vector2i) -> bool:
 	return true
 
 
-# --- C1.4 : déplacement ----------------------------------------------------
+# --- Déplacement : les PM ----------------------------------------------------
 
 ## Cette unité peut-elle tenir sur cette case, terrain mis à part de
 ## l'occupation ? L'eau est infranchissable pour les héros et ouverte aux
@@ -142,17 +141,26 @@ func can_pass_through(unit: Unit, cell: Vector2i) -> bool:
 	var occupant := unit_at(cell)
 	if occupant == null or occupant.id == unit.id:
 		return true
-	var key := &"pass_through_allies" if occupant.side == unit.side else &"pass_through_enemies"
-	return bool(CombatRules.rule(&"movement", key, false))
+	if occupant.side == unit.side:
+		return CombatRules.pass_through_allies()
+	return CombatRules.pass_through_enemies()
 
 
-## Cases où l'unité peut terminer son déplacement, avec leur coût.
-## Parcours en largeur pondéré : { Vector2i → coût }. La case de départ
-## est incluse au coût 0 — rester sur place est toujours légal.
-func reachable_cells(unit: Unit) -> Dictionary:
+## Cases où l'unité peut terminer son déplacement, avec leur coût en PM.
+##
+## Parcours en largeur pondéré : { Vector2i → PM dépensés }. La case de
+## départ est incluse au coût 0 — rester sur place est toujours légal.
+## Le budget est ce qu'il RESTE de PM dans l'activation en cours, pas le
+## maximum de l'unité : c'est ce qui permet d'avancer de deux cases,
+## frapper, puis avancer encore (§ 14).
+##
+## `budget` force un autre budget que les PM courants. L'IA s'en sert pour
+## se demander où elle pourrait aller avec le plein.
+func reachable_cells(unit: Unit, budget: int = -1) -> Dictionary:
 	var costs := {unit.cell: 0}
 	if unit.is_downed():
 		return {}
+	var points := unit.movement_points if budget < 0 else budget
 
 	var frontier: Array[Vector2i] = [unit.cell]
 	while not frontier.is_empty():
@@ -161,8 +169,11 @@ func reachable_cells(unit: Unit) -> Dictionary:
 		for neighbor: Vector2i in grid.neighbors(current):
 			if not can_pass_through(unit, neighbor):
 				continue
-			var step_cost: int = current_cost + tile_at(neighbor).move_cost()
-			if step_cost > unit.movement:
+			var step_cost: int = (
+				current_cost
+				+ CombatRules.move_cost_per_cell() * tile_at(neighbor).move_cost()
+			)
+			if step_cost > points:
 				continue
 			if costs.has(neighbor) and int(costs[neighbor]) <= step_cost:
 				continue
@@ -183,7 +194,13 @@ func can_move_to(unit: Unit, cell: Vector2i) -> bool:
 	return reachable_cells(unit).has(cell)
 
 
-# --- C1.5 : ligne de vue et portée ----------------------------------------
+## Coût en PM pour rejoindre cette case, ou -1 si elle est hors d'atteinte.
+func move_cost_to(unit: Unit, cell: Vector2i, budget: int = -1) -> int:
+	var costs := reachable_cells(unit, budget)
+	return int(costs[cell]) if costs.has(cell) else -1
+
+
+# --- Ligne de vue, portée, zone ----------------------------------------
 
 ## La vue passe-t-elle de `from` à `to` ? Les deux extrémités ne comptent
 ## pas : une unité en forêt reste visible, mais on ne tire pas à travers
@@ -197,85 +214,136 @@ func has_line_of_sight(from: Vector2i, to: Vector2i) -> bool:
 	return true
 
 
-## Portée maximale effective, colline comprise. Le bonus de la colline ne
-## vaut que pour les unités à distance : un guerrier perché ne frappe pas
-## plus loin.
-func effective_range_max(unit: Unit) -> int:
-	if not unit.is_ranged():
-		return unit.range_max
+## Portée maximale d'une compétence depuis la case où se tient l'unité,
+## colline comprise. Le bonus de la colline ne vaut que pour les
+## compétences à distance : un guerrier perché ne frappe pas plus loin.
+func effective_range_max(unit: Unit, ability: Ability) -> int:
+	if ability.range_max <= 1:
+		return ability.range_max
 	var tile := tile_at(unit.cell)
 	var bonus := tile.ranged_range_bonus() if tile != null else 0
-	return unit.range_max + bonus
+	return ability.range_max + bonus
 
 
-## Cases que l'unité peut prendre pour cible depuis là où elle est.
-func attackable_cells(unit: Unit) -> Array[Vector2i]:
+## Cases que cette compétence peut VISER depuis là où l'unité se tient.
+## Ce n'est pas la même chose que les cases touchées : une Boule de foudre
+## vise une case et en touche cinq.
+func targetable_cells(unit: Unit, ability: Ability) -> Array[Vector2i]:
 	var out: Array[Vector2i] = []
-	if unit.is_downed():
+	if unit.is_downed() or ability == null:
+		return out
+	if ability.targets_self():
+		out.append(unit.cell)
 		return out
 	for cell: Vector2i in grid.cells_in_range(
-		unit.cell, unit.range_min, effective_range_max(unit)
+		unit.cell, ability.range_min, effective_range_max(unit, ability)
 	):
-		if unit.is_ranged() and not has_line_of_sight(unit.cell, cell):
+		if ability.needs_line_of_sight and not has_line_of_sight(unit.cell, cell):
 			continue
 		out.append(cell)
 	return out
 
 
-## Cibles ennemies effectivement atteignables.
-func attackable_units(unit: Unit) -> Array[Unit]:
+func can_target(unit: Unit, ability: Ability, cell: Vector2i) -> bool:
+	return targetable_cells(unit, ability).has(cell)
+
+
+## Cases effectivement TOUCHÉES si l'unité vise `target`. C'est ce que le
+## HUD colore avant de valider (§ 18 : les zones doivent être très
+## lisibles), et c'est ce que la résolution parcourt.
+func affected_cells(unit: Unit, ability: Ability, target: Vector2i) -> Array[Vector2i]:
+	if ability == null:
+		return []
+	return ability.area_cells(grid, unit.cell, target)
+
+
+## Unités présentes dans la zone touchée.
+##
+## Sans `friendly_fire`, les alliés du lanceur sont épargnés — et le
+## lanceur lui-même toujours. Avec, la Boule de feu brûle tout le monde :
+## c'est ce qui donne du poids au positionnement (§ 20).
+func affected_units(unit: Unit, ability: Ability, target: Vector2i) -> Array[Unit]:
 	var out: Array[Unit] = []
-	for cell: Vector2i in attackable_cells(unit):
+	for cell: Vector2i in affected_cells(unit, ability, target):
+		var occupant := unit_at(cell)
+		if occupant == null or not occupant.is_active():
+			continue
+		if occupant.id == unit.id:
+			continue
+		if occupant.side == unit.side and not ability.friendly_fire:
+			continue
+		out.append(occupant)
+	return out
+
+
+## Cibles ennemies qu'une compétence peut atteindre depuis là où l'unité
+## se tient, sans bouger.
+func reachable_targets(unit: Unit, ability: Ability) -> Array[Unit]:
+	var out: Array[Unit] = []
+	for cell: Vector2i in targetable_cells(unit, ability):
 		var target := unit_at(cell)
 		if target != null and target.is_active() and target.side != unit.side:
 			out.append(target)
 	return out
 
 
-func can_attack(unit: Unit, target: Unit) -> bool:
-	return attackable_units(unit).has(target)
+## L'unité peut-elle frapper cette cible avec cette compétence, là, tout
+## de suite ? Vérifie les PA et la recharge autant que la portée.
+func can_use_on(unit: Unit, ability: Ability, target: Unit) -> bool:
+	if ability == null or target == null or not target.is_active():
+		return false
+	if not ability.is_available_to(unit):
+		return false
+	return reachable_targets(unit, ability).has(target)
 
 
-# --- C1.6 : résolution d'une attaque --------------------------------------
-
-## Dégâts qu'une attaque infligerait, sans rien appliquer.
+## Dégâts qu'une compétence infligerait à une unité, sans rien appliquer.
 ##
 ## C'est cette fonction que lit le télégraphe : le joueur voit le chiffre
 ## exact avant que le coup ne parte, colline et forêt comprises. Elle doit
-## donc rester la seule source du calcul — un télégraphe qui ment est pire
-## qu'une absence de télégraphe.
-func predicted_damage(attacker: Unit, target_cell: Vector2i) -> int:
-	var total := attacker.damage
-
-	var attacker_tile := tile_at(attacker.cell)
-	if attacker_tile != null and attacker.is_ranged():
-		total += attacker_tile.ranged_damage_bonus()
-
-	var target_tile := tile_at(target_cell)
-	if target_tile != null:
-		total += target_tile.damage_taken_modifier()
-
-	return maxi(total, 0)
+## rester la seule source du calcul.
+func predicted_damage(attacker: Unit, ability: Ability, target: Unit) -> int:
+	return Damage.compute(
+		attacker, ability, target, tile_at(attacker.cell), tile_at(target.cell)
+	)
 
 
-## Applique une attaque. Renvoie le compte rendu du coup :
-## { damage, target_id, downed, drowned }.
-func resolve_attack(attacker: Unit, target: Unit) -> Dictionary:
-	var damage := predicted_damage(attacker, target.cell)
-	var downed := target.take_damage(damage)
-	if downed:
-		remove_from_board(target)
-	attacker.has_acted = true
+## Applique une compétence sur une case. Renvoie le compte rendu :
+## { caster_id, ability, target, hits: [ { target_id, damage, downed,
+## status } ], downed_ids }.
+##
+## Ne dépense NI les PA NI la recharge : c'est le moteur qui décide qu'une
+## action a lieu, le plateau ne fait que l'appliquer. Cela permet à l'IA
+## et au télégraphe de simuler sans consommer.
+func resolve_ability(attacker: Unit, ability: Ability, target: Vector2i) -> Dictionary:
+	var hits: Array[Dictionary] = []
+	var downed_ids: Array[int] = []
+	for victim: Unit in affected_units(attacker, ability, target):
+		var amount := predicted_damage(attacker, ability, victim)
+		var downed := victim.take_damage(amount)
+		if not ability.status_id.is_empty():
+			victim.apply_status(ability.status_id, ability.status_duration)
+		if downed:
+			remove_from_board(victim)
+			downed_ids.append(victim.id)
+		hits.append({
+			"target_id": victim.id,
+			"cell": victim.cell,
+			"damage": amount,
+			"downed": downed,
+			"status": String(ability.status_id),
+		})
 	return {
-		"attacker_id": attacker.id,
-		"target_id": target.id,
-		"damage": damage,
-		"downed": downed,
-		"drowned": false,
+		"caster_id": attacker.id,
+		"ability": String(ability.id),
+		"target": target,
+		"cells": affected_cells(attacker, ability, target),
+		"hits": hits,
+		"downed_ids": downed_ids,
 	}
 
 
-# --- C1.7 : poussée --------------------------------------------------------
+# --- Poussée --------------------------------------------------------
 
 ## Où atterrirait une unité poussée, sans rien appliquer.
 ## Renvoie { destination, blocked, drowns, blocked_by }.
