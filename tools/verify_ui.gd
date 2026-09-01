@@ -27,6 +27,7 @@ func _init() -> void:
 	_check_button_roles()
 	_check_bars()
 	_check_widgets()
+	_check_glyphs()
 
 	if _problems.is_empty():
 		print("\nLe thème tient debout.")
@@ -233,3 +234,44 @@ func _check_widgets() -> void:
 
 	print("widgets      : %d déclarés, largeur de barre %d"
 		% [block.size() - 1, UiTheme.metric(&"scrollbar_width")])
+
+
+## Les glyphes de compétences (§ 48).
+##
+## LE SEUL MÉLANGE VECTORIEL / PIXEL DU JEU, et il ne tient qu'au seuil
+## d'alpha : sans lui la silhouette reste lisse et jure avec le pack. Un
+## seuil à zéro ou à un rendrait le glyphe respectivement flou ou vide,
+## et les deux se voient à l'écran sans rien casser ailleurs.
+func _check_glyphs() -> void:
+	var block := UiTheme.glyphs()
+	if block.is_empty():
+		_problems.append("aucun glyphe déclaré : la barre d'action restera en texte")
+		return
+
+	var threshold := float(block.get("alpha_threshold", -1.0))
+	if threshold <= 0.0 or threshold >= 1.0:
+		_problems.append("seuil d'alpha à %.2f : il doit être strictement entre 0 et 1"
+			% threshold)
+	if int(block.get("size", 0)) <= 0:
+		_problems.append("taille de glyphe nulle")
+
+	# CHAQUE COMPÉTENCE DU JOUEUR DOIT AVOIR SON GLYPHE. Une seule qui
+	# manque et la barre mélange icônes et texte nu, ce qui se lit plus
+	# mal que du texte partout.
+	var missing := PackedStringArray()
+	var covered := 0
+	for ability_id: StringName in Ability.ids():
+		var ability := Ability.of(ability_id)
+		if ability == null:
+			continue
+		if not Unit.hero_class_ids().has(ability.class_id) and not ability.is_carried():
+			continue
+		if AssetTable.has(&"glyphs", ability_id):
+			covered += 1
+		else:
+			missing.append(String(ability_id))
+	for id: String in missing:
+		_problems.append("« %s » n'a pas de glyphe" % id)
+
+	print("glyphes      : %d compétences couvertes, %d px, seuil %.2f"
+		% [covered, int(block.get("size", 0)), threshold])

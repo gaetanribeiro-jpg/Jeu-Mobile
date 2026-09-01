@@ -24,7 +24,8 @@ const TABLE_PATH := "res://data/assets.json"
 
 ## Catégories dont les entrées sont de simples fichiers, sans couleur.
 const PLAIN_CATEGORIES: Array[StringName] = [
-	&"terrain", &"decorations", &"resources", &"fx", &"ui", &"extra", &"widgets"
+	&"terrain", &"decorations", &"resources", &"fx", &"ui", &"extra",
+	&"widgets", &"glyphs"
 ]
 
 const KIND_IMAGE := &"image"
@@ -215,6 +216,15 @@ const NOTE_PREFIX := "_"
 
 static func is_note(key: String) -> bool:
 	return key.begins_with(NOTE_PREFIX)
+
+
+## Cette entrée existe-t-elle ? Distinct de `sprite()`, qui pousse une
+## erreur quand elle manque : ici, l'absence est une réponse valable —
+## une compétence sans glyphe reste en texte.
+static func has(category: StringName, key: StringName) -> bool:
+	if not PLAIN_CATEGORIES.has(category) or is_note(String(key)):
+		return false
+	return (table().get(String(category), {}) as Dictionary).has(String(key))
 
 
 static func sprite(category: StringName, key: StringName) -> Dictionary:

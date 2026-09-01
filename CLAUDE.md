@@ -423,10 +423,26 @@ ne dessine rien.** Un bouton Kenney à côté d'un bouton Tiny Swords se
 verrait ; une barre de défilement que Tiny Swords n'a jamais dessinée ne
 trahit rien.
 
-**Les packs Kenney n'ont AUCUNE icône de compétence** — vérifié sur les
-717 noms de fichiers. Les 15 compétences joueur n'ont toujours pas de
-glyphe, et le pack Tiny Swords n'en a pas non plus : ses 12 icônes sont
-des ressources et du chrome.
+**LES GLYPHES DE COMPÉTENCES VIENNENT DE game-icons.net (T9.5).** Ni Tiny
+Swords ni les packs Kenney n'en avaient : le premier a 12 icônes de
+ressources et de chrome, le second est thématique jeu de plateau. Trois
+choses à savoir :
+- **`assets/gameicons/` est en CC BY 3.0 : l'attribution est OBLIGATOIRE**,
+  pas une politesse comme pour le CC0. Lorc, Delapouite et Caro Asercion
+  sont nommés dans `CREDITS.md`. Trois régimes coexistent désormais —
+  Tiny Swords (interdit de redistribuer → `.gitignore`), Kenney (CC0),
+  game-icons (CC BY).
+- **Le seul mélange vectoriel / pixel du jeu, et il ne tient qu'au SEUIL
+  D'ALPHA.** Une silhouette lisse à côté d'un sprite Nearest se voit ;
+  seuillée, elle redevient un masque franc. On réduit en Lanczos PUIS on
+  seuille — l'inverse hacherait le trait.
+- **Le fond noir de chaque SVG a été retiré à l'import.** Chaque icône est
+  un carré noir plein suivi du tracé blanc.
+
+`AssetTable.has()` répond sans pousser d'erreur, contrairement à
+`sprite()` : une compétence sans glyphe reste en texte, ce qui est une
+réponse valable. Mais `verify_ui` exige un glyphe pour **chaque
+compétence de héros et chaque potion**.
 
 **`UiSkin`, PAS `Skin` : ce nom est pris par Godot** (la peau d'un
 squelette). L'autoload se résolvait silencieusement sur la classe native.

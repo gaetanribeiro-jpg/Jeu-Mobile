@@ -433,6 +433,13 @@ func _ability_button(ability_id: StringName) -> Button:
 	if not Consumable.item_for_ability(ability_id).is_empty():
 		role = &"arcane"
 	UiSkin.dress_button(button, role)
+	# LE GLYPHE DU § 48. Une compétence sans icône garde son texte seul :
+	# l'absence est une réponse valable, pas un défaut — c'est ce qui
+	# permet d'en ajouter une à la fois.
+	var mark := UiSkin.glyph(ability_id)
+	if mark != null:
+		button.icon = mark
+		button.expand_icon = false
 	button.pressed.connect(func() -> void:
 		_selected_ability = ability_id
 		ability_selected.emit(ability_id))

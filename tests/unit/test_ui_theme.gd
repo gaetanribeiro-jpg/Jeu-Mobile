@@ -180,6 +180,60 @@ func test_les_widgets_kenney_sont_dans_le_depot() -> void:
 		)
 
 
+func test_chaque_competence_du_joueur_a_son_glyphe() -> void:
+	# UNE SEULE QUI MANQUE ET LA BARRE MÉLANGE ICÔNES ET TEXTE NU, ce qui
+	# se lit plus mal que du texte partout. C'est aussi l'invariant qui
+	# rattrapera l'oubli le jour où une classe gagne une compétence.
+	assert_false(UiTheme.glyphs().is_empty(), "aucun glyphe déclaré")
+	for ability_id: StringName in Ability.ids():
+		var ability := Ability.of(ability_id)
+		if ability == null:
+			continue
+		var mine := Unit.hero_class_ids().has(ability.class_id)
+		if not mine and not ability.is_carried():
+			continue
+		assert_true(
+			AssetTable.has(&"glyphs", ability_id),
+			"« %s » n'a pas de glyphe" % ability_id
+		)
+
+
+func test_le_seuil_d_alpha_est_strictement_entre_zero_et_un() -> void:
+	# C'EST LUI SEUL QUI REND LE MÉLANGE SUPPORTABLE. À zéro le glyphe
+	# reste lisse et jure avec le pixel art ; à un il disparaît. Les deux
+	# se voient à l'écran sans rien casser ailleurs, donc sans test.
+	var threshold := float(UiTheme.glyphs().get("alpha_threshold", -1.0))
+	assert_gt(threshold, 0.0)
+	assert_lt(threshold, 1.0)
+	assert_gt(int(UiTheme.glyphs().get("size", 0)), 0)
+
+
+func test_les_glyphes_sont_dans_le_depot() -> void:
+	# game-icons.net est en CC BY 3.0 : redistribuable, donc versionné —
+	# et leur absence est un vrai défaut, pas un poste mal installé.
+	var seen := 0
+	for ability_id: StringName in Ability.ids():
+		if not AssetTable.has(&"glyphs", ability_id):
+			continue
+		var entry := AssetTable.sprite(&"glyphs", ability_id)
+		assert_true(
+			FileAccess.file_exists(String(entry.get("path", ""))),
+			"« %s » : fichier manquant" % ability_id
+		)
+		seen += 1
+	assert_gt(seen, 10, "les glyphes doivent être là")
+
+
+func test_une_categorie_sait_dire_qu_elle_ne_connait_pas_une_cle() -> void:
+	# `has` est distinct de `sprite` : ici l'absence est une RÉPONSE, pas
+	# une erreur. C'est ce qui permet à une compétence sans glyphe de
+	# rester en texte au lieu de pousser une erreur à chaque image.
+	assert_true(AssetTable.has(&"glyphs", &"fireball"))
+	assert_false(AssetTable.has(&"glyphs", &"gore"), "un ennemi n'a pas de glyphe")
+	assert_false(AssetTable.has(&"glyphs", &"_note"))
+	assert_false(AssetTable.has(&"pas_une_categorie", &"fireball"))
+
+
 func test_les_cles_de_commentaire_ne_sont_pas_des_entrees() -> void:
 	# Tous les fichiers de données du projet portent des `_note`. La table
 	# des assets n'y échappait que parce qu'elle n'en avait pas : en

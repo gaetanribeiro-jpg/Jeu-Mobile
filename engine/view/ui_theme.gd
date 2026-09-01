@@ -137,6 +137,13 @@ static func widget(name_: StringName) -> Dictionary:
 	return widgets().get(String(name_), {})
 
 
+## Les glyphes de compétences (§ 48) : taille, seuil d'alpha, teinte.
+## Vide si le thème n'en déclare pas — la barre d'action reste alors en
+## texte, ce qu'elle a fait pendant neuf phases.
+static func glyphs() -> Dictionary:
+	return section(&"glyphs")
+
+
 ## La couleur d'une jauge de vie selon ce qu'il reste, en fraction.
 ## Vit ici et pas dans un écran : trois écrans dessinent des PV, et trois
 ## seuils écrits trois fois divergent au premier réglage.

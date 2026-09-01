@@ -1797,6 +1797,72 @@ expédition à l'autre.
   raccrochent à des PV, celui-là à une intuition.
 
 
+### T9.5 — les icônes de compétences ✅
+
+La question ouverte depuis le début de la Phase 9 : **la barre d'action
+du § 48 était en texte nu**, parce qu'aucun pack n'avait de glyphe de
+sort. Gaetan a fourni trois paquets de plus, et la réponse est enfin
+franche.
+
+| Pack | Verdict |
+|---|---|
+| **game-icons.net** — 4133 SVG, CC BY 3.0 | **Les quinze y sont.** Le seul qui les ait toutes. |
+| **Kenney Board Game Icons** — 255 PNG 64 px, CC0 | Grille parfaite, mais thématique jeu de plateau : cartes, dés, pions. Quatre glyphes utilisables sur quinze. |
+| **Kenney Platformer Art Pixel** — 900 tuiles 21 px, CC0 | Hors sujet : un side-scroller cartoon, en 21 px, qui ne cohabite avec rien ici. |
+
+### Mêler du vectoriel au pixel art, et à quelle condition
+
+C'est le seul endroit du jeu où on le fait, et ça ne tient qu'à **une
+ligne de code** : le seuil d'alpha.
+
+Une silhouette vectorielle est LISSE. Rendue à 32 px et posée à côté d'un
+sprite de 64 px en filtrage Nearest, ça se voit immédiatement — le bord
+dégradé trahit l'origine. En jetant ce dégradé (alpha binaire au-dessus
+de 0,5), le glyphe redevient un **masque franc** : du pixel, comme le
+reste.
+
+L'ordre compte : on réduit d'abord en **Lanczos** pour garder la forme,
+PUIS on seuille. Réduire en Nearest depuis 512 px hacherait le trait
+(un pixel sur huit) avant qu'on ait rien à seuiller.
+
+Le glyphe est blanc à la source et se **repeint en blanc franc** au
+passage : sans ça, les pixels à demi couverts gardent leur gris et le
+seuil ne sert à rien.
+
+### Le fond noir, et pourquoi il n'apparaît nulle part
+
+Chaque SVG de game-icons.net est un **carré noir plein suivi du tracé
+blanc**. Le laisser aurait posé un carré noir sur chaque bouton. Il est
+retiré à l'import — c'est la seule modification, et CC BY l'autorise
+expressément.
+
+### La première obligation de licence du projet
+
+`assets/gameicons/` est **en CC BY 3.0** : redistribuable, donc versionné,
+mais **l'attribution est obligatoire** — pas une politesse comme pour les
+packs CC0. Trois auteurs : Lorc (14 icônes), Delapouite (3), Caro Asercion
+(1). Ils sont nommés dans `CREDITS.md`, et si le jeu sortait un jour de
+son cadre personnel, la mention devrait apparaître **à l'écran**.
+
+Le projet a donc maintenant trois régimes d'assets, et il faut les
+distinguer : Tiny Swords (redistribution interdite → `.gitignore`),
+Kenney (CC0 → versionné, aucune obligation), game-icons.net (CC BY →
+versionné, attribution due).
+
+### Un accesseur qui manquait
+
+`AssetTable.has()` répond « cette entrée existe-t-elle ? » sans pousser
+d'erreur, là où `sprite()` en pousse une. La différence compte : **une
+compétence sans glyphe reste en texte**, ce qui est une réponse valable
+et pas un défaut. Sans cet accesseur, chaque compétence ennemie affichée
+aurait crié dans la console à chaque image.
+
+`verify_ui` et un test vérifient l'inverse pour le joueur : **chaque
+compétence de héros ou de potion DOIT avoir son glyphe.** Une seule qui
+manque et la barre mélange icônes et texte nu, ce qui se lit plus mal que
+du texte partout.
+
+
 ---
 
 ## 6. Ce qui est rangé, pas jeté

@@ -23,6 +23,21 @@ GUT est versionné dans le dépôt (`addons/gut/LICENSE.md` conservé intact).
 | Tiny Swords — Free Pack | Pixel Frog | Usage commercial et modification autorisés, **redistribution des fichiers interdite même modifiés** | 2026-08-29 |
 | Tiny Swords — Enemy Pack | Pixel Frog | idem (pack payant, 9,75 $) | 2026-08-29 |
 | UI Pack — Adventure (`assets/kenney/widgets/`) | Kenney (kenney.nl) | **CC0 1.0** — domaine public | 2026-09-01 |
+| 18 icônes de compétences (`assets/gameicons/abilities/`) | game-icons.net — Lorc (14), Delapouite (3), Caro Asercion (1) | **CC BY 3.0** — attribution OBLIGATOIRE | 2026-09-01 |
+
+**C'est la seule ligne du projet où l'attribution est une OBLIGATION et pas
+une politesse.** CC0 n'en demande aucune ; CC BY 3.0 en exige une. Les
+auteurs sont donc nommés ci-dessus et dans `assets/gameicons/LICENSE-gameicons.txt`,
+conservé intact. Si le jeu sortait un jour de son cadre personnel, cette
+mention devrait apparaître à l'écran, pas seulement dans ce fichier.
+
+Icônes retenues : `sword-wound`, `broadsword`, `shouting`, `axe-swing`,
+`mantrap`, `bow-arrow`, `broadhead-arrow`, `jump-across`, `arrow-cluster`,
+`chained-arrow-heads`, `magic-swirl`, `fireball`, `snowflake-1`,
+`sinusoidal-beam`, `snowing`, `health-potion`, `round-potion`, `fire-bomb`.
+
+Le fond noir de chaque SVG a été retiré à l'import — c'est la seule
+modification, et CC BY l'autorise expressément.
 
 **Les assets Kenney SONT dans le dépôt, contrairement à Tiny Swords**, et la
 différence est la licence : CC0 autorise la redistribution, Pixel Frog

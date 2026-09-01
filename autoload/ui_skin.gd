@@ -183,6 +183,59 @@ func build_bar(value: float, maximum: float, fill_color: Color) -> Control:
 	return trough
 
 
+## Le glyphe d'une compétence, ou null si elle n'en a pas.
+##
+## LE SEUL ENDROIT DU JEU OÙ L'ON MÊLE DU VECTORIEL AU PIXEL ART, et
+## c'était ça ou rien : ni Tiny Swords ni les packs Kenney n'ont d'icône
+## de sort. Le premier en a douze, toutes de ressources et de chrome ; le
+## second est thématique jeu de plateau et n'offre que l'épée, l'arc, le
+## feu et le bouclier. game-icons.net les avait toutes les quinze.
+##
+## LE SEUIL D'ALPHA EST CE QUI REND LE MÉLANGE SUPPORTABLE. Une silhouette
+## vectorielle est lisse ; posée à côté d'un sprite de 64 px en filtrage
+## Nearest, ça se voit immédiatement. En jetant le dégradé de bord, le
+## glyphe redevient un masque franc — du pixel, comme le reste. On réduit
+## d'abord en Lanczos pour garder la forme, PUIS on seuille : l'inverse
+## (réduire en Nearest) hacherait le trait.
+func glyph(ability_id: StringName) -> Texture2D:
+	var block := UiTheme.glyphs()
+	if block.is_empty() or ability_id.is_empty():
+		return null
+	var cache := StringName("glyph|%s" % ability_id)
+	if _textures.has(cache):
+		return _textures[cache]
+	if not AssetTable.has(&"glyphs", ability_id):
+		return null
+
+	var entry := AssetTable.sprite(&"glyphs", ability_id)
+	if entry.is_empty():
+		return null
+	var image := _load_image(String(entry.get("path", "")))
+	if image == null:
+		return null
+
+	var side := maxi(int(block.get("size", 48)), 1)
+	image.resize(side, side, Image.INTERPOLATE_LANCZOS)
+	_threshold(image, float(block.get("alpha_threshold", 0.5)))
+	var texture := ImageTexture.create_from_image(image)
+	_textures[cache] = texture
+	return texture
+
+
+## Rend l'alpha binaire : un bord franc au lieu d'un dégradé.
+func _threshold(image: Image, level: float) -> void:
+	for y in image.get_height():
+		for x in image.get_width():
+			var pixel := image.get_pixel(x, y)
+			if pixel.a < level:
+				image.set_pixel(x, y, Color(0, 0, 0, 0))
+			else:
+				# Le glyphe est blanc à la source ; on le REPEINT en blanc
+				# franc, sinon les pixels à demi couverts gardent leur
+				# gris et le seuil ne sert à rien.
+				image.set_pixel(x, y, Color(1, 1, 1, 1))
+
+
 ## Les deux textures d'une jauge : { base, fill }. Vides si le pack
 ## manque — l'appelant retombe alors sur un rectangle plein.
 func bar_textures() -> Dictionary:

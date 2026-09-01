@@ -200,5 +200,11 @@
       "scale": 1,
       "tint": "wood_light"
     }
+  },
+  "glyphs": {
+    "_note": "LES ICÔNES DE COMPÉTENCES (§ 48), et le seul endroit du jeu où l'on mélange du vectoriel à du pixel art.\n\n`size` est la taille de rendu final. `alpha_threshold` est ce qui rend le mélange supportable : une silhouette vectorielle est LISSE, et posée à côté du pixel art de Tiny Swords ça se voit tout de suite. En seuillant l'alpha, le dégradé de bord disparaît et le glyphe redevient un masque franc — du pixel, comme le reste.\n\nIls sont blancs à la source et se teintent comme les boutons : la palette décide, pas le fichier.",
+    "size": 32,
+    "alpha_threshold": 0.5,
+    "tint": "ink_inverse"
   }
 }
