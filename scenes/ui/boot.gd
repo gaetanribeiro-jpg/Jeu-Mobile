@@ -55,6 +55,10 @@ var _expedition_screen: Control = null
 
 
 func _ready() -> void:
+	theme = UiSkin.theme
+	_title.add_theme_font_size_override("font_size", UiTheme.font_size(&"title"))
+	_title.add_theme_color_override("font_color", UiTheme.color(&"ink_gold"))
+	_subtitle.add_theme_color_override("font_color", UiTheme.color(&"ink_muted"))
 	_title.text = tr("GAME_TITLE")
 	_subtitle.text = tr("BOOT_TEMPORARY")
 	GameState.load_saved()
@@ -102,9 +106,7 @@ func _build_squad_picker() -> void:
 	# repartant de zéro sans s'en apercevoir.
 	# UN COMBAT INTERROMPU PASSE AVANT TOUT. C'est l'état le plus fragile
 	# de la partie et le plus coûteux à perdre : sept rondes de décisions.
-	var go := Button.new()
-	go.custom_minimum_size = Vector2(400, 84)
-	go.add_theme_font_size_override("font_size", 26)
+	var go := _menu_button(&"primary", 400)
 	if GameState.combat != null and not GameState.combat.is_finished():
 		go.text = tr("BOOT_RESUME_COMBAT")
 		go.pressed.connect(_resume_combat)
@@ -116,23 +118,17 @@ func _build_squad_picker() -> void:
 		go.pressed.connect(_open_world)
 	row.add_child(go)
 
-	var kingdom := Button.new()
-	kingdom.custom_minimum_size = Vector2(240, 84)
-	kingdom.add_theme_font_size_override("font_size", 26)
+	var kingdom := _menu_button(&"positive", 240)
 	kingdom.text = tr("BOOT_KINGDOM")
 	kingdom.pressed.connect(_open_kingdom)
 	row.add_child(kingdom)
 
-	var company := Button.new()
-	company.custom_minimum_size = Vector2(240, 84)
-	company.add_theme_font_size_override("font_size", 26)
+	var company := _menu_button(&"arcane", 240)
 	company.text = tr("BOOT_COMPANY")
 	company.pressed.connect(_open_company)
 	row.add_child(company)
 
-	var options := Button.new()
-	options.custom_minimum_size = Vector2(200, 84)
-	options.add_theme_font_size_override("font_size", 26)
+	var options := _menu_button(&"default", 200)
 	options.text = tr("BOOT_OPTIONS")
 	options.pressed.connect(_open_options)
 	row.add_child(options)
@@ -179,6 +175,20 @@ func _start_new_game() -> void:
 	_depth = 0
 	GameState.save()
 	_build_squad_picker()
+
+
+## Un bouton du menu principal : sa largeur, et le RÔLE qui lui donne sa
+## couleur. Six rôles sortent de la même image du pack — sans quoi le menu
+## serait bleu et rouge, une langue « confirmer / renoncer » qui ne veut
+## rien dire sur « Royaume » ou « Compagnie ».
+func _menu_button(role: StringName, width: int) -> Button:
+	var button := Button.new()
+	button.custom_minimum_size = Vector2(
+		width, UiTheme.metric(&"button_height")
+	)
+	button.add_theme_font_size_override("font_size", UiTheme.font_size(&"button_large"))
+	UiSkin.dress_button(button, role)
+	return button
 
 
 # --- Le royaume ------------------------------------------------------------
@@ -449,9 +459,9 @@ func _build_map_list() -> void:
 
 	var header := Label.new()
 	header.text = tr("BOOT_TESTBENCH")
-	header.add_theme_font_size_override("font_size", 22)
+	header.add_theme_font_size_override("font_size", UiTheme.font_size(&"subheading"))
 	header.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	header.add_theme_color_override("font_color", Color(0.6, 0.6, 0.64))
+	header.add_theme_color_override("font_color", UiTheme.color(&"ink_muted"))
 	_maps.add_child(header)
 
 	# Un GridContainer prend sa taille minimale et se cale à gauche : sans
@@ -469,8 +479,9 @@ func _build_map_list() -> void:
 		var map := CombatMap.load_map(map_id)
 		var button := Button.new()
 		button.text = tr(map.name_key) if map != null else String(map_id)
-		button.custom_minimum_size = Vector2(250, 62)
-		button.add_theme_font_size_override("font_size", 20)
+		button.custom_minimum_size = Vector2(250, UiTheme.metric(&"button_height_small"))
+		button.add_theme_font_size_override("font_size", UiTheme.font_size(&"small"))
+		UiSkin.dress_button(button, &"muted")
 		button.pressed.connect(_start_test_combat.bind(map_id))
 		grid.add_child(button)
 
@@ -480,8 +491,9 @@ func _build_map_list() -> void:
 	# c'est exactement le raisonnement qui a fait exister ce banc.
 	var night := Button.new()
 	night.text = tr("BOOT_TESTBENCH_NIGHT")
-	night.custom_minimum_size = Vector2(250, 62)
-	night.add_theme_font_size_override("font_size", 20)
+	night.custom_minimum_size = Vector2(250, UiTheme.metric(&"button_height_small"))
+	night.add_theme_font_size_override("font_size", UiTheme.font_size(&"small"))
+	UiSkin.dress_button(night, &"muted")
 	night.pressed.connect(_start_test_combat.bind(&"vallee_02", &"night"))
 	grid.add_child(night)
 

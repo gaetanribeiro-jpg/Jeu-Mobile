@@ -187,7 +187,7 @@ func play_attack(toward: Vector2i) -> void:
 ## Encaisse un coup : teinte blanche brève, puis retour.
 func play_hit() -> void:
 	var flash := ViewSettings.duration(&"death_flash")
-	_sprite.modulate = Color(4.0, 4.0, 4.0)
+	_sprite.modulate = ViewSettings.color(&"hit_flash")
 	await get_tree().create_timer(flash).timeout
 	if not is_inside_tree():
 		return
@@ -200,7 +200,7 @@ func play_hit() -> void:
 func play_downed(drowned: bool = false) -> void:
 	_busy = true
 	refresh()
-	_sprite.modulate = Color(4.0, 4.0, 4.0)
+	_sprite.modulate = ViewSettings.color(&"hit_flash")
 	await get_tree().create_timer(ViewSettings.duration(&"death_flash")).timeout
 	if not is_inside_tree():
 		return

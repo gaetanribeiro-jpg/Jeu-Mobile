@@ -43,6 +43,7 @@ var _selected_id: int = -1
 
 
 func _ready() -> void:
+	theme = UiSkin.theme
 	%Title.text = tr("COMPANY_TITLE")
 	_back.text = tr("COMBAT_BACK")
 	_back.pressed.connect(func() -> void: closed.emit())
@@ -116,7 +117,7 @@ func _roster_row(hero: Hero) -> Button:
 		mark.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		mark.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 		mark.add_theme_font_size_override("font_size", 30)
-		mark.add_theme_color_override("font_color", Color(1, 0.85, 0.35))
+		mark.add_theme_color_override("font_color", UiTheme.color(&"ink_gold"))
 		mark.text = "!"
 		row.add_child(mark)
 	return button
@@ -229,7 +230,7 @@ func _skill_row(hero: Hero, node_id: StringName) -> Control:
 	button.add_theme_font_size_override("font_size", 18)
 	button.disabled = not blocked.is_empty()
 	if blocked == &"learned":
-		button.add_theme_color_override("font_color_disabled", Color(0.55, 0.78, 0.5))
+		button.add_theme_color_override("font_disabled_color", UiTheme.color(&"moss"))
 	button.pressed.connect(func() -> void:
 		if hero.learn(node_id):
 			_touched())

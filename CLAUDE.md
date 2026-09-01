@@ -234,7 +234,7 @@ dur : passer par `data/assets.json`.
 
 *(à tenir à jour à chaque fin de session)*
 
-- **Phase courante : 8 — le cycle jour / nuit.** Le pivot vers la vision
+- **Phase courante : 9 — l'interface prend la peau du pack.** Le pivot vers la vision
   Tiny Kingdoms a été acté le 2026-08-31.
 - **Phase 1 terminée.** T1.1 à T1.14 sont faites et testées.
 - **Phase 2 terminée.** T2.1 à T2.7 : le `Hero`, les niveaux,
@@ -258,7 +258,8 @@ dur : passer par `data/assets.json`.
   472 erreurs moteur par campagne).
 - **Phase 8 terminée.** T8.1 : le cycle jour / nuit du § 36, dernier item
   du périmètre annoncé de la Phase 5 qui n'avait jamais été écrit.
-  **724 tests passent.**
+- **Phase 9 terminée.** T9.1 (le thème sort du code), T9.2 (jauges et
+  panneaux du pack), T9.3 (boutons teintés). **734 tests passent.**
 - **La boucle du § 3 tourne en entier :** royaume → carte du monde →
   expédition → combat → butin et expérience → compagnie → royaume. Une
   sortie conclue déclenche un cycle de production ; le royaume rend des
@@ -367,7 +368,33 @@ sur son texte de secours, et on croit l'écran cassé. Les installer à la
 main ne répare rien — l'échec est antérieur. D'où l'autoload `Capture`,
 inerte sans son argument, qui photographie le vrai jeu.
 
-**Toutes les valeurs de ressenti sont dans `data/combat/view.json`.**
+**Toutes les valeurs de ressenti sont dans `data/combat/view.json`** pour
+le combat, et dans **`data/ui/theme.json`** pour l'interface. Deux
+fichiers parce que ce sont deux métiers : le ressenti d'un coup n'est pas
+la lisibilité d'un menu. **Il ne reste zéro `Color(...)` en dur dans
+`scenes/`** — la règle 1 y était violée dans sept fichiers.
+
+**L'INTERFACE PORTE LA PEAU DU PACK (T9.1–T9.3).** 70 entrées `ui` étaient
+cataloguées et vérifiées depuis toujours, et pas un écran ne les
+dessinait. Trois choses à savoir avant d'y toucher :
+- **Le pack ne livre pas des images étirables.** Un bouton est une grille
+  3×3 de morceaux séparés par 64 px de VIDE ; `UiSkin` les recompose en
+  mémoire au démarrage. La géométrie est déclarée dans `assets.json`
+  (`slice`, `groove`), jamais déduite dans le code. Rien n'est écrit sur
+  le disque : le pack n'est pas versionné, un dérivé ne le serait pas non
+  plus.
+- **Six couleurs de bouton sortent de deux images**, en passant la source
+  en niveaux de gris avant de la teinter. Un écran demande un RÔLE
+  (`primary`, `danger`, `muted`…), jamais une couleur. `verify_ui` refuse
+  deux rôles de même teinte.
+- **L'échelle de réduction est un diviseur ENTIER.** Le pack est du pixel
+  art sur grille de 64 en filtrage Nearest ; une division fractionnaire
+  fait baver la bordure.
+
+**`UiSkin`, PAS `Skin` : ce nom est pris par Godot** (la peau d'un
+squelette). L'autoload se résolvait silencieusement sur la classe native.
+Même piège que `reload()` en T7.4 — un nom d'autoload se vérifie avant de
+l'écrire.
 
 **Les réglages du joueur sont à part de la sauvegarde**, dans
 `user://settings.json` (autoload `Settings`, défauts dans
@@ -399,6 +426,7 @@ godot --headless --path . -s tools/verify_items.gd      # 30 objets
 godot --headless --path . -s tools/verify_skills.gd     # 3 arbres, 33 nœuds
 godot --headless --path . -s tools/verify_world.gd      # régions, évènements, étal
 godot --headless --path . -s tools/verify_kingdom.gd    # ressources, chantiers, bâtiments
+godot --headless --path . -s tools/verify_ui.gd         # thème, teintes, tranches
 godot --headless --path . -s tools/simulate_combats.gd  # équilibrage
 ```
 

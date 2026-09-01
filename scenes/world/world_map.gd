@@ -36,6 +36,7 @@ var _squad_ids: Array[int] = []
 
 
 func _ready() -> void:
+	theme = UiSkin.theme
 	_title.text = tr("WORLD_TITLE")
 	_back.text = tr("COMBAT_BACK")
 	_back.pressed.connect(func() -> void: closed.emit())
@@ -104,7 +105,7 @@ func _region_row(region_id: StringName) -> Button:
 		tr("WORLD_ACT") % Region.act_of(region_id) if open else tr("WORLD_LOCKED"),
 	]
 	if not open:
-		button.add_theme_color_override("font_color", Color(0.55, 0.55, 0.58))
+		button.add_theme_color_override("font_color", UiTheme.color(&"ink_muted"))
 	button.pressed.connect(func() -> void:
 		_selected = region_id
 		refresh())

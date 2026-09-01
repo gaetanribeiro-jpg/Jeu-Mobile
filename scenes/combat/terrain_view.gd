@@ -88,7 +88,8 @@ func _same_block(cell: Vector2i, block: String) -> bool:
 
 func _draw_land(cell: Vector2i, tile: Tile, origin: Vector2) -> void:
 	if _tileset == null:
-		draw_rect(Rect2(origin, Vector2(_tile_size, _tile_size)), Color(0.35, 0.45, 0.3))
+		draw_rect(Rect2(origin, Vector2(_tile_size, _tile_size)),
+			ViewSettings.color(&"terrain_fallback"))
 		return
 	var block := ViewSettings.terrain_block_name(tile.terrain_id)
 	var region := ViewSettings.terrain_tile_region(

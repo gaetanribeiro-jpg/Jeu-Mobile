@@ -33,6 +33,7 @@ var _confirming := false
 
 
 func _ready() -> void:
+	theme = UiSkin.theme
 	_title.text = tr("OPTIONS_TITLE")
 	_back.text = tr("COMBAT_BACK")
 	_back.pressed.connect(func() -> void: closed.emit())
@@ -81,7 +82,7 @@ func refresh() -> void:
 func _heading(text: String) -> void:
 	var label := Label.new()
 	label.add_theme_font_size_override("font_size", 26)
-	label.add_theme_color_override("font_color", Color(1, 0.85, 0.35))
+	label.add_theme_color_override("font_color", UiTheme.color(&"ink_gold"))
 	label.text = text
 	_body.add_child(label)
 

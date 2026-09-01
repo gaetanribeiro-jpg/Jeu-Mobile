@@ -99,6 +99,7 @@ func refresh() -> void:
 	# L'HEURE EST DANS LE TITRE, pas dans un coin. Le § 36 veut que le
 	# moment pèse sur la décision du § 29 ; une information qu'il faut
 	# chercher ne pèse sur rien.
+	theme = UiSkin.theme
 	_title.text = "%s · %s · %s" % [
 		tr(Region.name_key(_run.region_id)),
 		tr("EXPEDITION_STEP_OF") % [_run.depth() + 1, _run.length()],
@@ -171,7 +172,7 @@ func _badge(step_index: int) -> Panel:
 		# On ÉCLAIRCIT l'heure au lieu de la remplacer : la pastille où l'on
 		# se trouve est aussi celle dont on veut savoir si elle est de nuit.
 		style.bg_color = style.bg_color.lightened(0.18)
-		style.border_color = Color(1, 0.85, 0.35)
+		style.border_color = UiTheme.color(&"ink_gold")
 		style.set_border_width_all(3)
 	style.set_corner_radius_all(6)
 	panel.add_theme_stylebox_override("panel", style)
@@ -183,7 +184,7 @@ func _badge(step_index: int) -> Panel:
 	label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	label.add_theme_font_size_override("font_size", 18)
 	if done:
-		label.add_theme_color_override("font_color", Color(0.5, 0.5, 0.5))
+		label.add_theme_color_override("font_color", UiTheme.color(&"ink_muted"))
 	label.text = "%d\n%s" % [step_index + 1, tr(_kind_key(kind))]
 	panel.add_child(label)
 	return panel
@@ -221,40 +222,26 @@ func _build_squad() -> void:
 		_squad.add_child(row)
 
 		var name_label := Label.new()
-		name_label.add_theme_font_size_override("font_size", 20)
+		name_label.add_theme_font_size_override("font_size", UiTheme.font_size(&"body"))
 		name_label.text = "%s · %s" % [
 			hero.display_name(), tr("CLASS_%s" % String(hero.class_id).to_upper())
 		]
 		row.add_child(name_label)
 
-		var bar := ProgressBar.new()
-		bar.custom_minimum_size = Vector2(0, 22)
-		bar.max_value = unit.max_hit_points
-		bar.value = unit.hit_points
-		bar.show_percentage = false
 		# Teintée : c'est le chiffre qui décide si l'on continue, et il doit
 		# se lire sans être lu. Gris sur gris ne dit rien de plus qu'une
 		# ligne de texte, et prend la place d'une information.
-		var fill := StyleBoxFlat.new()
-		fill.bg_color = _health_colour(float(unit.hit_points) / maxf(float(unit.max_hit_points), 1.0))
-		fill.set_corner_radius_all(3)
-		bar.add_theme_stylebox_override("fill", fill)
-		row.add_child(bar)
+		row.add_child(UiSkin.build_bar(
+			float(unit.hit_points), float(unit.max_hit_points),
+			UiTheme.health_color(
+				float(unit.hit_points) / maxf(float(unit.max_hit_points), 1.0)
+			)
+		))
 
 		var pv := Label.new()
-		pv.add_theme_font_size_override("font_size", 18)
+		pv.add_theme_font_size_override("font_size", UiTheme.font_size(&"small"))
 		pv.text = "%d / %d" % [unit.hit_points, unit.max_hit_points]
 		row.add_child(pv)
-
-
-## Vert tant que ça va, ambre quand ça se discute, rouge quand la question
-## ne se pose plus.
-func _health_colour(ratio: float) -> Color:
-	if ratio > 0.6:
-		return Color(0.40, 0.72, 0.36)
-	if ratio > 0.3:
-		return Color(0.90, 0.72, 0.28)
-	return Color(0.82, 0.32, 0.28)
 
 
 # --- L'étape en cours ------------------------------------------------------

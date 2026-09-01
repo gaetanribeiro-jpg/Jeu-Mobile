@@ -39,6 +39,7 @@ var _rng: CombatRng
 
 
 func _ready() -> void:
+	theme = UiSkin.theme
 	_back.text = tr("COMBAT_BACK")
 	_back.pressed.connect(func() -> void: closed.emit())
 	_view.picked.connect(_on_picked)

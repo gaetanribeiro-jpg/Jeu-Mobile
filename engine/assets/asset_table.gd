@@ -205,9 +205,23 @@ static func portrait(class_id: StringName, color: String) -> Dictionary:
 
 
 ## Entrée d'une catégorie simple : terrain, decorations, resources, fx, ui, extra.
+## Préfixe d'une clé de COMMENTAIRE. Tous les fichiers de données du
+## projet en portent ; la table des assets n'y échappait que parce qu'elle
+## n'en avait pas encore. En ajouter une a suffi à faire tomber
+## `all_entries()`, qui la lisait comme une entrée et recevait une chaîne
+## là où il attendait un objet.
+const NOTE_PREFIX := "_"
+
+
+static func is_note(key: String) -> bool:
+	return key.begins_with(NOTE_PREFIX)
+
+
 static func sprite(category: StringName, key: StringName) -> Dictionary:
 	if not PLAIN_CATEGORIES.has(category):
 		push_error("AssetTable : « %s » n'est pas une catégorie simple" % category)
+		return {}
+	if is_note(String(key)):
 		return {}
 	var entries: Dictionary = table().get(String(category), {})
 	var entry: Dictionary = entries.get(String(key), {})
@@ -224,6 +238,8 @@ static func all_entries() -> Array[Dictionary]:
 	var data := table()
 
 	for unit_id: String in data.get("units", {}).keys():
+		if is_note(unit_id):
+			continue
 		for animation: String in data["units"][unit_id].get("animations", {}).keys():
 			for color: String in colors():
 				var found := unit_animation(unit_id, animation, color)
@@ -233,6 +249,8 @@ static func all_entries() -> Array[Dictionary]:
 					out.append(found)
 
 	for enemy_id: String in data.get("enemies", {}).keys():
+		if is_note(enemy_id):
+			continue
 		for animation: String in data["enemies"][enemy_id].get("animations", {}).keys():
 			var found := enemy_animation(enemy_id, animation)
 			if not found.is_empty():
@@ -241,6 +259,8 @@ static func all_entries() -> Array[Dictionary]:
 				out.append(found)
 
 	for building_id: String in data.get("buildings", {}).keys():
+		if is_note(building_id):
+			continue
 		for color: String in colors():
 			var found := building(building_id, color)
 			if not found.is_empty():
@@ -250,6 +270,8 @@ static func all_entries() -> Array[Dictionary]:
 
 	for category: StringName in PLAIN_CATEGORIES:
 		for key: String in data.get(String(category), {}).keys():
+			if is_note(key):
+				continue
 			var found := sprite(category, key)
 			if not found.is_empty():
 				found["id"] = "%s.%s" % [category, key]

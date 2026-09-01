@@ -146,7 +146,7 @@ func _draw() -> void:
 func _draw_ground(factor: float) -> void:
 	var span := size
 	if _ground == null:
-		draw_rect(Rect2(Vector2.ZERO, span), Color(0.42, 0.62, 0.34))
+		draw_rect(Rect2(Vector2.ZERO, span), ViewSettings.color(&"kingdom_ground"))
 		return
 	var step := float(TILE) * factor
 	var columns := int(ceil(span.x / step))
@@ -224,20 +224,20 @@ func _place(spot: Vector2, source: Vector2, factor: float) -> Rect2:
 
 
 func _draw_halo(rect: Rect2) -> void:
-	draw_rect(rect.grow(4.0), Color(1, 0.85, 0.35, 0.9), false, 3.0)
+	draw_rect(rect.grow(4.0), UiTheme.color(&"ink_gold"), false, 3.0)
 
 
 func _draw_pip(anchor: Vector2, text: String, factor: float) -> void:
 	var radius := 13.0 * maxf(factor, 0.6)
 	var centre := anchor + Vector2(0.0, radius)
-	draw_circle(centre, radius, Color(0.09, 0.10, 0.09, 0.85))
-	draw_circle(centre, radius, Color(1, 0.85, 0.35), false, 2.0)
+	draw_circle(centre, radius, ViewSettings.color(&"badge_back"))
+	draw_circle(centre, radius, UiTheme.color(&"ink_gold"), false, 2.0)
 	var font := ThemeDB.fallback_font
 	var size := int(radius * 1.3)
 	var span := font.get_string_size(text, HORIZONTAL_ALIGNMENT_LEFT, -1, size)
 	draw_string(
 		font, centre + Vector2(-span.x * 0.5, span.y * 0.35), text,
-		HORIZONTAL_ALIGNMENT_LEFT, -1, size, Color(1, 0.92, 0.72)
+		HORIZONTAL_ALIGNMENT_LEFT, -1, size, UiTheme.color(&"ink_inverse")
 	)
 
 

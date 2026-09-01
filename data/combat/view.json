@@ -255,7 +255,50 @@
    0.11,
    0.2,
    1.0
-  ]
+  ],
+  "kingdom_ground": [
+   0.42,
+   0.62,
+   0.34,
+   1.0
+  ],
+  "badge_back": [
+   0.09,
+   0.1,
+   0.09,
+   0.85
+  ],
+  "dot_outline": [
+   0.0,
+   0.0,
+   0.0,
+   0.6
+  ],
+  "timeline_done": [
+   0.62,
+   0.7,
+   0.62,
+   1.0
+  ],
+  "timeline_downed": [
+   0.5,
+   0.4,
+   0.4,
+   1.0
+  ],
+  "terrain_fallback": [
+   0.35,
+   0.45,
+   0.3,
+   1.0
+  ],
+  "hit_flash": [
+   4.0,
+   4.0,
+   4.0,
+   1.0
+  ],
+  "_note": "Toutes les couleurs du COMBAT. Celles de l'interface hors combat vivent dans data/ui/theme.json : deux fichiers parce que ce sont deux métiers — le ressenti d'un coup n'est pas la lisibilité d'un menu."
  },
  "sizes": {
   "highlight_inset_px": 3.0,

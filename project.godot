@@ -20,6 +20,7 @@ Settings="*res://autoload/settings.gd"
 GameState="*res://autoload/game_state.gd"
 SaveManager="*res://autoload/save_manager.gd"
 AudioManager="*res://autoload/audio_manager.gd"
+UiSkin="*res://autoload/ui_skin.gd"
 Capture="*res://autoload/capture.gd"
 
 [display]

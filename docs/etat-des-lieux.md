@@ -1506,6 +1506,126 @@ carte.
   plus loin, est-ce qu'on hésite ? C'est la seule question qui compte.
 
 
+### Phase 9 — L'interface prend la peau du pack ✅
+
+| Tâche | Contenu | État |
+|---|---|---|
+| **T9.1** | Le thème sort du code : `data/ui/theme.json`, `UiTheme`, `UiSkin` | ✅ |
+| **T9.2** | Jauges et panneaux du pack | ✅ |
+| **T9.3** | Boutons teintés — six couleurs à partir de deux images | ✅ |
+
+Gaetan a posé la question qui manquait : « il y avait un pack UI dans
+Tiny Swords, non ? Pourquoi ne pas l'exploiter ? »
+
+**Le constat était gênant.** 70 entrées `ui` dans `assets.json`,
+contrôlées à chaque exécution par `verify_assets` — et **pas un seul
+écran ne les dessinait**. Les seuls appels `AssetTable` de tout le code
+d'interface étaient `portrait()` et `tile_size()`. Le projet vérifiait
+religieusement des images qu'il ne montrait jamais.
+
+**Et la règle 1 était violée partout.** Sept fichiers d'écran portaient
+des `Color(0.13, 0.15, 0.13)` et des tailles de police en dur. Une
+couleur est une valeur de ressenti — exactement ce que le § 46 veut
+pouvoir régler sans réécrire la logique — et c'était le seul domaine du
+jeu où on ne le pouvait pas. Il en reste zéro dans `scenes/`.
+
+### Le pack ne livre pas des images étirables
+
+C'est la découverte qui a tout conditionné, et elle ne se voit qu'en
+regardant les fichiers.
+
+**Un bouton du pack est une grille 3×3 de morceaux séparés par 64 px de
+VIDE.** Donné tel quel à un `StyleBoxTexture`, il étire les trous en même
+temps que le décor : le résultat reste reconnaissable comme un bouton,
+mais il est faux — donc facile à ne pas voir. `UiSkin` recompose les neuf
+morceaux bord à bord, en mémoire, au démarrage.
+
+La géométrie est régulière : espace de 64, morceau central de 64, coin de
+`(largeur − 192) / 2`. Elle est **écrite dans `assets.json` plutôt que
+déduite** — une règle déduite dans le code est un nombre dans le code, et
+le jour où un asset s'en écarte, c'est la donnée qui doit pouvoir le dire.
+
+**Rien n'est écrit sur le disque.** Le pack n'est pas dans le dépôt
+(licence), et un dérivé du pack ne le serait pas davantage : il faudrait
+le régénérer à la main sur chaque poste, ce que personne ne ferait.
+
+### Six couleurs à partir de deux images (T9.3)
+
+Le pack ne livre que du bleu et du rouge — une langue « confirmer /
+renoncer » qui ne dit rien sur « Royaume » ou « Compagnie ». Gaetan a
+tranché pour la teinte plutôt que de s'y cantonner.
+
+**La source est passée en NIVEAUX DE GRIS avant d'être teintée.** Sans
+ça, la teinte ne sert à rien : multiplier un bouton bleu par de l'or
+donne du vert sale. Désaturé sur la luminance perçue — pas sur la moyenne,
+qui écraserait le relief que le pack a dessiné — il prend n'importe quelle
+couleur proprement.
+
+Six rôles en sortent : `default`, `primary`, `positive`, `danger`,
+`arcane`, `muted`. **Le rôle porte le sens, jamais la couleur** : un écran
+demande « danger », et le thème décide de quoi ça a l'air. Le menu de
+pause en est la démonstration — vert reprendre, or sauvegarder, acier
+options, rouge abandonner, lisible sans lire.
+
+`verify_ui` refuse deux rôles de même couleur : deux rôles identiques ne
+sont pas deux rôles.
+
+### La jauge, ou quatre erreurs d'affilée
+
+Elle a coûté plus cher que tout le reste, et chaque étape ne se voyait
+qu'à la capture.
+
+1. **Le bois se répétait deux fois en hauteur.** Mes marges de tranches
+   s'appliquaient aux quatre côtés ; une jauge ne se découpe
+   qu'HORIZONTALEMENT, et des coins de 32 ne tiennent pas dans une barre
+   de 22.
+2. **Le remplissage était invisible.** Le pack le livre en rouge sombre :
+   mesuré, sa luminance plafonne à 0,71 et vaut 0,37 en moyenne. Désaturé
+   puis multiplié par un vert de PV, il tombait sous 0,3 — du brun foncé
+   dans une auge brun foncé. On remonte donc le plus clair à blanc avant
+   de teinter.
+3. **La jauge débordait de son auge.** Un `StyleBoxTexture` écarte déjà
+   son contenu de ses marges ; le `MarginContainer` que j'avais ajouté
+   par-dessus faisait 64 px de chaque côté sur une barre large de 110, et
+   la barre tombait à zéro. Deux captures de suite à chercher pourquoi le
+   vert ne se voyait pas, avant de penser à mesurer la LARGEUR plutôt que
+   la couleur.
+4. **Le remplissage n'occupait qu'un tiers de la rainure.** C'est une
+   bande de 24 px peinte dans une toile de 64, le reste transparent :
+   étirée telle quelle, elle laissait deux tiers de vide. Il faut la
+   recadrer sur ce qu'elle dessine.
+
+La rainure du bois est **mesurée et déclarée** dans `assets.json` — 44 px
+d'embout de chaque côté sur 192, près du quart de la largeur. Supposée,
+elle était fausse.
+
+### Deux pièges de nommage, et le second est le premier
+
+**`Skin` est déjà une classe de Godot** (la peau d'un squelette).
+L'autoload se résolvait silencieusement sur la classe native, et le seul
+message était « Cannot find member "theme" in base "Skin" ». C'est
+exactement `reload()` contre `Script.reload()` de T7.4, deux phases plus
+tard : **un nom d'autoload se vérifie avant de l'écrire.** D'où `UiSkin`.
+
+**Une clé `_note` a fait tomber la table des assets.** Tous les fichiers
+de données du projet en portent ; `assets.json` n'y échappait que parce
+qu'il n'en avait pas encore. `all_entries()` la lisait comme une entrée et
+recevait une chaîne là où il attendait un objet. `AssetTable.is_note()`
+règle la question pour toutes les familles à la fois.
+
+### Ce qu'il faut regarder en jouant
+
+- **Les six teintes.** Le menu principal et le menu de pause se
+  distinguent-ils au coup d'œil, sans lire ? C'est toute la raison d'être
+  de T9.3.
+- **Le texte sur les boutons.** Il est clair, cerclé de sombre. Tient-il
+  sur les six couleurs, ou faut-il en assombrir une ?
+- **Les jauges de PV** sur l'écran d'expédition : le vert / ambre / rouge
+  se lit-il aussi vite qu'avant, avec le bois autour ?
+- **L'arbre de compétences.** Une trentaine de nœuds désactivés :
+  lisibles, ou ternes ?
+
+
 ---
 
 ## 6. Ce qui est rangé, pas jeté

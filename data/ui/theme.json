@@ -1,0 +1,172 @@
+{
+  "_readme": "LE THÈME DE L'INTERFACE (T9.1). Il existe pour deux raisons, et la première est une règle du projet.\n\nLA RÈGLE 1 ÉTAIT VIOLÉE PARTOUT. « Aucune valeur chiffrée dans le code » : sept fichiers d'écran portaient des `Color(0.13, 0.15, 0.13)` et des tailles de police en dur. Une couleur est une valeur de ressenti — exactement ce que le § 46 veut pouvoir régler sans réécrire la logique — et c'était le seul domaine du jeu où on ne le pouvait pas.\n\nLE PACK FOURNIT UNE INTERFACE ET PERSONNE NE LA DESSINAIT. 70 entrées `ui` dans `assets.json`, contrôlées à chaque exécution par `verify_assets`, et pas un écran ne les utilisait. Le projet vérifiait des images qu'il ne montrait jamais.\n\nCE FICHIER EST LA SOURCE UNIQUE. Un écran ne choisit plus une couleur : il demande un RÔLE (« le fond d'un panneau », « un bouton d'action »), et c'est ici qu'on décide à quoi ressemble ce rôle.",
+  "palette": {
+    "_note": "Les couleurs sont [r, v, b] ou [r, v, b, a] en 0–1, comme dans view.json — une seule convention pour tout le projet.",
+    "ink": [
+      0.13,
+      0.1,
+      0.07
+    ],
+    "ink_soft": [
+      0.34,
+      0.28,
+      0.22
+    ],
+    "ink_inverse": [
+      0.96,
+      0.93,
+      0.85
+    ],
+    "ink_muted": [
+      0.55,
+      0.52,
+      0.48
+    ],
+    "ink_gold": [
+      1.0,
+      0.85,
+      0.35
+    ],
+    "backdrop": [
+      0.09,
+      0.1,
+      0.09
+    ],
+    "parchment": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "wood": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "steel": [
+      0.7,
+      0.86,
+      0.96
+    ],
+    "gold": [
+      1.0,
+      0.8,
+      0.34
+    ],
+    "moss": [
+      0.6,
+      0.88,
+      0.46
+    ],
+    "rust": [
+      0.96,
+      0.46,
+      0.36
+    ],
+    "plum": [
+      0.78,
+      0.62,
+      0.98
+    ],
+    "stone": [
+      0.62,
+      0.62,
+      0.64
+    ],
+    "health_high": [
+      0.4,
+      0.72,
+      0.36
+    ],
+    "health_mid": [
+      0.9,
+      0.72,
+      0.28
+    ],
+    "health_low": [
+      0.82,
+      0.32,
+      0.28
+    ],
+    "action_points": [
+      1.0,
+      0.82,
+      0.3
+    ],
+    "move_points": [
+      0.42,
+      0.72,
+      1.0
+    ],
+    "ink_disabled": [
+      0.96,
+      0.93,
+      0.85,
+      0.55
+    ]
+  },
+  "typography": {
+    "_note": "Silver est une police pixel : elle ne rend proprement qu'à certaines tailles. Les valeurs ici sont des multiples pairs, et ne doivent le rester.",
+    "title": 40,
+    "heading": 26,
+    "subheading": 22,
+    "body": 20,
+    "small": 18,
+    "button": 22,
+    "button_large": 26
+  },
+  "metrics": {
+    "button_height": 72,
+    "button_height_small": 56,
+    "panel_margin": 18,
+    "row_spacing": 10,
+    "bar_height": 32,
+    "bar_height_small": 16,
+    "text_outline": 4,
+    "bar_fill_height": 14,
+    "bar_inset": 7
+  },
+  "surfaces": {
+    "_note": "Chaque rôle dit QUEL asset du pack, à quelle RÉDUCTION, et de quelle TEINTE.\n\n`scale` est un diviseur ENTIER, et il n'y a pas d'exception à ça : le pack est du pixel art sur grille de 64, filtré en Nearest. Diviser par 2 fait tomber quatre pixels sur un ; diviser par 1,5 en fait tomber deux et demi, et la bordure bave. C'est aussi ce qui décide la taille des coins : un bouton de 72 px de haut ne peut pas porter des coins de 64, il lui faut du 32 — donc `scale: 2`.\n\n`desaturate` transforme la source en niveaux de gris AVANT de la teinter. Sans ça on ne pourrait pas sortir des deux couleurs du pack : multiplier un bouton bleu par de l'or donne du vert sale. Passé en gris, il prend n'importe quelle teinte proprement, et les six rôles ci-dessous sortent tous de la même image.",
+    "button": {
+      "asset": "bigbluebutton_regular",
+      "pressed_asset": "bigbluebutton_pressed",
+      "scale": 2,
+      "desaturate": true,
+      "tint": "steel"
+    },
+    "panel": {
+      "asset": "regularpaper",
+      "scale": 2,
+      "desaturate": false,
+      "tint": "parchment"
+    },
+    "panel_strong": {
+      "asset": "specialpaper",
+      "scale": 2,
+      "desaturate": false,
+      "tint": "parchment"
+    },
+    "frame": {
+      "asset": "woodtable",
+      "scale": 2,
+      "desaturate": false,
+      "tint": "wood"
+    }
+  },
+  "button_tints": {
+    "_note": "SIX COULEURS À PARTIR DE DEUX IMAGES. Le pack ne livre que du bleu et du rouge — une langue « confirmer / renoncer » qui ne suffit pas à un menu de sept entrées. La source est donc passée en gris et reteintée par rôle.\n\nLe rôle porte le SENS, pas la couleur : un écran demande « default » ou « danger », jamais « bleu ». Le jour où la palette change, aucun écran ne bouge.",
+    "default": "steel",
+    "primary": "gold",
+    "positive": "moss",
+    "danger": "rust",
+    "arcane": "plum",
+    "muted": "stone"
+  },
+  "bars": {
+    "_note": "Les jauges du pack sont en TROIS morceaux horizontaux — deux embouts et un corps — avec le même espace de 64 px entre eux que les boutons. `BigBar_Fill` est le remplissage, teinté par ce qu'il mesure.\n\n`normalise_fill` REMONTE LE PLUS CLAIR À BLANC avant de teinter, et sans ça la jauge est invisible : le remplissage est livré en rouge sombre, luminance 0,71 au plus haut et 0,37 en moyenne. Désaturé puis multiplié par un vert de PV, il tombait sous 0,3 — du brun foncé dans une auge brun foncé. On voyait le bois, jamais la vie.",
+    "base_asset": "bigbar_base",
+    "fill_asset": "bigbar_fill",
+    "scale": 2,
+    "normalise_fill": true
+  }
+}

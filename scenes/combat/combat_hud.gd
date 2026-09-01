@@ -86,7 +86,7 @@ class PipRow:
 		for i in total:
 			var centre := Vector2(radius + float(i) * spacing, size.y * 0.5)
 			draw_circle(centre, radius, color if i < filled else empty)
-			draw_arc(centre, radius, 0.0, TAU, 16, Color(0, 0, 0, 0.6), 1.5)
+			draw_arc(centre, radius, 0.0, TAU, 16, ViewSettings.color(&"dot_outline"), 1.5)
 
 
 func _ready() -> void:
@@ -313,7 +313,7 @@ func _timeline_badge(unit: Unit, is_current: bool) -> Control:
 	label.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-	label.add_theme_color_override("font_color", Color(0.08, 0.07, 0.06))
+	label.add_theme_color_override("font_color", UiTheme.color(&"ink"))
 	label.add_theme_constant_override("outline_size", 0)
 	badge.add_child(label)
 	return badge
@@ -454,9 +454,9 @@ func _refresh_squad(engine: CombatEngine) -> void:
 			unit.hit_points, unit.max_hit_points,
 		]
 		if pending.has(unit):
-			row.modulate = Color(0.62, 0.7, 0.62)
+			row.modulate = ViewSettings.color(&"timeline_done")
 		elif not unit.is_active():
-			row.modulate = Color(0.5, 0.4, 0.4)
+			row.modulate = ViewSettings.color(&"timeline_downed")
 		elif active != null and active.id == unit.id:
 			row.modulate = ViewSettings.color(&"timeline_now")
 		else:
@@ -495,7 +495,7 @@ func _stretch() -> Control:
 func _label(size: int) -> Label:
 	var label := Label.new()
 	label.add_theme_font_size_override("font_size", size)
-	label.add_theme_color_override("font_outline_color", Color(0, 0, 0, 0.85))
+	label.add_theme_color_override("font_outline_color", UiTheme.color(&"ink"))
 	label.add_theme_constant_override("outline_size", 6)
 	label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	return label
