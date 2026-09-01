@@ -8,10 +8,10 @@ extends GutTest
 
 
 func before_each() -> void:
-	CombatRules.reload()
-	Unit.reload()
-	Equipment.reload()
-	Loot.reload()
+	CombatRules.clear_cache()
+	Unit.clear_cache()
+	Equipment.clear_cache()
+	Loot.clear_cache()
 
 
 func _encounter(downed: int, victory: bool) -> Dictionary:

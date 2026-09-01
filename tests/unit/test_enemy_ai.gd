@@ -11,9 +11,9 @@ extends GutTest
 
 
 func before_each() -> void:
-	CombatRules.reload()
-	Unit.reload()
-	Ability.reload()
+	CombatRules.clear_cache()
+	Unit.clear_cache()
+	Ability.clear_cache()
 
 
 func _board(rows: Array) -> CombatBoard:
@@ -47,10 +47,10 @@ func _ai() -> EnemyAI:
 
 func test_les_ennemis_des_terres_vertes_sont_declares() -> void:
 	var ids := Unit.enemy_ids()
-	assert_eq(ids.size(), 8)
+	assert_eq(ids.size(), 9)
 	for expected: StringName in [
 		&"spear_goblin", &"gnome", &"slingshot_gnome", &"torch_goblin",
-		&"thief", &"troll", &"gnoll", &"hex_shaman"
+		&"thief", &"troll", &"gnoll", &"hex_shaman", &"minotaur"
 	]:
 		assert_true(ids.has(expected), "ennemi manquant : %s" % expected)
 

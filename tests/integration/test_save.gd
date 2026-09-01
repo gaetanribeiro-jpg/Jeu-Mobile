@@ -17,11 +17,11 @@ var _had_save := false
 
 
 func before_each() -> void:
-	CombatRules.reload()
-	Unit.reload()
-	HeroProgression.reload()
-	HeroNames.reload()
-	Equipment.reload()
+	CombatRules.clear_cache()
+	Unit.clear_cache()
+	HeroProgression.clear_cache()
+	HeroNames.clear_cache()
+	Equipment.clear_cache()
 	_had_save = FileAccess.file_exists(SaveManager.SAVE_PATH)
 	_saved = SaveManager.load_game() if _had_save else {}
 

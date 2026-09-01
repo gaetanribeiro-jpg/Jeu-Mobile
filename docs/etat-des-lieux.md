@@ -197,7 +197,7 @@ voisines coûtent la même chose. Une diagonale reste à distance 2.
 
 Suit l'ordre du § 45, adapté à ce qui existe déjà.
 
-### Phase 1 — Cœur tactique PA/PM ⏳ *en cours*
+### Phase 1 — Cœur tactique PA/PM ✅
 
 | Tâche | Contenu | État |
 |---|---|---|
@@ -216,11 +216,11 @@ Suit l'ordre du § 45, adapté à ce qui existe déjà.
 | **T1.13** | `tools/verify_scripts.gd` : né du constat que `--quit` ne voit pas les scripts chargés à l'exécution | ✅ |
 | **T1.14** | L'Archer et les tireurs du bestiaire : la portée se paie | ✅ |
 
-**État au 2026-08-31 : la Phase 1 est terminée.** T1.1 à T1.11 sont
-faites et testées, **354 tests passent**. Le combat se joue de bout en
-bout : placement, timeline entremêlée, PA/PM, neuf compétences
-atteignables au doigt, portées et zones affichées, télégraphe, annulation.
-Reste T1.12, qui n'est pas un défaut de combat mais un manque de terrain.
+**État au 2026-08-31 : la Phase 1 est terminée.** T1.1 à T1.14 sont
+faites et testées. Le combat se joue de bout en bout : placement, timeline
+entremêlée, PA/PM, neuf compétences atteignables au doigt, portées et
+zones affichées, télégraphe, annulation, décor destructible, et la portée
+qui se paie en dégâts.
 
 ### Ce que T1.9 a apporté
 
@@ -986,7 +986,7 @@ feu invisible de T1.12, deux phases plus tard.
 Ressources (bois, pierre, or, nourriture), chantiers, construction,
 amélioration des bâtiments, population, recrutement, armée.
 
-### Phase 6 — Confort ⏳
+### Phase 6 — Confort ✅
 
 | Tâche | Contenu | État |
 |---|---|---|
@@ -1234,6 +1234,131 @@ déjà décidée ; `resolve_invasion` reste le chemin de l'armée seule.
 
 Loot → royaume, royaume → héros, exploration → ressources, invasions,
 défense tactique, cycle jour/nuit.
+
+### Phase 7 — Les dettes ✅
+
+Pas une phase du § 45 : quatre choses qui traînaient et que rien ne
+justifiait plus de laisser traîner.
+
+| Tâche | Contenu | État |
+|---|---|---|
+| **T7.1** | Sauvegarde en plein combat, et une porte de sortie à tout moment | ✅ |
+| **T7.2** | `vallee_09`, le vrai mini-boss des Terres Vertes | ✅ |
+| **T7.3** | L'IA frappe ce qui barre la route | ✅ |
+| **T7.4** | `reload()` → `clear_cache()` : 472 erreurs par campagne de tests | ✅ |
+
+### Ce que le combat oubliait de sauvegarder (T7.1)
+
+La règle 5 dit « sauvegarde après chaque action significative », et le
+combat — l'écran où le joueur passe le plus de temps — n'en écrivait
+aucune. Un appel téléphonique pendant un combat de la ronde 6 coûtait le
+combat, et l'expédition avec.
+
+**Ce qui est écrit est ce qu'on regrette de perdre** : les positions et les
+PV, la timeline (avec sa position dans la ronde), le télégraphe, et le
+terrain dans l'état où il est. Pas la carte : le PLATEAU. La bataille de
+défense du royaume (§ 38) se fabrique à partir de ce que le joueur a bâti
+et ne vit dans aucun fichier — rejouer un identifiant de carte ne la
+retrouverait jamais.
+
+**La pile d'annulation n'est PAS sauvegardée, et c'est délibéré.** Elle ne
+sert qu'à l'intérieur d'une activation ; une reprise recommence
+l'activation en cours, donc il n'y a rien à annuler. La sauvegarder aurait
+alourdi le fichier de tout l'historique du combat pour rendre un bouton
+grisé.
+
+**Le télégraphe, lui, est sauvegardé.** « Information parfaite, toujours »
+ne peut pas s'arrêter à un rechargement : reprendre un combat sans savoir
+ce que le Minotaure a annoncé, c'est se faire encorner par une règle qui
+promettait le contraire.
+
+**La graine reprend où elle en était.** `CombatRng` sait déjà se
+positionner — c'est ce qui fait marcher l'annulation. Recharger sans cela
+donnerait un combat qui repart sur d'autres tirages, et le § 4 du CLAUDE.md
+(rejouer un bug à l'identique) tomberait au premier rechargement.
+
+**La sortie est à tout moment**, pas seulement entre deux tours : le menu
+de pause a un « Sauvegarder et quitter » et l'écran de titre propose
+« Reprendre le combat » avant tout le reste. Le jeu écrit aussi tout seul
+à chaque fin d'activation — sur mobile, l'application meurt sans prévenir
+et personne ne pense à sauvegarder avant.
+
+### Un mini-boss qui n'existait pas (T7.2)
+
+L'étape « mini-boss » du § 28 servait `vallee_07`, une rencontre
+ordinaire. Une étape annoncée qui ne tient pas sa promesse est pire qu'une
+étape absente.
+
+**`vallee_09` est construite autour d'une seule idée.** Le Minotaure —
+210 PV, 6 PA — a l'**Encornade**, qui traverse deux cases EN LIGNE. Se
+ranger derrière son Guerrier, la bonne réponse partout ailleurs, devient
+ici la mauvaise. C'est tout ce que la carte a à enseigner, et c'est assez.
+
+Quatre éperons de rocher réduisent le passage à une bande centrale de
+trois rangées plus deux couloirs d'une case le long des bords — la sortie
+de secours existe, elle est longue et exposée. Les bosquets ne bloquent
+pas le passage mais la vue, et c'est ce qui fait hésiter entre avancer à
+couvert et foncer.
+
+**Elle coûte 29 % des PV, contre 35 % pour le boss.** Un mini-boss plus
+dur que le boss aurait inversé la courbe de l'expédition. Une première
+version à 180 PV plus un gobelin torche montait à 46 % et mettait deux
+héros à terre : le gobelin est reparti, les 210 PV sont restés.
+
+**Le simulateur sous-évalue cette carte, et c'est structurel.** Sa
+politique de joueur est triviale — elle ne se met jamais en ligne exprès,
+donc elle ne se fait jamais encorner à trois. Le chiffre est un plancher,
+pas une mesure.
+
+**Deux gnolls étaient plantés DANS un rocher.** Posés derrière les
+éperons, sur des cases infranchissables : aveugles, incapables d'y
+revenir, et `verify_maps` disait « 0 problème ». Les cases de placement
+des héros étaient contrôlées depuis toujours, celles des ennemis jamais —
+l'outil vérifie désormais l'assise des ennemis comme celle des héros, et
+qu'il n'y en a pas deux sur la même case.
+
+### L'IA frappe ce qui barre la route (T7.3)
+
+Ouvert depuis T1.12, et c'est la Phase 5 qui l'a rendu criant. L'IA ne
+visait que des UNITÉS : un pont ne se cassait jamais tout seul, et un
+objectif « protéger une structure » ne pouvait donc pas échouer. Une carte
+dont l'objectif ne peut pas être perdu n'est pas une carte. Une palissade
+que personne n'attaque n'est pas un mur, c'est une frontière.
+
+**La règle est sobre, et c'est le point.** Un ennemi qui n'a RIEN à
+frapper frappe ce qui le sépare de sa cible ; il ne casse jamais un décor
+quand il peut cogner quelqu'un. Sans cette sobriété, les assaillants
+s'occuperaient du paysage pendant que le joueur les contourne — un défaut
+plus visible que celui qu'on corrige. Parmi les obstacles à portée il
+choisit le plus proche de sa cible : on ouvre la brèche en face de ce
+qu'on veut atteindre.
+
+Les huit cartes de la vallée ne bougent pas d'un point — vérifié au
+simulateur : 79 % de PV, 4,8 rondes, avant comme après.
+
+### 472 erreurs par campagne de tests (T7.4)
+
+Chaque table de données offrait un `static func reload()` pour vider son
+cache entre deux tests. **`Object` a déjà un `reload()`** — celui d'un
+script. GDScript ne signale rien à la compilation ; il appelle
+`Script.reload()` et pousse une erreur moteur.
+
+Ce n'était donc pas du bruit : **les caches n'étaient jamais vidés**.
+Chaque test lisait la table du test précédent. Tout passait quand même —
+ce qui est exactement ce qui rendait le défaut durable. La méthode
+s'appelle `clear_cache()`, les 472 erreurs ont disparu, et les 704 tests
+passent toujours.
+
+### Ce que la capture d'écran ne savait pas faire
+
+`--press` presse des boutons. Or « Commencer » reste désactivé tant que
+l'équipe n'est pas posée, et poser un héros demande de toucher la
+grille : **le combat était le seul écran du jeu impossible à
+photographier dans le vrai jeu**. Une étape `@x,y` touche maintenant une
+case, par `handle_tap()` — la porte même du doigt. C'est ce qui a permis
+de constater que le combat rechargé est identique au combat quitté, au
+pixel près hors images d'animation.
+
 
 ---
 

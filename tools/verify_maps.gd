@@ -52,7 +52,7 @@ func _init() -> void:
 func _check(map: CombatMap, width: int, height: int) -> void:
 	var id := String(map.id)
 
-	# La taille n'est pas un défaut, c'est une dette : les huit cartes ont
+	# La taille n'est pas un défaut, c'est une dette : les cartes ont
 	# été écrites pour l'ancienne grille et attendent leur réécriture
 	# (T1.10). Elles restent parfaitement jouables en attendant, donc on
 	# les signale à part au lieu de faire rougir l'outil pour rien.
@@ -100,6 +100,28 @@ func _check(map: CombatMap, width: int, height: int) -> void:
 	var max_enemies := int(CombatRules.rule(&"sides", &"max_enemies", 7))
 	if enemies.size() > max_enemies:
 		_problems.append("%s : %d ennemis, %d au plus" % [id, enemies.size(), max_enemies])
+
+	# LA CASE DE DÉPART D'UN ENNEMI SE VÉRIFIE COMME CELLE D'UN HÉROS.
+	# L'asymétrie était le trou : les cases de placement étaient contrôlées
+	# depuis toujours, celles des ennemis jamais. Deux gnolls de
+	# `vallee_09` se sont retrouvés PLANTÉS DANS UN ROCHER — ils voyaient
+	# à travers rien, ne pouvaient pas y revenir, et l'outil disait « 0
+	# problème ». Une carte fausse qui ne plante pas est exactement ce que
+	# cet outil existe pour attraper.
+	var occupied := {}
+	for enemy: Unit in enemies:
+		var cell := enemy.cell
+		if not map.board.grid.contains(cell):
+			_problems.append("%s : ennemi « %s » en %s, hors grille"
+				% [id, enemy.class_id, cell])
+			continue
+		if occupied.has(cell):
+			_problems.append("%s : deux ennemis sur la case %s" % [id, cell])
+		occupied[cell] = true
+		var footing := map.board.tile_at(cell)
+		if not footing.is_walkable():
+			_problems.append("%s : ennemi « %s » posé sur du « %s » en %s"
+				% [id, enemy.class_id, footing.terrain_id, cell])
 
 	_check_objective(map, id)
 

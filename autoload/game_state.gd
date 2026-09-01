@@ -32,6 +32,23 @@ var expedition: Expedition = null
 ## verrouillée et le § 2 refuse le free-to-play.
 var kingdom := Kingdom.create()
 
+## Le combat en cours, ou null.
+##
+## SUR MOBILE L'APPLICATION MEURT À TOUT MOMENT. L'expédition survivait
+## déjà à ça, le combat non : perdre sept rondes parce qu'un appel arrive
+## est exactement la punition que le § 41 refuse.
+##
+## C'est un MOTEUR, pas un dictionnaire : on le tient sous sa vraie forme
+## en mémoire, et on ne le sérialise qu'au moment d'écrire. La scène de
+## combat reprend donc un objet vivant, pas une carte à remonter.
+var combat: CombatEngine = null
+
+## Identifiant de la carte du combat en cours. Une carte de défense du
+## royaume n'existe dans aucun fichier, donc cet identifiant ne suffit pas
+## à la reconstruire — c'est le moteur sauvegardé qui porte le plateau, et
+## l'identifiant ne sert qu'à savoir de quel combat il s'agit.
+var combat_map_id: StringName = &""
+
 
 func _ready() -> void:
 	if campaign_seed == 0:
@@ -45,6 +62,8 @@ func start_new_campaign(seed_value: int) -> void:
 	company = Company.new()
 	expedition = null
 	kingdom = Kingdom.create()
+	combat = null
+	combat_map_id = &""
 
 
 ## Tout ce qu'il faut écrire pour retrouver la partie où on l'a laissée.
@@ -56,6 +75,11 @@ func to_save() -> Dictionary:
 	}
 	if expedition != null:
 		data["expedition"] = expedition.to_dictionary()
+	# Un combat fini n'a rien à faire sur le disque : au prochain
+	# lancement, « Reprendre » rouvrirait une bataille déjà jouée.
+	if combat != null and not combat.is_finished():
+		data["combat"] = combat.to_dictionary()
+		data["combat_map"] = String(combat_map_id)
 	return data
 
 
@@ -71,7 +95,20 @@ func from_save(data: Dictionary) -> bool:
 	expedition = null
 	if data.has("expedition"):
 		expedition = Expedition.from_dictionary(data["expedition"])
+	combat = null
+	combat_map_id = &""
+	if data.has("combat"):
+		combat = CombatEngine.from_dictionary(data["combat"])
+		combat_map_id = StringName(data.get("combat_map", ""))
 	return true
+
+
+## Oublie le combat en cours. À appeler dès qu'il est fini ou abandonné :
+## un combat qui traîne dans la sauvegarde se rouvrirait au lancement
+## suivant.
+func clear_combat() -> void:
+	combat = null
+	combat_map_id = &""
 
 
 ## Sauvegarde la partie. À appeler après chaque action significative :

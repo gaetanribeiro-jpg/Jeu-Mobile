@@ -10,16 +10,16 @@ extends GutTest
 
 
 func before_each() -> void:
-	CombatRules.reload()
-	Unit.reload()
-	Ability.reload()
-	HeroProgression.reload()
-	HeroNames.reload()
-	Equipment.reload()
-	ResourceTable.reload()
-	Worksite.reload()
-	Buildings.reload()
-	Invasion.reload()
+	CombatRules.clear_cache()
+	Unit.clear_cache()
+	Ability.clear_cache()
+	HeroProgression.clear_cache()
+	HeroNames.clear_cache()
+	Equipment.clear_cache()
+	ResourceTable.clear_cache()
+	Worksite.clear_cache()
+	Buildings.clear_cache()
+	Invasion.clear_cache()
 
 
 func _kingdom(built: bool = false) -> Kingdom:

@@ -5,8 +5,8 @@ extends GutTest
 
 
 func before_each() -> void:
-	CombatRules.reload()
-	Unit.reload()
+	CombatRules.clear_cache()
+	Unit.clear_cache()
 
 
 func _board(rows: Array) -> CombatBoard:

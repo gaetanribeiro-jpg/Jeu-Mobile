@@ -20,17 +20,17 @@ var _ended := -1
 
 
 func before_each() -> void:
-	CombatRules.reload()
-	Unit.reload()
-	Ability.reload()
-	HeroProgression.reload()
-	HeroNames.reload()
-	Equipment.reload()
-	Loot.reload()
-	Region.reload()
-	ExpeditionRules.reload()
-	ExpeditionEvent.reload()
-	Merchant.reload()
+	CombatRules.clear_cache()
+	Unit.clear_cache()
+	Ability.clear_cache()
+	HeroProgression.clear_cache()
+	HeroNames.clear_cache()
+	Equipment.clear_cache()
+	Loot.clear_cache()
+	Region.clear_cache()
+	ExpeditionRules.clear_cache()
+	ExpeditionEvent.clear_cache()
+	Merchant.clear_cache()
 
 	_company = Company.new()
 	var rng := CombatRng.new(31337)

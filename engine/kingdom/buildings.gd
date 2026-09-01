@@ -27,7 +27,14 @@ const KEYSTONE := &"castle"
 static var _data: Dictionary = {}
 
 
-static func reload() -> void:
+## Vide le cache de données, pour les tests et le rechargement à chaud.
+##
+## PAS `reload()` : ce nom entre en collision avec `Script.reload()` de
+## Godot, et c'est CELUI-LÀ qui était appelé — « Cannot reload script while
+## instances exist », 472 fois par exécution des tests. Le cache n'était
+## donc jamais vidé, et la table de données que le test croyait relire
+## était celle du test précédent.
+static func clear_cache() -> void:
 	_data = {}
 
 

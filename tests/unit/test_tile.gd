@@ -6,7 +6,7 @@ extends GutTest
 
 
 func before_each() -> void:
-	CombatRules.reload()
+	CombatRules.clear_cache()
 
 
 func test_l_herbe_est_neutre() -> void:

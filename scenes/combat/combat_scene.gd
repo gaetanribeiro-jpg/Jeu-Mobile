@@ -23,6 +23,18 @@ extends Node2D
 
 signal combat_finished(victory: bool)
 
+## Le combat a changé d'état de façon significative : une activation vient
+## de se terminer, ou le placement est fini. L'appelant sauvegarde.
+##
+## RÈGLE 5 : « sauvegarde après chaque action significative ». Une
+## activation est la bonne granularité — sauver à chaque PA dépensé
+## écrirait sur le disque dix fois par tour pour rien, et sauver à la fin
+## du combat ne sauverait rien du tout.
+signal state_changed
+
+## Le joueur demande à sauvegarder et à quitter depuis la pause.
+signal save_and_quit_requested
+
 ## Écran de pause en cours, ou null. Le combat est au tour par tour, donc
 ## rien ne « tourne » — la pause ne suspend rien, elle offre une SORTIE.
 ## Sans elle, un joueur interrompu quitte par le bouton système, ce qui
@@ -81,6 +93,20 @@ func configure(combat_map_id: StringName, squad: Array[Unit], rng: CombatRng = n
 	if map == null:
 		return
 	configure_with_map(map, squad, rng)
+
+
+## Reprend un combat déjà commencé.
+##
+## Pour la sauvegarde en plein combat (T7.1) : le moteur a été reconstruit
+## au chargement de la partie, et la scène le reprend TEL QUEL plutôt que
+## de recharger une carte et de tout replacer. Pour la défense du royaume,
+## recharger serait d'ailleurs impossible — sa carte n'est dans aucun
+## fichier.
+func adopt(running: CombatEngine, running_map_id: StringName) -> void:
+	if running == null:
+		return
+	engine = running
+	map_id = running_map_id
 
 
 ## Prépare la scène sur une carte DÉJÀ CONSTRUITE.
@@ -440,6 +466,10 @@ func _on_end_turn() -> void:
 	if engine.is_deploying():
 		if engine.begin_combat():
 			_refresh_all()
+			# Le placement est la première décision du combat, et elle
+			# vaut d'être sauvée : la refaire après un rechargement, c'est
+			# refaire le seul choix qu'on avait déjà pesé.
+			state_changed.emit()
 		return
 	_resolve_enemy_turn()
 
@@ -455,6 +485,8 @@ func _on_end_turn() -> void:
 func _resolve_enemy_turn() -> void:
 	_resolving = true
 	await _replay(engine.end_activation())
+	if not engine.is_finished():
+		state_changed.emit()
 
 
 ## Rejoue un journal produit par le moteur.
@@ -669,6 +701,9 @@ func _open_pause() -> void:
 	_pause = packed.instantiate()
 	_pause.resumed.connect(_close_pause)
 	_pause.abandoned.connect(_abandon)
+	_pause.save_and_quit.connect(func() -> void:
+		_close_pause()
+		save_and_quit_requested.emit())
 	add_child(_pause)
 
 

@@ -4,9 +4,9 @@ extends GutTest
 
 
 func before_each() -> void:
-	CombatRules.reload()
-	Unit.reload()
-	Ability.reload()
+	CombatRules.clear_cache()
+	Unit.clear_cache()
+	Ability.clear_cache()
 
 
 func test_les_trois_classes_du_mvp_sont_declarees() -> void:

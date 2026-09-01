@@ -393,5 +393,23 @@
     },
     "animation": "heal",
     "note": "Le Gel, mais sur cinq cases et pour deux activations. Presque aucun dégât : c'est du CONTRÔLE, et le § 15 le veut lisible — une vague qui gèle un groupe se comprend sans explication."
+  },
+  "gore": {
+    "class": "minotaur",
+    "kind": "attack",
+    "action_points": 5,
+    "range_min": 1,
+    "range_max": 1,
+    "needs_line_of_sight": true,
+    "area": {
+      "shape": "line",
+      "length": 2
+    },
+    "damage": 30,
+    "scaling": "strength",
+    "cooldown": 1,
+    "animation": "attack",
+    "effect": "dust_02",
+    "note": "L'Encornade traverse DEUX cases en ligne. C'est la seule attaque ennemie qui punit un alignement, et c'est tout le sujet du mini-boss : sur une carte à goulot, se ranger derrière son Guerrier cesse d'être la bonne réponse. Le télégraphe l'annonce comme les autres, donc la leçon se prend une fois et se retient."
   }
 }

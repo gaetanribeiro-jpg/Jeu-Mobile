@@ -6,16 +6,17 @@
       "description_key": "REGION_GREENLANDS_DESC",
       "act": 1,
       "unlocked": true,
-      "_maps_note": "L'ORDRE EST MESURÉ, PAS SUPPOSÉ. Il vient de la colonne PV de `tools/simulate_combats.gd`, qui est l'instrument établi en T1.11 : ce qu'une carte coûte à l'équipe, sur cinquante graines. Rangé à l'œil, il était faux.\n\nCoût moyen mesuré après T1.14 : 01 → 0 %, 06 → 11 %, 05 → 15 %, 02 → 19 %, 03 → 23 %, 04 → 36 %. Fenêtre du départ 9 % en moyenne, fenêtre du fond 26 % : l'escalade du § 29 est réelle, et elle est chiffrée à près du triple.\n\nÀ RELANCER APRÈS TOUTE MODIFICATION D'UNE CARTE OU D'UN ENNEMI : cet ordre est une mesure, et une mesure périme. Il a déjà changé deux fois — une fois parce qu'il avait été rangé à l'œil, une fois parce que le bestiaire a reçu deux tireurs.",
+      "_maps_note": "L'ORDRE EST MESURÉ, PAS SUPPOSÉ. Il vient de la colonne PV de `tools/simulate_combats.gd`, qui est l'instrument établi en T1.11 : ce qu'une carte coûte à l'équipe, sur cinquante graines. Rangé à l'œil, il était faux.\n\nCoût moyen mesuré : 01 → 0 %, 06 → 11 %, 05 → 15 %, 02 → 19 %, 07 → 19 %, 03 → 23 %, 04 → 36 %. Fenêtre du départ 9 % en moyenne, fenêtre du fond 26 %.\n\n`vallee_07` est revenue dans la réserve ordinaire quand `vallee_09` a pris le rôle de mini-boss (T7.2) : une étape annoncée « mini-boss » qui servait une rencontre ordinaire était une promesse non tenue.\n\nÀ RELANCER APRÈS TOUTE MODIFICATION D'UNE CARTE OU D'UN ENNEMI : cet ordre est une mesure, et une mesure périme. Il a déjà changé trois fois.",
       "encounter_maps": [
         "vallee_01",
         "vallee_06",
         "vallee_05",
         "vallee_02",
+        "vallee_07",
         "vallee_03",
         "vallee_04"
       ],
-      "miniboss_map": "vallee_07",
+      "miniboss_map": "vallee_09",
       "boss_map": "vallee_08",
       "map_window": {
         "_note": "`size` cartes tirables à la fois ; la fenêtre avance de `slide` carte par rencontre déjà passée. Avec six cartes, une fenêtre de trois et un pas d'une demie, la profondeur 6 ne laisse plus que les trois dernières.",

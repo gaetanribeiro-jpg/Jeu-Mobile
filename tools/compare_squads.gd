@@ -6,7 +6,7 @@ extends SceneTree
 ##     godot --headless --path . -s tools/compare_squads.gd -- 10
 ##
 ## Quatre emplacements et trois classes, doublons autorisés, font quinze
-## compositions. Cet outil les joue toutes sur les huit cartes et rend le
+## compositions. Cet outil les joue toutes sur toutes les cartes et rend le
 ## taux de victoire de chacune.
 ##
 ## Il répond à la question que pose la composition d'équipe : le choix

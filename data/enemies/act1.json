@@ -130,5 +130,22 @@
       "hex_bolt"
     ],
     "question": "Frappe une zone à six cases, soit une de plus que l'Archer. Une équipe massée hors de portée de la mêlée est exactement la cible qu'il attend : c'est lui qui rend le regroupement coûteux, et donc le déplacement obligatoire."
+  },
+  "minotaur": {
+    "sprite": "minotaur",
+    "role": "brute",
+    "hit_points": 210,
+    "action_points": 6,
+    "movement_points": 3,
+    "initiative": 3,
+    "strength": 10,
+    "agility": 2,
+    "intelligence": 1,
+    "defence": 5,
+    "abilities": [
+      "gore"
+    ],
+    "question": "Le mini-boss des Terres Vertes. Entre le gobelin lancier et le Troll : assez de PV pour qu'on ne l'efface pas en une ronde, assez lent pour qu'on puisse le contourner, et une Encornade en ligne qui interdit de se ranger en file. Il joue tôt pour un colosse — c'est ce qui empêche de l'ignorer.",
+    "_hit_points_note": "Monté de 180 à 210 après mesure. À 180, le mini-boss coûtait 29 % des PV de l'équipe, soit MOINS que `vallee_04` (36 %) et que le boss (35 %) : une étape annoncée « mini-boss » qui se joue plus facilement qu'une rencontre ordinaire ne tient pas sa promesse."
   }
 }

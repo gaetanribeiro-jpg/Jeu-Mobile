@@ -9,8 +9,8 @@ extends GutTest
 
 
 func before_each() -> void:
-	CombatRules.reload()
-	Unit.reload()
+	CombatRules.clear_cache()
+	Unit.clear_cache()
 
 
 func test_quatre_emplacements_pour_trois_classes() -> void:

@@ -22,9 +22,9 @@ var _asked := 0
 
 func before_each() -> void:
 	_asked = 0
-	CombatRules.reload()
-	Unit.reload()
-	Ability.reload()
+	CombatRules.clear_cache()
+	Unit.clear_cache()
+	Ability.clear_cache()
 	Settings.reset()
 
 	var packed: PackedScene = load("res://scenes/ui/options_screen.tscn")

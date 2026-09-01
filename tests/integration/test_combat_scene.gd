@@ -33,10 +33,10 @@ func should_skip_script():
 
 
 func before_each() -> void:
-	CombatRules.reload()
-	Unit.reload()
-	Ability.reload()
-	ViewSettings.reload()
+	CombatRules.clear_cache()
+	Unit.clear_cache()
+	Ability.clear_cache()
+	ViewSettings.clear_cache()
 	var packed: PackedScene = load("res://scenes/combat/combat_scene.tscn")
 	_scene = packed.instantiate()
 	_scene.map_id = &"vallee_01"

@@ -16,6 +16,10 @@ extends CanvasLayer
 signal resumed
 signal abandoned
 
+## Sauvegarder et rendre la main. Le combat repart d'où il en est au
+## prochain lancement.
+signal save_and_quit
+
 const OPTIONS_SCENE := "res://scenes/ui/options_screen.tscn"
 
 var _confirming := false
@@ -39,6 +43,10 @@ func _build() -> void:
 	_column.add_child(title)
 
 	_action(tr("PAUSE_RESUME"), func() -> void: resumed.emit())
+	# Sauvegarder et quitter est la RAISON D'ÊTRE de ce menu sur mobile :
+	# on est interrompu, et un combat dont on ne peut sortir que par
+	# l'abandon ou le bouton système n'a pas de bonne sortie.
+	_action(tr("PAUSE_SAVE_QUIT"), func() -> void: save_and_quit.emit())
 	_action(tr("PAUSE_OPTIONS"), _open_options)
 
 	if _confirming:

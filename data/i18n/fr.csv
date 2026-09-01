@@ -375,3 +375,8 @@ INVASION_REPELLED,L'assaut est repoussé (%d contre %d). Butin : %d or.
 INVASION_LOST,Le royaume est pillé (%d contre %d).
 INVASION_ALONE,L'armée a défendu seule.
 MAP_KINGDOM_DEFENCE,La défense du royaume
+PAUSE_SAVE_QUIT,Sauvegarder et quitter
+BOOT_RESUME_COMBAT,Reprendre le combat
+ENEMY_MINOTAUR,Minotaure
+ABILITY_GORE,Encornade
+MAP_VALLEE_09,Le goulet du minotaure

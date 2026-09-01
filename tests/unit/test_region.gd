@@ -11,8 +11,8 @@ extends GutTest
 
 
 func before_each() -> void:
-	Region.reload()
-	CombatRules.reload()
+	Region.clear_cache()
+	CombatRules.clear_cache()
 
 
 # --- Ce que la table promet ------------------------------------------------

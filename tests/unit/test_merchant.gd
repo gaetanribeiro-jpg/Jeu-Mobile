@@ -14,16 +14,16 @@ extends GutTest
 
 
 func before_each() -> void:
-	CombatRules.reload()
-	Unit.reload()
-	Ability.reload()
-	HeroProgression.reload()
-	HeroNames.reload()
-	Equipment.reload()
-	Loot.reload()
-	Region.reload()
-	ExpeditionRules.reload()
-	Merchant.reload()
+	CombatRules.clear_cache()
+	Unit.clear_cache()
+	Ability.clear_cache()
+	HeroProgression.clear_cache()
+	HeroNames.clear_cache()
+	Equipment.clear_cache()
+	Loot.clear_cache()
+	Region.clear_cache()
+	ExpeditionRules.clear_cache()
+	Merchant.clear_cache()
 
 
 func _company(gold: int = 0) -> Company:

@@ -6,9 +6,9 @@ extends GutTest
 
 
 func before_each() -> void:
-	CombatRules.reload()
-	Unit.reload()
-	HeroNames.reload()
+	CombatRules.clear_cache()
+	Unit.clear_cache()
+	HeroNames.clear_cache()
 
 
 func test_le_pack_de_noms_est_complet() -> void:

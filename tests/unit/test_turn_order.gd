@@ -7,8 +7,8 @@ extends GutTest
 
 
 func before_each() -> void:
-	CombatRules.reload()
-	Unit.reload()
+	CombatRules.clear_cache()
+	Unit.clear_cache()
 
 
 func _unit(id: int, side: int, initiative: int) -> Unit:

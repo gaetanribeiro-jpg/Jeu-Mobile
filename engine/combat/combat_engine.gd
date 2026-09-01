@@ -75,6 +75,82 @@ func _init(
 	order = TurnOrder.new()
 
 
+# --- Sauvegarde en plein combat (T7.1) -------------------------------------
+#
+# POURQUOI. Sur mobile, l'application meurt à tout moment. L'expédition
+# survivait déjà à ça, le combat non : perdre sept rondes parce qu'un appel
+# arrive est exactement la punition que le § 41 refuse.
+#
+# CE QU'ON N'ÉCRIT PAS, ET C'EST DÉLIBÉRÉ : la pile d'annulation. Annuler
+# ne vaut qu'à l'intérieur d'une activation, et reprendre une partie
+# commence l'activation à neuf. La sauver obligerait à sérialiser des
+# instantanés entiers du plateau pour un service que personne ne réclamera
+# après avoir rallumé son téléphone.
+#
+# CE QU'ON ÉCRIT ET QU'ON POURRAIT CROIRE SUPERFLU : les INTENTIONS, c'est
+# à dire le télégraphe. Sans elles, un ennemi qui avait annoncé son coup
+# frapperait sans l'avoir annoncé, et « information parfaite, toujours »
+# tomberait sur un rechargement.
+
+## Tout ce qu'il faut pour reprendre ce combat exactement où il en est.
+func to_dictionary() -> Dictionary:
+	var saved_intents := {}
+	for unit_id: Variant in _intents.keys():
+		saved_intents[str(unit_id)] = (_intents[unit_id] as CombatIntent).to_dictionary()
+	var saved_pending: Array = []
+	for unit: Unit in _pending:
+		saved_pending.append(unit.to_dictionary())
+	var saved_cells: Array = []
+	for cell: Vector2i in _deployment_cells:
+		saved_cells.append([cell.x, cell.y])
+
+	return {
+		"phase": phase,
+		"outcome": outcome,
+		"board": board.to_dictionary(),
+		"objective": objective.to_dictionary(),
+		"order": order.to_dictionary(),
+		"rng": rng.position(),
+		"intents": saved_intents,
+		"pending": saved_pending,
+		"deployment_cells": saved_cells,
+		"taunting": _taunting.duplicate(),
+	}
+
+
+static func from_dictionary(data: Dictionary) -> CombatEngine:
+	if data.is_empty():
+		return null
+	var restored_board := CombatBoard.from_dictionary(data.get("board", {}))
+	if restored_board == null:
+		return null
+
+	var restored_rng := CombatRng.new(0)
+	restored_rng.rewind_to(data.get("rng", {}))
+	var engine := CombatEngine.new(
+		restored_board,
+		CombatObjective.from_dictionary(data.get("objective", {})),
+		restored_rng
+	)
+	engine.phase = int(data.get("phase", Phase.SETUP))
+	engine.outcome = int(data.get("outcome", CombatObjective.Outcome.ONGOING))
+	engine.order = TurnOrder.from_dictionary(data.get("order", {}), restored_board.units())
+
+	for key: Variant in (data.get("intents", {}) as Dictionary).keys():
+		var intent := CombatIntent.from_dictionary((data["intents"] as Dictionary)[key])
+		if intent != null:
+			engine._intents[int(String(key))] = intent
+	for raw: Variant in data.get("pending", []):
+		var unit := Unit.from_dictionary(raw)
+		if unit != null:
+			engine._pending.append(unit)
+	for pair: Variant in data.get("deployment_cells", []):
+		engine._deployment_cells.append(Vector2i(int(pair[0]), int(pair[1])))
+	for raw: Variant in data.get("taunting", []):
+		engine._taunting.append(int(raw))
+	return engine
+
+
 ## Déclare la zone de placement et l'équipe à poser. À appeler avant
 ## `start()` ; sans elle, le combat s'ouvre directement, ce qui reste
 ## utile aux tests qui posent les unités eux-mêmes.

@@ -17,12 +17,12 @@ var _changes := 0
 
 
 func before_each() -> void:
-	CombatRules.reload()
-	Unit.reload()
-	Ability.reload()
-	HeroProgression.reload()
-	HeroNames.reload()
-	Equipment.reload()
+	CombatRules.clear_cache()
+	Unit.clear_cache()
+	Ability.clear_cache()
+	HeroProgression.clear_cache()
+	HeroNames.clear_cache()
+	Equipment.clear_cache()
 
 	_company = Company.new()
 	var rng := CombatRng.new(31337)

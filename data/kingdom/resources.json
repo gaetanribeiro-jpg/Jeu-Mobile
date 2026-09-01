@@ -1,5 +1,5 @@
 {
-  "_readme": "Les quatre ressources du § 6 : bois, pierre, or, nourriture. Ne pas en ajouter dans le MVP — le § 6 le dit, et quatre suffisent déjà à rendre un coût de bâtiment intéressant.\n\nOÙ VIT CHAQUE RESSOURCE, ET POURQUOI CE N'EST PAS UNIFORME. L'OR vit avec la COMPAGNIE : ce sont les héros qui le gagnent sur la route et qui le dépensent chez le marchand, en pleine expédition, loin du royaume. Lui faire une seconde bourse au royaume obligerait à les synchroniser, et deux bourses qui doivent rester d'accord finissent toujours par ne plus l'être. Les trois autres vivent dans les RÉSERVES du royaume : personne ne transporte une carrière.\n\n`holder` dit donc où lire chaque ressource, et l'écran du royaume les montre côte à côte sans avoir à connaître la raison.\n\nL'ICÔNE DE LA PIERRE EST UN ROCHER DU DÉCOR. Le pack n'a pas d'icône de pierre — c'est un des manques relevés dans etat-des-lieux.md § 3. `Rock1` est ce qui s'en approche le plus et il est déjà dans la table des assets.",
+  "_readme": "Les quatre ressources du § 6 : bois, pierre, or, nourriture. Ne pas en ajouter dans le MVP — le § 6 le dit, et quatre suffisent déjà à rendre un coût de bâtiment intéressant.\n\nOÙ VIT CHAQUE RESSOURCE, ET POURQUOI CE N'EST PAS UNIFORME. L'OR vit avec la COMPAGNIE : ce sont les héros qui le gagnent sur la route et qui le dépensent chez le marchand, en pleine expédition, loin du royaume. Lui faire une seconde bourse au royaume obligerait à les synchroniser, et deux bourses qui doivent rester d'accord finissent toujours par ne plus l'être. Les trois autres vivent dans les RÉSERVES du royaume : personne ne transporte une carrière.\n\n`holder` dit donc où lire chaque ressource, et l'écran du royaume les montre côte à côte sans avoir à connaître la raison.\n\nL'ICÔNE DE LA PIERRE EST `Rock4`, TRANCHÉ. Le pack n'a pas d'icône de pierre : ses douze icônes d'UI font bois, or, viande, épées, bouclier, engrenage — et s'arrêtent là. Les trois autres ressources utilisent déjà les TAS du monde (`wood_resource`, `gold_resource`, `meat_resource`) et non la famille d'UI ; `Rock4` tient donc le même registre visuel, et c'est le seul vrai tas de pierres du pack. `Rock1`, posé au départ, est un caillou de trois pixels illisible à la taille d'une icône.",
   "resources": {
     "wood": {
       "name_key": "RESOURCE_WOOD",
@@ -11,7 +11,7 @@
       "name_key": "RESOURCE_STONE",
       "holder": "kingdom",
       "start": 20,
-      "asset": "decorations/rock1"
+      "asset": "decorations/rock4"
     },
     "gold": {
       "name_key": "RESOURCE_GOLD",

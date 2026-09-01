@@ -234,9 +234,9 @@ dur : passer par `data/assets.json`.
 
 *(à tenir à jour à chaque fin de session)*
 
-- **Phase courante : 1 — cœur tactique PA/PM.** Le pivot vers la vision
+- **Phase courante : les dettes (7).** Le pivot vers la vision
   Tiny Kingdoms a été acté le 2026-08-31.
-- **Phase 1 terminée.** T1.1 à T1.12 sont faites et testées.
+- **Phase 1 terminée.** T1.1 à T1.14 sont faites et testées.
 - **Phase 2 terminée.** T2.1 à T2.7 : le `Hero`, les niveaux,
   l'équipement, le butin, la `Company`, la sauvegarde, l'écran de
   compagnie.
@@ -252,6 +252,10 @@ dur : passer par `data/assets.json`.
 - **Phase 4 terminée.** T4.1 à T4.4 : `Kingdom`, `Buildings`, l'écran du
   royaume et le branchement sur la boucle. **640 tests passent** sous
   Godot 4.6 en headless.
+- **Phase 7 terminée — les dettes.** T7.1 (sauvegarde en plein combat et
+  sortie à tout moment), T7.2 (`vallee_09`, le vrai mini-boss), T7.3
+  (l'IA frappe ce qui barre la route), T7.4 (`reload()` → `clear_cache()`,
+  472 erreurs moteur par campagne). **704 tests passent.**
 - **La boucle du § 3 tourne en entier :** royaume → carte du monde →
   expédition → combat → butin et expérience → compagnie → royaume. Une
   sortie conclue déclenche un cycle de production ; le royaume rend des
@@ -279,11 +283,21 @@ faire passer par là.**
 composition de l'équipe → départ → route du § 28 (combats, évènements,
 marchand, mini-boss, boss) → rentrer ou continuer.
 `pointing/emulate_touch_from_mouse` est actif, donc la souris se comporte
-comme un doigt. **Le banc d'essai des 8 cartes reste sur l'écran de
+comme un doigt. **Le banc d'essai des cartes reste sur l'écran de
 titre** : ouvrir une carte précise en deux clics est la seule façon de
 vérifier un combat sans traverser une sortie entière.
 
-**Les huit cartes sont au format 12 × 9** et se jouent en 3 à 7 rondes.
+**Les neuf cartes sont au format 12 × 9** et se jouent en 3 à 8 rondes.
+Sept en rencontre ordinaire, `vallee_09` en mini-boss, `vallee_08` en
+boss ; l'ordre du § 28 suit le coût mesuré, pas l'ordre d'écriture.
+
+**LE COMBAT SE SAUVEGARDE (T7.1).** Le jeu écrit tout seul à chaque fin
+d'activation, le menu de pause offre « Sauvegarder et quitter », et
+l'écran de titre propose « Reprendre le combat » avant tout le reste. Ce
+qui est écrit, c'est le PLATEAU, pas l'identifiant de la carte : la
+bataille de défense du royaume se fabrique et ne vit dans aucun fichier.
+Le télégraphe et la position de la graine sont dedans ; la pile
+d'annulation, non — elle ne vaut qu'à l'intérieur d'une activation.
 
 **PAS DE TÉLÉPHONE ANDROID pour l'instant.** Les étapes F, G et H de
 `docs/installation.md` (SDK, préréglage d'export, déploiement) attendent.
@@ -302,6 +316,11 @@ xvfb-run -a godot --path . --resolution 1280x720 -- --capture /tmp/x.png
 # --press navigue : il presse des boutons par leur texte, dans l'ordre.
 xvfb-run -a godot --path . --resolution 1280x720 -- --capture /tmp/x.png \
   --press "Partir en expédition|Partir pour"
+# Une étape « @x,y » TOUCHE UNE CASE au lieu de presser un bouton. Sans
+# elle, le combat est inatteignable : « Commencer » reste désactivé tant
+# que l'équipe n'est pas posée.
+xvfb-run -a godot --path . --resolution 1280x720 -- --capture /tmp/x.png \
+  --press "Le goulet du minotaure|@0,4|@1,4|@0,3|@1,5|Commencer"
 xvfb-run -a godot --path . --resolution 1280x720 \
   -s tools/dev/combat_storyboard.gd -- /tmp/planche vallee_03
 ```
@@ -375,8 +394,15 @@ assemblage passe de 97 % à 92 % de PV et l'écart entre compositions de 14 à
 1. **Le Mage utilise le sprite du Moine.** Décision prise par défaut pour
    ne pas bloquer ; c'est le seul choix qui ne coûte rien. À confirmer à
    l'œil quand le combat tournera.
-2. **La pierre n'a pas d'icône** dans le pack. Découper `Rock1` ou piocher
-   dans `icon_01..12` ?
+2. ~~**La pierre n'a pas d'icône**~~ — **tranché : `decorations/rock4`.**
+   Les 12 icônes d'interface du pack sont bois, or, viande, épées,
+   bouclier, engrenage… : pas de pierre. Les trois autres ressources
+   prennent déjà leur image dans la famille des TAS du monde
+   (`wood_resource`, `gold_resource`, `meat_resource`), donc un rocher du
+   monde reste dans la même langue visuelle. `Rock1` est un caillou de
+   trois pixels ; `Rock4` est le plus gros, et c'est le seul qui se lise
+   à la taille d'une icône. **À revoir à l'œil si le royaume paraît
+   incohérent.**
 3. **Ferme, scierie et mine en chantiers plutôt qu'en bâtiments** — c'est
    ce que le pack sait dessiner, mais ça change la tête du royaume.
 4. **Les affectations de `data/audio.json`**, faites au nom des fichiers,

@@ -155,6 +155,12 @@ func _skip_downed() -> void:
 		_position += 1
 
 
+## La timeline telle quelle : la ronde, l'ordre tiré, et où l'on en est.
+##
+## Sert à l'annulation (instantané par activation) ET à la sauvegarde en
+## plein combat (T7.1). Refaire le tri au rechargement ne suffirait pas :
+## l'ordre a pu être amputé d'unités mises à terre, et la reprise ferait
+## rejouer quelqu'un qui a déjà agi.
 func to_dictionary() -> Dictionary:
 	return {
 		"round": round_index,

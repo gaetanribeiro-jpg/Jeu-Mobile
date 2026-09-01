@@ -1,6 +1,6 @@
 extends GutTest
 
-## Joue des combats entiers, jusqu'à la fin, sur les huit cartes.
+## Joue des combats entiers, jusqu'à la fin, sur toutes les cartes.
 ##
 ## Les tests unitaires vérifient chaque règle isolément. Celui-ci vérifie
 ## la seule chose qu'ils ne peuvent pas voir : qu'un combat SE TERMINE.
@@ -15,9 +15,9 @@ const ACTIVATION_CAP := 200
 
 
 func before_each() -> void:
-	CombatRules.reload()
-	Unit.reload()
-	Ability.reload()
+	CombatRules.clear_cache()
+	Unit.clear_cache()
+	Ability.clear_cache()
 
 
 func _squad() -> Array[Unit]:
@@ -167,9 +167,9 @@ func _run(map_id: StringName, seed_value: int) -> Dictionary:
 	}
 
 
-func test_les_huit_cartes_se_chargent() -> void:
+func test_les_cartes_de_l_acte_i_se_chargent() -> void:
 	var ids := CombatMap.map_ids()
-	assert_eq(ids.size(), 8, "huit cartes de l'Acte I")
+	assert_eq(ids.size(), 9, "les cartes de l'Acte I, mini-boss compris")
 	for id: StringName in ids:
 		var map := CombatMap.load_map(id, CombatRules.ADJACENCY_ORTHOGONAL)
 		assert_not_null(map, String(id))

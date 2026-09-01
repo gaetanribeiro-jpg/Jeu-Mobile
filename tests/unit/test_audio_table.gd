@@ -6,7 +6,7 @@ extends GutTest
 
 
 func before_each() -> void:
-	AudioTable.reload()
+	AudioTable.clear_cache()
 
 
 func test_la_table_se_charge() -> void:

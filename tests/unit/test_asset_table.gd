@@ -8,7 +8,7 @@ extends GutTest
 
 
 func before_each() -> void:
-	AssetTable.reload()
+	AssetTable.clear_cache()
 
 
 func test_la_table_se_charge() -> void:

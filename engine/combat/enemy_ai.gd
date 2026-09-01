@@ -53,6 +53,9 @@ func plan(board: CombatBoard, unit: Unit, taunting: Array[int] = []) -> Dictiona
 	var origin := unit.cell
 	var moved := destination != origin and board.move_unit(unit, destination)
 	var intent := _intent_from_here(board, unit, target)
+	if intent.kind == CombatIntent.Kind.NONE:
+		# Rien à frapper : on regarde ce qui BARRE LA ROUTE.
+		intent = _breach_intent(board, unit, target)
 	if moved:
 		board.move_unit(unit, origin)
 
@@ -71,7 +74,10 @@ func intent_here(board: CombatBoard, unit: Unit, taunting: Array[int] = []) -> C
 	var target := _choose_target(board, unit, taunting)
 	if target == null:
 		return CombatIntent.none(unit.id)
-	return _intent_from_here(board, unit, target)
+	var intent := _intent_from_here(board, unit, target)
+	if intent.kind == CombatIntent.Kind.NONE:
+		intent = _breach_intent(board, unit, target)
+	return intent
 
 
 ## Compétences de l'unité, de la plus chère à la moins chère. L'ennemi
@@ -119,6 +125,51 @@ func _intent_from_here(board: CombatBoard, unit: Unit, target: Unit) -> CombatIn
 	if ability == null:
 		return CombatIntent.none(unit.id)
 	return CombatIntent.attack_cell(unit.id, ability.id, unit.cell, target.cell)
+
+
+## Frapper l'obstacle destructible qui barre la route, faute de mieux.
+##
+## OUVERT DEPUIS T1.12, ET C'EST LA PHASE 5 QUI LE FERMAIT. L'IA ne visait
+## que des UNITÉS : un pont ne se cassait jamais tout seul, et un objectif
+## « protéger une structure » ne pouvait donc pas échouer — une carte dont
+## l'objectif ne peut pas être perdu n'est pas une carte. La défense du
+## royaume (§ 38) rend le manque criant : une palissade que personne
+## n'attaque n'est pas un mur, c'est une frontière.
+##
+## LA RÈGLE EST SOBRE, et c'est voulu : un ennemi qui n'a RIEN à frapper
+## frappe ce qui le sépare de sa cible. Il ne casse jamais un décor quand
+## il peut cogner quelqu'un — sinon les assaillants s'occuperaient du
+## paysage pendant que le joueur les contourne.
+##
+## Parmi les obstacles à portée, il choisit le plus proche de sa cible :
+## un assiégeant ouvre la brèche en face de ce qu'il veut atteindre, pas
+## à l'autre bout de la palissade.
+func _breach_intent(board: CombatBoard, unit: Unit, target: Unit) -> CombatIntent:
+	var best_cell := Vector2i.ZERO
+	var best_ability: Ability = null
+	var best_distance := -1
+
+	for ability: Ability in _abilities_of(unit):
+		if ability.action_points > unit.max_action_points or not ability.is_attack():
+			continue
+		if not unit.is_ready(ability.id):
+			continue
+		for cell: Vector2i in board.targetable_cells(unit, ability):
+			if board.breakable_cells(unit, ability, cell).is_empty():
+				continue
+			var distance := board.grid.distance(cell, target.cell)
+			if best_distance < 0 or distance < best_distance:
+				best_distance = distance
+				best_cell = cell
+				best_ability = ability
+		if best_ability != null:
+			# Les compétences sont rangées de la plus chère à la moins
+			# chère : la première qui ouvre une brèche est la bonne.
+			break
+
+	if best_ability == null:
+		return CombatIntent.none(unit.id)
+	return CombatIntent.attack_cell(unit.id, best_ability.id, unit.cell, best_cell)
 
 
 ## Dégâts que cet ennemi peut espérer porter à cette cible, au mieux.

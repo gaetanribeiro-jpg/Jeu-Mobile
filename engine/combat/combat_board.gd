@@ -49,6 +49,51 @@ static func from_rows(rows: PackedStringArray, adjacency: String = "") -> Combat
 	return board
 
 
+## Le plateau tel quel : sa grille, ses cases, ses unités.
+##
+## POUR LA SAUVEGARDE EN PLEIN COMBAT (T7.1). Sur mobile l'application meurt
+## à tout moment, et une expédition survivait déjà — un combat non. Perdre
+## sept rondes parce qu'un appel arrive est exactement la punition que le
+## § 41 refuse.
+##
+## ON N'ÉCRIT QUE CE QUI A CHANGÉ DEPUIS LA CARTE : les tuiles portent leur
+## terrain courant, qui suffit à retrouver un pont cassé ou un feu qui
+## brûle. Réécrire la carte d'origine en plus obligerait à tenir les deux
+## d'accord.
+func to_dictionary() -> Dictionary:
+	var saved_tiles: Array = []
+	for cell: Vector2i in _tiles.keys():
+		saved_tiles.append((_tiles[cell] as Tile).to_dictionary())
+	var saved_units: Array = []
+	for unit: Unit in _units.values():
+		saved_units.append(unit.to_dictionary())
+	return {
+		"width": grid.width,
+		"height": grid.height,
+		"adjacency": grid.adjacency(),
+		"tiles": saved_tiles,
+		"units": saved_units,
+	}
+
+
+static func from_dictionary(data: Dictionary) -> CombatBoard:
+	if data.is_empty():
+		return null
+	var board := CombatBoard.new(Grid.new(
+		int(data.get("width", 0)), int(data.get("height", 0)),
+		String(data.get("adjacency", ""))
+	))
+	for raw: Variant in data.get("tiles", []):
+		var tile := Tile.from_dictionary(raw)
+		if tile != null and board._tiles.has(tile.cell):
+			board._tiles[tile.cell] = tile
+	for raw: Variant in data.get("units", []):
+		var unit := Unit.from_dictionary(raw)
+		if unit != null:
+			board._units[unit.id] = unit
+	return board
+
+
 # --- Tuiles et unités ------------------------------------------------------
 
 func tile_at(cell: Vector2i) -> Tile:

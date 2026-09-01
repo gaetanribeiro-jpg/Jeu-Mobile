@@ -100,12 +100,20 @@ func _build_squad_picker() -> void:
 	# Une expédition en cours passe avant tout le reste : elle a la
 	# priorité sur le disque comme à l'écran, sinon on la perdrait en
 	# repartant de zéro sans s'en apercevoir.
-	var running := GameState.expedition != null and GameState.expedition.is_ongoing()
+	# UN COMBAT INTERROMPU PASSE AVANT TOUT. C'est l'état le plus fragile
+	# de la partie et le plus coûteux à perdre : sept rondes de décisions.
 	var go := Button.new()
 	go.custom_minimum_size = Vector2(400, 84)
 	go.add_theme_font_size_override("font_size", 26)
-	go.text = tr("BOOT_RESUME") if running else tr("BOOT_EXPEDITION")
-	go.pressed.connect(_resume_expedition if running else _open_world)
+	if GameState.combat != null and not GameState.combat.is_finished():
+		go.text = tr("BOOT_RESUME_COMBAT")
+		go.pressed.connect(_resume_combat)
+	elif GameState.expedition != null and GameState.expedition.is_ongoing():
+		go.text = tr("BOOT_RESUME")
+		go.pressed.connect(_resume_expedition)
+	else:
+		go.text = tr("BOOT_EXPEDITION")
+		go.pressed.connect(_open_world)
 	row.add_child(go)
 
 	var kingdom := Button.new()
@@ -477,6 +485,53 @@ func _on_test_combat_finished(scene: Node) -> void:
 	visible = true
 
 
+# --- Quitter et reprendre un combat ---------------------------------------
+
+## Le joueur sauvegarde et rend la main depuis la pause. Le combat reste
+## dans la sauvegarde ; l'écran de titre proposera de le reprendre.
+func _save_and_leave_combat(scene: Node) -> void:
+	GameState.save()
+	if is_instance_valid(scene):
+		scene.queue_free()
+	_build_squad_picker()
+	visible = true
+
+
+## Rouvre le combat sauvegardé, exactement où il en était.
+##
+## LE MOTEUR EST DÉJÀ VIVANT : il a été reconstruit au chargement de la
+## partie. La scène le reprend tel quel plutôt que de recharger une carte
+## et de tout replacer — ce qui, pour la défense du royaume, serait
+## d'ailleurs impossible : sa carte n'est dans aucun fichier.
+func _resume_combat() -> void:
+	if GameState.combat == null or GameState.combat.is_finished():
+		GameState.clear_combat()
+		return
+	var packed: PackedScene = load(COMBAT_SCENE)
+	if packed == null:
+		return
+	var scene: Node2D = packed.instantiate()
+	scene.adopt(GameState.combat, GameState.combat_map_id)
+	scene.state_changed.connect(GameState.save)
+	scene.save_and_quit_requested.connect(_save_and_leave_combat.bind(scene))
+	# On reprend le chemin de fin qui correspond au combat repris : une
+	# défense de royaume et une rencontre d'expédition ne se concluent pas
+	# de la même façon.
+	var on_done := _on_expedition_combat_finished
+	if GameState.combat_map_id == DefenceMap.MAP_ID:
+		on_done = _on_defence_finished
+	elif GameState.expedition == null:
+		on_done = _on_test_combat_finished
+	scene.combat_finished.connect(func(_victory: bool) -> void:
+		await get_tree().create_timer(2.5).timeout
+		GameState.clear_combat()
+		on_done.call(scene)
+		if is_instance_valid(scene):
+			scene.queue_free())
+	get_tree().root.add_child(scene)
+	visible = false
+
+
 # --- Plomberie commune -----------------------------------------------------
 
 func _launch(map_id: StringName, units: Array[Unit], rng: CombatRng, on_done: Callable) -> void:
@@ -496,9 +551,21 @@ func _launch_with_map(
 		return
 	var scene: Node2D = packed.instantiate()
 	scene.configure_with_map(map, units, rng)
+	# LE MOTEUR VIT DANS `GameState` DÈS SA CRÉATION. Sur mobile
+	# l'application meurt à tout moment, y compris à la première
+	# activation : attendre un « moment sûr » pour l'y mettre reviendrait
+	# à choisir la fenêtre pendant laquelle on accepte de tout perdre.
+	GameState.combat = scene.engine
+	GameState.combat_map_id = map.id
+	scene.state_changed.connect(GameState.save)
+	scene.save_and_quit_requested.connect(_save_and_leave_combat.bind(scene))
+	GameState.save()
 	scene.combat_finished.connect(func(_victory: bool) -> void:
 		# On laisse la bannière de résultat à l'écran, puis on rend la main.
 		await get_tree().create_timer(2.5).timeout
+		# Le combat est fini : il n'a plus rien à faire dans la sauvegarde,
+		# sinon « Reprendre » rouvrirait une bataille déjà jouée.
+		GameState.clear_combat()
 		on_done.call(scene)
 		if is_instance_valid(scene):
 			scene.queue_free())

@@ -44,6 +44,31 @@ var carried := false
 
 
 ## Construit un objectif depuis les données d'une carte de combat.
+## L'objectif tel quel. `carried` est le seul état qui bouge en cours de
+## combat — le colis ramassé de l'extraction — et l'oublier ferait
+## redémarrer une extraction déjà à moitié faite.
+func to_dictionary() -> Dictionary:
+	var saved_cells: Array = []
+	for cell: Vector2i in cells:
+		saved_cells.append([cell.x, cell.y])
+	var saved_pickup: Array = []
+	for cell: Vector2i in pickup_cells:
+		saved_pickup.append([cell.x, cell.y])
+	var saved_protected: Array = []
+	for cell: Vector2i in protected_cells:
+		saved_protected.append([cell.x, cell.y])
+	return {
+		"kind": kind_name(),
+		"turns": turns,
+		"deadline": deadline,
+		"cells": saved_cells,
+		"pickup_cells": saved_pickup,
+		"protected_cells": saved_protected,
+		"subject_ids": subject_ids.duplicate(),
+		"carried": carried,
+	}
+
+
 static func from_dictionary(data: Dictionary) -> CombatObjective:
 	var objective := CombatObjective.new()
 	var name_ := String(data.get("kind", "eliminate"))
@@ -62,6 +87,10 @@ static func from_dictionary(data: Dictionary) -> CombatObjective:
 	for raw: Variant in data.get("subject_ids", []):
 		ids.append(int(raw))
 	objective.subject_ids = ids
+	# Une carte écrite à la main ne déclare pas `carried` ; une sauvegarde
+	# de combat, si. Sans lui, recharger une extraction rendrait le colis
+	# au sol après qu'on est allé le chercher.
+	objective.carried = bool(data.get("carried", false))
 	return objective
 
 

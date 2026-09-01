@@ -5,6 +5,7 @@ extends Node
 ##     xvfb-run -a godot --path . --resolution 1280x720 -- --capture /tmp/x.png
 ##     xvfb-run -a godot --path . -- --capture /tmp/x.png --frames 90
 ##     xvfb-run -a godot --path . -- --capture /tmp/x.png --press "Partir|Partir pour"
+##     xvfb-run -a godot --path . -- --capture /tmp/x.png --press "La brèche|@0,3|@0,4|@1,3|@1,4|Commencer"
 ##
 ## `--press` presse des boutons par leur TEXTE, dans l'ordre, en laissant
 ## respirer entre chacun. C'est ce qui permet de photographier un écran
@@ -12,6 +13,13 @@ extends Node
 ## joueur l'atteint, pas monté à la main dans un banc d'essai. Un préfixe
 ## suffit ; un bouton désactivé ou absent arrête la séquence et le dit,
 ## plutôt que de capturer un écran qu'on croira être le bon.
+##
+## UNE ÉTAPE « @x,y » TOUCHE UNE CASE au lieu de presser un bouton. Sans
+## elle, le combat était le seul écran du jeu inatteignable en capture :
+## « Commencer » reste désactivé tant que l'équipe n'est pas posée, et
+## poser un héros demande de toucher la grille. La séquence passe par
+## `handle_tap()`, exactement la porte qu'emprunte le doigt — rien n'est
+## monté à la main, on clique pour de vrai.
 ##
 ## POURQUOI CET AUTOLOAD EXISTE. `tools/dev/screenshot.gd` monte une scène
 ## dans un script lancé par `-s`, et un tel script ne reçoit AUCUN
@@ -30,6 +38,8 @@ extends Node
 const ARG_PATH := "--capture"
 const ARG_FRAMES := "--frames"
 const ARG_PRESS := "--press"
+## Préfixe d'une étape qui touche une case de la grille : « @x,y ».
+const TAP_PREFIX := "@"
 const DEFAULT_FRAMES := 45
 
 ## Images laissées passer après chaque pression.
@@ -98,17 +108,50 @@ func _process(_delta: float) -> void:
 ## entre chacun.
 func _walk() -> bool:
 	for label: String in _press:
-		var button := _find_button(get_tree().root, label)
-		if button == null:
-			var seen := PackedStringArray()
-			_collect(get_tree().root, seen)
-			push_error("Capture : aucun bouton actif « %s ». Disponibles : %s"
-				% [label, ", ".join(seen)])
-			return false
-		button.pressed.emit()
+		if label.begins_with(TAP_PREFIX):
+			if not _tap(label.substr(TAP_PREFIX.length())):
+				return false
+		else:
+			var button := _find_button(get_tree().root, label)
+			if button == null:
+				var seen := PackedStringArray()
+				_collect(get_tree().root, seen)
+				push_error("Capture : aucun bouton actif « %s ». Disponibles : %s"
+					% [label, ", ".join(seen)])
+				return false
+			button.pressed.emit()
 		for i in SETTLE_FRAMES:
 			await get_tree().process_frame
 	return true
+
+
+## Touche la case « x,y » de la scène de combat en cours.
+func _tap(coordinates: String) -> bool:
+	var parts := coordinates.split(",", false)
+	if parts.size() != 2:
+		push_error("Capture : « %s%s » ne se lit pas — il faut « %sx,y »"
+			% [TAP_PREFIX, coordinates, TAP_PREFIX])
+		return false
+	var scene := _find_combat_scene(get_tree().root)
+	if scene == null:
+		push_error("Capture : « %s%s » sans combat à l'écran"
+			% [TAP_PREFIX, coordinates])
+		return false
+	scene.call("handle_tap", Vector2i(parts[0].to_int(), parts[1].to_int()))
+	return true
+
+
+## La scène de combat, reconnue à sa porte d'entrée. Elle n'a pas de
+## `class_name` — le test porte donc sur la méthode que le doigt appelle,
+## ce qui revient au même et ne crée pas de dépendance.
+func _find_combat_scene(node: Node) -> Node:
+	if node.has_method("handle_tap"):
+		return node
+	for child: Node in node.get_children():
+		var found := _find_combat_scene(child)
+		if found != null:
+			return found
+	return null
 
 
 ## Le premier bouton visible, actif et cliquable dont le texte commence par
