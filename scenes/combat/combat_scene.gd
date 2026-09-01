@@ -53,6 +53,13 @@ const ENEMY_COLOR := "Red"
 var engine: CombatEngine
 var map_id: StringName = &"vallee_01"
 
+## L'heure qu'il est (§ 36). Elle ne change AUCUNE règle du combat : les
+## renforts de la nuit sont déjà sur le plateau quand la scène l'ouvre, et
+## le butin se calcule ailleurs. Elle ne sert qu'à ce que le joueur voie
+## dans quoi il se bat — un combat de nuit qui ressemble à un combat de
+## jour dirait que le cycle est un chiffre, pas un lieu.
+var moment: StringName = DayNight.DEFAULT_MOMENT
+
 var _terrain: Node2D
 var _units_root: Node2D
 var _overlay: Node2D
@@ -144,6 +151,15 @@ func _build_from_map() -> void:
 func _build_scene() -> void:
 	if engine == null:
 		return
+
+	# LA TEINTE EST UN `CanvasModulate`, donc elle porte sur le CALQUE ZÉRO
+	# — le terrain et les unités — et pas sur le HUD, qui vit sur son
+	# propre `CanvasLayer`. Assombrir les chiffres de PV la nuit serait
+	# transformer une ambiance en handicap de lecture, ce que le § 48
+	# interdit.
+	var tint := CanvasModulate.new()
+	tint.color = ViewSettings.color(StringName("moment_%s" % moment))
+	add_child(tint)
 
 	_terrain = Node2D.new()
 	_terrain.set_script(load("res://scenes/combat/terrain_view.gd"))

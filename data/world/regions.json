@@ -1,81 +1,86 @@
 {
-  "_readme": "Les régions du monde (§ 26). Une seule est jouable au MVP : les Terres Vertes. Les cinq autres sont DÉCLARÉES ET VERROUILLÉES — la carte du monde a ainsi quelque chose à montrer, et le joueur voit où il ira, sans qu'on ait inventé leur contenu.\n\nL'ORDRE DE `encounter_maps` EST L'ORDRE DE DIFFICULTÉ, du plus facile au plus dur. C'est de lui que vient l'escalade du § 29 : le tirage d'une rencontre ne pioche pas dans toutes les cartes, mais dans une FENÊTRE qui glisse avec la profondeur. Plus le joueur s'enfonce, plus les cartes faciles cessent de sortir. Aucun chiffre de combat n'est touché — c'est la sélection qui monte, pas les ennemis.\n\nLa carte de mini-boss et celle de boss sont hors de la fenêtre : elles ne peuvent tomber qu'à leur place dans la chaîne.\n\nLA CHAÎNE SUIT LE § 28 : Départ → Combat → Événement → Combat → Marchand → Combat → Mini-boss → Récompense → Boss. `pattern` est le corps, répété jusqu'à la longueur tirée ; `tail` est la fin, toujours identique. Une expédition courte n'est donc pas une expédition tronquée : elle a moins de corps, mais elle a sa fin.",
-  "regions": {
-    "greenlands": {
-      "name_key": "REGION_GREENLANDS",
-      "description_key": "REGION_GREENLANDS_DESC",
-      "act": 1,
-      "unlocked": true,
-      "_maps_note": "L'ORDRE EST MESURÉ, PAS SUPPOSÉ. Il vient de la colonne PV de `tools/simulate_combats.gd`, qui est l'instrument établi en T1.11 : ce qu'une carte coûte à l'équipe, sur cinquante graines. Rangé à l'œil, il était faux.\n\nCoût moyen mesuré : 01 → 0 %, 06 → 11 %, 05 → 15 %, 02 → 19 %, 07 → 19 %, 03 → 23 %, 04 → 36 %. Fenêtre du départ 9 % en moyenne, fenêtre du fond 26 %.\n\n`vallee_07` est revenue dans la réserve ordinaire quand `vallee_09` a pris le rôle de mini-boss (T7.2) : une étape annoncée « mini-boss » qui servait une rencontre ordinaire était une promesse non tenue.\n\nÀ RELANCER APRÈS TOUTE MODIFICATION D'UNE CARTE OU D'UN ENNEMI : cet ordre est une mesure, et une mesure périme. Il a déjà changé trois fois.",
-      "encounter_maps": [
-        "vallee_01",
-        "vallee_06",
-        "vallee_05",
-        "vallee_02",
-        "vallee_07",
-        "vallee_03",
-        "vallee_04"
-      ],
-      "miniboss_map": "vallee_09",
-      "boss_map": "vallee_08",
-      "map_window": {
-        "_note": "`size` cartes tirables à la fois ; la fenêtre avance de `slide` carte par rencontre déjà passée. Avec six cartes, une fenêtre de trois et un pas d'une demie, la profondeur 6 ne laisse plus que les trois dernières.",
-        "size": 3,
-        "slide": 0.5
-      },
-      "chain": {
-        "pattern": [
-          "combat",
-          "event",
-          "combat",
-          "merchant"
-        ],
-        "tail": [
-          "miniboss",
-          "reward",
-          "boss"
-        ],
-        "body": {
-          "min": 3,
-          "max": 6
-        }
-      },
-      "resources_per_encounter": {
-        "wood": 9,
-        "food": 6,
-        "stone": 3
-      },
-      "_resources_note": "CE QU'UNE RENCONTRE RAPPORTE AU ROYAUME, en plus de l'or et des objets. C'est le maillon « exploration → ressources » du § 45, et sans lui l'expédition et le royaume vivaient chacun de leur côté : le royaume ne mangeait que ses propres chantiers, et une sortie ne servait qu'aux héros.\n\nLA RÉGION DICTE SA NATURE. Les Terres Vertes sont des prairies et des bosquets : beaucoup de bois, de quoi manger, peu de pierre. Une région de montagne inversera le tableau, et c'est ce qui donnera une raison d'aller ailleurs que « les ennemis y sont plus durs ».\n\nCES RESSOURCES VONT DANS LA BESACE, donc elles sont en jeu jusqu'au retour, comme le butin. Le § 29 y gagne un terme de plus : continuer, c'est aussi risquer le bois qui manquait à la caserne."
-    },
-    "burning_dunes": {
-      "name_key": "REGION_BURNING_DUNES",
-      "description_key": "REGION_BURNING_DUNES_DESC",
-      "act": 2,
-      "unlocked": false
-    },
-    "frozen_mountains": {
-      "name_key": "REGION_FROZEN_MOUNTAINS",
-      "description_key": "REGION_FROZEN_MOUNTAINS_DESC",
-      "act": 3,
-      "unlocked": false
-    },
-    "broken_lands": {
-      "name_key": "REGION_BROKEN_LANDS",
-      "description_key": "REGION_BROKEN_LANDS_DESC",
-      "act": 4,
-      "unlocked": false
-    },
-    "cursed_lands": {
-      "name_key": "REGION_CURSED_LANDS",
-      "description_key": "REGION_CURSED_LANDS_DESC",
-      "act": 5,
-      "unlocked": false
-    },
-    "black_empire": {
-      "name_key": "REGION_BLACK_EMPIRE",
-      "description_key": "REGION_BLACK_EMPIRE_DESC",
-      "act": 6,
-      "unlocked": false
+ "_readme": "Les régions du monde (§ 26). Une seule est jouable au MVP : les Terres Vertes. Les cinq autres sont DÉCLARÉES ET VERROUILLÉES — la carte du monde a ainsi quelque chose à montrer, et le joueur voit où il ira, sans qu'on ait inventé leur contenu.\n\nL'ORDRE DE `encounter_maps` EST L'ORDRE DE DIFFICULTÉ, du plus facile au plus dur. C'est de lui que vient l'escalade du § 29 : le tirage d'une rencontre ne pioche pas dans toutes les cartes, mais dans une FENÊTRE qui glisse avec la profondeur. Plus le joueur s'enfonce, plus les cartes faciles cessent de sortir. Aucun chiffre de combat n'est touché — c'est la sélection qui monte, pas les ennemis.\n\nLa carte de mini-boss et celle de boss sont hors de la fenêtre : elles ne peuvent tomber qu'à leur place dans la chaîne.\n\nLA CHAÎNE SUIT LE § 28 : Départ → Combat → Événement → Combat → Marchand → Combat → Mini-boss → Récompense → Boss. `pattern` est le corps, répété jusqu'à la longueur tirée ; `tail` est la fin, toujours identique. Une expédition courte n'est donc pas une expédition tronquée : elle a moins de corps, mais elle a sa fin.",
+ "regions": {
+  "greenlands": {
+   "name_key": "REGION_GREENLANDS",
+   "description_key": "REGION_GREENLANDS_DESC",
+   "act": 1,
+   "unlocked": true,
+   "_maps_note": "L'ORDRE EST MESURÉ, PAS SUPPOSÉ. Il vient de la colonne PV de `tools/simulate_combats.gd`, qui est l'instrument établi en T1.11 : ce qu'une carte coûte à l'équipe, sur cinquante graines. Rangé à l'œil, il était faux.\n\nCoût moyen mesuré, de jour : 01 → 0 %, 07 → 5 %, 06 → 7 %, 05 → 15 %, 02 → 19 %, 03 → 23 %, 04 → 36 %.\n\n`vallee_07` A BONDI DE LA CINQUIÈME PLACE À LA DEUXIÈME, et ce n'est pas la carte qui a changé — c'est l'outil qui a cessé de se tromper. Son pilote visait `cells[0]` des cases d'objectif, donc il garait son propre Guerrier sur la case de sortie et bloquait son escorté à côté. Il mesurait sa propre bêtise. Corrigé, `vallee_06` passe de 89 à 93 % et `vallee_07` de 81 à 95 %.\n\n`vallee_07` est revenue dans la réserve ordinaire quand `vallee_09` a pris le rôle de mini-boss (T7.2) : une étape annoncée « mini-boss » qui servait une rencontre ordinaire était une promesse non tenue.\n\nÀ RELANCER APRÈS TOUTE MODIFICATION D'UNE CARTE, D'UN ENNEMI OU DU SIMULATEUR : cet ordre est une mesure, et une mesure périme. Il a déjà changé quatre fois.",
+   "encounter_maps": [
+    "vallee_01",
+    "vallee_07",
+    "vallee_06",
+    "vallee_05",
+    "vallee_02",
+    "vallee_03",
+    "vallee_04"
+   ],
+   "miniboss_map": "vallee_09",
+   "boss_map": "vallee_08",
+   "map_window": {
+    "_note": "`size` cartes tirables à la fois ; la fenêtre avance de `slide` carte par rencontre déjà passée. Avec six cartes, une fenêtre de trois et un pas d'une demie, la profondeur 6 ne laisse plus que les trois dernières.",
+    "size": 3,
+    "slide": 0.5
+   },
+   "chain": {
+    "pattern": [
+     "combat",
+     "event",
+     "combat",
+     "merchant"
+    ],
+    "tail": [
+     "miniboss",
+     "reward",
+     "boss"
+    ],
+    "body": {
+     "min": 3,
+     "max": 6
     }
+   },
+   "resources_per_encounter": {
+    "wood": 9,
+    "food": 6,
+    "stone": 3
+   },
+   "_resources_note": "CE QU'UNE RENCONTRE RAPPORTE AU ROYAUME, en plus de l'or et des objets. C'est le maillon « exploration → ressources » du § 45, et sans lui l'expédition et le royaume vivaient chacun de leur côté : le royaume ne mangeait que ses propres chantiers, et une sortie ne servait qu'aux héros.\n\nLA RÉGION DICTE SA NATURE. Les Terres Vertes sont des prairies et des bosquets : beaucoup de bois, de quoi manger, peu de pierre. Une région de montagne inversera le tableau, et c'est ce qui donnera une raison d'aller ailleurs que « les ennemis y sont plus durs ».\n\nCES RESSOURCES VONT DANS LA BESACE, donc elles sont en jeu jusqu'au retour, comme le butin. Le § 29 y gagne un terme de plus : continuer, c'est aussi risquer le bois qui manquait à la caserne.",
+   "night_roster": [
+    "thief",
+    "torch_goblin"
+   ],
+   "_night_roster_note": "CE QUI SORT DU BOIS QUAND LA NUIT TOMBE (§ 36). Un renfort par rencontre de nuit, tiré là-dedans, posé au centre de la formation ennemie.\n\nPAS UN GNOME DE PLUS : le § 36 dit « plus nombreux ET spéciaux », et ajouter la bête la plus faible du bestiaire rallongerait la rencontre sans la durcir. Le voleur vise l'arrière — il oblige à se soucier de l'Archer et du Mage au moment précis où l'on voulait foncer — et le gobelin torche est une masse de 75 PV qui arrive au contact.\n\nET SURTOUT PAS UN GNOLL, qui était le premier choix. Le gnoll est un TIRAILLEUR : il recule quand on l'approche. À la mesure, `vallee_02` passait de 5,0 à 9,8 rondes les nuits où il sortait — le combat ne devenait pas plus dur, il devenait une POURSUITE, et le § 28 veut des rencontres de trois à huit rondes. Un renfort doit ajouter de la pression, pas de la durée : on ne prend donc que des bêtes qui viennent au contact.\n\nLe plafond de `rules.json` tient : une carte qui a déjà sept ennemis n'en reçoit aucun, et une carte à horloge non plus."
+  },
+  "burning_dunes": {
+   "name_key": "REGION_BURNING_DUNES",
+   "description_key": "REGION_BURNING_DUNES_DESC",
+   "act": 2,
+   "unlocked": false
+  },
+  "frozen_mountains": {
+   "name_key": "REGION_FROZEN_MOUNTAINS",
+   "description_key": "REGION_FROZEN_MOUNTAINS_DESC",
+   "act": 3,
+   "unlocked": false
+  },
+  "broken_lands": {
+   "name_key": "REGION_BROKEN_LANDS",
+   "description_key": "REGION_BROKEN_LANDS_DESC",
+   "act": 4,
+   "unlocked": false
+  },
+  "cursed_lands": {
+   "name_key": "REGION_CURSED_LANDS",
+   "description_key": "REGION_CURSED_LANDS_DESC",
+   "act": 5,
+   "unlocked": false
+  },
+  "black_empire": {
+   "name_key": "REGION_BLACK_EMPIRE",
+   "description_key": "REGION_BLACK_EMPIRE_DESC",
+   "act": 6,
+   "unlocked": false
   }
+ }
 }

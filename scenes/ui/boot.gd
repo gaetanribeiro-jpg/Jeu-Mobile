@@ -398,8 +398,20 @@ func _start_expedition_combat(map_id: StringName) -> void:
 	var units := run.squad_units(GameState.company)
 	if units.is_empty():
 		return
-	_launch(map_id, units, CombatRng.new(hash([run.seed_value, run.index])),
-		_on_expedition_combat_finished)
+	var rng := CombatRng.new(hash([run.seed_value, run.index]))
+	var map := CombatMap.load_map(map_id)
+	if map == null:
+		return
+	# LA NUIT AJOUTE SES BÊTES AVANT LE PLACEMENT, jamais après. Le § 39
+	# veut l'information parfaite : le joueur doit pouvoir compter ses
+	# adversaires pendant qu'il décide où poser son équipe. Un renfort qui
+	# arriverait en cours de combat serait une embuscade, et une embuscade
+	# est le contraire d'un télégraphe.
+	DayNight.reinforce(
+		map.board, run.moment(), run.night_roster(), map.deployment_cells, rng,
+		map.objective
+	)
+	_launch_with_map(map, units, rng, _on_expedition_combat_finished, run.moment())
 
 
 func _on_expedition_combat_finished(scene: Node) -> void:
@@ -462,13 +474,36 @@ func _build_map_list() -> void:
 		button.pressed.connect(_start_test_combat.bind(map_id))
 		grid.add_child(button)
 
+	# UNE CARTE DE NUIT AU BANC D'ESSAI (§ 36). La nuit ne tombe qu'au fond
+	# d'une expédition : sans ce bouton, vérifier une rencontre de nuit
+	# demande de gagner cinq combats d'abord, et personne ne le fera —
+	# c'est exactement le raisonnement qui a fait exister ce banc.
+	var night := Button.new()
+	night.text = tr("BOOT_TESTBENCH_NIGHT")
+	night.custom_minimum_size = Vector2(250, 62)
+	night.add_theme_font_size_override("font_size", 20)
+	night.pressed.connect(_start_test_combat.bind(&"vallee_02", &"night"))
+	grid.add_child(night)
 
-func _start_test_combat(map_id: StringName) -> void:
+
+func _start_test_combat(
+	map_id: StringName, moment: StringName = DayNight.DEFAULT_MOMENT
+) -> void:
 	var squad := GameState.company.squad(_squad_ids)
 	if squad.is_empty():
 		return
-	_launch(map_id, GameState.company.to_units(squad),
-		GameState.combat_rng(_depth), _on_test_combat_finished)
+	var map := CombatMap.load_map(map_id)
+	if map == null:
+		return
+	var rng := GameState.combat_rng(_depth)
+	DayNight.reinforce(
+		map.board, moment, Region.night_roster(&"greenlands"),
+		map.deployment_cells, rng, map.objective
+	)
+	_launch_with_map(
+		map, GameState.company.to_units(squad), rng,
+		_on_test_combat_finished, moment
+	)
 
 
 func _on_test_combat_finished(scene: Node) -> void:
@@ -511,6 +546,7 @@ func _resume_combat() -> void:
 	if packed == null:
 		return
 	var scene: Node2D = packed.instantiate()
+	scene.moment = GameState.combat_moment
 	scene.adopt(GameState.combat, GameState.combat_map_id)
 	scene.state_changed.connect(GameState.save)
 	scene.save_and_quit_requested.connect(_save_and_leave_combat.bind(scene))
@@ -544,12 +580,14 @@ func _launch(map_id: StringName, units: Array[Unit], rng: CombatRng, on_done: Ca
 ## (§ 38) en fabrique une qui n'est dans aucun fichier ; tout le reste du
 ## chemin est identique.
 func _launch_with_map(
-	map: CombatMap, units: Array[Unit], rng: CombatRng, on_done: Callable
+	map: CombatMap, units: Array[Unit], rng: CombatRng, on_done: Callable,
+	moment: StringName = DayNight.DEFAULT_MOMENT
 ) -> void:
 	var packed: PackedScene = load(COMBAT_SCENE)
 	if packed == null:
 		return
 	var scene: Node2D = packed.instantiate()
+	scene.moment = moment
 	scene.configure_with_map(map, units, rng)
 	# LE MOTEUR VIT DANS `GameState` DÈS SA CRÉATION. Sur mobile
 	# l'application meurt à tout moment, y compris à la première
@@ -557,6 +595,7 @@ func _launch_with_map(
 	# à choisir la fenêtre pendant laquelle on accepte de tout perdre.
 	GameState.combat = scene.engine
 	GameState.combat_map_id = map.id
+	GameState.combat_moment = moment
 	scene.state_changed.connect(GameState.save)
 	scene.save_and_quit_requested.connect(_save_and_leave_combat.bind(scene))
 	GameState.save()

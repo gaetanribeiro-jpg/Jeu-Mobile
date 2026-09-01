@@ -234,7 +234,7 @@ dur : passer par `data/assets.json`.
 
 *(à tenir à jour à chaque fin de session)*
 
-- **Phase courante : les dettes (7).** Le pivot vers la vision
+- **Phase courante : 8 — le cycle jour / nuit.** Le pivot vers la vision
   Tiny Kingdoms a été acté le 2026-08-31.
 - **Phase 1 terminée.** T1.1 à T1.14 sont faites et testées.
 - **Phase 2 terminée.** T2.1 à T2.7 : le `Hero`, les niveaux,
@@ -255,7 +255,10 @@ dur : passer par `data/assets.json`.
 - **Phase 7 terminée — les dettes.** T7.1 (sauvegarde en plein combat et
   sortie à tout moment), T7.2 (`vallee_09`, le vrai mini-boss), T7.3
   (l'IA frappe ce qui barre la route), T7.4 (`reload()` → `clear_cache()`,
-  472 erreurs moteur par campagne). **704 tests passent.**
+  472 erreurs moteur par campagne).
+- **Phase 8 terminée.** T8.1 : le cycle jour / nuit du § 36, dernier item
+  du périmètre annoncé de la Phase 5 qui n'avait jamais été écrit.
+  **724 tests passent.**
 - **La boucle du § 3 tourne en entier :** royaume → carte du monde →
   expédition → combat → butin et expérience → compagnie → royaume. Une
   sortie conclue déclenche un cycle de production ; le royaume rend des
@@ -291,6 +294,33 @@ vérifier un combat sans traverser une sortie entière.
 Sept en rencontre ordinaire, `vallee_09` en mini-boss, `vallee_08` en
 boss ; l'ordre du § 28 suit le coût mesuré, pas l'ordre d'écriture.
 
+**UNE EXPÉDITION EST UNE JOURNÉE (§ 36, T8.1).** On part au matin et
+chaque étape avance l'heure : aller plus loin, c'est rentrer plus tard.
+La route montre les heures dès le départ (jour gris-vert, crépuscule
+brun, nuit bleue), donc « rentrer ou continuer » devient « rentrer avant
+la nuit ou pas ». La nuit **ajoute un ennemi et paie 20 % de plus, avec
+un cran de rareté**. Les deux moitiés vont ensemble — `verify_world`
+refuse une heure qui coûte sans payer.
+
+Quatre règles que la mesure a imposées contre l'intention, et qu'il ne
+faut pas défaire :
+- **Le renfort rejoint le CENTRE de la formation ennemie**, jamais la
+  case la plus loin du joueur : sur une carte dont le placement est au
+  milieu (`vallee_05`), « le plus loin » est un coin *derrière* l'équipe.
+- **Pas de tirailleur dans le vivier de nuit.** Le gnoll recule quand on
+  l'approche : `vallee_02` passait de 5,0 à 9,8 rondes. Un renfort ajoute
+  de la pression, pas de la durée.
+- **Pas de renfort sur une carte à échéance.** `vallee_04` tombait de
+  100 % à 44 % de réussite. La pression est déjà dans l'horloge.
+- **Le renfort tire sur un générateur DÉRIVÉ**, sinon il décale le hasard
+  du combat et jour et nuit ne sont plus comparables.
+
+**La nuit ne coûte qu'un point de PV en moyenne, et c'est écrit tel
+quel** dans `data/world/day_night.json`. L'écart par carte va de −8 à
++10 : à sept bêtes l'IA répartit ses coups au lieu de les concentrer, et
+des dégâts répartis ne mettent personne à terre. La récompense est
+réglée sur cette mesure, pas sur l'intention. **À rejuger à l'œil.**
+
 **LE COMBAT SE SAUVEGARDE (T7.1).** Le jeu écrit tout seul à chaque fin
 d'activation, le menu de pause offre « Sauvegarder et quitter », et
 l'écran de titre propose « Reprendre le combat » avant tout le reste. Ce
@@ -321,6 +351,10 @@ xvfb-run -a godot --path . --resolution 1280x720 -- --capture /tmp/x.png \
 # que l'équipe n'est pas posée.
 xvfb-run -a godot --path . --resolution 1280x720 -- --capture /tmp/x.png \
   --press "Le goulet du minotaure|@0,4|@1,4|@0,3|@1,5|Commencer"
+# Le banc d'essai ouvre aussi une rencontre DE NUIT : sans ce bouton il
+# faudrait gagner cinq combats avant d'en voir une.
+xvfb-run -a godot --path . --resolution 1280x720 -- --capture /tmp/x.png \
+  --press "La route basse — de nuit|@0,3|@1,3|@0,4|@1,4|Commencer"
 xvfb-run -a godot --path . --resolution 1280x720 \
   -s tools/dev/combat_storyboard.gd -- /tmp/planche vallee_03
 ```

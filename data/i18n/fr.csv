@@ -380,3 +380,7 @@ BOOT_RESUME_COMBAT,Reprendre le combat
 ENEMY_MINOTAUR,Minotaure
 ABILITY_GORE,Encornade
 MAP_VALLEE_09,Le goulet du minotaure
+MOMENT_DAY,Jour
+MOMENT_DUSK,Crépuscule
+MOMENT_NIGHT,Nuit
+BOOT_TESTBENCH_NIGHT,La route basse — de nuit

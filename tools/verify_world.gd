@@ -32,6 +32,7 @@ func _init() -> void:
 	_check_events()
 	_check_merchant()
 	_check_expedition_rules()
+	_check_day_night()
 
 	if _problems.is_empty():
 		print("\nLe monde est cohérent.")
@@ -334,3 +335,67 @@ func _check_merchant() -> void:
 		% [encounter_gold, cheapest])
 	if float(cheapest) < encounter_gold * 0.5:
 		_problems.append("l'étal est trop bon marché pour qu'acheter soit un choix")
+
+
+## Le cycle jour / nuit (§ 36), et la seule chose qu'il ne doit pas être :
+## un choix évident dans un sens ou dans l'autre.
+##
+## Les deux moitiés se vérifient l'une par l'autre. Une nuit qui ajoute un
+## ennemi sans rien payer de plus est une punition, et personne ne
+## continuerait. Une nuit qui paie sans rien ajouter est un cadeau, et
+## tout le monde continuerait. Dans les deux cas le § 29 s'effondre — et
+## aucun test unitaire ne le dirait, parce que chaque moitié serait juste.
+func _check_day_night() -> void:
+	var schedule := DayNight.schedule()
+	if schedule.is_empty():
+		_problems.append("le cycle jour/nuit n'a pas de calendrier")
+		return
+
+	for moment: StringName in schedule:
+		if not DayNight.exists(moment):
+			_problems.append("le calendrier appelle un moment inconnu « %s »" % moment)
+	if DayNight.moment_at(0) != schedule[0]:
+		_problems.append("le départ ne tombe pas sur la première heure du calendrier")
+
+	var lines := PackedStringArray()
+	var paying := 0
+	var costing := 0
+	for moment: StringName in DayNight.moments():
+		if not DayNight.exists(moment):
+			continue
+		var bonus := DayNight.loot_bonus(moment)
+		var extra := DayNight.reinforcements(moment)
+		var gold := float(bonus.get("gold_multiplier", 1.0))
+		var rarity := int(bonus.get("rarity_bonus", 0))
+		if gold > 1.0 or rarity > 0:
+			paying += 1
+		if extra > 0:
+			costing += 1
+		# Une heure qui coûte sans payer, ou l'inverse, casse le § 29 à
+		# elle seule : on n'a plus une décision, on a une réponse.
+		if extra > 0 and gold <= 1.0 and rarity <= 0:
+			_problems.append("« %s » ajoute %d ennemi(s) et ne paie rien" % [moment, extra])
+		var key := DayNight.name_key(moment)
+		if key.is_empty() or TranslationServer.translate(key) == key:
+			_problems.append("« %s » n'a pas de nom traduit" % moment)
+		lines.append("  %-8s +%d ennemi  or ×%.2f  rareté +%d"
+			% [moment, extra, gold, rarity])
+
+	print("\ncycle jour / nuit : %s" % " → ".join(_as_strings(schedule)))
+	for line: String in lines:
+		print(line)
+
+	if costing == 0:
+		_problems.append("aucune heure ne coûte quoi que ce soit : la nuit est un décor")
+	if paying == 0:
+		_problems.append("aucune heure ne paie : la nuit est une punition sèche")
+
+	# Le renfort doit avoir de quoi être tiré, sinon la nuit n'ajoute rien
+	# et la vérification ci-dessus passerait sur une promesse vide.
+	for region_id: StringName in Region.ids():
+		var roster := Region.night_roster(region_id)
+		if roster.is_empty():
+			continue
+		for enemy_id: StringName in roster:
+			if Unit.enemy_stats(enemy_id).is_empty():
+				_problems.append("%s : renfort de nuit inconnu « %s »" % [region_id, enemy_id])

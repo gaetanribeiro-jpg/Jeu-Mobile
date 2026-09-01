@@ -188,6 +188,27 @@ func step_kind(step_index: int) -> StringName:
 	return StringName(steps[step_index].get("kind", ""))
 
 
+## L'heure qu'il est à l'étape en cours (§ 36).
+##
+## LE MOMENT NE SE STOCKE PAS, IL SE DÉDUIT. Une expédition est une
+## journée : l'indice de l'étape EST l'heure. Rien à écrire sur le disque,
+## rien à convertir dans une sauvegarde d'avant le cycle, et aucune chance
+## que l'horloge sauvegardée diverge de la route sauvegardée.
+func moment() -> StringName:
+	return DayNight.moment_at(index)
+
+
+func moment_at(step_index: int) -> StringName:
+	return DayNight.moment_at(step_index)
+
+
+## Ce que la nuit ajoute à cette rencontre, et ce qu'elle y paie.
+func night_roster() -> Array[StringName]:
+	if DayNight.reinforcements(moment()) <= 0:
+		return [] as Array[StringName]
+	return Region.night_roster(region_id)
+
+
 ## Le boss est la dernière étape : la battre est la seule façon de finir la
 ## chaîne, et c'est ce qui distingue une expédition menée à son terme d'une
 ## expédition dont on est rentré.
@@ -236,7 +257,11 @@ func resolve_combat(summary: Dictionary, hero_units: Array[Unit], rng: CombatRng
 	if not bool(summary.get("victory", false)):
 		return _wipe(rng, downed)
 
-	var gained := Loot.roll(rng, summary, depth())
+	# LE BUTIN CONNAÎT L'HEURE. Sans ce terme, la nuit ne serait qu'un
+	# ennemi de plus — une punition sèche — et le § 29 perdrait la moitié
+	# qui fait la décision : continuer doit rapporter plus, pas seulement
+	# coûter plus.
+	var gained := Loot.roll(rng, summary, depth(), DayNight.loot_bonus(moment()))
 	_gather(gained)
 	# La région donne ses ressources à chaque rencontre gagnée : c'est ce
 	# qui fait qu'une sortie nourrit le royaume et pas seulement les héros.

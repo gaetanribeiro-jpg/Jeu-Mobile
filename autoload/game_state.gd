@@ -49,6 +49,17 @@ var combat: CombatEngine = null
 ## l'identifiant ne sert qu'à savoir de quel combat il s'agit.
 var combat_map_id: StringName = &""
 
+## L'heure à laquelle ce combat se livre (§ 36).
+##
+## ELLE SE SAUVEGARDE, elle ne se déduit pas. `Expedition.moment()` la
+## déduit de l'indice d'étape, et c'est juste POUR UNE EXPÉDITION — mais un
+## combat n'en vient pas toujours d'une. Un combat du banc d'essai, ou une
+## défense de royaume, n'a aucun indice d'où la tirer : le premier essai
+## rechargeait la nuit en plein jour, plateau identique et teinte
+## disparue. L'heure est une propriété DE CE COMBAT ; elle va donc là où
+## va son identifiant de carte.
+var combat_moment: StringName = DayNight.DEFAULT_MOMENT
+
 
 func _ready() -> void:
 	if campaign_seed == 0:
@@ -64,6 +75,7 @@ func start_new_campaign(seed_value: int) -> void:
 	kingdom = Kingdom.create()
 	combat = null
 	combat_map_id = &""
+	combat_moment = DayNight.DEFAULT_MOMENT
 
 
 ## Tout ce qu'il faut écrire pour retrouver la partie où on l'a laissée.
@@ -80,6 +92,7 @@ func to_save() -> Dictionary:
 	if combat != null and not combat.is_finished():
 		data["combat"] = combat.to_dictionary()
 		data["combat_map"] = String(combat_map_id)
+		data["combat_moment"] = String(combat_moment)
 	return data
 
 
@@ -97,9 +110,15 @@ func from_save(data: Dictionary) -> bool:
 		expedition = Expedition.from_dictionary(data["expedition"])
 	combat = null
 	combat_map_id = &""
+	combat_moment = DayNight.DEFAULT_MOMENT
 	if data.has("combat"):
 		combat = CombatEngine.from_dictionary(data["combat"])
 		combat_map_id = StringName(data.get("combat_map", ""))
+		# Une sauvegarde d'avant le cycle n'a pas d'heure : plein jour,
+		# qui ne change rien à rien.
+		combat_moment = StringName(
+			data.get("combat_moment", String(DayNight.DEFAULT_MOMENT))
+		)
 	return true
 
 
@@ -109,6 +128,7 @@ func from_save(data: Dictionary) -> bool:
 func clear_combat() -> void:
 	combat = null
 	combat_map_id = &""
+	combat_moment = DayNight.DEFAULT_MOMENT
 
 
 ## Sauvegarde la partie. À appeler après chaque action significative :

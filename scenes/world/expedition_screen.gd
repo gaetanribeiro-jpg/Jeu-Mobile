@@ -96,9 +96,13 @@ func refresh() -> void:
 	_run.reveal_event(_rng)
 	_run.reveal_stock(_rng)
 
-	_title.text = "%s · %s" % [
+	# L'HEURE EST DANS LE TITRE, pas dans un coin. Le § 36 veut que le
+	# moment pèse sur la décision du § 29 ; une information qu'il faut
+	# chercher ne pèse sur rien.
+	_title.text = "%s · %s · %s" % [
 		tr(Region.name_key(_run.region_id)),
 		tr("EXPEDITION_STEP_OF") % [_run.depth() + 1, _run.length()],
+		tr(DayNight.name_key(_run.moment())),
 	]
 	_satchel.text = tr("EXPEDITION_SATCHEL") % [_run.satchel_gold, _run.satchel_items.size()]
 	if not _run.satchel_resources.is_empty():
@@ -156,11 +160,17 @@ func _badge(step_index: int) -> Panel:
 	var panel := Panel.new()
 	panel.custom_minimum_size = Vector2(BADGE_PX, 84)
 	var style := StyleBoxFlat.new()
-	style.bg_color = Color(0.13, 0.15, 0.13)
+	# LA ROUTE SE LIT COMME UNE JOURNÉE. Chaque pastille prend la couleur
+	# de son heure, donc le joueur VOIT où la nuit commence avant d'y être
+	# — c'est ce qui transforme « je continue ? » en « je continue dans le
+	# noir ? ». Un moment qu'on ne découvre qu'en arrivant ne se décide pas.
+	style.bg_color = _badge_color(_run.moment_at(step_index))
 	if done:
-		style.bg_color = Color(0.10, 0.11, 0.10)
+		style.bg_color = style.bg_color.darkened(0.4)
 	if here:
-		style.bg_color = Color(0.22, 0.27, 0.18)
+		# On ÉCLAIRCIT l'heure au lieu de la remplacer : la pastille où l'on
+		# se trouve est aussi celle dont on veut savoir si elle est de nuit.
+		style.bg_color = style.bg_color.lightened(0.18)
 		style.border_color = Color(1, 0.85, 0.35)
 		style.set_border_width_all(3)
 	style.set_corner_radius_all(6)
@@ -181,6 +191,10 @@ func _badge(step_index: int) -> Panel:
 
 func _kind_key(kind: StringName) -> String:
 	return "STEP_%s" % String(kind).to_upper()
+
+
+func _badge_color(moment: StringName) -> Color:
+	return ViewSettings.color(StringName("badge_%s" % moment))
 
 
 # --- L'équipe --------------------------------------------------------------

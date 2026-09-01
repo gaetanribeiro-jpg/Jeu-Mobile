@@ -66,17 +66,27 @@ static func number(section: StringName, key: StringName, fallback: float) -> flo
 ##
 ## `summary` est ce que rend `CombatRewards.summarise`. `depth` est le
 ## nombre de rencontres déjà enchaînées dans l'expédition.
+##
+## `bonus` est un supplément de circonstance : { gold_multiplier,
+## rarity_bonus }. La nuit du § 36 passe par là. `Loot` reste ignorant de
+## l'heure qu'il est — il reçoit un bonus, pas une horloge — sinon la
+## table du butin devrait connaître le calendrier des expéditions, et
+## chaque nouvelle circonstance viendrait s'y ajouter.
+##
 ## Renvoie { gold, items }.
-static func roll(rng: CombatRng, summary: Dictionary, depth: int = 0) -> Dictionary:
+static func roll(
+	rng: CombatRng, summary: Dictionary, depth: int = 0, bonus: Dictionary = {}
+) -> Dictionary:
 	if rng == null or summary.is_empty():
 		return {"gold": 0, "items": [] as Array[StringName]}
 	var downed := int(summary.get("enemies_downed", 0))
 	var victory := bool(summary.get("victory", false))
 	var deeper := 1.0 + number(&"depth", &"gold_per_step", 0.0) * float(maxi(depth, 0))
+	deeper *= maxf(float(bonus.get("gold_multiplier", 1.0)), 0.0)
 
 	return {
 		"gold": _roll_gold(rng, downed, victory, deeper),
-		"items": _roll_items(rng, victory, depth),
+		"items": _roll_items(rng, victory, depth, int(bonus.get("rarity_bonus", 0))),
 	}
 
 
@@ -108,7 +118,9 @@ static func draw_items(rng: CombatRng, count: int, depth: int, rarity_bonus: int
 	return out
 
 
-static func _roll_items(rng: CombatRng, victory: bool, depth: int) -> Array[StringName]:
+static func _roll_items(
+	rng: CombatRng, victory: bool, depth: int, rarity_bonus: int = 0
+) -> Array[StringName]:
 	var out: Array[StringName] = []
 	var chance := number(&"drop", &"on_victory" if victory else &"on_defeat", 0.0)
 	chance += number(&"depth", &"drop_per_step", 0.0) * float(maxi(depth, 0))
@@ -117,7 +129,7 @@ static func _roll_items(rng: CombatRng, victory: bool, depth: int) -> Array[Stri
 	for i in maxi(limit, 0):
 		if not rng.chance(clampf(chance, 0.0, 1.0), &"loot_drop"):
 			continue
-		var item_id := _roll_item(rng, depth)
+		var item_id := _roll_item(rng, depth, rarity_bonus)
 		if not item_id.is_empty():
 			out.append(item_id)
 	return out

@@ -26,8 +26,29 @@ extends SceneTree
 ## proche. Les chiffres sont donc un PLANCHER : un vrai joueur fera mieux.
 ## Une carte que ce pilote perd n'est pas forcément trop dure ; une carte
 ## qu'il gagne sans une égratignure est forcément trop facile.
+##
+## CHAQUE CARTE EST JOUÉE DEUX FOIS, de jour puis de nuit (§ 36). La nuit
+## ajoute un ennemi : sans cette colonne, on réglerait le cycle à l'estime,
+## et la moitié des rencontres d'une expédition profonde échapperait à la
+## seule mesure dont on dispose.
 
-const TURN_CAP := 30
+## Plafond de sécurité, en RONDES et pas en activations.
+##
+## IL ÉTAIT EN ACTIVATIONS, ET C'ÉTAIT UN PIÈGE. Trente activations, c'est
+## trois rondes à onze combattants et sept rondes à quatre : le plafond
+## dépendait donc du NOMBRE D'ENNEMIS. En ajoutant la bête de la nuit
+## (§ 36), des combats parfaitement gagnés se sont mis à sortir « perdus »
+## — `vallee_06` rendait 56 % de victoires avec 91 % de PV et personne à
+## terre, ce qui ne veut rien dire. On mesurait le plafond de l'outil, pas
+## la carte.
+##
+## Une ronde est l'unité du jeu ; c'est donc la bonne unité pour ce
+## plafond. Trois fois la durée visée laisse toute la place à une carte
+## lente sans jamais laisser tourner une boucle folle.
+const ROUND_CAP_FACTOR := 3
+
+## Garde-fou dur, au cas où une ronde ne se terminerait jamais.
+const ACTIVATION_CAP := 500
 
 
 func _init() -> void:
@@ -37,39 +58,46 @@ func _init() -> void:
 		runs = maxi(1, arguments[0].to_int())
 
 	print("Simulation : %d graines par carte, politique de joueur triviale.\n" % runs)
-	print("%-14s %9s %8s %7s %8s" % ["carte", "victoire", "rondes", "PV", "tombés"])
-	print("-".repeat(50))
+	print("%-14s %-7s %9s %8s %7s %8s"
+		% ["carte", "heure", "victoire", "rondes", "PV", "tombés"])
+	print("-".repeat(58))
 
 	var total_turns := 0
 	var total_health := 0.0
 	var total_downed := 0.0
 	var total_runs := 0
 	for id: StringName in CombatMap.map_ids():
-		var wins := 0
-		var turns_sum := 0
-		var health_sum := 0.0
-		var downed_sum := 0.0
-		for i in runs:
-			var result := _run(id, 1000 + i * 7919)
-			if result.is_empty():
-				continue
-			if result["victory"]:
-				wins += 1
-			turns_sum += int(result["turns"])
-			health_sum += float(result["health"])
-			downed_sum += float(result["downed"])
-		total_turns += turns_sum
-		total_health += health_sum
-		total_downed += downed_sum
-		total_runs += runs
-		print("%-14s %8d%% %8.1f %6d%% %8.2f" % [
-			id, int(round(100.0 * wins / runs)),
-			float(turns_sum) / float(runs),
-			int(round(100.0 * health_sum / float(runs))),
-			downed_sum / float(runs),
-		])
+		for moment: StringName in [&"day", &"night"]:
+			var wins := 0
+			var turns_sum := 0
+			var health_sum := 0.0
+			var downed_sum := 0.0
+			for i in runs:
+				var result := _run(id, 1000 + i * 7919, moment)
+				if result.is_empty():
+					continue
+				if result["victory"]:
+					wins += 1
+				turns_sum += int(result["turns"])
+				health_sum += float(result["health"])
+				downed_sum += float(result["downed"])
+			# LA MOYENNE GÉNÉRALE RESTE CELLE DU JOUR. Elle sert de repère
+			# depuis T1.11 et la comparer à elle-même d'une session à
+			# l'autre n'aurait plus de sens si la nuit venait s'y mêler.
+			if moment == &"day":
+				total_turns += turns_sum
+				total_health += health_sum
+				total_downed += downed_sum
+				total_runs += runs
+			print("%-14s %-7s %8d%% %8.1f %6d%% %8.2f" % [
+				id if moment == &"day" else "", moment,
+				int(round(100.0 * wins / runs)),
+				float(turns_sum) / float(runs),
+				int(round(100.0 * health_sum / float(runs))),
+				downed_sum / float(runs),
+			])
 
-	print("-".repeat(50))
+	print("-".repeat(58))
 	print("Durée moyenne : %.1f rondes (cible : %d à %d)" % [
 		float(total_turns) / float(maxi(total_runs, 1)),
 		int(CombatRules.rule(&"turns", &"min_rounds", 3)),
@@ -87,19 +115,32 @@ func _squad() -> Array[Unit]:
 	return Unit.squad_from_classes(wanted.slice(0, CombatRules.team_size()))
 
 
-func _run(map_id: StringName, seed_value: int) -> Dictionary:
+func _run(
+	map_id: StringName, seed_value: int, moment: StringName = DayNight.DEFAULT_MOMENT
+) -> Dictionary:
 	var map := CombatMap.load_map(map_id)
 	if map == null:
 		return {}
-	var engine := map.to_engine(_squad(), CombatRng.new(seed_value))
+	var rng := CombatRng.new(seed_value)
+	# On prend le renfort de la région où la carte se joue. Les Terres
+	# Vertes sont la seule région de l'Acte I ; le jour où il y en aura
+	# deux, ce sera à passer en argument.
+	DayNight.reinforce(
+		map.board, moment, Region.night_roster(&"greenlands"),
+		map.deployment_cells, rng, map.objective
+	)
+	var engine := map.to_engine(_squad(), rng)
 	engine.start()
 	# Les simulations ne choisissent pas leur placement : ce serait une
 	# stratégie de plus à écrire, et c'est justement la décision qu'on veut
 	# laisser au joueur. On pose sur les premières cases libres.
 	engine.auto_deploy()
 	engine.begin_combat()
+	var round_cap := ROUND_CAP_FACTOR * int(CombatRules.rule(&"turns", &"max_rounds", 8))
 	var activations := 0
-	while not engine.is_finished() and activations < TURN_CAP:
+	while (not engine.is_finished()
+			and engine.round_index() <= round_cap
+			and activations < ACTIVATION_CAP):
 		var hero := engine.current_unit()
 		if hero != null and hero.is_hero():
 			_play_activation(engine, hero)
@@ -218,18 +259,43 @@ func _goal_for(engine: CombatEngine, hero: Unit) -> Vector2i:
 	var objective := engine.objective
 	match objective.kind:
 		CombatObjective.Kind.ESCORT:
-			if objective.subject_ids.has(hero.id) and not objective.cells.is_empty():
-				return objective.cells[0]
+			if objective.subject_ids.has(hero.id):
+				return _open_goal(engine, hero, objective.cells)
 		CombatObjective.Kind.SEIZE:
-			if not objective.cells.is_empty():
-				return objective.cells[0]
+			return _open_goal(engine, hero, objective.cells)
 		CombatObjective.Kind.EXTRACT:
 			if not objective.carried:
-				if not objective.pickup_cells.is_empty():
-					return objective.pickup_cells[0]
-			elif not objective.cells.is_empty():
-				return objective.cells[0]
+				return _open_goal(engine, hero, objective.pickup_cells)
+			return _open_goal(engine, hero, objective.cells)
 	return Vector2i(-1, -1)
+
+
+## La case d'objectif LIBRE la plus proche, et pas la première déclarée.
+##
+## PRENDRE `cells[0]` A COÛTÉ UNE FAUSSE MESURE. Sur `vallee_06`, le
+## pilote garait son propre Guerrier sur (11,3) et l'escorté, arrivé en
+## (10,3), passait quinze rondes à viser une case occupée par son escorte
+## alors que (11,4) était libre à côté. La carte sortait « perdue » 44 %
+## du temps — et rien dans la carte ne clochait, c'est l'outil qui se
+## bloquait tout seul. Un vrai joueur prendrait la case d'à côté.
+##
+## Les cases d'objectif sont données en alternative, jamais en liste
+## ordonnée : les traiter comme une file était une lecture fausse de la
+## donnée, pas seulement une politique paresseuse.
+func _open_goal(
+	engine: CombatEngine, hero: Unit, cells: Array[Vector2i]
+) -> Vector2i:
+	var best := Vector2i(-1, -1)
+	var best_distance := -1
+	for cell: Vector2i in cells:
+		var occupant := engine.board.unit_at(cell)
+		if occupant != null and occupant.id != hero.id:
+			continue
+		var distance := engine.board.grid.distance(hero.cell, cell)
+		if best_distance < 0 or distance < best_distance:
+			best_distance = distance
+			best = cell
+	return best
 
 
 func _walk_toward(engine: CombatEngine, hero: Unit, goal: Vector2i, keep: int) -> void:

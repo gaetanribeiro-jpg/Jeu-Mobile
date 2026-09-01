@@ -46,6 +46,49 @@ func _peopled() -> Company:
 	return company
 
 
+func test_l_heure_du_combat_survit_a_la_sauvegarde() -> void:
+	# LE PREMIER ESSAI LA DÉDUISAIT DE L'EXPÉDITION, et un combat du banc
+	# d'essai n'en a pas : la nuit se rechargeait en plein jour, plateau
+	# identique et teinte disparue. Trouvé en capture d'écran, comme
+	# d'habitude — aucun test ne l'aurait dit, puisque le plateau, lui,
+	# revenait juste.
+	GameState.start_new_campaign(31337)
+	var map := CombatMap.load_map(&"vallee_01")
+	assert_not_null(map)
+	GameState.combat = map.to_engine(
+		Unit.squad_from_classes([&"warrior", &"archer"]), CombatRng.new(9)
+	)
+	GameState.combat.start()
+	GameState.combat_map_id = map.id
+	GameState.combat_moment = &"night"
+	assert_true(GameState.save())
+
+	GameState.start_new_campaign(1)
+	assert_eq(GameState.combat_moment, DayNight.DEFAULT_MOMENT, "une partie neuve est de jour")
+
+	assert_true(GameState.load_saved())
+	assert_eq(GameState.combat_moment, &"night", "l'heure est revenue avec le combat")
+
+
+func test_une_sauvegarde_sans_heure_se_recharge_de_jour() -> void:
+	# Une sauvegarde d'avant le cycle n'a pas de champ « combat_moment ».
+	# Elle doit se recharger, pas se refuser.
+	GameState.start_new_campaign(555)
+	var map := CombatMap.load_map(&"vallee_01")
+	GameState.combat = map.to_engine(
+		Unit.squad_from_classes([&"warrior"]), CombatRng.new(2)
+	)
+	GameState.combat.start()
+	GameState.combat_map_id = map.id
+	var data := GameState.to_save()
+	data.erase("combat_moment")
+
+	GameState.start_new_campaign(1)
+	assert_true(GameState.from_save(data))
+	assert_eq(GameState.combat_moment, DayNight.DEFAULT_MOMENT)
+	assert_not_null(GameState.combat, "le combat se recharge quand même")
+
+
 func test_une_partie_sauvegardee_se_retrouve_entiere() -> void:
 	GameState.start_new_campaign(987654)
 	GameState.company = _peopled()

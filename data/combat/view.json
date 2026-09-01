@@ -1,337 +1,373 @@
 {
-  "_readme": "Valeurs de PRÉSENTATION du combat : couleurs, durées, caméra, choix de tuiles. Séparées de rules.json, qui porte les règles du jeu. Tout ce qui touche au ressenti est ici pour être réglé sans toucher au code — c'est la partie que je ne peux pas juger seul.",
-  "camera": {
-    "_note": "zoom_default est calculé pour que la grille tienne en largeur ; ces bornes encadrent le pincement.",
-    "zoom_min": 0.8,
-    "zoom_max": 3.0,
-    "zoom_default": 1.6,
-    "drag_threshold_px": 12,
-    "edge_margin_tiles": 1.5,
-    "follow_speed": 8.0
-  },
-  "durations": {
-    "_note": "Secondes. Le § 12 met le hit stop et le screen shake en tête du rapport impact/coût.",
-    "move_per_tile": 0.11,
-    "attack_windup": 0.12,
-    "attack_strike": 0.18,
-    "hit_stop": 0.08,
-    "damage_number": 0.9,
-    "death_flash": 0.1,
-    "death_fade": 0.2,
-    "enemy_step_gap": 0.15,
-    "telegraph_pulse": 1.2
-  },
-  "shake": {
-    "hit_pixels": 3.0,
-    "hit_seconds": 0.15,
-    "death_pixels": 5.0,
-    "death_seconds": 0.25
-  },
-  "colors": {
-    "move": [
-      0.35,
-      0.72,
-      1.0,
-      0.3
-    ],
-    "move_border": [
-      0.55,
-      0.85,
-      1.0,
-      0.65
-    ],
-    "attack": [
-      1.0,
-      0.42,
-      0.35,
-      0.3
-    ],
-    "attack_border": [
-      1.0,
-      0.55,
-      0.45,
-      0.7
-    ],
-    "threat": [
-      0.95,
-      0.25,
-      0.25,
-      0.34
-    ],
-    "threat_border": [
-      1.0,
-      0.45,
-      0.35,
-      0.85
-    ],
-    "ward": [
-      1.0,
-      0.9,
-      0.5,
-      0.4
-    ],
-    "selection": [
-      1.0,
-      0.95,
-      0.7,
-      0.9
-    ],
-    "ghost": [
-      1.0,
-      1.0,
-      1.0,
-      0.45
-    ],
-    "objective": [
-      0.55,
-      1.0,
-      0.6,
-      0.35
-    ],
-    "hero_bar": [
-      0.45,
-      0.85,
-      0.45,
-      1.0
-    ],
-    "enemy_bar": [
-      0.9,
-      0.35,
-      0.35,
-      1.0
-    ],
-    "bar_back": [
-      0.08,
-      0.07,
-      0.06,
-      0.85
-    ],
-    "damage_text": [
-      1.0,
-      0.85,
-      0.3,
-      1.0
-    ],
-    "shadow": [
-      0.0,
-      0.0,
-      0.0,
-      0.3
-    ],
-    "telegraph_badge": [
-      0.12,
-      0.04,
-      0.04,
-      0.92
-    ],
-    "telegraph_badge_border": [
-      1.0,
-      0.45,
-      0.35,
-      1.0
-    ],
-    "slot_badge": [
-      0.13,
-      0.16,
-      0.22,
-      0.95
-    ],
-    "slot_text": [
-      0.92,
-      0.95,
-      1.0,
-      1.0
-    ],
-    "slot_badge_border": [
-      0.75,
-      0.85,
-      1.0,
-      0.9
-    ],
-    "deployment": [
-      0.45,
-      0.95,
-      0.65,
-      0.26
-    ],
-    "deployment_border": [
-      0.6,
-      1.0,
-      0.75,
-      0.7
-    ],
-    "area": [
-      1.0,
-      0.62,
-      0.2,
-      0.42
-    ],
-    "area_border": [
-      1.0,
-      0.78,
-      0.35,
-      0.95
-    ],
-    "ap_pip": [
-      1.0,
-      0.86,
-      0.42,
-      1.0
-    ],
-    "mp_pip": [
-      0.45,
-      0.8,
-      1.0,
-      1.0
-    ],
-    "pip_empty": [
-      0.22,
-      0.2,
-      0.18,
-      0.9
-    ],
-    "timeline_now": [
-      1.0,
-      0.92,
-      0.55,
-      1.0
-    ],
-    "timeline_hero": [
-      0.55,
-      0.85,
-      0.55,
-      1.0
-    ],
-    "timeline_enemy": [
-      0.92,
-      0.45,
-      0.4,
-      1.0
-    ],
-    "hazard": [
-      1.0,
-      0.45,
-      0.12,
-      0.34
-    ],
-    "hazard_border": [
-      1.0,
-      0.72,
-      0.25,
-      0.8
-    ]
-  },
-  "sizes": {
-    "highlight_inset_px": 3.0,
-    "border_width_px": 2.0,
-    "health_bar_width_px": 44.0,
-    "health_bar_height_px": 6.0,
-    "health_bar_offset_px": -46.0,
-    "shadow_radius_x_px": 18.0,
-    "shadow_radius_y_px": 7.0,
-    "shadow_offset_px": 4.0,
-    "damage_font_size": 28,
-    "telegraph_font_size": 34,
-    "telegraph_badge_radius_px": 17.0,
-    "hill_cliff_height_px": 22.0,
-    "slot_badge_radius_px": 13.0,
-    "slot_badge_offset_px": -60.0,
-    "slot_font_size": 22,
-    "pip_radius_px": 7.0,
-    "pip_spacing_px": 19.0,
-    "timeline_badge_px": 34.0,
-    "decoration_max_tiles": 1.6,
-    "_decoration_max_tiles_note": "Largeur maximale d'un décor, en cases. Les bâtiments du pack font 128 à 320 pixels de large pour des cases de 64 : posés à leur taille native sur une carte de défense, ils se recouvraient les uns les autres et débordaient du plateau. Les décors plus petits qu'une case et demie ne sont pas touchés — un arbre garde sa taille."
-  },
-  "idle_float": {
-    "_note": "Flottement sinusoïdal des sprites au repos (§ 12). Trivial à coder, fort en impact.",
-    "amplitude_px": 2.0,
-    "period_seconds": 2.2
-  },
-  "terrain_blocks": {
-    "_note": "Le tileset est fait de blocs 4 x 4. Chaque axe encode QUATRE etats et non trois : 1 = aucun bord, 0 = bord avant (gauche ou haut), 2 = bord apres (droite ou bas), 3 = les deux bords, pour une bande d'une seule case. Releve sur les fichiers. [colonne, rangee] designe le coin haut-gauche du bloc. 'land' est l'herbe et ses rives, 'hill' le plateau et ses falaises.",
-    "land": [
-      0,
-      0
-    ],
-    "hill": [
-      5,
-      0
-    ],
-    "_cliff_note": "cliff = la rangee de falaise du bloc 'hill', dessinee sous le bord bas d'une colline. Sans elle, l'interieur du plateau est identique a l'herbe et le joueur ne voit pas ou est le bonus de portee.",
-    "hill_cliff": [
-      6,
-      4
-    ]
-  },
-  "terrain_block_of": {
-    "grass": "land",
-    "forest": "land",
-    "rock": "land",
-    "ruin": "land",
-    "bridge": "land",
-    "hill": "hill",
-    "fire": "land",
-    "mud": "land",
-    "palisade": "land",
-    "building_castle": "land",
-    "building_houses": "land",
-    "building_barracks": "land",
-    "building_archery": "land",
-    "building_monastery": "land"
-  },
-  "terrain_decorations": {
-    "_note": "Sprite posé par-dessus la tuile de base : [catégorie, clé] de data/assets.json. Une troisième valeur choisit l'image d'une bande d'animation — la première image d'un feu n'est qu'une étincelle de quelques pixels, invisible sur une case de 64. Une quatrième et une cinquième donnent [colonne, rangée] pour une entrée de type atlas. Le pack ne fournit ni pont ni ruine : la palissade sert de planches, les ossements de ruine. La boue n'a AUCUN sprite : elle se dessine comme de l'herbe, ce qui est un piège — aucune carte ne l'utilise pour l'instant, et il faudra une teinte avant qu'une carte le fasse.",
-    "forest": [
-      "resources",
-      "tree3"
-    ],
-    "rock": [
-      "decorations",
-      "rock3"
-    ],
-    "ruin": [
-      "extra",
-      "skull_decorations_bones_02"
-    ],
-    "bridge": [
-      "extra",
-      "wooden_fence_wooden_fence_64x64_tile",
-      1,
-      0
-    ],
-    "fire": [
-      "fx",
-      "fire_01",
-      4
-    ],
-    "palisade": [
-      "extra",
-      "wooden_fence_wooden_fence_64x64_tile",
-      0,
-      1,
-      1
-    ],
-    "building_castle": [
-      "buildings",
-      "castle"
-    ],
-    "building_houses": [
-      "buildings",
-      "house2"
-    ],
-    "building_barracks": [
-      "buildings",
-      "barracks"
-    ],
-    "building_archery": [
-      "buildings",
-      "archery"
-    ],
-    "building_monastery": [
-      "buildings",
-      "monastery"
-    ],
-    "_houses_note": "Le pack dessine `house1`, `house2` et `house3`, pas un bâtiment « houses » : c'est le royaume qui regroupe les trois sous un seul bâtiment à trois âges. La carte de défense n'a qu'un décor par terrain, donc elle montre l'âge du milieu."
-  }
+ "_readme": "Valeurs de PRÉSENTATION du combat : couleurs, durées, caméra, choix de tuiles. Séparées de rules.json, qui porte les règles du jeu. Tout ce qui touche au ressenti est ici pour être réglé sans toucher au code — c'est la partie que je ne peux pas juger seul.",
+ "camera": {
+  "_note": "zoom_default est calculé pour que la grille tienne en largeur ; ces bornes encadrent le pincement.",
+  "zoom_min": 0.8,
+  "zoom_max": 3.0,
+  "zoom_default": 1.6,
+  "drag_threshold_px": 12,
+  "edge_margin_tiles": 1.5,
+  "follow_speed": 8.0
+ },
+ "durations": {
+  "_note": "Secondes. Le § 12 met le hit stop et le screen shake en tête du rapport impact/coût.",
+  "move_per_tile": 0.11,
+  "attack_windup": 0.12,
+  "attack_strike": 0.18,
+  "hit_stop": 0.08,
+  "damage_number": 0.9,
+  "death_flash": 0.1,
+  "death_fade": 0.2,
+  "enemy_step_gap": 0.15,
+  "telegraph_pulse": 1.2
+ },
+ "shake": {
+  "hit_pixels": 3.0,
+  "hit_seconds": 0.15,
+  "death_pixels": 5.0,
+  "death_seconds": 0.25
+ },
+ "colors": {
+  "move": [
+   0.35,
+   0.72,
+   1.0,
+   0.3
+  ],
+  "move_border": [
+   0.55,
+   0.85,
+   1.0,
+   0.65
+  ],
+  "attack": [
+   1.0,
+   0.42,
+   0.35,
+   0.3
+  ],
+  "attack_border": [
+   1.0,
+   0.55,
+   0.45,
+   0.7
+  ],
+  "threat": [
+   0.95,
+   0.25,
+   0.25,
+   0.34
+  ],
+  "threat_border": [
+   1.0,
+   0.45,
+   0.35,
+   0.85
+  ],
+  "ward": [
+   1.0,
+   0.9,
+   0.5,
+   0.4
+  ],
+  "selection": [
+   1.0,
+   0.95,
+   0.7,
+   0.9
+  ],
+  "ghost": [
+   1.0,
+   1.0,
+   1.0,
+   0.45
+  ],
+  "objective": [
+   0.55,
+   1.0,
+   0.6,
+   0.35
+  ],
+  "hero_bar": [
+   0.45,
+   0.85,
+   0.45,
+   1.0
+  ],
+  "enemy_bar": [
+   0.9,
+   0.35,
+   0.35,
+   1.0
+  ],
+  "bar_back": [
+   0.08,
+   0.07,
+   0.06,
+   0.85
+  ],
+  "damage_text": [
+   1.0,
+   0.85,
+   0.3,
+   1.0
+  ],
+  "shadow": [
+   0.0,
+   0.0,
+   0.0,
+   0.3
+  ],
+  "telegraph_badge": [
+   0.12,
+   0.04,
+   0.04,
+   0.92
+  ],
+  "telegraph_badge_border": [
+   1.0,
+   0.45,
+   0.35,
+   1.0
+  ],
+  "slot_badge": [
+   0.13,
+   0.16,
+   0.22,
+   0.95
+  ],
+  "slot_text": [
+   0.92,
+   0.95,
+   1.0,
+   1.0
+  ],
+  "slot_badge_border": [
+   0.75,
+   0.85,
+   1.0,
+   0.9
+  ],
+  "deployment": [
+   0.45,
+   0.95,
+   0.65,
+   0.26
+  ],
+  "deployment_border": [
+   0.6,
+   1.0,
+   0.75,
+   0.7
+  ],
+  "area": [
+   1.0,
+   0.62,
+   0.2,
+   0.42
+  ],
+  "area_border": [
+   1.0,
+   0.78,
+   0.35,
+   0.95
+  ],
+  "ap_pip": [
+   1.0,
+   0.86,
+   0.42,
+   1.0
+  ],
+  "mp_pip": [
+   0.45,
+   0.8,
+   1.0,
+   1.0
+  ],
+  "pip_empty": [
+   0.22,
+   0.2,
+   0.18,
+   0.9
+  ],
+  "timeline_now": [
+   1.0,
+   0.92,
+   0.55,
+   1.0
+  ],
+  "timeline_hero": [
+   0.55,
+   0.85,
+   0.55,
+   1.0
+  ],
+  "timeline_enemy": [
+   0.92,
+   0.45,
+   0.4,
+   1.0
+  ],
+  "hazard": [
+   1.0,
+   0.45,
+   0.12,
+   0.34
+  ],
+  "hazard_border": [
+   1.0,
+   0.72,
+   0.25,
+   0.8
+  ],
+  "moment_day": [
+   1.0,
+   1.0,
+   1.0,
+   1.0
+  ],
+  "moment_dusk": [
+   1.0,
+   0.78,
+   0.58,
+   1.0
+  ],
+  "moment_night": [
+   0.52,
+   0.58,
+   0.86,
+   1.0
+  ],
+  "badge_day": [
+   0.13,
+   0.15,
+   0.13,
+   1.0
+  ],
+  "badge_dusk": [
+   0.22,
+   0.15,
+   0.12,
+   1.0
+  ],
+  "badge_night": [
+   0.1,
+   0.11,
+   0.2,
+   1.0
+  ]
+ },
+ "sizes": {
+  "highlight_inset_px": 3.0,
+  "border_width_px": 2.0,
+  "health_bar_width_px": 44.0,
+  "health_bar_height_px": 6.0,
+  "health_bar_offset_px": -46.0,
+  "shadow_radius_x_px": 18.0,
+  "shadow_radius_y_px": 7.0,
+  "shadow_offset_px": 4.0,
+  "damage_font_size": 28,
+  "telegraph_font_size": 34,
+  "telegraph_badge_radius_px": 17.0,
+  "hill_cliff_height_px": 22.0,
+  "slot_badge_radius_px": 13.0,
+  "slot_badge_offset_px": -60.0,
+  "slot_font_size": 22,
+  "pip_radius_px": 7.0,
+  "pip_spacing_px": 19.0,
+  "timeline_badge_px": 34.0,
+  "decoration_max_tiles": 1.6,
+  "_decoration_max_tiles_note": "Largeur maximale d'un décor, en cases. Les bâtiments du pack font 128 à 320 pixels de large pour des cases de 64 : posés à leur taille native sur une carte de défense, ils se recouvraient les uns les autres et débordaient du plateau. Les décors plus petits qu'une case et demie ne sont pas touchés — un arbre garde sa taille."
+ },
+ "idle_float": {
+  "_note": "Flottement sinusoïdal des sprites au repos (§ 12). Trivial à coder, fort en impact.",
+  "amplitude_px": 2.0,
+  "period_seconds": 2.2
+ },
+ "terrain_blocks": {
+  "_note": "Le tileset est fait de blocs 4 x 4. Chaque axe encode QUATRE etats et non trois : 1 = aucun bord, 0 = bord avant (gauche ou haut), 2 = bord apres (droite ou bas), 3 = les deux bords, pour une bande d'une seule case. Releve sur les fichiers. [colonne, rangee] designe le coin haut-gauche du bloc. 'land' est l'herbe et ses rives, 'hill' le plateau et ses falaises.",
+  "land": [
+   0,
+   0
+  ],
+  "hill": [
+   5,
+   0
+  ],
+  "_cliff_note": "cliff = la rangee de falaise du bloc 'hill', dessinee sous le bord bas d'une colline. Sans elle, l'interieur du plateau est identique a l'herbe et le joueur ne voit pas ou est le bonus de portee.",
+  "hill_cliff": [
+   6,
+   4
+  ]
+ },
+ "terrain_block_of": {
+  "grass": "land",
+  "forest": "land",
+  "rock": "land",
+  "ruin": "land",
+  "bridge": "land",
+  "hill": "hill",
+  "fire": "land",
+  "mud": "land",
+  "palisade": "land",
+  "building_castle": "land",
+  "building_houses": "land",
+  "building_barracks": "land",
+  "building_archery": "land",
+  "building_monastery": "land"
+ },
+ "terrain_decorations": {
+  "_note": "Sprite posé par-dessus la tuile de base : [catégorie, clé] de data/assets.json. Une troisième valeur choisit l'image d'une bande d'animation — la première image d'un feu n'est qu'une étincelle de quelques pixels, invisible sur une case de 64. Une quatrième et une cinquième donnent [colonne, rangée] pour une entrée de type atlas. Le pack ne fournit ni pont ni ruine : la palissade sert de planches, les ossements de ruine. La boue n'a AUCUN sprite : elle se dessine comme de l'herbe, ce qui est un piège — aucune carte ne l'utilise pour l'instant, et il faudra une teinte avant qu'une carte le fasse.",
+  "forest": [
+   "resources",
+   "tree3"
+  ],
+  "rock": [
+   "decorations",
+   "rock3"
+  ],
+  "ruin": [
+   "extra",
+   "skull_decorations_bones_02"
+  ],
+  "bridge": [
+   "extra",
+   "wooden_fence_wooden_fence_64x64_tile",
+   1,
+   0
+  ],
+  "fire": [
+   "fx",
+   "fire_01",
+   4
+  ],
+  "palisade": [
+   "extra",
+   "wooden_fence_wooden_fence_64x64_tile",
+   0,
+   1,
+   1
+  ],
+  "building_castle": [
+   "buildings",
+   "castle"
+  ],
+  "building_houses": [
+   "buildings",
+   "house2"
+  ],
+  "building_barracks": [
+   "buildings",
+   "barracks"
+  ],
+  "building_archery": [
+   "buildings",
+   "archery"
+  ],
+  "building_monastery": [
+   "buildings",
+   "monastery"
+  ],
+  "_houses_note": "Le pack dessine `house1`, `house2` et `house3`, pas un bâtiment « houses » : c'est le royaume qui regroupe les trois sous un seul bâtiment à trois âges. La carte de défense n'a qu'un décor par terrain, donc elle montre l'âge du milieu."
+ }
 }

@@ -1360,6 +1360,152 @@ de constater que le combat rechargé est identique au combat quitté, au
 pixel près hors images d'animation.
 
 
+### Phase 8 — Le cycle jour / nuit ✅
+
+| Tâche | Contenu | État |
+|---|---|---|
+| **T8.1** | Le § 36 : une expédition est une journée | ✅ |
+
+Il était dans le périmètre annoncé de la Phase 5 — « loot → royaume,
+royaume → héros, exploration → ressources, invasions, défense tactique,
+cycle jour/nuit » — et c'est le seul de la liste qui n'avait jamais été
+écrit.
+
+### Une expédition est une journée
+
+On part au matin, et chaque étape franchie avance l'heure. Aller plus
+loin ne veut plus seulement dire « `depth + 1` » : ça veut dire rentrer
+plus tard. Le § 29 y gagne sa formulation la plus concrète — **rentrer
+avant la nuit, ou pas** — et le § 36 le « véritable intérêt gameplay »
+qu'il réclame, puisque le moment cesse d'être un décor pour devenir un
+terme de la décision.
+
+**La route montre l'heure au départ.** Chaque pastille prend la couleur
+de son moment, donc le joueur voit où la nuit commence avant d'y être.
+Un moment qu'on ne découvrirait qu'en arrivant ne se déciderait pas.
+
+**Le calendrier est lu par indice d'étape, et la dernière valeur tient
+au-delà.** Une chaîne de six étapes finit sa journée au boss ; une chaîne
+de neuf passe aussi le mini-boss dans le noir. La route longue est la
+route gourmande, et c'est elle qui paie — faire tourner l'horloge
+rendrait la route longue *plus sûre* que la courte, exactement l'inverse
+de ce que le § 29 demande.
+
+**Deux moitiés, et il en faut deux.** La nuit ajoute un ennemi et paie
+davantage. Livrer la première seule ferait une punition gratuite ; la
+seconde seule, un cadeau gratuit. Dans les deux cas le § 29 tombe, et le
+cycle n'est plus qu'un filtre de couleur. `verify_world` refuse
+désormais une heure qui coûte sans payer.
+
+### Quatre choses que la mesure a refusées
+
+Le cycle a été réglé quatre fois, et chaque fois c'est `simulate_combats`
+qui a tranché contre l'intention. **`simulate_combats` joue maintenant
+chaque carte deux fois, de jour puis de nuit** — sans cette colonne, on
+réglerait à l'estime la moitié des rencontres d'une expédition profonde.
+
+1. **Le renfort apparaissait DANS LE DOS de l'équipe.** La première règle
+   était « la case libre la plus loin de la zone de placement ». Sur
+   `vallee_05`, dont la zone de placement est au CENTRE de la carte, la
+   case la plus lointaine est un coin : le renfort sortait en (0,0),
+   derrière les héros. Une règle qui suppose que le joueur se déploie sur
+   un bord ne tient pas sur une carte où il se déploie au milieu. Il
+   rejoint maintenant le centre de la formation ennemie, et jamais plus
+   près du joueur que la bête la plus avancée — le § 39 veut qu'on puisse
+   compter ses adversaires avant de placer.
+2. **Le gnoll allongeait le combat au lieu de le durcir.** C'était le
+   premier renfort choisi, parce qu'il tire. Mais son rôle est
+   *tirailleur* : il RECULE quand on l'approche. `vallee_02` passait de
+   5,0 à 9,8 rondes les nuits où il sortait — une poursuite, pas une
+   bataille, et le § 28 veut trois à huit rondes. **Un renfort doit
+   ajouter de la pression, pas de la durée** : le vivier ne prend plus que
+   des bêtes qui viennent au contact. Un test le vérifie, parce que rien
+   d'autre ne le dirait.
+3. **Sur une carte à horloge, la nuit n'est pas une pente, c'est une
+   falaise.** `vallee_04` demande trois cases en six rondes. L'ennemi de
+   plus allonge le combat d'une demi-ronde, et la réussite tombait de
+   100 % à 44 % : on ne perdait pas un peu plus de PV, on ratait
+   l'objectif ou pas. La règle qui en sort tient en une ligne — **la
+   pression est déjà dans l'horloge** — et une carte à échéance ne reçoit
+   plus de renfort.
+4. **Le tirage du renfort décalait le hasard du combat.** Tirer dans le
+   flux du combat décale tous ses tirages suivants : la même carte, aux
+   mêmes graines, ne se jouait plus pareil de jour et de nuit, et l'outil
+   comparait deux échantillons en croyant comparer deux réglages. Le
+   renfort tire sur un générateur dérivé.
+
+### Ce que la nuit coûte vraiment, et pourquoi c'est peu
+
+**83 % de PV le jour, 82 % la nuit.** Un point. Ce n'est pas ce qu'on
+attendait d'un ennemi de plus, et il vaut mieux l'écrire que le maquiller.
+
+L'écart par carte va de **−8 à +10, dans les deux sens** : `vallee_09`
+perd huit points et un héros de plus, `vallee_03` en *gagne* dix. Le
+mécanisme est lisible — à sept bêtes, l'IA répartit ses coups au lieu de
+les concentrer, et des dégâts répartis ne mettent personne à terre.
+**« Plus d'ennemis » n'est donc pas mécaniquement « plus dur ».**
+
+L'instrument sous-lit, et c'est structurel : la politique du simulateur
+ne protège pas son Archer, n'utilise pas le terrain et ne renonce jamais.
+Une bête de plus dans la timeline ne peut pas lui gâcher un plan,
+puisqu'elle n'en fait pas.
+
+**La récompense est donc réglée sur ce qui est mesuré, pas sur ce qu'on
+espérait :** ×1,2 sur l'or et un cran de rareté, là où le premier jet
+donnait ×1,4. Payer ×1,4 un risque mesuré à un point aurait fait de la
+nuit un choix évident, et un choix évident n'est pas un choix (§ 55).
+**C'est le chiffre à rejuger à l'œil** : sept ennemis au lieu de six, ça
+se sent en jouant bien avant que ça se voie dans une moyenne.
+
+### Deux défauts de l'OUTIL, découverts en réglant le cycle
+
+Les deux faussaient des mesures depuis longtemps, et il a fallu ajouter
+un ennemi pour qu'ils se voient.
+
+**Le plafond du simulateur était en ACTIVATIONS.** Trente activations,
+c'est trois rondes à onze combattants et sept rondes à quatre : le
+plafond dépendait donc du nombre d'ennemis. Avec la bête de la nuit, des
+combats parfaitement gagnés se sont mis à sortir « perdus » —
+`vallee_06` rendait 56 % de victoires avec 91 % de PV et personne à
+terre, ce qui ne veut rien dire. On mesurait le plafond de l'outil. Il
+est maintenant en rondes, l'unité du jeu.
+
+**Le pilote garait son propre Guerrier sur la case d'objectif.** Il
+visait `cells[0]` — la première case déclarée — alors que les cases
+d'objectif sont des ALTERNATIVES, pas une file. Sur `vallee_06`,
+l'escorté arrivait en (10,3) et passait quinze rondes à viser (11,3)
+occupée par son escorte, avec (11,4) libre à côté. Corrigé, `vallee_06`
+passe de 89 à 93 % et `vallee_07` de 81 à 95 % — **et l'ordre des cartes
+de `regions.json`, qui est une mesure, a dû être refait une quatrième
+fois.** `vallee_07` y bondit de la cinquième place à la deuxième, et ce
+n'est pas la carte qui a changé.
+
+### L'heure se sauvegarde, elle ne se déduit pas
+
+`Expedition.moment()` la déduit de l'indice d'étape, et c'est juste —
+pour une expédition. Mais un combat n'en vient pas toujours d'une : le
+banc d'essai et la défense du royaume n'ont aucun indice d'où la tirer.
+
+Le premier jet la déduisait quand même, et la nuit se rechargeait **en
+plein jour** : plateau identique, unités identiques, teinte disparue.
+Trouvé en capture d'écran, comme d'habitude — aucun test ne l'aurait dit,
+puisque le plateau, lui, revenait juste. L'heure est une propriété de CE
+combat ; elle va donc dans la sauvegarde, à côté de son identifiant de
+carte.
+
+### Ce qu'il faut regarder en jouant
+
+- **La route, au départ.** Voit-on d'un coup d'œil où la nuit commence ?
+  Le crépuscule brun et la nuit bleue se distinguent-ils du jour ?
+- **Une rencontre de nuit.** Le banc d'essai de l'écran de titre en ouvre
+  une directement — sans ce bouton il faudrait gagner cinq combats
+  d'abord. Sept ennemis au lieu de six : est-ce que ça se sent ?
+- **La teinte.** Les barres de vie et les chiffres restent-ils lisibles ?
+  Le HUD n'est volontairement pas teinté ; seul le plateau l'est.
+- **La décision.** Arrivé à l'étape 4, avec la nuit visible deux pastilles
+  plus loin, est-ce qu'on hésite ? C'est la seule question qui compte.
+
+
 ---
 
 ## 6. Ce qui est rangé, pas jeté

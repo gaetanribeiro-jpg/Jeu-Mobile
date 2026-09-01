@@ -115,6 +115,16 @@ static func encounter_maps(region_id: StringName) -> Array[StringName]:
 	return out
 
 
+## Ce que la région envoie en renfort quand la nuit tombe (§ 36). Vide,
+## la région n'a pas de nuit — ce qui est une réponse valable, pas un
+## défaut : une région souterraine n'a pas de jour à perdre.
+static func night_roster(region_id: StringName) -> Array[StringName]:
+	var out: Array[StringName] = []
+	for enemy_id: Variant in entry(region_id).get("night_roster", []):
+		out.append(StringName(enemy_id))
+	return out
+
+
 static func miniboss_map(region_id: StringName) -> StringName:
 	return StringName(entry(region_id).get("miniboss_map", ""))
 
