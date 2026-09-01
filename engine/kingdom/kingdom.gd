@@ -236,6 +236,46 @@ func recruitable_classes() -> Array[StringName]:
 	return out
 
 
+## Recrute un héros dans un bâtiment. Renvoie le héros, ou null.
+##
+## LE COÛT EST EN OR ET EN NOURRITURE : l'or parce qu'un héros s'équipe, la
+## nourriture parce qu'il mange. Une seule monnaie aurait fait du
+## recrutement un robinet ; deux en font un arbitrage contre les bâtiments,
+## qui puisent dans la même bourse.
+##
+## L'HABITANT N'EST PAS UN HÉROS. Recruter ne prend personne à la
+## population : un royaume qui perdrait un bûcheron chaque fois qu'il forme
+## un Guerrier punirait le joueur d'avoir joué. Le § 9 les distingue
+## d'ailleurs — les habitants travaillent, l'armée se bat.
+func recruit(building_id: StringName, company: Company, rng: CombatRng) -> Hero:
+	if company == null or rng == null:
+		return null
+	var class_id := Buildings.hero_class(building_id)
+	if class_id.is_empty() or level_of(building_id) <= 0:
+		return null
+	var cost := Buildings.recruit_cost(building_id)
+	if cost.is_empty() or not pay(cost, company):
+		return null
+	var hero := company.recruit(class_id, rng)
+	if hero == null:
+		# Le recrutement a échoué après le paiement : on rend l'argent
+		# plutôt que de laisser le joueur avec un trou dans ses réserves
+		# et personne de plus.
+		grant(cost, company)
+	return hero
+
+
+## Pourquoi on ne peut pas recruter ici : vide si on peut.
+func cannot_recruit_because(building_id: StringName, company: Company = null) -> StringName:
+	if Buildings.hero_class(building_id).is_empty():
+		return &"not_a_trainer"
+	if level_of(building_id) <= 0:
+		return &"not_built"
+	if not can_afford(Buildings.recruit_cost(building_id), company):
+		return &"cost"
+	return &""
+
+
 func assigned_to(worksite_id: StringName) -> int:
 	return int(assignments.get(worksite_id, 0))
 

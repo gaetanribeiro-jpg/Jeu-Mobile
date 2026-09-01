@@ -85,10 +85,18 @@ func squad(hero_ids: Array) -> Array[Hero]:
 
 ## Fabrique les unités de combat d'une équipe, numérotées de 1 à n. L'ordre
 ## donne le numéro d'emplacement, qui est ce qui distingue deux Guerriers.
-func to_units(company_squad: Array[Hero]) -> Array[Unit]:
+##
+## `bonuses_by_class` est ce que le royaume ajoute, par classe. La
+## compagnie ne sait pas d'où ça vient — c'est l'appelant qui relie les
+## deux, et c'est ce qui permet de fabriquer une escouade sans royaume, en
+## test comme dans le simulateur.
+func to_units(
+	company_squad: Array[Hero], bonuses_by_class: Dictionary = {}
+) -> Array[Unit]:
 	var out: Array[Unit] = []
 	for i in company_squad.size():
-		var unit := company_squad[i].to_unit(i + 1, i + 1)
+		var bonuses: Dictionary = bonuses_by_class.get(company_squad[i].class_id, {})
+		var unit := company_squad[i].to_unit(i + 1, i + 1, bonuses)
 		if unit != null:
 			out.append(unit)
 	return out

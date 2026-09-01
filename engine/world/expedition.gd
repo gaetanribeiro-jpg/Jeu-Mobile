@@ -417,7 +417,7 @@ func _gather(gained: Dictionary) -> void:
 
 func _advance(health_change: float = 0.0) -> void:
 	index += 1
-	_change_health(ExpeditionRules.healing_between_steps() + health_change)
+	_change_health(ExpeditionRules.healing_between_steps() + kingdom_healing + health_change)
 	if index >= steps.size():
 		state = State.RETURNED
 
@@ -509,6 +509,17 @@ func _change_health(fraction: float) -> void:
 		carried[hero_id] = clampi(int(carried[hero_id]) + delta, 1, maximum)
 
 
+## Ce que le royaume ajoute à cette sortie : des modificateurs par classe,
+## et une fraction de PV rendue entre deux étapes (le monastère).
+##
+## POSÉ PAR L'APPELANT, PAS LU SUR LE ROYAUME. `Expedition` ignore qu'un
+## royaume existe — c'est ce qui permet de jouer une sortie dans un test
+## ou dans le simulateur sans en construire un. Et rien de tout ça n'est
+## sauvegardé : ce sont des valeurs DÉRIVÉES, et une valeur dérivée qu'on
+## écrit sur le disque est une valeur qui finit par mentir.
+var kingdom_bonuses: Dictionary = {}
+var kingdom_healing: float = 0.0
+
 ## PV maximums relevés au dernier passage : soigner une fraction demande de
 ## savoir de quoi. Ils viennent des unités, donc de `Hero.effective_stats`,
 ## donc de l'équipement porté au moment du combat.
@@ -532,7 +543,7 @@ func squad_units(company: Company) -> Array[Unit]:
 	for hero: Hero in heroes:
 		squad_ids.append(hero.id)
 
-	var units := company.to_units(heroes)
+	var units := company.to_units(heroes, kingdom_bonuses)
 	for unit: Unit in units:
 		var hero_id := hero_id_of_unit(unit)
 		_max_health[hero_id] = unit.max_hit_points

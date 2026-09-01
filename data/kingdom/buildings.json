@@ -30,7 +30,11 @@
           "population_cap": 1
         }
       ],
-      "_grants_note": "Le vrai pouvoir du château n'est pas dans cette colonne : c'est lui qui PLAFONNE le niveau de tous les autres bâtiments. Un habitant de plus par niveau est la prime, pas la fonction."
+      "_grants_note": "Le vrai pouvoir du château n'est pas dans cette colonne : c'est lui qui PLAFONNE le niveau de tous les autres bâtiments. Un habitant de plus par niveau est la prime, pas la fonction.",
+      "spot": [
+        340,
+        300
+      ]
     },
     "houses": {
       "name_key": "BUILDING_HOUSES",
@@ -64,6 +68,10 @@
         {
           "population_cap": 1
         }
+      ],
+      "spot": [
+        120,
+        520
       ]
     },
     "barracks": {
@@ -94,7 +102,15 @@
           "hit_points": 10,
           "strength": 1
         }
-      ]
+      ],
+      "spot": [
+        580,
+        300
+      ],
+      "recruit_cost": {
+        "gold": 180,
+        "food": 45
+      }
     },
     "archery": {
       "name_key": "BUILDING_ARCHERY",
@@ -124,7 +140,15 @@
           "agility": 1,
           "critical": 4
         }
-      ]
+      ],
+      "spot": [
+        790,
+        300
+      ],
+      "recruit_cost": {
+        "gold": 180,
+        "food": 45
+      }
     },
     "monastery": {
       "name_key": "BUILDING_MONASTERY",
@@ -156,7 +180,17 @@
           "intelligence": 1,
           "heal_between_steps": 0.03
         }
-      ]
+      ],
+      "spot": [
+        110,
+        300
+      ],
+      "recruit_cost": {
+        "gold": 180,
+        "food": 45
+      }
     }
-  }
+  },
+  "_layout_note": "`spot` est le pied du bâtiment sur le terrain du royaume, en pixels d'une toile de 900 x 560. C'est de la MISE EN SCÈNE, et elle vit ici plutôt que dans le code parce que le § 5 fait de l'évolution visuelle du royaume une exigence : déplacer une caserne doit se faire en changeant deux nombres, pas en recompilant.",
+  "_recruit_note": "Le § 45 met le recrutement dans la Phase 4, et c'est le bâtiment qui l'autorise : sans caserne, pas de Guerrier. Le coût est en OR et en NOURRITURE — l'or parce qu'un héros s'équipe, la nourriture parce qu'il mange. Payer en bois pour un homme n'aurait rien voulu dire, et une seule monnaie aurait fait du recrutement un robinet plutôt qu'un arbitrage contre les bâtiments."
 }

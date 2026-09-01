@@ -17,7 +17,12 @@
       "per_cycle": 12,
       "tool": "axe",
       "asset": "resources/tree1",
-      "slots": 3
+      "slots": 3,
+      "spot": [
+        330,
+        545
+      ],
+      "scale": 0.5
     },
     "quarry": {
       "name_key": "WORKSITE_QUARRY",
@@ -25,15 +30,26 @@
       "per_cycle": 8,
       "tool": "pickaxe",
       "asset": "decorations/rock3",
-      "slots": 3
+      "slots": 3,
+      "spot": [
+        500,
+        545
+      ],
+      "scale": 1.8
     },
     "gold_mine": {
       "name_key": "WORKSITE_MINE",
       "resource": "gold",
       "per_cycle": 20,
       "tool": "pickaxe",
-      "asset": "resources/gold_resource",
-      "slots": 3
+      "asset": "resources/gold_stone_4",
+      "slots": 3,
+      "spot": [
+        650,
+        545
+      ],
+      "scale": 1.2,
+      "_asset_note": "PAS `gold_resource` : c'est la pépite que le Pawn PORTE, vingt-quatre pixels de contenu perdus dans une toile de 128. À l'écran, la mine d'or était un point jaune illisible. `gold_stone_4` est le rocher aurifère, soixante-trois pixels de contenu — c'est le gisement, et il se voit. Trouvé en capture d'écran, comme le feu invisible de T1.12."
     },
     "pasture": {
       "name_key": "WORKSITE_PASTURE",
@@ -41,8 +57,14 @@
       "per_cycle": 16,
       "tool": "knife",
       "asset": "resources/sheep_idle",
-      "slots": 3
+      "slots": 3,
+      "spot": [
+        810,
+        545
+      ],
+      "scale": 1.0
     },
-    "_note": "`slots` est le nombre de bras qu'un gisement accepte. Douze places pour quatre chantiers, contre un plafond de quatorze habitants : il reste toujours un ou deux bras libres, donc affecter est un ARBITRAGE entre les ressources et jamais un simple remplissage. Le rapport compte : beaucoup plus de places que de bras rendrait le choix indolore, moins de places que de bras ferait des habitants excédentaires de pures bouches."
+    "_note": "`slots` est le nombre de bras qu'un gisement accepte. Douze places pour quatre chantiers, contre un plafond de quatorze habitants : il reste toujours un ou deux bras libres, donc affecter est un ARBITRAGE entre les ressources et jamais un simple remplissage. Le rapport compte : beaucoup plus de places que de bras rendrait le choix indolore, moins de places que de bras ferait des habitants excédentaires de pures bouches.",
+    "_scale_note": "Les gisements du pack n'ont pas la même taille : un rocher fait 64 pixels, un arbre 256. `scale` les ramène tous autour de 128 à l'écran. Sans lui, la carrière est un caillou perdu au milieu du pré et le joueur ne la voit pas."
   }
 }

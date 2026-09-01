@@ -115,6 +115,17 @@ static func asset_of(building_id: StringName, level: int) -> String:
 	return String(evolving[index])
 
 
+## Le pied du bâtiment sur le terrain du royaume, en pixels d'une toile de
+## 900 x 560. C'est de la mise en scène, et elle vit dans les données parce
+## que le § 5 fait de l'évolution visuelle du royaume une exigence :
+## déplacer une caserne doit se faire en changeant deux nombres.
+static func spot_of(building_id: StringName) -> Vector2:
+	var raw: Array = entry(building_id).get("spot", [])
+	if raw.size() < 2:
+		return Vector2.ZERO
+	return Vector2(float(raw[0]), float(raw[1]))
+
+
 # --- Ce qu'un niveau coûte -------------------------------------------------
 
 ## Prix pour ATTEINDRE ce niveau depuis le précédent. Zéro pour un niveau
@@ -131,6 +142,23 @@ static func cost_of(building_id: StringName, level: int) -> Dictionary:
 		# qu'un prix de 135, et personne ne compte à l'unité près.
 		out[StringName(key)] = int(round(float(base[key]) * factor / 5.0)) * 5
 	return out
+
+
+## Ce que coûte le recrutement d'un héros dans ce bâtiment. Vide pour un
+## bâtiment qui ne forme personne.
+static func recruit_cost(building_id: StringName) -> Dictionary:
+	var out := {}
+	for key: Variant in (entry(building_id).get("recruit_cost", {}) as Dictionary).keys():
+		out[StringName(key)] = int((entry(building_id)["recruit_cost"] as Dictionary)[key])
+	return out
+
+
+## Le bâtiment qui forme cette classe, ou rien.
+static func trainer_of(class_id: StringName) -> StringName:
+	for building_id: StringName in ids():
+		if hero_class(building_id) == class_id:
+			return building_id
+	return &""
 
 
 # --- Ce qu'un niveau accorde -----------------------------------------------

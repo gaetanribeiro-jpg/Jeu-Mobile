@@ -240,13 +240,13 @@ dur : passer par `data/assets.json`.
 - **Phase 3 terminée.** T3.1 à T3.6 : `Region`, `Expedition`, les
   évènements du § 40, le marchand, l'écran d'expédition et la carte du
   monde.
-- **Phase 4 en cours.** T4.1 (`Kingdom` : ressources, habitants,
-  chantiers, cycle) et T4.2 (`Buildings`) sont faites. **628 tests
-  passent** sous Godot 4.6 en headless.
-- **La boucle du § 3 tourne, sauf le royaume :** carte du monde →
-  expédition → combat → butin et expérience → compagnie → sauvegarde. Il
-  manque 🏰 ROYAUME, qui est la Phase 4 et qui se branchera au même
-  endroit — sur `boot.gd` et sur l'or de la compagnie.
+- **Phase 4 terminée.** T4.1 à T4.4 : `Kingdom`, `Buildings`, l'écran du
+  royaume et le branchement sur la boucle. **640 tests passent** sous
+  Godot 4.6 en headless.
+- **La boucle du § 3 tourne en entier :** royaume → carte du monde →
+  expédition → combat → butin et expérience → compagnie → royaume. Une
+  sortie conclue déclenche un cycle de production ; le royaume rend des
+  modificateurs aux héros et du soin à l'expédition.
 
 **Le sens de la dépendance, à ne pas inverser :** `Hero` connaît `Unit`,
 jamais l'inverse. Le combat ignore ce qu'est un niveau. Toutes les
@@ -290,7 +290,7 @@ xvfb-run -a godot --path . --resolution 1280x720 -- --capture /tmp/x.png \
 xvfb-run -a godot --path . --resolution 1280x720 \
   -s tools/dev/combat_storyboard.gd -- /tmp/planche vallee_03
 ```
-**Douze défauts n'ont été trouvés que comme ça**, dont trois vrais bugs.
+**Seize défauts n'ont été trouvés que comme ça**, dont quatre vrais bugs.
 
 **Un script lancé par `-s` ne reçoit AUCUN autoload**, et l'identifiant
 `GameState` est résolu à la COMPILATION : un écran qui lit la partie
@@ -300,6 +300,14 @@ main ne répare rien — l'échec est antérieur. D'où l'autoload `Capture`,
 inerte sans son argument, qui photographie le vrai jeu.
 
 **Toutes les valeurs de ressenti sont dans `data/combat/view.json`.**
+
+**Deux pièges d'interface qui font TOMBER le moteur en headless.** Un
+`ScrollContainer` dont la barre verticale apparaît selon la hauteur du
+contenu oscille avec tout texte replié, et empile un redessin par tour :
+mettre `vertical_scroll_mode = 2` (toujours visible). Et `queue_redraw()`
+dans un `_process` empile une file que rien ne vide en headless : ne pas
+s'animer quand `DisplayServer.get_name() == \"headless\"`. Les deux se
+signalent par un signal 11 dont la trace ne désigne personne.
 
 **Après toute modification de `data/i18n/fr.csv`, relancer `--import`.**
 Le moteur lit le `.translation` compilé, pas le CSV : une clé ajoutée sans

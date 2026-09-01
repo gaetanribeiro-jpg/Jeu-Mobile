@@ -27,6 +27,11 @@ var company := Company.new()
 ## des punitions — précisément celle que le § 41 refuse pour la mort.
 var expedition: Expedition = null
 
+## Le royaume : ses réserves, ses habitants, ses chantiers, ses bâtiments.
+## Il produit UNE FOIS PAR SORTIE CONCLUE — aucun timer, c'est une décision
+## verrouillée et le § 2 refuse le free-to-play.
+var kingdom := Kingdom.create()
+
 
 func _ready() -> void:
 	if campaign_seed == 0:
@@ -39,6 +44,7 @@ func start_new_campaign(seed_value: int) -> void:
 	rng.seed = seed_value
 	company = Company.new()
 	expedition = null
+	kingdom = Kingdom.create()
 
 
 ## Tout ce qu'il faut écrire pour retrouver la partie où on l'a laissée.
@@ -46,6 +52,7 @@ func to_save() -> Dictionary:
 	var data := {
 		"seed": campaign_seed,
 		"company": company.to_dictionary(),
+		"kingdom": kingdom.to_dictionary(),
 	}
 	if expedition != null:
 		data["expedition"] = expedition.to_dictionary()
@@ -60,6 +67,7 @@ func from_save(data: Dictionary) -> bool:
 	campaign_seed = int(data.get("seed", campaign_seed))
 	rng.seed = campaign_seed
 	company = Company.from_dictionary(data.get("company", {}))
+	kingdom = Kingdom.from_dictionary(data.get("kingdom", {}))
 	expedition = null
 	if data.has("expedition"):
 		expedition = Expedition.from_dictionary(data["expedition"])

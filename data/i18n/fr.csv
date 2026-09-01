@@ -234,3 +234,35 @@ BUILDING_ARCHERY,Camp d'archers
 BUILDING_ARCHERY_DESC,On y forme les Archers. Chaque niveau affûte leur œil.
 BUILDING_MONASTERY,Monastère
 BUILDING_MONASTERY_DESC,On y forme les Mages — et on y soigne : l'équipe récupère entre deux rencontres.
+KINGDOM_TITLE,Votre royaume
+KINGDOM_PEOPLE,Habitants
+KINGDOM_IDLE,au repos
+KINGDOM_PICK,Touchez un bâtiment ou un chantier.
+KINGDOM_LEVEL,Niveau %d sur %d
+KINGDOM_GRANTS_NOW,Accorde aujourd'hui : %s
+KINGDOM_NEXT,Niveau %d : %s
+KINGDOM_NEXT_GRANTS,Il apportera : %s
+KINGDOM_MAXED,Rien de plus à bâtir ici.
+KINGDOM_BUILD,Améliorer
+KINGDOM_FOUND,Bâtir
+KINGDOM_NEEDS_CASTLE,Il faut d'abord agrandir le château
+KINGDOM_NEEDS_RESOURCES,Ressources insuffisantes
+KINGDOM_BUILT,%s passe au niveau %d.
+KINGDOM_HANDS,%d bras sur %d places
+KINGDOM_YIELD,Rend %d %s par cycle (%d par bras).
+KINGDOM_ASSIGN,Envoyer un habitant
+KINGDOM_UNASSIGN,Rappeler un habitant
+KINGDOM_EATEN,%d nourriture mangée
+KINGDOM_ARRIVED,Un habitant s'installe.
+KINGDOM_HUNGRY,Les réserves de nourriture sont vides.
+GRANT_POPULATION_CAP,Habitants
+GRANT_HIT_POINTS,PV
+GRANT_STRENGTH,Force
+GRANT_AGILITY,Agilité
+GRANT_INTELLIGENCE,Intelligence
+GRANT_DEFENCE,Défense
+GRANT_CRITICAL,Critique
+GRANT_HEAL_BETWEEN_STEPS,Soin entre rencontres
+KINGDOM_RECRUIT,Recruter un %s\n%s
+KINGDOM_RECRUITED,%s rejoint la compagnie (%s).
+BOOT_KINGDOM,Royaume

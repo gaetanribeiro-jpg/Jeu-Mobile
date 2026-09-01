@@ -238,6 +238,9 @@ func _action(text: String, handler: Callable, enabled: bool = true) -> Button:
 	var button := Button.new()
 	button.custom_minimum_size = Vector2(420, 72)
 	button.add_theme_font_size_override("font_size", 22)
+	# Voir `kingdom_screen._action` : un texte plus large que son conteneur
+	# renégocie sa largeur, et la mise en page peut se mettre à osciller.
+	button.clip_text = true
 	button.text = text
 	button.disabled = not enabled
 	button.pressed.connect(handler)

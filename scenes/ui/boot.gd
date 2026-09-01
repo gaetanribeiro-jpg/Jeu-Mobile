@@ -18,6 +18,7 @@ extends Control
 const COMBAT_SCENE := "res://scenes/combat/combat_scene.tscn"
 const COMPANY_SCENE := "res://scenes/ui/company_screen.tscn"
 const WORLD_SCENE := "res://scenes/world/world_map.tscn"
+const KINGDOM_SCENE := "res://scenes/kingdom/kingdom_screen.tscn"
 const EXPEDITION_SCENE := "res://scenes/world/expedition_screen.tscn"
 
 ## Identifiants des héros emmenés au banc d'essai, dans l'ordre des
@@ -28,7 +29,12 @@ var _squad_ids: Array[int] = []
 ## hors expédition ; une vraie sortie utilise la sienne.
 var _depth: int = 0
 
+## Compte rendu du dernier cycle de production, montré à la prochaine
+## ouverture du royaume.
+var _last_cycle: Dictionary = {}
+
 var _company_screen: Control = null
+var _kingdom_screen: Control = null
 var _world_screen: Control = null
 var _expedition_screen: Control = null
 
@@ -92,8 +98,15 @@ func _build_squad_picker() -> void:
 	go.pressed.connect(_resume_expedition if running else _open_world)
 	row.add_child(go)
 
+	var kingdom := Button.new()
+	kingdom.custom_minimum_size = Vector2(240, 84)
+	kingdom.add_theme_font_size_override("font_size", 26)
+	kingdom.text = tr("BOOT_KINGDOM")
+	kingdom.pressed.connect(_open_kingdom)
+	row.add_child(kingdom)
+
 	var company := Button.new()
-	company.custom_minimum_size = Vector2(260, 84)
+	company.custom_minimum_size = Vector2(240, 84)
 	company.add_theme_font_size_override("font_size", 26)
 	company.text = tr("BOOT_COMPANY")
 	company.pressed.connect(_open_company)
@@ -110,6 +123,31 @@ func _open_company() -> void:
 func _close_company() -> void:
 	_dismiss(_company_screen)
 	_company_screen = null
+	_reset_squad()
+	_build_squad_picker()
+	visible = true
+
+
+# --- Le royaume ------------------------------------------------------------
+
+func _open_kingdom() -> void:
+	_kingdom_screen = _open(KINGDOM_SCENE, func(screen: Node) -> void:
+		screen.configure(
+			GameState.kingdom, GameState.company,
+			GameState.combat_rng(GameState.kingdom.cycles + GameState.company.size())
+		)
+		screen.closed.connect(_close_kingdom)
+		screen.changed.connect(GameState.save))
+	# Le compte rendu du dernier cycle attend ici : le joueur revient
+	# d'expédition sur l'écran de titre, et c'est en ouvrant son royaume
+	# qu'il veut savoir ce qu'il a produit pendant son absence.
+	if is_instance_valid(_kingdom_screen) and not _last_cycle.is_empty():
+		_kingdom_screen.report_cycle(_last_cycle)
+
+
+func _close_kingdom() -> void:
+	_dismiss(_kingdom_screen)
+	_kingdom_screen = null
 	_reset_squad()
 	_build_squad_picker()
 	visible = true
@@ -159,6 +197,10 @@ func _resume_expedition() -> void:
 
 
 func _open_expedition() -> void:
+	# Ce que le royaume apporte à cette sortie se pose ICI, à chaque
+	# ouverture, plutôt que d'être figé au départ : le joueur a pu bâtir
+	# entre deux, et une valeur dérivée qu'on garde finit par mentir.
+	_apply_kingdom_to(GameState.expedition)
 	_expedition_screen = _open(EXPEDITION_SCENE, func(screen: Node) -> void:
 		screen.configure(GameState.expedition, GameState.company)
 		screen.changed.connect(GameState.save)
@@ -173,9 +215,28 @@ func _close_expedition(_state: int) -> void:
 	# prochain lancement, « Reprendre » proposerait une sortie déjà close.
 	if GameState.expedition != null and GameState.expedition.is_over():
 		GameState.expedition = null
+		# UNE SORTIE CONCLUE = UN CYCLE DE PRODUCTION. C'est la couture des
+		# deux moitiés de la boucle du § 3, et elle tient en une ligne :
+		# une sortie courte rapporte plus de cycles, une longue plus de
+		# butin. Une déroute compte aussi — les bûcherons ont travaillé
+		# pendant que les héros tombaient.
+		_last_cycle = GameState.kingdom.run_cycle(GameState.company)
 	GameState.save()
 	_build_squad_picker()
 	visible = true
+
+
+## Le royaume ne parle pas à l'expédition : c'est l'écran de titre qui les
+## relie. `Expedition` ignore qu'un royaume existe, et c'est ce qui permet
+## de jouer une sortie dans un test ou dans le simulateur sans en bâtir un.
+func _apply_kingdom_to(run: Expedition) -> void:
+	if run == null:
+		return
+	var bonuses := {}
+	for class_id: StringName in Unit.hero_class_ids():
+		bonuses[class_id] = GameState.kingdom.hero_bonuses(class_id)
+	run.kingdom_bonuses = bonuses
+	run.kingdom_healing = GameState.kingdom.healing_between_steps()
 
 
 func _start_expedition_combat(map_id: StringName) -> void:

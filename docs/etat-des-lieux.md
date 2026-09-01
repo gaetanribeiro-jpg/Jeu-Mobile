@@ -743,14 +743,14 @@ ne plus vérifier les scripts les mieux documentés.
 Aujourd'hui : 44 scripts vérifiés, 1 nommé comme non vérifiable
 (`boot.gd`), et un script cassé volontairement est bien détecté.
 
-### Phase 4 — Royaume ⏳ *en cours*
+### Phase 4 — Royaume ✅
 
 | Tâche | Contenu | État |
 |---|---|---|
 | **T4.1** | `Kingdom` : ressources, habitants, chantiers, cycle de production | ✅ |
 | **T4.2** | `Buildings` : construction, niveaux, ce qu'ils accordent aux héros | ✅ |
-| **T4.3** | L'écran du royaume | ⏳ |
-| **T4.4** | Le branchement : le cycle sur l'expédition, les bonus sur les héros | ⏳ |
+| **T4.3** | L'écran du royaume, dessiné | ✅ |
+| **T4.4** | Le branchement : le cycle sur l'expédition, les bonus sur les héros, le recrutement | ✅ |
 
 ### Le cycle est une expédition, pas une minute (T4.1)
 
@@ -819,6 +819,84 @@ modificateurs, `Hero.effective_stats` l'ajoute **comme il ajoute un
 anneau**, et ni `Hero` ni `Unit` ne savent qu'un royaume existe. Le crochet
 `bonuses` existait depuis T2.1 et attendait exactement ça.
 
+### L'écran du royaume : le terrain à gauche, la décision à droite (T4.3)
+
+Le § 5 fait de l'évolution visuelle une exigence : il fallait donc que le
+royaume se **voie**, et pas seulement se lise dans un tableau. Mais un
+royaume qu'on voit sans pouvoir agir dessus est un fond d'écran — le
+panneau de droite est la moitié qui décide.
+
+**Trois choses rendent l'évolution visible**, dans l'ordre de leur poids :
+le **nombre** de bâtiments debout ; les **habitants au travail**, un Pawn
+par bras affecté, pioche ou hache en main, à son gisement ; et les
+**maisons**, seul bâtiment dont le pack sait dessiner trois âges. Ce que le
+pack ne sait pas montrer — le niveau d'une caserne — s'écrit en chiffre sur
+une pastille : le § 8 ne réclame la visibilité que « quand c'est possible ».
+
+**Deux décisions, et deux seulement.** Bâtir (dépenser maintenant, ou
+garder pour la prochaine sortie) et affecter (quelle ressource manque le
+plus, ce cycle-ci). Elles se disputent la même bourse et les mêmes bras.
+Tout le reste de l'écran les éclaire : les réserves en haut, les bras
+libres à côté d'elles, le coût du niveau suivant **avec ce qu'on n'a pas
+encore entre parenthèses**, et un bouton grisé qui dit ce qui manque —
+de l'argent, ou un château plus haut.
+
+**Un Control qui se dessine lui-même**, pas une nuée de nœuds : le terrain,
+les bâtiments, les gisements et les Pawns tiennent dans un `_draw` et une
+table de rectangles cliquables. Une trentaine de sprites ne justifient pas
+trente nœuds à tenir synchronisés avec un état qui change à chaque clic.
+
+### Le branchement (T4.4)
+
+**Une sortie conclue = un cycle de production.** C'est la couture des deux
+moitiés de la boucle du § 3, et elle tient en une ligne dans `boot.gd`.
+Une déroute compte aussi : les bûcherons ont travaillé pendant que les
+héros tombaient.
+
+**Le royaume ne parle pas à l'expédition.** `Expedition` ignore qu'un
+royaume existe — c'est l'écran de titre qui pose ses modificateurs et son
+soin sur la sortie, à chaque ouverture plutôt qu'au départ, parce que le
+joueur a pu bâtir entre-temps et **une valeur dérivée qu'on garde finit par
+mentir**. C'est aussi ce qui permet de jouer une sortie dans un test ou
+dans le simulateur sans bâtir de royaume.
+
+**Recruter est la seconde chose qu'un bâtiment militaire permet** (§ 45).
+Le coût est en or et en nourriture : une seule monnaie aurait fait du
+recrutement un robinet, deux en font un arbitrage contre les bâtiments, qui
+puisent dans la même bourse. Et **l'habitant n'est pas un héros** : recruter
+ne prend personne à la population. Un royaume qui perdrait un bûcheron
+chaque fois qu'il forme un Guerrier punirait le joueur d'avoir joué.
+
+### Trois heures perdues sur une barre de défilement
+
+L'écran du royaume faisait **tomber le moteur** en headless — signal 11,
+avec pour seul indice « Message queue out of memory » et un nom de méthode
+qui ne désigne rien (`CanvasItem::_redraw_callback`, puis
+`Control::_update_minimum_size`).
+
+La cause : la **barre de défilement verticale** du panneau apparaissait et
+disparaissait selon la hauteur du contenu. Quand elle apparaît, elle
+rétrécit le contenu ; un texte replié qui rétrécit devient plus haut, donc
+rappelle la barre. La mise en page **oscille**, empile un redessin par
+tour, et rien ne vide cette file en headless. Le panneau ne passait de six
+à sept enfants qu'avec le bouton de recrutement — ce qui a fait accuser le
+bouton pendant longtemps, puis son libellé, puis `autowrap_mode`, qui n'a
+fait que déplacer la boucle sous un autre nom.
+
+Le correctif tient en une propriété : la barre est **toujours visible**, sa
+présence ne dépend plus de rien. Les deux écrans à panneau la portent
+maintenant.
+
+Deux leçons qui valent au-delà de ce bug :
+- **un plantage du moteur en headless n'a pas de coupable dans sa trace.**
+  La bissection à coups de `print` a trouvé en dix minutes ce que la
+  lecture de la pile n'aurait jamais donné ;
+- `queue_redraw()` dans un `_process` est un **piège en headless** : rien
+  ne vide la file. La vue du royaume ne s'anime donc que là où quelque
+  chose sera dessiné, et ne redessine qu'au changement d'image — soixante
+  redessins par seconde pour en montrer dix étaient de toute façon
+  cinquante de trop.
+
 ### Ce que `verify_kingdom` a trouvé le jour de sa naissance
 
 Une économie n'a pas plus d'instrument qu'un objet. On ne simule pas cent
@@ -839,6 +917,12 @@ analyse tout nombre JSON en flottant**, `6` comme `0.02`. Distinguer un
 gain fractionnaire par son TYPE ne pouvait pas marcher — tout était
 flottant, et la distinction était une illusion qui affichait « +600 % »
 pour six points de vie. On le distingue maintenant par sa clé.
+
+Un troisième défaut, celui-là trouvé en capture d'écran : **la mine d'or
+était un point jaune illisible**. `gold_resource` est la pépite que le Pawn
+PORTE — vingt-quatre pixels de contenu perdus dans une toile de 128.
+`gold_stone_4` est le rocher aurifère, et il se voit. C'est exactement le
+feu invisible de T1.12, deux phases plus tard.
 
 ### Phase 4 — Royaume
 

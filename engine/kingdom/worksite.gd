@@ -97,6 +97,23 @@ static func slots_of(worksite_id: StringName) -> int:
 	return int(entry(worksite_id).get("slots", 0))
 
 
+## Facteur d'échelle du gisement. Les images du pack vont de 64 à 256
+## pixels ; sans lui, la carrière est un caillou perdu au milieu du pré.
+static func scale_of(worksite_id: StringName) -> float:
+	return float(entry(worksite_id).get("scale", 1.0))
+
+
+## Le pied du bâtiment sur le terrain du royaume, en pixels d'une toile de
+## 900 x 560. C'est de la mise en scène, et elle vit dans les données parce
+## que le § 5 fait de l'évolution visuelle du royaume une exigence :
+## déplacer une caserne doit se faire en changeant deux nombres.
+static func spot_of(worksite_id: StringName) -> Vector2:
+	var raw: Array = entry(worksite_id).get("spot", [])
+	if raw.size() < 2:
+		return Vector2.ZERO
+	return Vector2(float(raw[0]), float(raw[1]))
+
+
 # --- Les chiffres du cycle -------------------------------------------------
 
 static func number(section: StringName, key: StringName, fallback: float) -> float:
