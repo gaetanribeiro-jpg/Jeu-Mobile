@@ -22,8 +22,8 @@
   },
   "archer": {
     "sprite": "archer",
-    "role_note": "DPS à distance, mobile. Le seul à pouvoir se replacer sans dépenser de PM. Fragile au contact : 85 PV et 4 de défense ne tiennent pas deux tours de mêlée.",
-    "hit_points": 85,
+    "role_note": "DPS à distance, mobile. Le seul à pouvoir se replacer sans dépenser de PM. Fragile au contact : 72 PV et 2 de défense ne tiennent pas deux tours de mêlée — un gobelin lancier lui retire plus d'un tiers de sa vie par activation.",
+    "hit_points": 72,
     "action_points": 8,
     "movement_points": 5,
     "initiative": 8,
@@ -38,7 +38,8 @@
       "power_shot",
       "hop_back"
     ],
-    "primary_stat": "agility"
+    "primary_stat": "agility",
+    "hit_points_note": "Descendu de 85 à 72 en T1.14. Tant que rien ne pouvait le toucher, ses PV ne voulaient rien dire ; une fois le bestiaire doté de deux tireurs de plus, la fragilité annoncée par sa fiche est devenue une fragilité réelle. Les deux corrections vont ensemble et l'une sans l'autre ne changeait rien."
   },
   "mage": {
     "sprite": "monk",

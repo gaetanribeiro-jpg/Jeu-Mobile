@@ -45,13 +45,42 @@ func _ai() -> EnemyAI:
 	return EnemyAI.new(CombatRng.new(1234))
 
 
-func test_les_six_ennemis_des_terres_vertes_sont_declares() -> void:
+func test_les_ennemis_des_terres_vertes_sont_declares() -> void:
 	var ids := Unit.enemy_ids()
-	assert_eq(ids.size(), 6)
+	assert_eq(ids.size(), 8)
 	for expected: StringName in [
-		&"spear_goblin", &"gnome", &"slingshot_gnome", &"torch_goblin", &"thief", &"troll"
+		&"spear_goblin", &"gnome", &"slingshot_gnome", &"torch_goblin",
+		&"thief", &"troll", &"gnoll", &"hex_shaman"
 	]:
 		assert_true(ids.has(expected), "ennemi manquant : %s" % expected)
+
+
+func test_le_bestiaire_sait_rendre_le_tir() -> void:
+	# L'INVARIANT DE T1.14, et il vaut plus que le compte au-dessus. Tant
+	# qu'un seul ennemi portait au-delà du contact, il mourait le premier
+	# et une équipe entièrement à distance finissait ses combats à 97 % de
+	# PV — sans jamais avoir été touchée. Retirer des tireurs du bestiaire
+	# ramènerait ce défaut, et rien d'autre ne le dirait.
+	var shooters: Array[StringName] = []
+	for enemy_id: StringName in Unit.enemy_ids():
+		for ability_id: Variant in Unit.enemy_stats(enemy_id).get("abilities", []):
+			var ability := Ability.of(StringName(ability_id))
+			if ability != null and ability.range_max > 1:
+				shooters.append(enemy_id)
+				break
+	assert_gt(shooters.size(), 2, "le bestiaire ne sait pas rendre le tir : %s" % [shooters])
+
+
+func test_au_moins_un_ennemi_frappe_en_zone() -> void:
+	# Une zone est la seule chose qui punisse un groupe massé, et une
+	# équipe à distance se masse par construction.
+	var found := false
+	for enemy_id: StringName in Unit.enemy_ids():
+		for ability_id: Variant in Unit.enemy_stats(enemy_id).get("abilities", []):
+			var ability := Ability.of(StringName(ability_id))
+			if ability != null and not ability.targets_self() and ability.radius > 0:
+				found = true
+	assert_true(found, "aucun ennemi ne frappe en zone")
 
 
 func test_chaque_ennemi_a_un_role() -> void:

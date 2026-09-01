@@ -6,11 +6,11 @@
       "description_key": "REGION_GREENLANDS_DESC",
       "act": 1,
       "unlocked": true,
-      "_maps_note": "L'ORDRE EST MESURÉ, PAS SUPPOSÉ. Il vient de la colonne PV de `tools/simulate_combats.gd`, qui est l'instrument établi en T1.11 : ce qu'une carte coûte à l'équipe, sur cinquante graines. Rangé à l'œil, il était faux — vallee_05 coûte 7 % et vallee_02 en coûte 14, alors que le numéro disait l'inverse, et la fenêtre du fond proposait donc une carte plus facile que celle du départ.\n\nCoût moyen mesuré : 01 → 0 %, 05 → 7 %, 06 → 12 %, 02 → 14 %, 03 → 14 %, 04 → 24 %. Fenêtre du départ 6 % en moyenne, fenêtre du fond 17 % : l'escalade du § 29 est réelle, et elle est chiffrée.\n\nÀ RELANCER APRÈS TOUTE MODIFICATION D'UNE CARTE OU D'UN ENNEMI : cet ordre est une mesure, et une mesure périme.",
+      "_maps_note": "L'ORDRE EST MESURÉ, PAS SUPPOSÉ. Il vient de la colonne PV de `tools/simulate_combats.gd`, qui est l'instrument établi en T1.11 : ce qu'une carte coûte à l'équipe, sur cinquante graines. Rangé à l'œil, il était faux.\n\nCoût moyen mesuré après T1.14 : 01 → 0 %, 06 → 11 %, 05 → 15 %, 02 → 19 %, 03 → 23 %, 04 → 36 %. Fenêtre du départ 9 % en moyenne, fenêtre du fond 26 % : l'escalade du § 29 est réelle, et elle est chiffrée à près du triple.\n\nÀ RELANCER APRÈS TOUTE MODIFICATION D'UNE CARTE OU D'UN ENNEMI : cet ordre est une mesure, et une mesure périme. Il a déjà changé deux fois — une fois parce qu'il avait été rangé à l'œil, une fois parce que le bestiaire a reçu deux tireurs.",
       "encounter_maps": [
         "vallee_01",
-        "vallee_05",
         "vallee_06",
+        "vallee_05",
         "vallee_02",
         "vallee_03",
         "vallee_04"
@@ -23,8 +23,17 @@
         "slide": 0.5
       },
       "chain": {
-        "pattern": ["combat", "event", "combat", "merchant"],
-        "tail": ["miniboss", "reward", "boss"],
+        "pattern": [
+          "combat",
+          "event",
+          "combat",
+          "merchant"
+        ],
+        "tail": [
+          "miniboss",
+          "reward",
+          "boss"
+        ],
         "body": {
           "min": 3,
           "max": 6

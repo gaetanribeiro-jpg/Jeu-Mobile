@@ -214,6 +214,7 @@ Suit l'ordre du § 45, adapté à ce qui existe déjà.
 | **T1.11** | Équilibrage : le combat coûte quelque chose | ✅ |
 | **T1.12** | Le décor encaisse, et le feu brûle | ✅ |
 | **T1.13** | `tools/verify_scripts.gd` : né du constat que `--quit` ne voit pas les scripts chargés à l'exécution | ✅ |
+| **T1.14** | L'Archer et les tireurs du bestiaire : la portée se paie | ✅ |
 
 **État au 2026-08-31 : la Phase 1 est terminée.** T1.1 à T1.11 sont
 faites et testées, **354 tests passent**. Le combat se joue de bout en
@@ -285,8 +286,8 @@ rendent maintenant cette colonne.
 
 ### Ce qui reste ouvert après T1.11
 
-**L'Archer domine le jeu de portée.** Une équipe entièrement à distance
-finit ses combats à 97 % de PV : elle tire à 5 cases sur des ennemis qui
+**~~L'Archer domine le jeu de portée.~~ Tranché en T1.14, plus bas.** Une
+équipe entièrement à distance finissait ses combats à 97 % de PV : elle tire à 5 cases sur des ennemis qui
 avancent de 3 ou 4, et n'est jamais rattrapée. Donner au gnome à fronde la
 même portée et un PM de plus n'a rien changé — il est seul de son espèce et
 meurt le premier.
@@ -300,6 +301,61 @@ appartient à Gaetan. Trois pistes :
    conception, et elle punit le kiting sans toucher aux chiffres.
 3. **Assumer** : l'Archer est fort au MVP, et l'équilibrage viendra avec
    l'équipement et les classes suivantes (Phase 2).
+
+### T1.14 — l'Archer, tranché
+
+La question ouverte depuis la Phase 1 : une équipe entièrement à distance
+finissait ses combats à **97 % de PV**. Gaetan a proposé deux corrections ;
+la mesure en a réclamé une troisième, et c'est celle-là qui portait tout.
+
+**1. Deux tireurs de plus au bestiaire.** Le pack les dessinait déjà et ils
+n'avaient jamais servi : le **gnoll lanceur d'os** (portée 2–5, 60 PV — il
+ne meurt plus au premier tir comme le gnome à fronde) et le **chaman**
+(portée 3–6, en **zone**). Le chaman est la réponse de forme plutôt que de
+chiffre : une équipe à distance se masse hors de portée de la mêlée, et un
+groupe immobile est un groupe rangé. Sa portée dépasse celle de l'Archer,
+donc il faut **avancer** pour le faire taire.
+
+Résultat : 97 % → 90 %. Réel, mais pas suffisant.
+
+**2. L'Archer plus fragile — 85 PV → 72.** Presque **inerte** sur la mesure
+(90 % → 90 %), et c'est logique : le pourcentage se calcule sur les PV
+maximums, donc baisser le maximum baisse les deux côtés de la fraction. La
+correction reste bonne en jeu — l'Archer encaisse maintenant 3 coups de
+gobelin lancier au lieu de 4 — mais **elle ne pouvait pas régler le
+problème**, et la croire suffisante aurait fait perdre une session.
+
+**3. La portée doit se payer en dégâts.** C'était la vraie cause, et elle
+n'était ni dans les ennemis ni dans les PV : l'Archer faisait **18+7 = 25**
+par tir à cinq cases quand le Guerrier faisait **20+6 = 26** au contact,
+avec un PM de plus et un repli gratuit. Il avait la puissance **et** la
+portée, donc aucune contrepartie. `shot` descend à 15, `power_shot` à 30.
+
+| | avant | après |
+|---|---|---|
+| meilleure composition | 4 archer, **97 %** | 4 archer / 4 mage, **92 %** |
+| pire composition | archer + 3 mage, 83 % | warrior + archer + 2 mage, 82 % |
+| écart | 14 points | **10 points** |
+
+L'Archer ne domine plus : il **égalise** avec le Mage. Aucune classe n'est
+gratuite.
+
+**Ce que ça a coûté ailleurs, et c'est assumé.** Une rencontre coûte
+maintenant **20 % des PV** au lieu de 13, et 0,6 personnage tombe par
+combat. La courbe d'usure du § 29 est plus dure — et elle reste tenable
+parce que l'étape de récompense rend 25 % et que le monastère en rend
+jusqu'à 8 par étape. Une chaîne complète se finit autour de 45–50 % de PV.
+C'est la tension que le roguelite demande, et elle est maintenant portée
+par le bestiaire plutôt que par un déséquilibre entre les classes.
+
+**L'ordre des cartes a été remesuré** et il a changé pour la deuxième fois :
+01 (0 %), 06 (11 %), 05 (15 %), 02 (19 %), 03 (23 %), 04 (36 %). La fenêtre
+du départ coûte 9 % en moyenne, celle du fond 26 % — près du triple.
+
+**Une asymétrie assumée :** le chaman n'a pas de feu ami alors que la Boule
+de feu du Mage en a. L'IA ne choisit pas son point d'impact pour épargner
+les siens ; avec le feu ami, le chaman se saborderait sur sa propre mêlée
+et deviendrait un cadeau. À rouvrir le jour où l'IA saura placer une zone.
 
 **T1.12 est faite.** Deux choses étaient déclarées en données et jamais
 appliquées : les points de vie d'un pont, et le `leaves_terrain` du Torch

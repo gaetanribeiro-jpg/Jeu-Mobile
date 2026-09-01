@@ -143,6 +143,9 @@ régions avant que le combat soit fun.
 
 ### Héros
 
+- **La portée se paie en dégâts** (T1.14). Un tir porte moins fort qu'un
+  coup au contact ; sinon la portée est un avantage gratuit et une équipe
+  à distance ne se fait jamais toucher.
 - **Trois classes dans le MVP** : Guerrier, Archer, **Mage**. Les autres
   (Lancier, Assassin, Paladin, Druide, Berserker…) viendront après.
 - **Le Mage utilise le sprite du Moine.** Le pack n'a pas de mage ; le
@@ -332,17 +335,21 @@ godot --headless --path . -s tools/simulate_combats.gd  # équilibrage
 Le taux de victoire ne dit rien. Une rencontre du MVP est faite pour être
 gagnée ; le risque vit à l'échelle de l'**expédition** (§ 29). L'instrument
 est donc la colonne **PV** des deux outils : ce qu'il reste à l'équipe à la
-fin. Un combat coûte aujourd'hui **13 % en moyenne**, ce qui laisse 49 %
-après cinq rencontres — la courbe d'usure que le roguelite demande.
+fin. Un combat coûte aujourd'hui **20 % en moyenne** (13 % avant T1.14). Une
+chaîne complète se finit autour de 45–50 % de PV, l'étape de récompense et
+le monastère compris — la courbe d'usure que le roguelite demande.
 
 **Les statistiques sont des modificateurs, pas des multiplicateurs.** Les
 dégâts du § 47 sont des chiffres finaux ; empiler une Force à 12 par-dessus
 une Frappe de 20 ajoutait 60 % et vidait le combat de son enjeu. Elles
 tiennent dans une fourchette de 1 à 8.
 
-**Ouvert : l'Archer domine le jeu de portée.** Une équipe entièrement à
-distance finit à 97 % de PV. Trois pistes dans `docs/etat-des-lieux.md`,
-la décision est à prendre.
+**Tranché (T1.14) : la portée se paie en dégâts.** L'Archer faisait 25 par
+tir à 5 cases quand le Guerrier faisait 26 au contact — puissance ET
+portée, sans contrepartie. `shot` descend à 15, l'Archer à 72 PV, et le
+bestiaire reçoit deux tireurs (gnoll, chaman en zone). Le meilleur
+assemblage passe de 97 % à 92 % de PV et l'écart entre compositions de 14 à
+10 points. **Une rencontre coûte désormais 20 % des PV** au lieu de 13.
 
 **Questions ouvertes, à trancher par Gaetan :**
 

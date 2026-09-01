@@ -98,5 +98,37 @@
     ],
     "guardian": true,
     "question": "Joue toujours en dernier, donc on sait ce qui arrive. Windup, Attack, Recovery : trois animations distinctes, un boss sur trois temps entièrement dessiné."
+  },
+  "gnoll": {
+    "sprite": "gnoll",
+    "role": "skirmisher",
+    "hit_points": 60,
+    "action_points": 6,
+    "movement_points": 3,
+    "initiative": 6,
+    "strength": 3,
+    "agility": 7,
+    "intelligence": 1,
+    "defence": 2,
+    "abilities": [
+      "bone_throw"
+    ],
+    "question": "Tire aussi loin que l'Archer et encaisse mieux que le gnome à fronde. Il faut aller le chercher, et aller le chercher, c'est sortir de sa ligne."
+  },
+  "hex_shaman": {
+    "sprite": "hex_shaman",
+    "role": "caster",
+    "hit_points": 55,
+    "action_points": 6,
+    "movement_points": 3,
+    "initiative": 4,
+    "strength": 1,
+    "agility": 2,
+    "intelligence": 7,
+    "defence": 1,
+    "abilities": [
+      "hex_bolt"
+    ],
+    "question": "Frappe une zone à six cases, soit une de plus que l'Archer. Une équipe massée hors de portée de la mêlée est exactement la cible qu'il attend : c'est lui qui rend le regroupement coûteux, et donc le déplacement obligatoire."
   }
 }

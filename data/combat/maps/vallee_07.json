@@ -76,7 +76,7 @@
   ],
   "enemies": [
     {
-      "type": "spear_goblin",
+      "type": "hex_shaman",
       "cell": [
         9,
         1
