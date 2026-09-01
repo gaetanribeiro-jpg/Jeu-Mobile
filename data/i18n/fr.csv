@@ -374,3 +374,4 @@ INVASION_RETURNING,Vous faites demi-tour vers le royaume.
 INVASION_REPELLED,L'assaut est repoussé (%d contre %d). Butin : %d or.
 INVASION_LOST,Le royaume est pillé (%d contre %d).
 INVASION_ALONE,L'armée a défendu seule.
+MAP_KINGDOM_DEFENCE,La défense du royaume

@@ -1106,13 +1106,13 @@ maintenant à moins de 8 % d'écart (22/23, 28/27,6, 25/27).
 `initiative` a gagné un coût au barème au passage : elle décide **quand**
 on joue, ce qui vaut cher en positionnement mais ne change aucun chiffre.
 
-### Phase 5 — Interconnexion ⏳ *en cours*
+### Phase 5 — Interconnexion ✅
 
 | Tâche | Contenu | État |
 |---|---|---|
 | **T5.1** | Exploration → ressources : une sortie nourrit le royaume | ✅ |
 | **T5.2** | Invasions (§ 37) : la menace, le choix, la défense par l'armée | ✅ |
-| **T5.3** | Bataille de défense (§ 38) : le royaume devient une carte | ⏳ |
+| **T5.3** | Bataille de défense (§ 38) : le royaume devient une carte | ✅ |
 
 ### Une sortie nourrit le royaume (T5.1)
 
@@ -1173,6 +1173,62 @@ et qui rendraient la mécanique morte ou insupportable :
 L'outil l'a d'ailleurs corrigé : à son premier réglage, un royaume au
 maximum était attaqué **dès la première étape** de chaque sortie, et la
 menace ne retombait jamais.
+
+### La bataille de défense : le royaume devient une carte (T5.3)
+
+« Le terrain du royaume devient une carte de combat » est une phrase du
+§ 38, pas une image. **Cette carte n'existe dans aucun fichier** : elle se
+fabrique à partir de ce que le joueur a bâti. Plus le royaume est avancé,
+plus il y a de murs de pierre sur le plateau, et le même assaut ne se joue
+donc pas de la même façon. C'est le seul endroit du jeu où les deux moitiés
+de la boucle se relient par le **terrain** et pas par des chiffres.
+
+`CombatMap.from_data` a été séparé de `load_map` pour ça. Le reste du
+combat ne voit aucune différence — c'est tout l'intérêt de n'avoir qu'un
+seul type `CombatMap`.
+
+**On protège l'intendant, pas un bâtiment.** L'IA ne vise que des unités —
+ouvert depuis T1.12 — et un objectif « protéger une structure » ne pourrait
+donc jamais échouer. L'intendant est un villageois posté derrière tout le
+monde, et le protéger veut dire exactement ce que le § 38 demande : tenir
+la ligne. C'est la même convention que `vallee_05`, et en inventer une
+seconde pour le même manque aurait coûté plus cher que de vivre avec la
+première.
+
+**Les bâtiments ne se cassent pas, la palissade oui.** Le § 41 refuse la
+punition absolue, et regarder son monastère tomber pendant qu'on le défend
+serait exactement ça. La palissade — le mur du § 38, avec ce que le pack
+sait dessiner, faute de mur et de porte — donne aux assaillants un verbe
+autre que « contourner », et elle laisse une **porte** de trois cases :
+sans elle, la carte serait un siège et pas une bataille.
+
+**La bataille a lieu pour de vrai.** Résoudre l'assaut par une comparaison
+de nombres alors que le joueur est rentré exprès reviendrait à lui dire
+qu'il a gagné pour de faux. `Kingdom.settle_invasion` applique une issue
+déjà décidée ; `resolve_invasion` reste le chemin de l'armée seule.
+
+### Quatre défauts, et trois n'auraient jamais échoué un test
+
+1. **Un défaut d'ORDONNANCEMENT, et il annulait la fonctionnalité.**
+   Refermer l'expédition déclenche le cycle de production, qui résout un
+   assaut imminent par l'armée seule. Le retour était annoncé *après* :
+   le joueur rentrait donc défendre une bataille déjà perdue sans lui, et
+   le jeu ne montrait rien d'anormal. L'annonce passe maintenant avant.
+2. **Les bâtiments étaient dessinés à leur taille native** — 320 pixels
+   sur des cases de 64. Ils se recouvraient et débordaient du plateau. Un
+   plafond de largeur en cases, dans `view.json`.
+3. **Les cinq bâtiments se dessinaient tous en château** : un terrain ne
+   porte qu'un décor. Il y a maintenant un terrain par bâtiment.
+4. **Le décor `houses` pointait sur un bâtiment que le pack ne dessine
+   pas** — le royaume regroupe `house1/2/3` sous un seul bâtiment à trois
+   âges. Un décor absent ne plante pas la carte : il pousse une erreur au
+   moment de DESSINER, donc loin du problème. `verify_maps` vérifie
+   maintenant **tous les décors de terrain** contre la table des assets,
+   et **construit la carte de défense** pour la contrôler comme les
+   autres — sinon elle serait la seule carte du jeu que personne ne
+   vérifie. Il a d'ailleurs immédiatement refusé ses vingt-deux cases de
+   placement : vingt-deux cases proposées ne sont pas vingt-deux
+   décisions, c'est une décision noyée.
 
 ### Phase 5 — Interconnexion
 

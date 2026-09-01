@@ -442,12 +442,16 @@ func _after_step() -> void:
 
 ## Rentrer défendre : la sortie se referme comme un retour ordinaire — la
 ## besace est sauve — et l'appelant résout l'assaut.
+## L'ORDRE COMPTE. On annonce le retour AVANT de refermer la sortie :
+## refermer déclenche le cycle de production, qui résout un assaut imminent
+## par l'armée seule. Annoncé après, le joueur rentrait défendre une
+## bataille déjà perdue sans lui.
 func _on_defend() -> void:
 	if not _run.retreat():
 		return
+	defence_requested.emit()
 	_note(tr("INVASION_RETURNING"))
 	_after_step()
-	defence_requested.emit()
 
 
 func _on_retreat() -> void:

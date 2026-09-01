@@ -77,10 +77,22 @@ func _ready() -> void:
 ## Prépare la scène sur une carte donnée. À appeler avant de l'ajouter à
 ## l'arbre ; sinon la carte par défaut est chargée.
 func configure(combat_map_id: StringName, squad: Array[Unit], rng: CombatRng = null) -> void:
-	map_id = combat_map_id
-	var map := CombatMap.load_map(map_id)
+	var map := CombatMap.load_map(combat_map_id)
 	if map == null:
 		return
+	configure_with_map(map, squad, rng)
+
+
+## Prépare la scène sur une carte DÉJÀ CONSTRUITE.
+##
+## Existe pour la défense du royaume (§ 38), dont la carte se fabrique à
+## partir de ce que le joueur a bâti et n'est donc dans aucun fichier. Le
+## reste de la scène ne voit aucune différence — c'est tout l'intérêt de
+## n'avoir qu'un seul type `CombatMap`.
+func configure_with_map(map: CombatMap, squad: Array[Unit], rng: CombatRng = null) -> void:
+	if map == null:
+		return
+	map_id = map.id
 	engine = map.to_engine(squad, rng)
 	engine.start()
 

@@ -37,6 +37,11 @@ var _last_cycle: Dictionary = {}
 ## Compte rendu du dernier assaut, montré au même endroit.
 var _last_defence: Dictionary = {}
 
+## Vrai entre l'annonce du retour et le lancement de la bataille. Sans ce
+## drapeau, la fermeture de l'expédition résoudrait l'assaut par l'armée
+## seule une fraction de seconde avant que le joueur n'arrive.
+var _defending := false
+
 var _company_screen: Control = null
 var _kingdom_screen: Control = null
 var _options_screen: Control = null
@@ -269,11 +274,16 @@ func _close_expedition(_state: int) -> void:
 		# Un assaut que le joueur n'est pas rentré défendre se résout tout
 		# seul : le § 37 dit que l'armée peut défendre seule, pas que
 		# l'assaut attend indéfiniment.
-		if GameState.kingdom.invasion != null and GameState.kingdom.invasion.is_imminent():
+		# Un assaut que le joueur n'est pas rentré défendre se résout tout
+		# seul. S'il rentre, la bataille tranche à la place.
+		if (not _defending and GameState.kingdom.invasion != null
+				and GameState.kingdom.invasion.is_imminent()):
 			_resolve_invasion(0)
 	GameState.save()
 	_build_squad_picker()
 	visible = true
+	if _defending:
+		_start_defence()
 
 
 ## Le royaume ne parle pas à l'expédition : c'est l'écran de titre qui les
@@ -289,11 +299,67 @@ func _apply_kingdom_to(run: Expedition) -> void:
 	run.kingdom_healing = GameState.kingdom.healing_between_steps()
 
 
-## Le joueur est rentré défendre (§ 37). Les héros de l'équipe pèsent dans
-## la balance : le § 37 veut que rentrer soit MEILLEUR, jamais obligatoire.
+## Le joueur est rentré défendre (§ 37, § 38).
+##
+## LA BATAILLE A LIEU. Résoudre l'assaut par une comparaison de nombres
+## alors que le joueur est rentré exprès reviendrait à lui dire qu'il a
+## gagné pour de faux — et « le terrain du royaume devient une carte de
+## combat » est une phrase du § 38, pas une image.
 func _defend_kingdom() -> void:
-	_resolve_invasion(_squad_levels())
+	# La sortie n'est pas encore refermée : on note l'intention, et la
+	# bataille se lance une fois l'écran d'expédition rendu.
+	_defending = true
+
+
+func _start_defence() -> void:
+	_defending = false
+	var raid: Invasion = GameState.kingdom.invasion
+	if raid == null:
+		return
+	var run: Expedition = GameState.expedition
+	var seed_value := run.seed_value if run != null else GameState.campaign_seed
+	var rng := CombatRng.new(hash([seed_value, "defence", raid.strength]))
+	var map := DefenceMap.build(GameState.kingdom, raid, rng)
+	var squad := GameState.company.squad(_squad_ids_for_defence())
+	if map == null or squad.is_empty():
+		# On ne laisse pas le royaume avec un assaut en suspens : l'armée
+		# défend seule, comme si le joueur n'était pas rentré.
+		_resolve_invasion(0)
+		GameState.save()
+		return
+
+	var units := GameState.company.to_units(squad, _kingdom_bonuses())
+	_launch_with_map(map, units, rng, _on_defence_finished)
+
+
+## L'équipe qui défend : celle qui rentre, ou la compagnie entière si
+## aucune sortie n'est en cours.
+func _squad_ids_for_defence() -> Array:
+	var run: Expedition = GameState.expedition
+	if run != null and not run.squad_ids.is_empty():
+		return run.squad_ids
+	return _squad_ids
+
+
+func _kingdom_bonuses() -> Dictionary:
+	var bonuses := {}
+	for class_id: StringName in Unit.hero_class_ids():
+		bonuses[class_id] = GameState.kingdom.hero_bonuses(class_id)
+	return bonuses
+
+
+func _on_defence_finished(scene: Node) -> void:
+	if not is_instance_valid(scene) or GameState.kingdom.invasion == null:
+		return
+	var won := (scene.engine as CombatEngine).is_victory()
+	_last_defence = GameState.kingdom.settle_invasion(
+		GameState.company, won, GameState.kingdom.defence_strength(_squad_levels())
+	)
+	_last_defence["alone"] = false
+	_last_defence["fought"] = true
 	GameState.save()
+	_build_squad_picker()
+	visible = true
 
 
 ## Résout l'assaut en cours, s'il y en a un. `hero_levels` vaut zéro quand
@@ -414,12 +480,22 @@ func _on_test_combat_finished(scene: Node) -> void:
 # --- Plomberie commune -----------------------------------------------------
 
 func _launch(map_id: StringName, units: Array[Unit], rng: CombatRng, on_done: Callable) -> void:
+	var map := CombatMap.load_map(map_id)
+	if map != null:
+		_launch_with_map(map, units, rng, on_done)
+
+
+## Lance un combat sur une carte déjà construite. La défense du royaume
+## (§ 38) en fabrique une qui n'est dans aucun fichier ; tout le reste du
+## chemin est identique.
+func _launch_with_map(
+	map: CombatMap, units: Array[Unit], rng: CombatRng, on_done: Callable
+) -> void:
 	var packed: PackedScene = load(COMBAT_SCENE)
 	if packed == null:
 		return
 	var scene: Node2D = packed.instantiate()
-	scene.map_id = map_id
-	scene.configure(map_id, units, rng)
+	scene.configure_with_map(map, units, rng)
 	scene.combat_finished.connect(func(_victory: bool) -> void:
 		# On laisse la bannière de résultat à l'écran, puis on rend la main.
 		await get_tree().create_timer(2.5).timeout

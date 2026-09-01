@@ -31,6 +31,9 @@ func _init() -> void:
 			continue
 		_check(map, width, height)
 
+	_check_decorations()
+	_check_defence_map()
+
 	if not _to_rewrite.is_empty():
 		print("\nÀ réécrire pour la nouvelle grille (T1.10) : %d" % _to_rewrite.size())
 		for line: String in _to_rewrite:
@@ -138,3 +141,42 @@ func _check_objective(map: CombatMap, id: String) -> void:
 			if objective.turns <= 0 or objective.turns > limit:
 				_problems.append("%s : tenir %d rondes, hors des %d rondes visées"
 					% [id, objective.turns, limit])
+
+
+## Chaque décor de terrain doit exister dans la table des assets.
+##
+## POURQUOI ICI. Un décor qui pointe sur une image absente ne plante pas la
+## carte : il pousse une erreur au moment de DESSINER, donc dans un test
+## d'intégration ou à l'écran, jamais à l'endroit du problème. C'est arrivé
+## avec la carte de défense — le royaume regroupe trois maisons sous un
+## bâtiment « houses » que le pack ne dessine pas.
+func _check_decorations() -> void:
+	print("")
+	for terrain_id: StringName in CombatRules.terrain_ids():
+		var entry := ViewSettings.terrain_decoration(terrain_id)
+		if entry.is_empty():
+			continue
+		var category := StringName(entry["category"])
+		var key := StringName(entry["key"])
+		var table := AssetTable.table().get(String(category), {}) as Dictionary
+		if not table.has(String(key)):
+			_problems.append("%s : décor « %s/%s » absent de la table des assets"
+				% [terrain_id, category, key])
+
+
+## La carte de défense du royaume (§ 38) ne vit dans aucun fichier : elle
+## se fabrique. Elle doit donc être vérifiée là où on vérifie les autres,
+## sinon elle est la seule carte du jeu que personne ne contrôle.
+func _check_defence_map() -> void:
+	var kingdom := Kingdom.create()
+	for building_id: StringName in Buildings.ids():
+		kingdom.levels[building_id] = 1
+	var raid := Invasion.declare(CombatRng.new(1), kingdom.building_levels(), 0)
+	var map := DefenceMap.build(kingdom, raid, CombatRng.new(1))
+	if map == null:
+		_problems.append("la carte de défense du royaume ne se construit pas")
+		return
+	print("carte de défense : %d cases de placement, %d assaillants"
+		% [map.deployment_cells.size(), map.board.active_units(Unit.Side.ENEMIES).size()])
+	_check(map, int(CombatRules.rule(&"grid", &"combat_width", 0)),
+		int(CombatRules.rule(&"grid", &"combat_height", 0)))

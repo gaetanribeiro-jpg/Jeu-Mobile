@@ -239,7 +239,9 @@
     "slot_font_size": 22,
     "pip_radius_px": 7.0,
     "pip_spacing_px": 19.0,
-    "timeline_badge_px": 34.0
+    "timeline_badge_px": 34.0,
+    "decoration_max_tiles": 1.6,
+    "_decoration_max_tiles_note": "Largeur maximale d'un décor, en cases. Les bâtiments du pack font 128 à 320 pixels de large pour des cases de 64 : posés à leur taille native sur une carte de défense, ils se recouvraient les uns les autres et débordaient du plateau. Les décors plus petits qu'une case et demie ne sont pas touchés — un arbre garde sa taille."
   },
   "idle_float": {
     "_note": "Flottement sinusoïdal des sprites au repos (§ 12). Trivial à coder, fort en impact.",
@@ -270,7 +272,13 @@
     "bridge": "land",
     "hill": "hill",
     "fire": "land",
-    "mud": "land"
+    "mud": "land",
+    "palisade": "land",
+    "building_castle": "land",
+    "building_houses": "land",
+    "building_barracks": "land",
+    "building_archery": "land",
+    "building_monastery": "land"
   },
   "terrain_decorations": {
     "_note": "Sprite posé par-dessus la tuile de base : [catégorie, clé] de data/assets.json. Une troisième valeur choisit l'image d'une bande d'animation — la première image d'un feu n'est qu'une étincelle de quelques pixels, invisible sur une case de 64. Une quatrième et une cinquième donnent [colonne, rangée] pour une entrée de type atlas. Le pack ne fournit ni pont ni ruine : la palissade sert de planches, les ossements de ruine. La boue n'a AUCUN sprite : elle se dessine comme de l'herbe, ce qui est un piège — aucune carte ne l'utilise pour l'instant, et il faudra une teinte avant qu'une carte le fasse.",
@@ -296,6 +304,34 @@
       "fx",
       "fire_01",
       4
-    ]
+    ],
+    "palisade": [
+      "extra",
+      "wooden_fence_wooden_fence_64x64_tile",
+      0,
+      1,
+      1
+    ],
+    "building_castle": [
+      "buildings",
+      "castle"
+    ],
+    "building_houses": [
+      "buildings",
+      "house2"
+    ],
+    "building_barracks": [
+      "buildings",
+      "barracks"
+    ],
+    "building_archery": [
+      "buildings",
+      "archery"
+    ],
+    "building_monastery": [
+      "buildings",
+      "monastery"
+    ],
+    "_houses_note": "Le pack dessine `house1`, `house2` et `house3`, pas un bâtiment « houses » : c'est le royaume qui regroupe les trois sous un seul bâtiment à trois âges. La carte de défense n'a qu'un décor par terrain, donc elle montre l'âge du milieu."
   }
 }

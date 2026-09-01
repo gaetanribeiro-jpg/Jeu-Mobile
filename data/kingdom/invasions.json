@@ -28,5 +28,19 @@
   "spoils": {
     "_note": "Ce qu'une défense réussie rapporte : les assaillants laissent leur barda. Modeste — repousser une invasion est déjà la récompense.",
     "gold_per_strength": 1.5
+  },
+  "assault": {
+    "_note": "LA BATAILLE DE DÉFENSE DU § 38, quand le joueur rentre. Le nombre d'assaillants se déduit de la force de l'assaut : c'est le même chiffre qui décide si l'armée s'en sort seule, donc les deux issues parlent de la même invasion et pas de deux choses différentes.\n\n`hold_rounds` est ce qu'il faut tenir. On PROTÈGE l'intendant plutôt qu'un bâtiment : l'IA ne vise que des unités — c'est ouvert depuis T1.12 — et un objectif « protéger une structure » ne pourrait donc jamais échouer. L'intendant est un villageois qu'on met derrière tout le monde, et le protéger veut dire exactement ce que le § 38 demande : tenir la ligne.",
+    "types": [
+      "gnome",
+      "spear_goblin",
+      "gnoll",
+      "torch_goblin",
+      "hex_shaman"
+    ],
+    "cost_per_enemy": 16,
+    "min_enemies": 3,
+    "max_enemies": 8,
+    "hold_rounds": 5
   }
 }

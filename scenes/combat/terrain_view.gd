@@ -13,6 +13,10 @@ extends Node2D
 
 var board: CombatBoard
 
+## Couleur de faction des bâtiments posés sur un plateau. Celle du joueur :
+## une carte de défense montre SON royaume.
+const BUILDING_COLOR := "Blue"
+
 var _tileset: Texture2D
 var _water: Texture2D
 var _decorations: Dictionary = {}
@@ -146,12 +150,20 @@ func _draw_decoration(tile: Tile, origin: Vector2) -> void:
 		return
 	# Les décors du pack sont plus grands que la case et posés au sol :
 	# on les centre horizontalement et on les cale par le bas.
+	#
+	# UN PLAFOND DE LARGEUR, en cases. Les bâtiments font 128 à 320 pixels
+	# pour des cases de 64 : posés à leur taille native sur la carte de
+	# défense (§ 38), ils se recouvraient et débordaient du plateau. Les
+	# décors plus petits ne sont pas touchés — un arbre garde sa taille.
 	var span := texture.get_size()
+	var ceiling := ViewSettings.size_of(&"decoration_max_tiles") * float(_tile_size)
+	if ceiling > 0.0 and span.x > ceiling:
+		span *= ceiling / span.x
 	var position := Vector2(
 		origin.x + (float(_tile_size) - span.x) * 0.5,
 		origin.y + float(_tile_size) - span.y
 	)
-	draw_texture(texture, position)
+	draw_texture_rect(texture, Rect2(position, span), false)
 
 
 ## Un décor peut être une bande d'animation (un arbre qui bouge), une image
@@ -164,7 +176,15 @@ func _load_decorations() -> void:
 		var entry := ViewSettings.terrain_decoration(terrain_id)
 		if entry.is_empty():
 			continue
-		var declared := AssetTable.sprite(entry["category"], entry["key"])
+		# Les BÂTIMENTS ne sont pas une catégorie simple : ils se résolvent
+		# par couleur de faction. C'est la carte de défense du royaume
+		# (§ 38) qui en a amené sur un plateau de combat, et `sprite()`
+		# poussait une erreur pour chaque tuile de bâtiment.
+		var declared := (
+			AssetTable.building(StringName(entry["key"]), BUILDING_COLOR)
+			if StringName(entry["category"]) == &"buildings"
+			else AssetTable.sprite(entry["category"], entry["key"])
+		)
 		if declared.is_empty():
 			continue
 		var texture: Texture2D = null

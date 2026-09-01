@@ -62,10 +62,22 @@ static func load_map(map_id: StringName, adjacency: String = "") -> CombatMap:
 	var parsed: Variant = JSON.parse_string(file.get_as_text())
 	file.close()
 	if typeof(parsed) != TYPE_DICTIONARY:
-		push_error("CombatMap : « %s » n'est pas un objet JSON" % map_id)
+		push_error("CombatMap : « %s » n\'est pas un objet JSON" % map_id)
 		return null
+	return from_data(map_id, parsed, adjacency)
 
-	var data: Dictionary = parsed
+
+## Construit une carte à partir de sa description, sans passer par un
+## fichier.
+##
+## SÉPARÉ DE `load_map` POUR LA DÉFENSE DU ROYAUME (§ 38) : « le terrain du
+## royaume devient une carte de combat », et cette carte-là n'existe dans
+## aucun fichier — elle se fabrique à partir de ce que le joueur a bâti.
+## Tout le reste du combat continue de ne connaître qu'une `CombatMap`, ce
+## qui est exactement l'intérêt de la couture.
+static func from_data(
+	map_id: StringName, data: Dictionary, adjacency: String = ""
+) -> CombatMap:
 	var rows := PackedStringArray()
 	for row: Variant in data.get("rows", []):
 		rows.append(String(row))

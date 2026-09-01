@@ -385,9 +385,18 @@ func defence_strength(hero_levels: int = 0) -> int:
 func resolve_invasion(company: Company, hero_levels: int = 0) -> Dictionary:
 	if invasion == null:
 		return {}
+	return settle_invasion(company, invasion.is_repelled_by(defence_strength(hero_levels)),
+		defence_strength(hero_levels))
+
+
+## Applique une issue DÉJÀ DÉCIDÉE. C'est par là que passe la bataille du
+## § 38 : quand le joueur défend lui-même, c'est le plateau qui tranche, et
+## comparer deux nombres par-dessus reviendrait à lui dire qu'il a gagné
+## pour de faux.
+func settle_invasion(company: Company, repelled: bool, defence: int = 0) -> Dictionary:
+	if invasion == null:
+		return {}
 	var raid := invasion
-	var defence := defence_strength(hero_levels)
-	var repelled := raid.is_repelled_by(defence)
 	var report := {
 		"repelled": repelled,
 		"strength": raid.strength,
