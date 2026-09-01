@@ -79,6 +79,10 @@ func _ensure_company() -> void:
 	var classes := Unit.hero_class_ids()
 	for i in CombatRules.team_size():
 		company.recruit(classes[i % classes.size()], rng)
+	# Le sac de départ (§ 44). Une potion qu'on ne peut pas obtenir n'est
+	# pas une mécanique, c'est une déclaration : tant que le butin et le
+	# marchand n'en distribuent pas, c'est d'ici qu'elles viennent.
+	company.supplies = Consumable.starting_stock()
 	GameState.save()
 
 
@@ -605,6 +609,10 @@ func _launch_with_map(
 	# l'application meurt à tout moment, y compris à la première
 	# activation : attendre un « moment sûr » pour l'y mettre reviendrait
 	# à choisir la fenêtre pendant laquelle on accepte de tout perdre.
+	# LE SAC ENTRE EN COMBAT ET EN RESSORT. Il vit dans le moteur le temps
+	# de la bataille — c'est l'annulation qui l'exige — et revient à la
+	# compagnie une fois la dernière activation jouée.
+	scene.engine.supplies = GameState.company.supplies.duplicate()
 	GameState.combat = scene.engine
 	GameState.combat_map_id = map.id
 	GameState.combat_moment = moment
@@ -614,6 +622,10 @@ func _launch_with_map(
 	scene.combat_finished.connect(func(_victory: bool) -> void:
 		# On laisse la bannière de résultat à l'écran, puis on rend la main.
 		await get_tree().create_timer(2.5).timeout
+		# Ce qui reste dans le sac revient à la compagnie : les potions
+		# bues sont bues, et elles manqueront au combat suivant. C'est
+		# tout l'intérêt d'une réserve finie (§ 29).
+		GameState.company.supplies = scene.engine.supplies.duplicate()
 		# Le combat est fini : il n'a plus rien à faire dans la sauvegarde,
 		# sinon « Reprendre » rouvrirait une bataille déjà jouée.
 		GameState.clear_combat()

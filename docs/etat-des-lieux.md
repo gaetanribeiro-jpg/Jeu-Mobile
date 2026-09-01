@@ -1682,6 +1682,121 @@ trouvée qu'en mesurant la capture au lieu de la regarder.
    L'inverse exact d'une jauge, et le même piège si on ne l'écrit pas.
 
 
+### Phase 10 — Les consommables ✅
+
+| Tâche | Contenu | État |
+|---|---|---|
+| **T10.1** | Le soin, les potions, le sac commun | ✅ |
+
+Le § 44 les liste dans le butin du MVP — « or, quelques armes, armures,
+**potions** » — et le § 48 leur donne un bouton dans la barre d'action :
+« ⚔️ Attaque 🔥 Sort 🧪 Item ». Ni l'un ni l'autre n'existait. C'est le
+dernier trou franc de la liste du MVP.
+
+### `KIND_HEAL` était déclaré depuis le premier jour et jamais écrit
+
+`Ability` connaissait la constante ; `resolve_ability` ne la lisait pas.
+Une compétence de soin aurait donc **silencieusement infligé des dégâts
+aux siens**. Personne ne s'en était aperçu parce qu'aucune compétence ne
+l'utilisait — c'est exactement le genre de défaut qui attend qu'on
+s'appuie dessus.
+
+Un soin vise les siens ET lui-même : c'est le seul endroit du moteur où
+le camp change de sens. `friendly_fire` dit « mes alliés encaissent
+aussi » ; un soin dit « il n'y a qu'eux ». Il ne relève pas un
+personnage à terre — le § 25 réserve la relève à l'expédition, et une
+potion qui remet debout retirerait tout son poids à la mise à terre.
+
+### Une potion EST une compétence, plus un stock
+
+Le moteur sait déjà porter un coût en PA, une portée, une zone et un
+effet. Leur donner un second système de résolution aurait doublé sa
+surface pour rien, ce que le § 46 interdit en toutes lettres. Une potion
+est donc une entrée d'`abilities.json` de classe `consumable`, plus un
+compteur.
+
+Une seule ligne les distingue : **une potion n'appartient à personne**.
+`is_available_to` saute la vérification de propriété pour elles, parce
+qu'elles sont dans le sac de l'équipe et que n'importe quel héros peut
+les prendre.
+
+**Et elle ne monte à aucune statistique.** Une bombe lancée par le Mage
+et par le Guerrier fait les mêmes dégâts : sa puissance vient de l'objet.
+Sinon il faudrait la réserver au personnage qui la valorise le mieux, et
+le sac commun n'aurait plus de sens. L'invariant « toute compétence qui
+fait des dégâts monte à une statistique » a donc gagné son exception, et
+`verify_items` vérifie l'inverse pour les potions.
+
+### Le sac vit dans le MOTEUR, et c'est l'annulation qui l'impose
+
+« Rien n'est irréversible avant la fin de l'activation » vaut aussi pour
+une potion bue. Si le compteur vivait sur `Company`, l'instantané
+d'annulation ne le verrait pas et la potion serait perdue pour de bon —
+**le seul geste du jeu qu'on ne pourrait pas reprendre**, et précisément
+celui qu'on veut pouvoir reprendre.
+
+**L'ORDRE EST TOUT, et je l'ai eu à l'envers.** Le premier jet retirait
+la potion AVANT d'appeler `use_ability`. Or c'est `use_ability` qui empile
+l'instantané, et cet instantané est l'état où l'on REVIENT : il doit
+montrer le sac encore plein. Annuler rendait le soin et gardait la potion
+bue. Le test qui l'a attrapé était écrit avant le code.
+
+Bénéfice second de l'ordre correct : une compétence qui refuse (cible
+hors de portée) n'a rien à remettre dans le sac.
+
+### Trois verbes, pas trois puissances
+
+- **Élixir de réparation** — 45 PV, 2 PA, sur soi ou un voisin.
+- **Philtre de hâte** — 3 PM par-dessus le maximum, 2 PA. La seule
+  contre-mesure au Gel, et la porte de sortie quand on s'est trop avancé.
+- **Bombe incendiaire** — 28 dégâts en croix à 2–4 cases, 3 PA. Elle ne
+  dépend de personne, donc l'Archer peut ouvrir une mêlée.
+
+Trois potions de soin d'intensités différentes n'auraient fait qu'un seul
+choix déguisé en trois.
+
+**Le barème remplace la mesure**, comme pour l'équipement : on ne simule
+pas mille combats pour un flacon. L'unité est le point de vie épargné, à
+1,6 pièce d'or le point, et `verify_items` refuse plus de 20 % d'écart.
+La bombe est évaluée sur **deux** cibles touchées et non cinq : la croix
+en atteint jusqu'à cinq, mais un joueur qui en aligne cinq a déjà gagné.
+On paie l'ordinaire, pas le meilleur cas.
+
+### Ce que ça change pour le § 29, et ce que la mesure ne voit pas
+
+Une réserve **finie** traverse toute l'expédition : chaque potion bue est
+une potion que le boss n'aura pas. « Je rentre ou je continue ? » gagne un
+troisième terme après les PV et la besace — et c'est le seul des trois sur
+lequel le joueur décide au coup par coup au lieu de subir.
+
+**`simulate_combats` ne boit pas.** Sa politique triviale ignore le sac,
+donc ses chiffres sont inchangés (81 % de PV, 4,7 rondes) et sont
+désormais un plancher plus bas encore qu'avant : un vrai joueur dispose
+d'une ressource que le pilote n'utilise jamais. Le mesurer demanderait
+d'apprendre au pilote quand boire, c'est-à-dire d'écrire la stratégie
+qu'on veut justement laisser au joueur.
+
+### Ce qui reste (T10.2)
+
+Le sac de départ est écrit dans `consumables.json` — 2 élixirs, 1
+philtre, 1 bombe. **Le butin et le marchand ne distribuent pas encore de
+potions** : une potion qu'on ne peut pas obtenir n'est pas une mécanique,
+et tant que ce maillon manque, la réserve ne se renouvelle pas d'une
+expédition à l'autre.
+
+### Ce qu'il faut regarder en jouant
+
+- **La barre d'action.** Les trois potions sont en violet, les
+  compétences en acier : la différence se voit-elle avant de lire ? Une
+  potion confondue avec un sort gratuit, c'est la dernière du sac brûlée
+  par distraction.
+- **Le compte `×2`.** Suffit-il à faire hésiter, ou faut-il le montrer
+  plus gros ?
+- **Le Philtre de hâte.** 2 PA pour 3 PM : trop cher, ou juste ?
+  C'est le chiffre le plus estimé des trois — les deux autres se
+  raccrochent à des PV, celui-là à une intuition.
+
+
 ---
 
 ## 6. Ce qui est rangé, pas jeté

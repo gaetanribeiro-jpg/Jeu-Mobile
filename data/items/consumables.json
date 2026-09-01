@@ -1,0 +1,43 @@
+{
+  "_readme": "LES CONSOMMABLES (§ 44, § 30, § 48). Le § 44 les liste dans le butin du MVP — « or, quelques armes, armures, potions » — et le § 48 leur donne un bouton dans la barre d'action : « ⚔️ Attaque 🔥 Sort 🧪 Item ». Ni l'un ni l'autre n'existait.\n\nUNE POTION EST UNE COMPÉTENCE, PLUS UN STOCK. Le moteur sait déjà porter un coût en PA, une portée, une zone et un effet ; ce fichier n'ajoute que ce qui manque — combien il en reste. La compétence elle-même est dans `abilities.json`, sous la classe `consumable`.\n\nCE QU'ELLES APPORTENT AU § 29, ET C'EST LA RAISON DE LES ÉCRIRE : une réserve FINIE qui traverse toute l'expédition. Chaque potion bue est une potion que le boss n'aura pas. « Je rentre ou je continue ? » gagne un troisième terme après les PV et la besace, et c'est le seul des trois sur lequel le joueur décide au coup par coup.\n\nLE STOCK EST COMMUN À L'ÉQUIPE, pas rangé par héros. Un sac par personnage demanderait une gestion d'inventaire que le § 44 ne réclame pas, et transformerait une décision tactique en corvée de rangement.\n\nTROIS VERBES, PAS TROIS PUISSANCES : soigner, se dégager, frapper en zone. Trois potions de soin d'intensités différentes ne feraient qu'un seul choix déguisé en trois.",
+  "budget": {
+    "_note": "MÊME RÈGLE QUE L'ÉQUIPEMENT, et pour la même raison : on ne simule pas mille combats pour une potion. Le prix est ce qui équilibre, et il doit être proportionné à ce que la potion épargne.\n\nL'unité est le POINT DE VIE ÉPARGNÉ. Une rencontre coûte 20 % des PV d'une équipe de 382, soit environ 76 PV. Une potion qui rend 45 PV épargne donc un peu plus d'un demi-combat, et doit coûter dans cet ordre de grandeur — sinon on en achète dix et l'usure du roguelite disparaît.\n\n`verify_items` refuse un prix qui s'écarte de plus de 20 % de la valeur calculée.",
+    "gold_per_point": 1.6,
+    "tolerance": 0.2
+  },
+  "items": {
+    "draught_of_mending": {
+      "name_key": "ITEM_DRAUGHT_OF_MENDING",
+      "ability": "draught_of_mending",
+      "rarity": "common",
+      "value": 45,
+      "price": 72,
+      "icon": "fx/dust_01",
+      "_note": "Rend 45 PV à soi-même ou à un voisin, pour 2 PA. Le soin ne relève PAS un personnage à terre : le § 25 réserve la relève à l'expédition, et une potion qui remet debout retirerait tout son poids à la mise à terre."
+    },
+    "philtre_of_haste": {
+      "name_key": "ITEM_PHILTRE_OF_HASTE",
+      "ability": "philtre_of_haste",
+      "rarity": "common",
+      "value": 30,
+      "price": 48,
+      "icon": "fx/dust_02",
+      "_note": "Trois PM par-dessus le maximum, pour 2 PA. C'est la seule contre-mesure au Gel, et la porte de sortie quand on s'est trop avancé.\n\nDEUX PA ET PAS UN, parce que le barème des compétences va de 2 à 7 et qu'une potion n'a aucune raison d'y échapper. Le point de comparaison est le Bond de l'Archer : 2 PA pour deux cases. Trois cases utilisables n'importe quand valent un peu mieux, et c'est justement ce qu'on paie en la consommant."
+    },
+    "firebomb": {
+      "name_key": "ITEM_FIREBOMB",
+      "ability": "firebomb",
+      "rarity": "uncommon",
+      "value": 56,
+      "price": 90,
+      "icon": "fx/explosion_01",
+      "_note": "28 dégâts en croix à 2–4 cases, pour 3 PA. Sa valeur compte DEUX cibles touchées, pas cinq : la croix en atteint jusqu'à cinq, mais un joueur qui en aligne cinq a déjà gagné le combat. On paie ce qu'on obtient d'ordinaire, pas le meilleur cas."
+    }
+  },
+  "starting_stock": {
+    "_note": "CE QUE LA COMPAGNIE POSSÈDE AU PREMIER LANCEMENT. Une potion qu'on ne peut pas obtenir n'est pas une mécanique, c'est une déclaration : tant que le butin et le marchand ne les distribuent pas (T10.2), c'est d'ici qu'elles viennent.",
+    "draught_of_mending": 2,
+    "philtre_of_haste": 1,
+    "firebomb": 1
+  }
+}

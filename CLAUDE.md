@@ -234,7 +234,7 @@ dur : passer par `data/assets.json`.
 
 *(à tenir à jour à chaque fin de session)*
 
-- **Phase courante : 9 — l'interface prend la peau du pack.** Le pivot vers la vision
+- **Phase courante : 10 — les consommables.** Le pivot vers la vision
   Tiny Kingdoms a été acté le 2026-08-31.
 - **Phase 1 terminée.** T1.1 à T1.14 sont faites et testées.
 - **Phase 2 terminée.** T2.1 à T2.7 : le `Hero`, les niveaux,
@@ -260,7 +260,10 @@ dur : passer par `data/assets.json`.
   du périmètre annoncé de la Phase 5 qui n'avait jamais été écrit.
 - **Phase 9 terminée.** T9.1 (le thème sort du code), T9.2 (jauges et
   panneaux du pack), T9.3 (boutons teintés), T9.4 (les widgets que Tiny
-  Swords ne dessine pas, pris chez Kenney). **736 tests passent.**
+  Swords ne dessine pas, pris chez Kenney).
+- **Phase 10 en cours.** T10.1 : le soin (`KIND_HEAL` était déclaré et
+  jamais écrit), les potions du § 44, le sac commun. **754 tests
+  passent.**
 - **La boucle du § 3 tourne en entier :** royaume → carte du monde →
   expédition → combat → butin et expérience → compagnie → royaume. Une
   sortie conclue déclenche un cycle de production ; le royaume rend des
@@ -276,6 +279,23 @@ deux branches, onze nœuds pour neuf points : on ne finit jamais un arbre.
 `verify_skills` PÈSE les deux branches au barème de l'équipement et refuse
 qu'une vaille plus de 25 % de plus que l'autre — sinon ce n'est pas un
 choix, c'est une bonne réponse et une erreur.
+
+**UNE POTION EST UNE COMPÉTENCE, PLUS UN STOCK (T10.1).** Pas de second
+système de résolution : une entrée d'`abilities.json` de classe
+`consumable`, plus un compteur. Trois choses à ne pas défaire :
+- **Le sac vit dans le MOTEUR, pas dans `Company`**, et c'est
+  l'annulation qui l'impose : seul ce qui est dans l'instantané peut être
+  rendu. Et on retire la potion APRÈS `use_ability`, jamais avant —
+  l'instantané est l'état où l'on revient, il doit montrer le sac encore
+  plein.
+- **Une potion ne monte à aucune statistique.** Sa puissance vient de
+  l'objet, pas de qui le tient ; sinon il faudrait la réserver au
+  personnage qui la valorise le mieux et le sac commun n'aurait plus de
+  sens. `verify_items` le vérifie.
+- **`simulate_combats` ne boit pas.** Ses chiffres sont désormais un
+  plancher plus bas encore : le pilote ignore une ressource que le joueur
+  a. Lui apprendre à boire reviendrait à écrire la stratégie qu'on veut
+  laisser au joueur.
 
 **L'équilibrage d'un objet n'a pas d'instrument.** On ne simule pas mille
 combats pour un anneau. La règle qui remplace la mesure : chaque rareté

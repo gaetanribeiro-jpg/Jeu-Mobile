@@ -76,6 +76,18 @@ func test_toute_competence_qui_fait_des_degats_monte_a_une_statistique() -> void
 		var ability := Ability.of(ability_id)
 		if ability.damage <= 0:
 			continue
+		# SAUF LES POTIONS, ET C'EST TOUT LEUR INTÉRÊT. Une bombe lancée
+		# par le Mage et par le Guerrier fait les mêmes dégâts : sa
+		# puissance vient de l'objet, pas de qui le tient. C'est ce qui en
+		# fait une ressource d'ÉQUIPE — sinon il faudrait la réserver au
+		# personnage qui la valorise le mieux, et le sac commun (§ 44)
+		# n'aurait plus de sens.
+		if ability.is_carried():
+			assert_true(
+				ability.scaling.is_empty(),
+				"%s : une potion ne doit dépendre de personne" % ability_id
+			)
+			continue
 		assert_false(
 			ability.scaling.is_empty(), "%s ne monte à rien" % ability_id
 		)

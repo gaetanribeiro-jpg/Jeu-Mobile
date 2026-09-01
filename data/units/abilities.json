@@ -1,415 +1,463 @@
 {
-  "_readme": "Les compétences, héros et ennemis (vision § 21). Format data-driven du § 47 : une compétence est entièrement décrite ici, aucun .gd ne connaît son nom.\n\nCHAMPS :\n- action_points : coût en PA (§ 13 : légère 2, base 3, moyenne 4, puissante 5-7)\n- movement_points : coût en PM, quand la compétence en consomme aussi\n- range_min / range_max : portée en distance de Manhattan. 0 = sur soi.\n- needs_line_of_sight : la forêt et les rochers bloquent-ils le tir ?\n- area : forme de la zone touchée. single = la case visée. cross = la case et ses voisines dans un rayon de Manhattan. line et cone viendront avec les classes suivantes.\n- damage : dégâts de base, avant statistique et défense\n- scaling : la statistique du lanceur qui s'ajoute aux dégâts\n- cooldown : nombre d'activations avant de pouvoir la relancer. 0 = pas de recharge.\n- requires_not_moved : ne part que si le lanceur n'a pas dépensé de PM ce tour\n\nAUCUNE de ces valeurs n'est équilibrée. T1.11.",
-  "strike": {
-    "class": "warrior",
-    "kind": "attack",
-    "action_points": 3,
-    "range_min": 1,
-    "range_max": 1,
-    "needs_line_of_sight": true,
-    "area": {
-      "shape": "single"
-    },
-    "damage": 20,
-    "scaling": "strength",
-    "cooldown": 0,
-    "animation": "attack1",
-    "note": "L'attaque de base. Deux fois par tour avec 6 PA, il reste 2 PM pour se replacer."
+ "_readme": "Les compétences, héros et ennemis (vision § 21). Format data-driven du § 47 : une compétence est entièrement décrite ici, aucun .gd ne connaît son nom.\n\nCHAMPS :\n- action_points : coût en PA (§ 13 : légère 2, base 3, moyenne 4, puissante 5-7)\n- movement_points : coût en PM, quand la compétence en consomme aussi\n- range_min / range_max : portée en distance de Manhattan. 0 = sur soi.\n- needs_line_of_sight : la forêt et les rochers bloquent-ils le tir ?\n- area : forme de la zone touchée. single = la case visée. cross = la case et ses voisines dans un rayon de Manhattan. line et cone viendront avec les classes suivantes.\n- damage : dégâts de base, avant statistique et défense\n- scaling : la statistique du lanceur qui s'ajoute aux dégâts\n- cooldown : nombre d'activations avant de pouvoir la relancer. 0 = pas de recharge.\n- requires_not_moved : ne part que si le lanceur n'a pas dépensé de PM ce tour\n\nAUCUNE de ces valeurs n'est équilibrée. T1.11.",
+ "strike": {
+  "class": "warrior",
+  "kind": "attack",
+  "action_points": 3,
+  "range_min": 1,
+  "range_max": 1,
+  "needs_line_of_sight": true,
+  "area": {
+   "shape": "single"
   },
-  "heavy_strike": {
-    "class": "warrior",
-    "kind": "attack",
-    "action_points": 5,
-    "range_min": 1,
-    "range_max": 1,
-    "needs_line_of_sight": true,
-    "area": {
-      "shape": "single"
-    },
-    "damage": 40,
-    "scaling": "strength",
-    "cooldown": 2,
-    "animation": "attack2",
-    "note": "La recharge est ce qui empêche « je fais toujours l'attaque la plus forte » (§ 50). Le tour où elle est prête, elle laisse 3 PA : une Frappe de plus, ou rien."
+  "damage": 20,
+  "scaling": "strength",
+  "cooldown": 0,
+  "animation": "attack1",
+  "note": "L'attaque de base. Deux fois par tour avec 6 PA, il reste 2 PM pour se replacer."
+ },
+ "heavy_strike": {
+  "class": "warrior",
+  "kind": "attack",
+  "action_points": 5,
+  "range_min": 1,
+  "range_max": 1,
+  "needs_line_of_sight": true,
+  "area": {
+   "shape": "single"
   },
-  "taunt": {
-    "class": "warrior",
-    "kind": "taunt",
-    "action_points": 2,
-    "range_min": 0,
-    "range_max": 0,
-    "needs_line_of_sight": false,
-    "area": {
-      "shape": "single"
-    },
-    "duration": 1,
-    "cooldown": 3,
-    "animation": "guard",
-    "note": "Les ennemis adjacents doivent le cibler. Portée 0 : c'est l'adjacence à sa propre case qui compte. C'est le verbe « attirer » du Guerrier, et l'ouverture de tous les combos (§ 22)."
+  "damage": 40,
+  "scaling": "strength",
+  "cooldown": 2,
+  "animation": "attack2",
+  "note": "La recharge est ce qui empêche « je fais toujours l'attaque la plus forte » (§ 50). Le tour où elle est prête, elle laisse 3 PA : une Frappe de plus, ou rien."
+ },
+ "taunt": {
+  "class": "warrior",
+  "kind": "taunt",
+  "action_points": 2,
+  "range_min": 0,
+  "range_max": 0,
+  "needs_line_of_sight": false,
+  "area": {
+   "shape": "single"
   },
-  "shot": {
-    "class": "archer",
-    "kind": "attack",
-    "action_points": 3,
-    "range_min": 2,
-    "range_max": 5,
-    "needs_line_of_sight": true,
-    "area": {
-      "shape": "single"
-    },
-    "damage": 15,
-    "scaling": "agility",
-    "cooldown": 0,
-    "animation": "shoot",
-    "note": "Portée minimale 2 : l'Archer ne tire pas sur son voisin. C'est ce qui rend l'approche dangereuse pour lui.\n\nDÉGÂTS DESCENDUS DE 18 À 15 EN T1.14, et c'est la correction de fond. L'Archer faisait 18+7=25 par tir à cinq cases quand le Guerrier faisait 20+6=26 au contact, avec un PM de plus et un repli gratuit : il avait la puissance ET la portée, donc aucune contrepartie. Ajouter des tireurs au bestiaire ne réglait que la moitié du problème — une équipe entièrement à distance repassait à 97 % de PV dès qu'on adoucissait le chaman. LA PORTÉE EST UN AVANTAGE, ELLE DOIT SE PAYER EN DÉGÂTS (§ 17, § 20)."
+  "duration": 1,
+  "cooldown": 3,
+  "animation": "guard",
+  "note": "Les ennemis adjacents doivent le cibler. Portée 0 : c'est l'adjacence à sa propre case qui compte. C'est le verbe « attirer » du Guerrier, et l'ouverture de tous les combos (§ 22)."
+ },
+ "shot": {
+  "class": "archer",
+  "kind": "attack",
+  "action_points": 3,
+  "range_min": 2,
+  "range_max": 5,
+  "needs_line_of_sight": true,
+  "area": {
+   "shape": "single"
   },
-  "power_shot": {
-    "class": "archer",
-    "kind": "attack",
-    "action_points": 5,
-    "range_min": 2,
-    "range_max": 6,
-    "needs_line_of_sight": true,
-    "area": {
-      "shape": "single"
-    },
-    "damage": 30,
-    "scaling": "agility",
-    "cooldown": 2,
-    "requires_not_moved": true,
-    "animation": "shoot",
-    "note": "Ne part que s'il n'a pas dépensé un seul PM. Rester immobile devient tentant, et donc le Voleur devient dangereux : c'est la tension centrale de la classe."
+  "damage": 15,
+  "scaling": "agility",
+  "cooldown": 0,
+  "animation": "shoot",
+  "note": "Portée minimale 2 : l'Archer ne tire pas sur son voisin. C'est ce qui rend l'approche dangereuse pour lui.\n\nDÉGÂTS DESCENDUS DE 18 À 15 EN T1.14, et c'est la correction de fond. L'Archer faisait 18+7=25 par tir à cinq cases quand le Guerrier faisait 20+6=26 au contact, avec un PM de plus et un repli gratuit : il avait la puissance ET la portée, donc aucune contrepartie. Ajouter des tireurs au bestiaire ne réglait que la moitié du problème — une équipe entièrement à distance repassait à 97 % de PV dès qu'on adoucissait le chaman. LA PORTÉE EST UN AVANTAGE, ELLE DOIT SE PAYER EN DÉGÂTS (§ 17, § 20)."
+ },
+ "power_shot": {
+  "class": "archer",
+  "kind": "attack",
+  "action_points": 5,
+  "range_min": 2,
+  "range_max": 6,
+  "needs_line_of_sight": true,
+  "area": {
+   "shape": "single"
   },
-  "hop_back": {
-    "class": "archer",
-    "kind": "reposition",
-    "action_points": 2,
-    "range_min": 2,
-    "range_max": 2,
-    "needs_line_of_sight": true,
-    "area": {
-      "shape": "single"
-    },
-    "cooldown": 2,
-    "animation": "run",
-    "counts_as_movement": true,
-    "note": "Se replace de deux cases sans dépenser un seul PM. Cela reste un déplacement — le Tir puissant ne part plus après un bond — mais c'est la seule façon de décrocher d'un corps-à-corps quand les PM sont épuisés."
+  "damage": 30,
+  "scaling": "agility",
+  "cooldown": 2,
+  "requires_not_moved": true,
+  "animation": "shoot",
+  "note": "Ne part que s'il n'a pas dépensé un seul PM. Rester immobile devient tentant, et donc le Voleur devient dangereux : c'est la tension centrale de la classe."
+ },
+ "hop_back": {
+  "class": "archer",
+  "kind": "reposition",
+  "action_points": 2,
+  "range_min": 2,
+  "range_max": 2,
+  "needs_line_of_sight": true,
+  "area": {
+   "shape": "single"
   },
-  "bolt": {
-    "class": "mage",
-    "kind": "attack",
-    "action_points": 3,
-    "range_min": 1,
-    "range_max": 5,
-    "needs_line_of_sight": true,
-    "area": {
-      "shape": "single"
-    },
-    "damage": 12,
-    "scaling": "intelligence",
-    "cooldown": 0,
-    "animation": "heal",
-    "note": "Pas de portée minimale : le Mage peut se défendre au contact, mal. Trois fois par tour avec 9 PA — et trois Traits font toujours moins qu'une activation de Guerrier : l'AoE est sa raison d'être, pas la cible unique."
+  "cooldown": 2,
+  "animation": "run",
+  "counts_as_movement": true,
+  "note": "Se replace de deux cases sans dépenser un seul PM. Cela reste un déplacement — le Tir puissant ne part plus après un bond — mais c'est la seule façon de décrocher d'un corps-à-corps quand les PM sont épuisés."
+ },
+ "bolt": {
+  "class": "mage",
+  "kind": "attack",
+  "action_points": 3,
+  "range_min": 1,
+  "range_max": 5,
+  "needs_line_of_sight": true,
+  "area": {
+   "shape": "single"
   },
-  "fireball": {
-    "class": "mage",
-    "kind": "attack",
-    "action_points": 5,
-    "range_min": 2,
-    "range_max": 5,
-    "needs_line_of_sight": true,
-    "area": {
-      "shape": "cross",
-      "radius": 1
-    },
-    "damage": 24,
-    "scaling": "intelligence",
-    "friendly_fire": true,
-    "cooldown": 2,
-    "animation": "heal",
-    "effect": "explosion_01",
-    "note": "La case visée et ses quatre voisines : jusqu'à cinq cibles. friendly_fire à vrai — le Mage touche aussi les alliés, sinon le positionnement ne coûte rien (§ 20). C'est l'identité de la classe."
+  "damage": 12,
+  "scaling": "intelligence",
+  "cooldown": 0,
+  "animation": "heal",
+  "note": "Pas de portée minimale : le Mage peut se défendre au contact, mal. Trois fois par tour avec 9 PA — et trois Traits font toujours moins qu'une activation de Guerrier : l'AoE est sa raison d'être, pas la cible unique."
+ },
+ "fireball": {
+  "class": "mage",
+  "kind": "attack",
+  "action_points": 5,
+  "range_min": 2,
+  "range_max": 5,
+  "needs_line_of_sight": true,
+  "area": {
+   "shape": "cross",
+   "radius": 1
   },
-  "frost": {
-    "class": "mage",
-    "kind": "attack",
-    "action_points": 3,
-    "range_min": 1,
-    "range_max": 4,
-    "needs_line_of_sight": true,
-    "area": {
-      "shape": "single"
-    },
-    "damage": 8,
-    "scaling": "intelligence",
-    "cooldown": 1,
-    "status": {
-      "id": "chilled",
-      "duration": 1
-    },
-    "animation": "heal",
-    "note": "Peu de dégâts, mais retire des PM à la cible au prochain tour. Le verbe « ralentir » : c'est ce qui met en place la Charge et la Provocation (§ 22)."
+  "damage": 24,
+  "scaling": "intelligence",
+  "friendly_fire": true,
+  "cooldown": 2,
+  "animation": "heal",
+  "effect": "explosion_01",
+  "note": "La case visée et ses quatre voisines : jusqu'à cinq cibles. friendly_fire à vrai — le Mage touche aussi les alliés, sinon le positionnement ne coûte rien (§ 20). C'est l'identité de la classe."
+ },
+ "frost": {
+  "class": "mage",
+  "kind": "attack",
+  "action_points": 3,
+  "range_min": 1,
+  "range_max": 4,
+  "needs_line_of_sight": true,
+  "area": {
+   "shape": "single"
   },
-  "goblin_spear": {
-    "class": "spear_goblin",
-    "kind": "attack",
-    "action_points": 3,
-    "range_min": 1,
-    "range_max": 2,
-    "needs_line_of_sight": true,
-    "area": {
-      "shape": "single"
-    },
-    "damage": 18,
-    "scaling": "strength",
-    "cooldown": 0,
-    "note": "C'est une lance : elle porte à deux cases. Le gobelin frappe donc sans être adjacent, et un mur de boucliers ne suffit pas."
+  "damage": 8,
+  "scaling": "intelligence",
+  "cooldown": 1,
+  "status": {
+   "id": "chilled",
+   "duration": 1
   },
-  "gnome_claw": {
-    "class": "gnome",
-    "kind": "attack",
-    "action_points": 3,
-    "range_min": 1,
-    "range_max": 1,
-    "needs_line_of_sight": true,
-    "area": {
-      "shape": "single"
-    },
-    "damage": 12,
-    "scaling": "strength",
-    "cooldown": 0
+  "animation": "heal",
+  "note": "Peu de dégâts, mais retire des PM à la cible au prochain tour. Le verbe « ralentir » : c'est ce qui met en place la Charge et la Provocation (§ 22)."
+ },
+ "goblin_spear": {
+  "class": "spear_goblin",
+  "kind": "attack",
+  "action_points": 3,
+  "range_min": 1,
+  "range_max": 2,
+  "needs_line_of_sight": true,
+  "area": {
+   "shape": "single"
   },
-  "sling_stone": {
-    "class": "slingshot_gnome",
-    "kind": "attack",
-    "action_points": 3,
-    "range_min": 2,
-    "range_max": 5,
-    "needs_line_of_sight": true,
-    "area": {
-      "shape": "single"
-    },
-    "damage": 14,
-    "scaling": "agility",
-    "cooldown": 0,
-    "note": "Porte aussi loin que l'Archer, et c'est délibéré : sans un ennemi capable de rendre le tir, une équipe entièrement à distance ne se fait jamais toucher — elle finissait ses combats à 98 % de PV. Le gnome à fronde est la réponse du bestiaire au jeu de portée."
+  "damage": 18,
+  "scaling": "strength",
+  "cooldown": 0,
+  "note": "C'est une lance : elle porte à deux cases. Le gobelin frappe donc sans être adjacent, et un mur de boucliers ne suffit pas."
+ },
+ "gnome_claw": {
+  "class": "gnome",
+  "kind": "attack",
+  "action_points": 3,
+  "range_min": 1,
+  "range_max": 1,
+  "needs_line_of_sight": true,
+  "area": {
+   "shape": "single"
   },
-  "goblin_torch": {
-    "class": "torch_goblin",
-    "kind": "attack",
-    "action_points": 3,
-    "range_min": 1,
-    "range_max": 1,
-    "needs_line_of_sight": true,
-    "area": {
-      "shape": "single"
-    },
-    "damage": 18,
-    "scaling": "strength",
-    "cooldown": 0,
-    "leaves_terrain": "fire",
-    "note": "Laisse du feu sur la case touchée. Le terrain gagné devient coûteux à tenir. Le feu persistant est une tâche à part."
+  "damage": 12,
+  "scaling": "strength",
+  "cooldown": 0
+ },
+ "sling_stone": {
+  "class": "slingshot_gnome",
+  "kind": "attack",
+  "action_points": 3,
+  "range_min": 2,
+  "range_max": 5,
+  "needs_line_of_sight": true,
+  "area": {
+   "shape": "single"
   },
-  "thief_stab": {
-    "class": "thief",
-    "kind": "attack",
-    "action_points": 3,
-    "range_min": 1,
-    "range_max": 1,
-    "needs_line_of_sight": true,
-    "area": {
-      "shape": "single"
-    },
-    "damage": 20,
-    "scaling": "agility",
-    "cooldown": 0,
-    "note": "8 PA et 4 PM : le Voleur frappe et lui reste de quoi repartir. C'est ce qui rend l'Archer immobile vulnérable."
+  "damage": 14,
+  "scaling": "agility",
+  "cooldown": 0,
+  "note": "Porte aussi loin que l'Archer, et c'est délibéré : sans un ennemi capable de rendre le tir, une équipe entièrement à distance ne se fait jamais toucher — elle finissait ses combats à 98 % de PV. Le gnome à fronde est la réponse du bestiaire au jeu de portée."
+ },
+ "goblin_torch": {
+  "class": "torch_goblin",
+  "kind": "attack",
+  "action_points": 3,
+  "range_min": 1,
+  "range_max": 1,
+  "needs_line_of_sight": true,
+  "area": {
+   "shape": "single"
   },
-  "troll_smash": {
-    "class": "troll",
-    "kind": "attack",
-    "action_points": 5,
-    "range_min": 1,
-    "range_max": 1,
-    "needs_line_of_sight": true,
-    "area": {
-      "shape": "line",
-      "length": 2
-    },
-    "damage": 40,
-    "scaling": "strength",
-    "cooldown": 1,
-    "note": "Frappe deux cases en ligne. Windup, Attack, Recovery : trois animations distinctes, donc un boss sur trois temps entièrement dessiné. Le cycle à trois temps reste à implémenter."
+  "damage": 18,
+  "scaling": "strength",
+  "cooldown": 0,
+  "leaves_terrain": "fire",
+  "note": "Laisse du feu sur la case touchée. Le terrain gagné devient coûteux à tenir. Le feu persistant est une tâche à part."
+ },
+ "thief_stab": {
+  "class": "thief",
+  "kind": "attack",
+  "action_points": 3,
+  "range_min": 1,
+  "range_max": 1,
+  "needs_line_of_sight": true,
+  "area": {
+   "shape": "single"
   },
-  "bone_throw": {
-    "class": "gnoll",
-    "kind": "attack",
-    "action_points": 3,
-    "range_min": 2,
-    "range_max": 5,
-    "needs_line_of_sight": true,
-    "area": {
-      "shape": "single"
-    },
-    "damage": 16,
-    "scaling": "agility",
-    "cooldown": 0,
-    "animation": "throw",
-    "note": "Le second tireur du bestiaire. Le gnome à fronde était seul de son espèce et mourait le premier ; une équipe entièrement à distance finissait donc ses combats à 97 % de PV, sans jamais avoir été touchée. Deux tireurs ne se tuent pas d'un tir."
+  "damage": 20,
+  "scaling": "agility",
+  "cooldown": 0,
+  "note": "8 PA et 4 PM : le Voleur frappe et lui reste de quoi repartir. C'est ce qui rend l'Archer immobile vulnérable."
+ },
+ "troll_smash": {
+  "class": "troll",
+  "kind": "attack",
+  "action_points": 5,
+  "range_min": 1,
+  "range_max": 1,
+  "needs_line_of_sight": true,
+  "area": {
+   "shape": "line",
+   "length": 2
   },
-  "hex_bolt": {
-    "class": "hex_shaman",
-    "kind": "attack",
-    "action_points": 5,
-    "range_min": 3,
-    "range_max": 6,
-    "needs_line_of_sight": true,
-    "area": {
-      "shape": "cross",
-      "radius": 1
-    },
-    "damage": 13,
-    "scaling": "intelligence",
-    "friendly_fire": false,
-    "cooldown": 2,
-    "animation": "attack",
-    "effect": "explosion_02",
-    "note": "LA RÉPONSE AU JEU DE PORTÉE, et elle est de forme plutôt que de chiffre. Une équipe à distance se masse hors de portée de la mêlée et tire ; le chaman punit exactement ça, parce qu'une zone touche un groupe et qu'un groupe immobile est un groupe rangé. Sa portée de 6 dépasse celle de l'Archer : il ouvre le feu avant qu'on puisse lui répondre, et il faut donc AVANCER pour le faire taire.\n\nfriendly_fire à FAUX, contrairement à la Boule de feu du Mage, et c'est une asymétrie assumée : l'IA ne choisit pas son point d'impact pour épargner les siens. Avec le feu ami, le chaman se saborderait sur sa propre mêlée et deviendrait un cadeau plutôt qu'une menace. À rouvrir le jour où l'IA saura placer une zone.\n\nDégâts descendus de 15 à 12 et recharge portée à 2 après mesure : à 15, une zone de cinq cases retirait jusqu'à 110 PV en une activation, et le coût moyen d'une rencontre passait de 13 % à 21 %. Une réponse au jeu de portée ne doit pas devenir la nouvelle réponse à tout."
+  "damage": 40,
+  "scaling": "strength",
+  "cooldown": 1,
+  "note": "Frappe deux cases en ligne. Windup, Attack, Recovery : trois animations distinctes, donc un boss sur trois temps entièrement dessiné. Le cycle à trois temps reste à implémenter."
+ },
+ "bone_throw": {
+  "class": "gnoll",
+  "kind": "attack",
+  "action_points": 3,
+  "range_min": 2,
+  "range_max": 5,
+  "needs_line_of_sight": true,
+  "area": {
+   "shape": "single"
   },
-  "cleave": {
-    "class": "warrior",
-    "kind": "attack",
-    "action_points": 5,
-    "range_min": 1,
-    "range_max": 1,
-    "needs_line_of_sight": true,
-    "area": {
-      "shape": "line",
-      "length": 2
-    },
-    "damage": 24,
-    "scaling": "strength",
-    "friendly_fire": true,
-    "cooldown": 1,
-    "animation": "attack2",
-    "note": "Le « Tourbillon » du § 34, dans le vocabulaire que le moteur sait déjà dire : une ligne de deux cases à partir du Guerrier. Deux ennemis alignés tombent ensemble, et c'est ce qui récompense d'avoir attiré la mêlée avec la Provocation. friendly_fire à vrai : la ligne ne trie pas, donc où l'on se place compte (§ 20)."
+  "damage": 16,
+  "scaling": "agility",
+  "cooldown": 0,
+  "animation": "throw",
+  "note": "Le second tireur du bestiaire. Le gnome à fronde était seul de son espèce et mourait le premier ; une équipe entièrement à distance finissait donc ses combats à 97 % de PV, sans jamais avoir été touchée. Deux tireurs ne se tuent pas d'un tir."
+ },
+ "hex_bolt": {
+  "class": "hex_shaman",
+  "kind": "attack",
+  "action_points": 5,
+  "range_min": 3,
+  "range_max": 6,
+  "needs_line_of_sight": true,
+  "area": {
+   "shape": "cross",
+   "radius": 1
   },
-  "hamstring": {
-    "class": "warrior",
-    "kind": "attack",
-    "action_points": 3,
-    "range_min": 1,
-    "range_max": 1,
-    "needs_line_of_sight": true,
-    "area": {
-      "shape": "single"
-    },
-    "damage": 14,
-    "scaling": "strength",
-    "cooldown": 1,
-    "status": {
-      "id": "chilled",
-      "duration": 1
-    },
-    "animation": "attack1",
-    "note": "Peu de dégâts, mais la cible perd deux PM à sa prochaine activation. C'est le verbe « fixer » : un ennemi ralenti ne décroche plus du Guerrier, et le § 22 fait de l'enchaînement le cœur du plaisir."
+  "damage": 13,
+  "scaling": "intelligence",
+  "friendly_fire": false,
+  "cooldown": 2,
+  "animation": "attack",
+  "effect": "explosion_02",
+  "note": "LA RÉPONSE AU JEU DE PORTÉE, et elle est de forme plutôt que de chiffre. Une équipe à distance se masse hors de portée de la mêlée et tire ; le chaman punit exactement ça, parce qu'une zone touche un groupe et qu'un groupe immobile est un groupe rangé. Sa portée de 6 dépasse celle de l'Archer : il ouvre le feu avant qu'on puisse lui répondre, et il faut donc AVANCER pour le faire taire.\n\nfriendly_fire à FAUX, contrairement à la Boule de feu du Mage, et c'est une asymétrie assumée : l'IA ne choisit pas son point d'impact pour épargner les siens. Avec le feu ami, le chaman se saborderait sur sa propre mêlée et deviendrait un cadeau plutôt qu'une menace. À rouvrir le jour où l'IA saura placer une zone.\n\nDégâts descendus de 15 à 12 et recharge portée à 2 après mesure : à 15, une zone de cinq cases retirait jusqu'à 110 PV en une activation, et le coût moyen d'une rencontre passait de 13 % à 21 %. Une réponse au jeu de portée ne doit pas devenir la nouvelle réponse à tout."
+ },
+ "cleave": {
+  "class": "warrior",
+  "kind": "attack",
+  "action_points": 5,
+  "range_min": 1,
+  "range_max": 1,
+  "needs_line_of_sight": true,
+  "area": {
+   "shape": "line",
+   "length": 2
   },
-  "volley": {
-    "class": "archer",
-    "kind": "attack",
-    "action_points": 5,
-    "range_min": 3,
-    "range_max": 6,
-    "needs_line_of_sight": true,
-    "area": {
-      "shape": "cross",
-      "radius": 1
-    },
-    "damage": 15,
-    "scaling": "agility",
-    "friendly_fire": true,
-    "cooldown": 2,
-    "animation": "shoot",
-    "effect": "dust_01",
-    "note": "La réponse de l'Archer au groupe, et sa seule portée de 6. friendly_fire à vrai comme la Boule de feu : une zone qui trie ses cibles ne demande pas de viser."
+  "damage": 24,
+  "scaling": "strength",
+  "friendly_fire": true,
+  "cooldown": 1,
+  "animation": "attack2",
+  "note": "Le « Tourbillon » du § 34, dans le vocabulaire que le moteur sait déjà dire : une ligne de deux cases à partir du Guerrier. Deux ennemis alignés tombent ensemble, et c'est ce qui récompense d'avoir attiré la mêlée avec la Provocation. friendly_fire à vrai : la ligne ne trie pas, donc où l'on se place compte (§ 20)."
+ },
+ "hamstring": {
+  "class": "warrior",
+  "kind": "attack",
+  "action_points": 3,
+  "range_min": 1,
+  "range_max": 1,
+  "needs_line_of_sight": true,
+  "area": {
+   "shape": "single"
   },
-  "pinning_shot": {
-    "class": "archer",
-    "kind": "attack",
-    "action_points": 4,
-    "range_min": 2,
-    "range_max": 5,
-    "needs_line_of_sight": true,
-    "area": {
-      "shape": "single"
-    },
-    "damage": 12,
-    "scaling": "agility",
-    "cooldown": 1,
-    "status": {
-      "id": "chilled",
-      "duration": 1
-    },
-    "animation": "shoot",
-    "note": "Moins de dégâts qu'un tir simple, mais la cible avance moins au tour suivant. C'est ce qui permet à l'Archer de tenir sa distance sans le Guerrier — et donc de payer sa fragilité par de la préparation plutôt que par de la fuite."
+  "damage": 14,
+  "scaling": "strength",
+  "cooldown": 1,
+  "status": {
+   "id": "chilled",
+   "duration": 1
   },
-  "arcane_lance": {
-    "class": "mage",
-    "kind": "attack",
-    "action_points": 5,
-    "range_min": 2,
-    "range_max": 6,
-    "needs_line_of_sight": true,
-    "area": {
-      "shape": "line",
-      "length": 3
-    },
-    "damage": 18,
-    "scaling": "intelligence",
-    "friendly_fire": true,
-    "cooldown": 2,
-    "animation": "heal",
-    "effect": "explosion_01",
-    "note": "Trois cases en ligne à partir de la cible. La Boule de feu punit un amas, le Trait punit une colonne : deux formes de zone pour deux façons d'être mal placé."
+  "animation": "attack1",
+  "note": "Peu de dégâts, mais la cible perd deux PM à sa prochaine activation. C'est le verbe « fixer » : un ennemi ralenti ne décroche plus du Guerrier, et le § 22 fait de l'enchaînement le cœur du plaisir."
+ },
+ "volley": {
+  "class": "archer",
+  "kind": "attack",
+  "action_points": 5,
+  "range_min": 3,
+  "range_max": 6,
+  "needs_line_of_sight": true,
+  "area": {
+   "shape": "cross",
+   "radius": 1
   },
-  "hoarfrost": {
-    "class": "mage",
-    "kind": "attack",
-    "action_points": 4,
-    "range_min": 2,
-    "range_max": 5,
-    "needs_line_of_sight": true,
-    "area": {
-      "shape": "cross",
-      "radius": 1
-    },
-    "damage": 8,
-    "scaling": "intelligence",
-    "friendly_fire": true,
-    "cooldown": 2,
-    "status": {
-      "id": "chilled",
-      "duration": 2
-    },
-    "animation": "heal",
-    "note": "Le Gel, mais sur cinq cases et pour deux activations. Presque aucun dégât : c'est du CONTRÔLE, et le § 15 le veut lisible — une vague qui gèle un groupe se comprend sans explication."
+  "damage": 15,
+  "scaling": "agility",
+  "friendly_fire": true,
+  "cooldown": 2,
+  "animation": "shoot",
+  "effect": "dust_01",
+  "note": "La réponse de l'Archer au groupe, et sa seule portée de 6. friendly_fire à vrai comme la Boule de feu : une zone qui trie ses cibles ne demande pas de viser."
+ },
+ "pinning_shot": {
+  "class": "archer",
+  "kind": "attack",
+  "action_points": 4,
+  "range_min": 2,
+  "range_max": 5,
+  "needs_line_of_sight": true,
+  "area": {
+   "shape": "single"
   },
-  "gore": {
-    "class": "minotaur",
-    "kind": "attack",
-    "action_points": 5,
-    "range_min": 1,
-    "range_max": 1,
-    "needs_line_of_sight": true,
-    "area": {
-      "shape": "line",
-      "length": 2
-    },
-    "damage": 30,
-    "scaling": "strength",
-    "cooldown": 1,
-    "animation": "attack",
-    "effect": "dust_02",
-    "note": "L'Encornade traverse DEUX cases en ligne. C'est la seule attaque ennemie qui punit un alignement, et c'est tout le sujet du mini-boss : sur une carte à goulot, se ranger derrière son Guerrier cesse d'être la bonne réponse. Le télégraphe l'annonce comme les autres, donc la leçon se prend une fois et se retient."
-  }
+  "damage": 12,
+  "scaling": "agility",
+  "cooldown": 1,
+  "status": {
+   "id": "chilled",
+   "duration": 1
+  },
+  "animation": "shoot",
+  "note": "Moins de dégâts qu'un tir simple, mais la cible avance moins au tour suivant. C'est ce qui permet à l'Archer de tenir sa distance sans le Guerrier — et donc de payer sa fragilité par de la préparation plutôt que par de la fuite."
+ },
+ "arcane_lance": {
+  "class": "mage",
+  "kind": "attack",
+  "action_points": 5,
+  "range_min": 2,
+  "range_max": 6,
+  "needs_line_of_sight": true,
+  "area": {
+   "shape": "line",
+   "length": 3
+  },
+  "damage": 18,
+  "scaling": "intelligence",
+  "friendly_fire": true,
+  "cooldown": 2,
+  "animation": "heal",
+  "effect": "explosion_01",
+  "note": "Trois cases en ligne à partir de la cible. La Boule de feu punit un amas, le Trait punit une colonne : deux formes de zone pour deux façons d'être mal placé."
+ },
+ "hoarfrost": {
+  "class": "mage",
+  "kind": "attack",
+  "action_points": 4,
+  "range_min": 2,
+  "range_max": 5,
+  "needs_line_of_sight": true,
+  "area": {
+   "shape": "cross",
+   "radius": 1
+  },
+  "damage": 8,
+  "scaling": "intelligence",
+  "friendly_fire": true,
+  "cooldown": 2,
+  "status": {
+   "id": "chilled",
+   "duration": 2
+  },
+  "animation": "heal",
+  "note": "Le Gel, mais sur cinq cases et pour deux activations. Presque aucun dégât : c'est du CONTRÔLE, et le § 15 le veut lisible — une vague qui gèle un groupe se comprend sans explication."
+ },
+ "gore": {
+  "class": "minotaur",
+  "kind": "attack",
+  "action_points": 5,
+  "range_min": 1,
+  "range_max": 1,
+  "needs_line_of_sight": true,
+  "area": {
+   "shape": "line",
+   "length": 2
+  },
+  "damage": 30,
+  "scaling": "strength",
+  "cooldown": 1,
+  "animation": "attack",
+  "effect": "dust_02",
+  "note": "L'Encornade traverse DEUX cases en ligne. C'est la seule attaque ennemie qui punit un alignement, et c'est tout le sujet du mini-boss : sur une carte à goulot, se ranger derrière son Guerrier cesse d'être la bonne réponse. Le télégraphe l'annonce comme les autres, donc la leçon se prend une fois et se retient."
+ },
+ "draught_of_mending": {
+  "class": "consumable",
+  "kind": "heal",
+  "action_points": 2,
+  "range_min": 0,
+  "range_max": 1,
+  "needs_line_of_sight": false,
+  "area": {
+   "shape": "single"
+  },
+  "damage": 45,
+  "cooldown": 0,
+  "animation": "attack",
+  "effect": "dust_01"
+ },
+ "firebomb": {
+  "class": "consumable",
+  "kind": "attack",
+  "action_points": 3,
+  "range_min": 2,
+  "range_max": 4,
+  "needs_line_of_sight": true,
+  "area": {
+   "shape": "cross",
+   "radius": 1
+  },
+  "damage": 28,
+  "cooldown": 0,
+  "animation": "attack",
+  "effect": "explosion_01"
+ },
+ "philtre_of_haste": {
+  "class": "consumable",
+  "kind": "heal",
+  "action_points": 2,
+  "range_min": 0,
+  "range_max": 0,
+  "needs_line_of_sight": false,
+  "area": {
+   "shape": "single"
+  },
+  "damage": 0,
+  "restores_movement_points": 3,
+  "cooldown": 0,
+  "animation": "attack",
+  "effect": "dust_01"
+ },
+ "_consumables_note": "LES TROIS DERNIÈRES SONT DES POTIONS (§ 44, § 48), et elles sont ici parce qu'une potion EST une compétence : un coût en PA, une portée, une zone, un effet. Leur donner un second système aurait doublé la surface du moteur pour rien — le § 46 demande l'inverse.\n\nCe qui les distingue d'une compétence vit ailleurs : elles se consomment. Le stock est dans `data/items/consumables.json` et dans la besace ; le moteur ne connaît qu'un compteur.\n\nTROIS VERBES DIFFÉRENTS, pas trois puissances : soigner, se dégager, frapper en zone. Trois potions qui soignent plus ou moins fort ne seraient qu'un seul choix, déguisé en trois."
 }

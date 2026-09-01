@@ -344,9 +344,19 @@ func affected_cells(unit: Unit, ability: Ability, target: Vector2i) -> Array[Vec
 ## c'est ce qui donne du poids au positionnement (§ 20).
 func affected_units(unit: Unit, ability: Ability, target: Vector2i) -> Array[Unit]:
 	var out: Array[Unit] = []
+	# UN SOIN VISE LES SIENS, ET LUI-MÊME. C'est l'exact inverse d'une
+	# attaque, et le seul endroit du moteur où le camp change de sens :
+	# `friendly_fire` dit « mes alliés encaissent aussi », un soin dit
+	# « il n'y a qu'eux ». Boire sa propre potion est le cas courant, donc
+	# le lanceur n'est pas écarté.
+	var mends := ability.kind == Ability.KIND_HEAL
 	for cell: Vector2i in affected_cells(unit, ability, target):
 		var occupant := unit_at(cell)
 		if occupant == null or not occupant.is_active():
+			continue
+		if mends:
+			if occupant.side == unit.side:
+				out.append(occupant)
 			continue
 		if occupant.id == unit.id:
 			continue
@@ -354,6 +364,50 @@ func affected_units(unit: Unit, ability: Ability, target: Vector2i) -> Array[Uni
 			continue
 		out.append(occupant)
 	return out
+
+
+## Le soin, qui rend le même compte rendu qu'une attaque avec des dégâts
+## négatifs — c'est ce qui permet à la vue de l'afficher sans rien savoir
+## de neuf.
+##
+## `KIND_HEAL` ÉTAIT DÉCLARÉ DEPUIS LE PREMIER JOUR ET JAMAIS ÉCRIT :
+## `Ability` connaissait la constante, `resolve_ability` ne la lisait pas,
+## et une compétence de soin aurait silencieusement infligé des dégâts aux
+## siens. Personne ne s'en était aperçu parce qu'aucune compétence ne
+## l'utilisait — jusqu'aux potions du § 44.
+##
+## UN SOIN NE RELÈVE PAS UN PERSONNAGE À TERRE. `affected_units` écarte
+## déjà les inactifs, et le § 25 réserve la relève à l'expédition : une
+## potion qui remet debout retirerait tout son poids à la mise à terre.
+func _resolve_heal(healer: Unit, ability: Ability, target: Vector2i) -> Dictionary:
+	var hits: Array[Dictionary] = []
+	for mended: Unit in affected_units(healer, ability, target):
+		var amount := ability.damage
+		if not ability.scaling.is_empty():
+			amount += healer.stat(ability.scaling)
+		var given := mended.heal(maxi(amount, 0))
+		hits.append({
+			"target_id": mended.id,
+			"cell": mended.cell,
+			"damage": -given,
+			"healed": given,
+			"downed": false,
+			"status": String(ability.status_id),
+		})
+		if not ability.status_id.is_empty():
+			mended.apply_status(ability.status_id, ability.status_duration)
+	# LE MÊME COMPTE RENDU QU'UNE ATTAQUE, aux mêmes clés : la vue rejoue
+	# un journal sans savoir si le coup faisait mal ou du bien.
+	return {
+		"caster_id": healer.id,
+		"ability": String(ability.id),
+		"target": target,
+		"cells": affected_cells(healer, ability, target),
+		"hits": hits,
+		"downed_ids": [] as Array[int],
+		"broken": [] as Array[Vector2i],
+		"burned": [] as Array[Vector2i],
+	}
 
 
 ## Cibles ennemies qu'une compétence peut atteindre depuis là où l'unité
@@ -396,6 +450,8 @@ func predicted_damage(attacker: Unit, ability: Ability, target: Unit) -> int:
 ## action a lieu, le plateau ne fait que l'appliquer. Cela permet à l'IA
 ## et au télégraphe de simuler sans consommer.
 func resolve_ability(attacker: Unit, ability: Ability, target: Vector2i) -> Dictionary:
+	if ability.kind == Ability.KIND_HEAL:
+		return _resolve_heal(attacker, ability, target)
 	var hits: Array[Dictionary] = []
 	var downed_ids: Array[int] = []
 	for victim: Unit in affected_units(attacker, ability, target):

@@ -18,6 +18,9 @@ const KIND_REPOSITION := &"reposition"
 const KIND_PUSH := &"push"
 const KIND_HEAL := &"heal"
 
+## Classe des compétences qui viennent du SAC et non d'un personnage.
+const CLASS_CONSUMABLE := &"consumable"
+
 ## Formes de zone (§ 18). `single` et `cross` sont implémentées ; `line`
 ## sert au Troll ; `cone` attend une classe qui en ait besoin.
 const SHAPE_SINGLE := &"single"
@@ -44,6 +47,11 @@ var length: int = 1
 
 var damage: int = 0
 var scaling: StringName = &""
+
+## PM rendus par la compétence, au lieu d'en coûter. Le Philtre de hâte
+## du § 44 : la seule contre-mesure au Gel, et une porte de sortie quand
+## on s'est trop avancé. Zéro pour tout le reste.
+var restores_movement_points: int = 0
 
 var cooldown: int = 0
 var requires_not_moved: bool = false
@@ -134,6 +142,7 @@ static func from_dictionary(ability_id: StringName, data: Dictionary) -> Ability
 	ability.kind = StringName(data.get("kind", KIND_ATTACK))
 	ability.action_points = int(data.get("action_points", 0))
 	ability.movement_points = int(data.get("movement_points", 0))
+	ability.restores_movement_points = int(data.get("restores_movement_points", 0))
 	ability.range_min = int(data.get("range_min", 1))
 	ability.range_max = int(data.get("range_max", 1))
 	ability.needs_line_of_sight = bool(data.get("needs_line_of_sight", true))
@@ -202,10 +211,20 @@ func is_distance_in_range(distance: int) -> bool:
 
 ## L'unité peut-elle lancer cette compétence maintenant ? Ne regarde que
 ## l'unité — les PA, la recharge, l'immobilité —, pas le plateau.
+## Une potion n'appartient à PERSONNE : elle est dans le sac de l'équipe,
+## et n'importe quel héros peut la prendre. C'est la seule différence
+## entre boire et lancer un sort, et elle tient en une ligne — le reste
+## (coût en PA, portée, zone, recharge) est identique, ce qui est
+## exactement pourquoi les potions n'ont pas eu droit à leur propre
+## système (§ 46).
+func is_carried() -> bool:
+	return class_id == CLASS_CONSUMABLE
+
+
 func is_available_to(unit: Unit) -> bool:
 	if not unit.is_active():
 		return false
-	if not unit.has_ability(id):
+	if not is_carried() and not unit.has_ability(id):
 		return false
 	if not unit.is_ready(id):
 		return false

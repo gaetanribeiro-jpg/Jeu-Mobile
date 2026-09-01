@@ -364,7 +364,13 @@ func _refresh_abilities(engine: CombatEngine) -> void:
 	var unit := engine.current_unit()
 	var wanted: Array[StringName] = []
 	if unit != null and unit.is_hero() and not engine.is_deploying():
-		wanted = unit.abilities
+		wanted = unit.abilities.duplicate()
+		# LE BOUTON « ITEM » DU § 48. Les potions se rangent après les
+		# compétences et se manipulent comme elles : le HUD ne connaît que
+		# des identifiants de compétence, et c'est le moteur qui sait
+		# laquelle vient du sac.
+		for item_id: StringName in engine.usable_consumables(unit):
+			wanted.append(Consumable.ability_of(item_id))
 
 	if wanted.is_empty():
 		_clear_abilities()
@@ -388,7 +394,16 @@ func _refresh_abilities(engine: CombatEngine) -> void:
 		if ability == null:
 			continue
 		var left := unit.cooldown_left(ability_id)
-		if left > 0:
+		var carried := Consumable.item_for_ability(ability_id)
+		if not carried.is_empty():
+			# Une potion affiche ce qu'il en RESTE, pas sa recharge : c'est
+			# le seul chiffre qui décide de la boire maintenant ou plus
+			# tard, et c'est tout le poids qu'elle a dans le § 29.
+			button.text = tr("HUD_CONSUMABLE") % [
+				tr(Consumable.name_key(carried)), ability.action_points,
+				int(engine.supplies.get(carried, 0))
+			]
+		elif left > 0:
 			button.text = tr("HUD_ABILITY_COOLDOWN") % [_ability_name(ability_id), left]
 		else:
 			button.text = tr("HUD_ABILITY") % [
@@ -410,7 +425,14 @@ func _ability_button(ability_id: StringName) -> Button:
 	var button := Button.new()
 	button.toggle_mode = true
 	button.custom_minimum_size = Vector2(TOUCH_TARGET_PX * 2, TOUCH_TARGET_PX * 0.75)
-	button.add_theme_font_size_override("font_size", 22)
+	button.add_theme_font_size_override("font_size", UiTheme.font_size(&"button"))
+	# UNE POTION N'EST PAS UN SORT, ET ÇA DOIT SE VOIR AVANT DE LIRE. Elle
+	# se consomme : la confondre avec une compétence gratuite au moment de
+	# choisir, c'est brûler la dernière du sac par distraction.
+	var role: StringName = &"default"
+	if not Consumable.item_for_ability(ability_id).is_empty():
+		role = &"arcane"
+	UiSkin.dress_button(button, role)
 	button.pressed.connect(func() -> void:
 		_selected_ability = ability_id
 		ability_selected.emit(ability_id))

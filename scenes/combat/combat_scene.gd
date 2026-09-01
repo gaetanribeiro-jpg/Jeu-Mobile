@@ -402,7 +402,15 @@ func _confirm() -> void:
 		var target := _preview_target
 		var caster := _selected
 		var aimed := _preview_cell
-		var report := engine.use_ability(caster, _current_ability(), aimed)
+		# UNE POTION SE CONSOMME, UN SORT NON. Le HUD ne manipule que des
+		# identifiants de compétence — c'est ce qui lui permet de les
+		# afficher côte à côte — donc c'est ici, au moment d'agir, qu'on
+		# distingue les deux.
+		var carried := Consumable.item_for_ability(_current_ability())
+		var report := (
+			engine.use_consumable(caster, carried, aimed) if not carried.is_empty()
+			else engine.use_ability(caster, _current_ability(), aimed)
+		)
 		if not report.is_empty():
 			# Un déplacement déguisé — le Bond de l'Archer — se joue comme un
 			# déplacement, pas comme un coup : le sprite doit glisser.

@@ -37,6 +37,14 @@ var rng: CombatRng
 var ai: EnemyAI
 var order: TurnOrder
 
+## Les potions emportées, identifiant → compte (§ 44).
+##
+## LE SAC EST COMMUN À L'ÉQUIPE et il vit DANS le moteur : « rien n'est
+## irréversible avant la fin de l'activation » vaut aussi pour une potion
+## bue, et seul ce qui est dans l'instantané peut être rendu. L'appelant
+## le charge au début du combat et le relit à la fin.
+var supplies: Dictionary = {}
+
 var phase: int = Phase.SETUP
 var outcome: int = CombatObjective.Outcome.ONGOING
 
@@ -115,6 +123,7 @@ func to_dictionary() -> Dictionary:
 		"pending": saved_pending,
 		"deployment_cells": saved_cells,
 		"taunting": _taunting.duplicate(),
+		"supplies": supplies.duplicate(),
 	}
 
 
@@ -135,6 +144,9 @@ static func from_dictionary(data: Dictionary) -> CombatEngine:
 	engine.phase = int(data.get("phase", Phase.SETUP))
 	engine.outcome = int(data.get("outcome", CombatObjective.Outcome.ONGOING))
 	engine.order = TurnOrder.from_dictionary(data.get("order", {}), restored_board.units())
+	# Le sac fait partie du combat rechargé : reprendre une bataille avec
+	# ses potions déjà bues serait pire que de ne pas la reprendre.
+	engine.supplies = (data.get("supplies", {}) as Dictionary).duplicate()
 
 	for key: Variant in (data.get("intents", {}) as Dictionary).keys():
 		var intent := CombatIntent.from_dictionary((data["intents"] as Dictionary)[key])
@@ -547,6 +559,61 @@ func affected_cells(unit: Unit, ability_id: StringName, target: Vector2i) -> Arr
 ##
 ## C'est ici que les PA sont dépensés et la recharge armée : le plateau
 ## applique, le moteur décide.
+## Boit ou lance une potion (§ 44). Rend le même compte rendu qu'une
+## compétence, parce que c'en est une.
+##
+## LE STOCK EST DANS LE MOTEUR, PAS DANS LA COMPAGNIE, et c'est
+## l'annulation qui l'impose. « Rien n'est irréversible avant la fin de
+## l'activation » : une potion bue puis annulée doit revenir dans le sac.
+## Si le compteur vivait sur `Company`, l'instantané d'annulation ne le
+## verrait pas et la potion serait perdue pour de bon — le seul geste du
+## jeu qu'on ne pourrait pas reprendre.
+##
+## L'appelant charge `supplies` au début du combat et le relit à la fin.
+## Le moteur, lui, ignore ce qu'est une compagnie.
+func use_consumable(
+	unit: Unit, item_id: StringName, target: Vector2i
+) -> Dictionary:
+	if phase != Phase.ACTIVE or unit == null or not unit.is_hero():
+		return {}
+	if int(supplies.get(item_id, 0)) <= 0:
+		return {}
+	var ability_id := Consumable.ability_of(item_id)
+	if ability_id.is_empty() or not can_use(unit, ability_id):
+		return {}
+	# ON RETIRE LA POTION APRÈS, ET L'ORDRE EST TOUT. `use_ability` empile
+	# l'instantané d'annulation, et cet instantané est l'état où l'on
+	# REVIENT : il doit donc montrer le sac ENCORE PLEIN. En retirant
+	# d'abord, l'annulation rendait le soin mais gardait la potion bue —
+	# le seul geste du jeu qu'on ne pouvait pas reprendre, et c'est
+	# exactement celui qu'on voulait pouvoir reprendre.
+	#
+	# Le bénéfice second : une compétence qui refuse (cible hors de
+	# portée) n'a rien à remettre dans le sac.
+	var report := use_ability(unit, ability_id, target)
+	if report.is_empty():
+		return {}
+	Consumable.take(supplies, item_id)
+	report["consumable"] = String(item_id)
+	report["left"] = int(supplies.get(item_id, 0))
+	return report
+
+
+## Les potions qu'il reste, et celles que ce personnage peut employer
+## maintenant — celles dont il a les PA.
+func usable_consumables(unit: Unit) -> Array[StringName]:
+	var out: Array[StringName] = []
+	if unit == null or not unit.is_hero():
+		return out
+	for item_id: StringName in Consumable.ids():
+		if int(supplies.get(item_id, 0)) <= 0:
+			continue
+		var ability := Ability.of(Consumable.ability_of(item_id))
+		if ability != null and unit.action_points >= ability.action_points:
+			out.append(item_id)
+	return out
+
+
 func use_ability(unit: Unit, ability_id: StringName, target: Vector2i) -> Dictionary:
 	if not can_use(unit, ability_id):
 		return {}
@@ -559,6 +626,12 @@ func use_ability(unit: Unit, ability_id: StringName, target: Vector2i) -> Dictio
 	unit.spend_action_points(ability.action_points)
 	if ability.movement_points > 0:
 		unit.spend_movement_points(ability.movement_points)
+	# Les PM rendus peuvent DÉPASSER le maximum : c'est un philtre, pas un
+	# repos. Le plafonner à `max_movement_points` le rendrait inutile
+	# précisément quand on en a besoin — au début d'une activation, quand
+	# on est encore au plein.
+	if ability.restores_movement_points > 0:
+		unit.movement_points += ability.restores_movement_points
 	unit.start_cooldown(ability.id, ability.cooldown)
 
 	match ability.kind:
@@ -887,6 +960,7 @@ func snapshot() -> Dictionary:
 		"outcome": outcome,
 		"order": order.to_dictionary(),
 		"carried": objective.carried,
+		"supplies": supplies.duplicate(),
 		"rng": rng.position(),
 		"pending": _pending.size(),
 		"taunting": _taunting.duplicate(),
@@ -900,6 +974,9 @@ func _restore(state: Dictionary) -> void:
 	phase = int(state["phase"])
 	outcome = int(state["outcome"])
 	objective.carried = bool(state["carried"])
+	# Une potion annulée revient dans le sac : sans cette ligne, c'était le
+	# seul geste du jeu qu'on ne pouvait pas reprendre.
+	supplies = (state.get("supplies", {}) as Dictionary).duplicate()
 	rng.rewind_to(state["rng"])
 	_taunting = (state.get("taunting", []) as Array).duplicate()
 

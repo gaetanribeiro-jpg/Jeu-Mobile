@@ -20,6 +20,16 @@ var gold: int = 0
 ## Objets possédés et non portés.
 var stash: Array[StringName] = []
 
+## Les potions du § 44, identifiant → compte. COMMUNES À L'ÉQUIPE : un sac
+## par personnage demanderait une gestion d'inventaire que le § 44 ne
+## réclame pas, et transformerait une décision tactique en rangement.
+##
+## Elles ne sont PAS dans `stash` malgré la ressemblance : la réserve
+## contient des objets uniques qu'on équipe, celle-ci des exemplaires
+## qu'on compte et qui disparaissent. Les mélanger obligerait chaque
+## appelant à demander de quel genre est l'objet qu'il tient.
+var supplies: Dictionary = {}
+
 ## Prochain identifiant de héros. Il ne redescend jamais, même après un
 ## départ : deux héros ne doivent jamais partager un identifiant, sinon une
 ## sauvegarde en écrase un.
@@ -151,11 +161,15 @@ func to_dictionary() -> Dictionary:
 	var items: Array = []
 	for item_id: StringName in stash:
 		items.append(String(item_id))
+	var potions := {}
+	for item_id: Variant in supplies.keys():
+		potions[String(item_id)] = int(supplies[item_id])
 	return {
 		"gold": gold,
 		"next_id": _next_id,
 		"heroes": saved,
 		"stash": items,
+		"supplies": potions,
 	}
 
 
@@ -169,5 +183,10 @@ static func from_dictionary(data: Dictionary) -> Company:
 		# réserve, sans emporter la partie avec lui.
 		if Equipment.exists(StringName(item_id)):
 			company.stash.append(StringName(item_id))
+	# Une potion retirée des données depuis la sauvegarde disparaît du sac,
+	# sans emporter la partie avec elle — même règle que la réserve.
+	for item_id: Variant in (data.get("supplies", {}) as Dictionary).keys():
+		if Consumable.exists(StringName(item_id)):
+			company.supplies[StringName(item_id)] = int(data["supplies"][item_id])
 	company._next_id = maxi(int(data.get("next_id", 1)), company._next_id)
 	return company
