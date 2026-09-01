@@ -243,8 +243,9 @@ dur : passer par `data/assets.json`.
 - **Phase 3 terminée.** T3.1 à T3.6 : `Region`, `Expedition`, les
   évènements du § 40, le marchand, l'écran d'expédition et la carte du
   monde.
-- **T1.14 :** la portée se paie. **T6.1 :** options, pause, volume,
-  tremblement d'écran.
+- **T1.14 :** la portée se paie. **T2.8 :** les arbres de compétences du
+  § 34, qui remplacent les choix de niveau. **T6.1 :** options, pause,
+  volume, tremblement d'écran.
 - **Phase 4 terminée.** T4.1 à T4.4 : `Kingdom`, `Buildings`, l'écran du
   royaume et le branchement sur la boucle. **640 tests passent** sous
   Godot 4.6 en headless.
@@ -257,6 +258,12 @@ dur : passer par `data/assets.json`.
 jamais l'inverse. Le combat ignore ce qu'est un niveau. Toutes les
 modifications sont appliquées une seule fois, dans
 `Hero.effective_stats()` ; `Unit.from_stats` reçoit un bloc déjà calculé.
+
+**Les arbres de compétences remplacent les choix de niveau.** Un tronc,
+deux branches, onze nœuds pour neuf points : on ne finit jamais un arbre.
+`verify_skills` PÈSE les deux branches au barème de l'équipement et refuse
+qu'une vaille plus de 25 % de plus que l'autre — sinon ce n'est pas un
+choix, c'est une bonne réponse et une erreur.
 
 **L'équilibrage d'un objet n'a pas d'instrument.** On ne simule pas mille
 combats pour un anneau. La règle qui remplace la mesure : chaque rareté
@@ -333,6 +340,7 @@ godot --headless --path . -s tools/verify_audio.gd      # 30 entrées
 godot --headless --path . -s tools/verify_font.gd       # 140 glyphes
 godot --headless --path . -s tools/verify_maps.gd       # 8 cartes
 godot --headless --path . -s tools/verify_items.gd      # 30 objets
+godot --headless --path . -s tools/verify_skills.gd     # 3 arbres, 33 nœuds
 godot --headless --path . -s tools/verify_world.gd      # régions, évènements, étal
 godot --headless --path . -s tools/verify_kingdom.gd    # ressources, chantiers, bâtiments
 godot --headless --path . -s tools/simulate_combats.gd  # équilibrage

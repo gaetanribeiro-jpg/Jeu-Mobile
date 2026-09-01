@@ -118,8 +118,8 @@ func test_un_niveau_sans_choix_se_prend_d_un_bouton() -> void:
 	assert_eq(_changes, 1, "l'appelant doit être prévenu pour sauvegarder")
 
 
-func test_un_niveau_a_choix_offre_ses_deux_options_et_ce_qu_elles_donnent() -> void:
-	# « Endurant » ne dit rien ; « Endurant — PV +15 » dit tout, et le choix
+func test_l_arbre_dit_ce_que_chaque_noeud_donne() -> void:
+	# « Fureur » ne dit rien ; « Fureur — Force +1 » dit tout, et le choix
 	# est définitif.
 	var hero: Hero = _company.heroes[0]
 	hero.add_experience(999999)
@@ -127,37 +127,51 @@ func test_un_niveau_a_choix_offre_ses_deux_options_et_ce_qu_elles_donnent() -> v
 	_screen.refresh()
 	await wait_process_frames(1)
 
-	var offered := hero.pending_choices()
-	assert_eq(offered.size(), 2)
-	var found := 0
+	var seen := 0
 	for button: Button in _sheet_buttons():
-		for option: StringName in offered:
-			if button.text.begins_with(tr(HeroProgression.option_name_key(option))):
-				found += 1
-				assert_true(
-					button.text.length() > tr(
-						HeroProgression.option_name_key(option)
-					).length() + 2,
-					"le bouton ne dit pas ce que l'option donne : %s" % button.text
+		for node_id: StringName in SkillTree.node_ids(hero.class_id):
+			var name_ := tr(SkillTree.name_key(node_id))
+			if button.text.begins_with(name_):
+				seen += 1
+				assert_gt(
+					button.text.length(), name_.length() + 3,
+					"le bouton ne dit pas ce que le nœud donne : %s" % button.text
 				)
-	assert_eq(found, 2, "les deux options ne sont pas offertes")
+	assert_eq(seen, SkillTree.node_ids(hero.class_id).size(), "l'arbre n'est pas entier")
 
 
-func test_choisir_applique_le_choix() -> void:
+func test_un_noeud_hors_de_portee_est_grise_et_dit_pourquoi() -> void:
 	var hero: Hero = _company.heroes[0]
 	hero.add_experience(999999)
 	hero.level_up_free()
-	var level: int = hero.level
-	var offered := hero.pending_choices()
 	_screen.refresh()
 	await wait_process_frames(1)
 
+	var root: StringName = SkillTree.roots_of(hero.class_id)[0]
+	var child: StringName = SkillTree.children_of(root)[0]
 	for button: Button in _sheet_buttons():
-		if button.text.begins_with(tr(HeroProgression.option_name_key(offered[0]))):
+		if button.text.begins_with(tr(SkillTree.name_key(child))):
+			assert_true(button.disabled)
+			assert_string_contains(button.text, tr(SkillTree.name_key(root)))
+			return
+	fail_test("le nœud enfant n'est pas affiché")
+
+
+func test_apprendre_un_noeud_l_applique() -> void:
+	var hero: Hero = _company.heroes[0]
+	hero.add_experience(999999)
+	hero.level_up_free()
+	_screen.refresh()
+	await wait_process_frames(1)
+
+	var root: StringName = SkillTree.roots_of(hero.class_id)[0]
+	var before := hero.skill_points_left()
+	for button: Button in _sheet_buttons():
+		if button.text.begins_with(tr(SkillTree.name_key(root))):
 			button.pressed.emit()
 			break
-	assert_eq(hero.level, level + 1)
-	assert_eq(StringName(hero.choices[hero.level]), offered[0])
+	assert_true(hero.has_learned(root))
+	assert_eq(hero.skill_points_left(), before - 1)
 	assert_gt(_changes, 0)
 
 

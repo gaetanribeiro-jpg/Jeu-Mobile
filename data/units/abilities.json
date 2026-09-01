@@ -275,5 +275,123 @@
     "animation": "attack",
     "effect": "explosion_02",
     "note": "LA RÉPONSE AU JEU DE PORTÉE, et elle est de forme plutôt que de chiffre. Une équipe à distance se masse hors de portée de la mêlée et tire ; le chaman punit exactement ça, parce qu'une zone touche un groupe et qu'un groupe immobile est un groupe rangé. Sa portée de 6 dépasse celle de l'Archer : il ouvre le feu avant qu'on puisse lui répondre, et il faut donc AVANCER pour le faire taire.\n\nfriendly_fire à FAUX, contrairement à la Boule de feu du Mage, et c'est une asymétrie assumée : l'IA ne choisit pas son point d'impact pour épargner les siens. Avec le feu ami, le chaman se saborderait sur sa propre mêlée et deviendrait un cadeau plutôt qu'une menace. À rouvrir le jour où l'IA saura placer une zone.\n\nDégâts descendus de 15 à 12 et recharge portée à 2 après mesure : à 15, une zone de cinq cases retirait jusqu'à 110 PV en une activation, et le coût moyen d'une rencontre passait de 13 % à 21 %. Une réponse au jeu de portée ne doit pas devenir la nouvelle réponse à tout."
+  },
+  "cleave": {
+    "class": "warrior",
+    "kind": "attack",
+    "action_points": 5,
+    "range_min": 1,
+    "range_max": 1,
+    "needs_line_of_sight": true,
+    "area": {
+      "shape": "line",
+      "length": 2
+    },
+    "damage": 24,
+    "scaling": "strength",
+    "friendly_fire": true,
+    "cooldown": 1,
+    "animation": "attack2",
+    "note": "Le « Tourbillon » du § 34, dans le vocabulaire que le moteur sait déjà dire : une ligne de deux cases à partir du Guerrier. Deux ennemis alignés tombent ensemble, et c'est ce qui récompense d'avoir attiré la mêlée avec la Provocation. friendly_fire à vrai : la ligne ne trie pas, donc où l'on se place compte (§ 20)."
+  },
+  "hamstring": {
+    "class": "warrior",
+    "kind": "attack",
+    "action_points": 3,
+    "range_min": 1,
+    "range_max": 1,
+    "needs_line_of_sight": true,
+    "area": {
+      "shape": "single"
+    },
+    "damage": 14,
+    "scaling": "strength",
+    "cooldown": 1,
+    "status": {
+      "id": "chilled",
+      "duration": 1
+    },
+    "animation": "attack1",
+    "note": "Peu de dégâts, mais la cible perd deux PM à sa prochaine activation. C'est le verbe « fixer » : un ennemi ralenti ne décroche plus du Guerrier, et le § 22 fait de l'enchaînement le cœur du plaisir."
+  },
+  "volley": {
+    "class": "archer",
+    "kind": "attack",
+    "action_points": 5,
+    "range_min": 3,
+    "range_max": 6,
+    "needs_line_of_sight": true,
+    "area": {
+      "shape": "cross",
+      "radius": 1
+    },
+    "damage": 15,
+    "scaling": "agility",
+    "friendly_fire": true,
+    "cooldown": 2,
+    "animation": "shoot",
+    "effect": "dust_01",
+    "note": "La réponse de l'Archer au groupe, et sa seule portée de 6. friendly_fire à vrai comme la Boule de feu : une zone qui trie ses cibles ne demande pas de viser."
+  },
+  "pinning_shot": {
+    "class": "archer",
+    "kind": "attack",
+    "action_points": 4,
+    "range_min": 2,
+    "range_max": 5,
+    "needs_line_of_sight": true,
+    "area": {
+      "shape": "single"
+    },
+    "damage": 12,
+    "scaling": "agility",
+    "cooldown": 1,
+    "status": {
+      "id": "chilled",
+      "duration": 1
+    },
+    "animation": "shoot",
+    "note": "Moins de dégâts qu'un tir simple, mais la cible avance moins au tour suivant. C'est ce qui permet à l'Archer de tenir sa distance sans le Guerrier — et donc de payer sa fragilité par de la préparation plutôt que par de la fuite."
+  },
+  "arcane_lance": {
+    "class": "mage",
+    "kind": "attack",
+    "action_points": 5,
+    "range_min": 2,
+    "range_max": 6,
+    "needs_line_of_sight": true,
+    "area": {
+      "shape": "line",
+      "length": 3
+    },
+    "damage": 18,
+    "scaling": "intelligence",
+    "friendly_fire": true,
+    "cooldown": 2,
+    "animation": "heal",
+    "effect": "explosion_01",
+    "note": "Trois cases en ligne à partir de la cible. La Boule de feu punit un amas, le Trait punit une colonne : deux formes de zone pour deux façons d'être mal placé."
+  },
+  "hoarfrost": {
+    "class": "mage",
+    "kind": "attack",
+    "action_points": 4,
+    "range_min": 2,
+    "range_max": 5,
+    "needs_line_of_sight": true,
+    "area": {
+      "shape": "cross",
+      "radius": 1
+    },
+    "damage": 8,
+    "scaling": "intelligence",
+    "friendly_fire": true,
+    "cooldown": 2,
+    "status": {
+      "id": "chilled",
+      "duration": 2
+    },
+    "animation": "heal",
+    "note": "Le Gel, mais sur cinq cases et pour deux activations. Presque aucun dégât : c'est du CONTRÔLE, et le § 15 le veut lisible — une vague qui gèle un groupe se comprend sans explication."
   }
 }

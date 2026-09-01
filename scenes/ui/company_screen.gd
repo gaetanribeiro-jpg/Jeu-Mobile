@@ -167,50 +167,74 @@ func _experience_line(hero: Hero) -> Label:
 	], 22)
 
 
-## Le choix de niveau. C'est le seul endroit du jeu où il se fait, et il
-## est définitif : on affiche donc ce que chaque option donne, pas
-## seulement son nom.
+## La montée de niveau, puis l'arbre. Monter ne demande plus rien — le
+## niveau donne un point, et le point se dépense ici quand le joueur veut.
+## C'est ce qui permet d'encaisser une expédition entière sans ouvrir un
+## menu au milieu d'un combat.
 func _build_level_choice(hero: Hero) -> void:
-	if not hero.can_level_up():
-		return
-	var offered := hero.pending_choices()
-	if offered.is_empty():
+	if hero.can_level_up():
 		var button := _button(tr("COMPANY_LEVEL_UP") % (hero.level + 1))
 		button.pressed.connect(func() -> void:
 			hero.level_up()
 			_touched())
 		_sheet.add_child(button)
+	_build_skill_tree(hero)
+
+
+## L'arbre de compétences du § 34.
+##
+## UN NŒUD DIT TROIS CHOSES : son nom, ce qu'il donne, et pourquoi on ne
+## peut pas le prendre. « Fureur » ne dit rien ; « Fureur — Force +1 » dit
+## tout, et « il faut d'abord Entaille » évite de chercher.
+##
+## L'INDENTATION EST LA STRUCTURE. Les nœuds sont décalés de leur
+## profondeur : c'est ce qui fait qu'un tronc et deux branches se lisent
+## comme un tronc et deux branches, sans avoir à dessiner de traits.
+func _build_skill_tree(hero: Hero) -> void:
+	if not SkillTree.has_tree(hero.class_id):
 		return
+	var left := hero.skill_points_left()
+	_sheet.add_child(_label(tr("SKILLS_TITLE"), 24))
+	_sheet.add_child(_label(
+		tr("SKILLS_POINTS") % left if left > 0 else tr("SKILLS_NONE"), 20
+	))
 
-	_sheet.add_child(_label(tr("COMPANY_CHOOSE") % (hero.level + 1), 22))
+	for node_id: StringName in SkillTree.node_ids(hero.class_id):
+		_sheet.add_child(_skill_row(hero, node_id))
+
+
+func _skill_row(hero: Hero, node_id: StringName) -> Control:
 	var row := HBoxContainer.new()
-	row.add_theme_constant_override("separation", 12)
-	_sheet.add_child(row)
-	for option: StringName in offered:
-		var button := _button("%s — %s" % [
-			tr(HeroProgression.option_name_key(option)), _describe(option)
-		])
-		button.custom_minimum_size = Vector2(250, 52)
-		button.pressed.connect(func() -> void:
-			hero.level_up(option)
+	row.add_theme_constant_override("separation", 8)
+
+	# Un décalage par niveau de profondeur : l'arbre se lit sans traits.
+	var indent := Control.new()
+	indent.custom_minimum_size = Vector2(float(SkillTree.depth_of(node_id)) * 18.0, 0)
+	row.add_child(indent)
+
+	var blocked := hero.cannot_learn_because(node_id)
+	var label := "%s — %s" % [
+		tr(SkillTree.name_key(node_id)), tr(SkillTree.description_key(node_id))
+	]
+	if blocked == &"learned":
+		label = "%s — %s" % [tr(SkillTree.name_key(node_id)), tr("SKILLS_TAKEN")]
+	elif blocked == &"locked":
+		label = "%s — %s" % [
+			tr(SkillTree.name_key(node_id)),
+			tr("SKILLS_LOCKED") % tr(SkillTree.name_key(SkillTree.requires(node_id))),
+		]
+
+	var button := _button(label)
+	button.custom_minimum_size = Vector2(520, 46)
+	button.add_theme_font_size_override("font_size", 18)
+	button.disabled = not blocked.is_empty()
+	if blocked == &"learned":
+		button.add_theme_color_override("font_color_disabled", Color(0.55, 0.78, 0.5))
+	button.pressed.connect(func() -> void:
+		if hero.learn(node_id):
 			_touched())
-		row.add_child(button)
-
-
-## Ce qu'une option donne, en clair. « Endurant » ne dit rien ; « Endurant,
-## +15 PV » dit tout.
-func _describe(option: StringName) -> String:
-	var pieces := PackedStringArray()
-	for key: Variant in HeroProgression.option_grants(option).keys():
-		var field := StringName(key)
-		var hero := selected_hero()
-		if field == HeroProgression.PRIMARY and hero != null:
-			field = hero.primary_stat()
-		pieces.append("%s %+d" % [
-			tr("STAT_%s" % String(field).to_upper()),
-			int(HeroProgression.option_grants(option)[key])
-		])
-	return ", ".join(pieces)
+	row.add_child(button)
+	return row
 
 
 func _stats_grid(hero: Hero) -> GridContainer:

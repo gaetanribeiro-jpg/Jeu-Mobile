@@ -401,6 +401,7 @@ de la Phase 5.
 | **T2.5** | `Company` : les héros, l'or, la réserve | ✅ |
 | **T2.6** | Sauvegarde et rechargement de la partie | ✅ |
 | **T2.7** | Écran de fiche de héros et de compagnie | ✅ |
+| **T2.8** | Arbres de compétences (§ 34) : ils remplacent les choix de niveau | ✅ |
 
 **Le sens de la dépendance est la décision structurante :** `Hero` connaît
 `Unit`, jamais l'inverse. Le combat ne sait pas ce qu'est un niveau, et
@@ -1053,6 +1054,57 @@ dit ce qu'elle coûte.
    et la capture montrait l'écran d'avant — le pire des résultats,
    puisqu'il ressemble à un vrai. Quarante images, et l'échec nomme
    maintenant **les boutons qui étaient à l'écran**.
+
+### Les arbres de compétences (T2.8, § 34)
+
+**Ils REMPLACENT les choix de niveau, ils ne s'y ajoutent pas.** Deux
+monnaies de progression pour le même acte — monter d'un niveau — auraient
+été exactement la complexité que le § 31 refuse. Les six options d'alors
+(Endurant, Affûté, Vif, Concentré, Mortel, Cuirassé) n'ont rien perdu :
+elles sont devenues des nœuds, et le joueur choisit maintenant dans quel
+**ordre** il les prend, pas seulement laquelle.
+
+**Un tronc, deux branches, onze nœuds pour neuf points.** Le tronc est
+l'identité de la classe ; les branches sont les builds du § 35 — Guerrier
+Tank contre Berserker, Archer Critique contre Mobilité, Mage Destruction
+contre Survie. On ne prend pas tout, et c'est ce qui fait qu'un Guerrier ne
+ressemble pas à un autre Guerrier. `verify_skills` refuse un arbre qu'on
+pourrait finir : un arbre qu'on finit n'est plus un arbre, c'est une liste.
+
+**Six compétences nouvelles**, toutes dans le vocabulaire que le moteur
+sait déjà dire — aucune mécanique inventée, donc rien à re-tester en
+profondeur. Fendre (une ligne de deux cases : le « Tourbillon » du § 34),
+Entaille, Tir entravant, Salve, Trait arcanique, Givre.
+
+**La classe garde ses trois compétences de départ.** L'arbre en ajoute, il
+n'en reprend aucune : un héros de niveau 1 doit pouvoir jouer, et
+l'équilibrage mesuré en T1.11 et T1.14 suppose ces trois-là.
+
+**Monter de niveau ne demande plus rien.** Le niveau donne un point, le
+point se dépense dans l'arbre quand le joueur veut. C'est ce qui permet
+d'encaisser l'expérience d'une expédition entière sans ouvrir un menu au
+milieu d'un combat — ce que l'ancien `level_up_free()` devait contourner.
+
+### Peser une branche avec le barème de l'équipement
+
+Le § 35 promet des builds. **Deux branches ne sont un choix que si elles se
+valent** : une branche qui donne deux fois plus que l'autre n'est pas une
+voie, c'est la bonne réponse et une erreur.
+
+`verify_skills` les pèse donc, au **barème de l'équipement** — les nœuds
+accordent les mêmes statistiques que les objets, et deux barèmes auraient
+divergé dès la première retouche. Un nœud de compétence est compté pour un
+point d'action, le gain le plus fort du barème : c'est une convention
+assumée plutôt qu'une mesure, et elle est écrite comme telle.
+
+Il a servi le jour de sa naissance. Avec Fendre dans le tronc, la branche
+Tank du Guerrier valait **15** contre **23** pour le Berserker — la branche
+sans compétence vaut structurellement moins. Le tronc ne porte donc plus
+aucune compétence : chaque branche a la sienne, et les trois arbres tombent
+maintenant à moins de 8 % d'écart (22/23, 28/27,6, 25/27).
+
+`initiative` a gagné un coût au barème au passage : elle décide **quand**
+on joue, ce qui vaut cher en positionnement mais ne change aucun chiffre.
 
 ### Phase 5 — Interconnexion
 

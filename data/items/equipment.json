@@ -8,7 +8,9 @@
     "defence": 2,
     "critical": 1,
     "movement_points": 5,
-    "action_points": 7
+    "action_points": 7,
+    "initiative": 1,
+    "_initiative_note": "Ajouté quand les arbres de compétences ont eu besoin de peser une branche : l'initiative décide QUAND on joue, ce qui vaut cher en positionnement mais ne change aucun chiffre. Alignée sur le critique, à un point par point."
   },
   "slots": [
     "weapon",

@@ -77,8 +77,7 @@ func test_le_plafond_de_niveau_est_respecte() -> void:
 	hero.add_experience(999999)
 	assert_eq(hero.reachable_level(), HeroProgression.max_level())
 	while hero.can_level_up():
-		var offered := hero.pending_choices()
-		hero.level_up(offered[0] if not offered.is_empty() else &"")
+		hero.level_up()
 	assert_eq(hero.level, HeroProgression.max_level())
 	assert_false(hero.can_level_up())
 
@@ -109,75 +108,150 @@ func test_monter_sans_experience_est_refuse() -> void:
 	assert_false(_hero().level_up())
 
 
-func test_un_niveau_sans_choix_se_prend_directement() -> void:
+func test_monter_ne_demande_plus_rien() -> void:
+	# Le niveau donne un point, et le point se dépense dans l'arbre quand
+	# le joueur veut. C'est ce qui permet d'encaisser l'expérience d'une
+	# expédition entière sans ouvrir un menu au milieu d'un combat.
 	var hero := _hero()
 	hero.add_experience(HeroProgression.experience_to_reach(2))
-	assert_true(HeroProgression.choices_at(2).is_empty(), "le niveau 2 ne demande rien")
 	assert_true(hero.level_up())
 	assert_eq(hero.level, 2)
 
 
-func test_un_niveau_a_choix_refuse_une_option_absente() -> void:
-	var hero := _hero()
-	var level: int = HeroProgression.choice_levels()[0]
-	hero.add_experience(HeroProgression.experience_to_reach(level))
-	while hero.level < level - 1:
-		hero.level_up()
-	assert_false(hero.level_up(&"invincibilite"))
-	assert_push_error("n'est pas une option")
-
-
-func test_un_niveau_a_choix_refuse_l_absence_de_choix() -> void:
-	var hero := _hero()
-	var level: int = HeroProgression.choice_levels()[0]
-	hero.add_experience(HeroProgression.experience_to_reach(level))
-	while hero.level < level - 1:
-		hero.level_up()
-	assert_false(hero.level_up(), "on ne monte pas en laissant le choix en suspens")
-	assert_push_error("n'est pas une option")
-	assert_eq(hero.level, level - 1)
-
-
-func test_la_montee_libre_s_arrete_devant_un_choix() -> void:
-	# C'est ce qui permet d'encaisser l'expérience d'une expédition entière
-	# sans voler au joueur les décisions qu'elle contient.
+func test_la_montee_libre_va_jusqu_au_bout() -> void:
 	var hero := _hero()
 	hero.add_experience(999999)
 	hero.level_up_free()
-	assert_eq(hero.level, HeroProgression.choice_levels()[0] - 1)
-	assert_true(hero.can_level_up())
-	assert_false(hero.pending_choices().is_empty())
+	assert_eq(hero.level, HeroProgression.max_level())
+	assert_false(hero.can_level_up())
 
 
-func test_le_choix_retenu_est_conserve() -> void:
+# --- L'arbre de compétences (§ 34) -----------------------------------------
+
+func test_un_niveau_donne_un_point() -> void:
+	# Le niveau 1 n'en donne pas : on ne récompense pas d'exister.
+	var hero := _hero()
+	assert_eq(hero.skill_points_earned(), 0)
+	hero.add_experience(999999)
+	hero.level_up_free()
+	assert_eq(
+		hero.skill_points_earned(),
+		(HeroProgression.max_level() - 1) * SkillTree.points_per_level()
+	)
+
+
+func test_on_ne_finit_jamais_un_arbre() -> void:
+	# Onze nœuds pour neuf points : le manque est voulu. Un arbre qu'on
+	# finit n'est plus un arbre, c'est une liste — et deux Guerriers se
+	# ressembleraient.
 	var hero := _hero()
 	hero.add_experience(999999)
 	hero.level_up_free()
-	var option: StringName = hero.pending_choices()[0]
-	assert_true(hero.level_up(option))
-	assert_eq(StringName(hero.choices[hero.level]), option)
+	assert_gt(
+		SkillTree.node_ids(hero.class_id).size(), hero.skill_points_earned(),
+		"l'arbre de %s se termine" % hero.class_id
+	)
 
 
-func test_chaque_niveau_a_choix_offre_au_moins_deux_options() -> void:
-	# Une seule option n'est pas un choix.
-	for level: int in HeroProgression.choice_levels():
-		assert_gt(
-			HeroProgression.choices_at(level).size(), 1,
-			"le niveau %d n'offre pas de vrai choix" % level
+func test_on_ne_prend_pas_un_noeud_sans_son_parent() -> void:
+	var hero := _hero()
+	hero.add_experience(999999)
+	hero.level_up_free()
+	var root: StringName = SkillTree.roots_of(hero.class_id)[0]
+	var child: StringName = SkillTree.children_of(root)[0]
+
+	assert_eq(hero.cannot_learn_because(child), &"locked")
+	assert_false(hero.learn(child))
+	assert_true(hero.learn(root))
+	assert_true(hero.learn(child))
+
+
+func test_on_ne_prend_pas_un_noeud_sans_point() -> void:
+	var hero := _hero()
+	var root: StringName = SkillTree.roots_of(hero.class_id)[0]
+	assert_eq(hero.skill_points_left(), 0)
+	assert_eq(hero.cannot_learn_because(root), &"points")
+	assert_false(hero.learn(root))
+
+
+func test_on_ne_prend_pas_deux_fois_le_meme_noeud() -> void:
+	var hero := _hero()
+	hero.add_experience(999999)
+	hero.level_up_free()
+	var root: StringName = SkillTree.roots_of(hero.class_id)[0]
+	assert_true(hero.learn(root))
+	assert_eq(hero.cannot_learn_because(root), &"learned")
+	assert_false(hero.learn(root))
+
+
+func test_on_ne_prend_pas_le_noeud_d_une_autre_classe() -> void:
+	var hero := _hero()
+	hero.add_experience(999999)
+	hero.level_up_free()
+	var other := &"archer" if hero.class_id != &"archer" else &"warrior"
+	assert_eq(
+		hero.cannot_learn_because(SkillTree.roots_of(other)[0]), &"unknown"
+	)
+
+
+func test_un_noeud_de_statistiques_change_la_fiche() -> void:
+	var hero := _hero()
+	hero.add_experience(999999)
+	hero.level_up_free()
+	var before := hero.effective_stats().duplicate()
+	var root: StringName = SkillTree.roots_of(hero.class_id)[0]
+	hero.learn(root)
+	for key: Variant in SkillTree.grants(root).keys():
+		assert_eq(
+			int(hero.effective_stats()[String(key)]),
+			int(before[String(key)]) + int(SkillTree.grants(root)[key]),
+			String(key)
 		)
 
 
-func test_toute_option_declaree_donne_quelque_chose() -> void:
-	for level: int in HeroProgression.choice_levels():
-		for option: StringName in HeroProgression.choices_at(level):
-			assert_false(
-				HeroProgression.option_grants(option).is_empty(),
-				"l'option %s ne donne rien" % option
-			)
-			assert_ne(
-				HeroProgression.option_name_key(option), "",
-				"l'option %s n'a pas de clé de traduction" % option
-			)
+func test_un_noeud_de_competence_ajoute_une_competence_au_combat() -> void:
+	# La classe garde ses trois compétences de départ : l'arbre en ajoute,
+	# il n'en reprend aucune.
+	var hero := _hero()
+	hero.add_experience(999999)
+	hero.level_up_free()
+	var base := hero.combat_abilities().size()
+
+	for node_id: StringName in SkillTree.node_ids(hero.class_id):
+		if not SkillTree.is_ability_node(node_id):
+			hero.learn(node_id)
+			continue
+		hero.learn(node_id)
+		assert_eq(hero.combat_abilities().size(), base + 1)
+		assert_true(hero.combat_abilities().has(SkillTree.ability_of(node_id)))
+		return
+	fail_test("l'arbre de %s n'a aucun nœud de compétence" % hero.class_id)
+
+
+func test_les_competences_apprises_entrent_au_combat() -> void:
+	var hero := _hero()
+	hero.add_experience(999999)
+	hero.level_up_free()
+	for node_id: StringName in SkillTree.node_ids(hero.class_id):
+		hero.learn(node_id)
+	assert_eq(hero.to_unit(1).abilities, hero.combat_abilities())
+
+
+func test_l_arbre_survit_a_un_rechargement() -> void:
+	var hero := _hero()
+	hero.add_experience(999999)
+	hero.level_up_free()
+	hero.learn(SkillTree.roots_of(hero.class_id)[0])
+	var reloaded := Hero.from_dictionary(hero.to_dictionary())
+	assert_eq(reloaded.learned, hero.learned)
+	assert_eq(reloaded.effective_stats(), hero.effective_stats())
+
+
+func test_un_noeud_disparu_des_donnees_ne_fait_pas_tomber_le_heros() -> void:
+	var hero := _hero()
+	var saved := hero.to_dictionary()
+	saved["learned"] = ["w_teleportation"]
+	assert_true(Hero.from_dictionary(saved).learned.is_empty())
 
 
 # --- Statistiques ----------------------------------------------------------
@@ -232,25 +306,6 @@ func test_la_maîtresse_suit_la_classe_et_pas_l_inverse() -> void:
 		int(archer.effective_stats()["agility"]),
 		int(Unit.hero_class(&"archer")["agility"]), "l'Agilité de l'Archer"
 	)
-
-
-func test_un_choix_retenu_modifie_les_statistiques() -> void:
-	var hero := _hero()
-	hero.add_experience(999999)
-	hero.level_up_free()
-	var option: StringName = hero.pending_choices()[0]
-	var grants := HeroProgression.option_grants(option)
-	var before := hero.effective_stats()
-	hero.level_up(option)
-	var after := hero.effective_stats()
-	for key: Variant in grants.keys():
-		var field := StringName(key)
-		if field == HeroProgression.PRIMARY:
-			field = hero.primary_stat()
-		assert_gt(
-			int(after[String(field)]), int(before.get(String(field), 0)),
-			"le choix %s n'a pas changé %s" % [option, field]
-		)
 
 
 func test_un_bonus_exterieur_s_ajoute_sans_être_conserve() -> void:
@@ -310,7 +365,8 @@ func test_aller_retour_de_serialisation() -> void:
 	hero.color = "Purple"
 	hero.add_experience(999999)
 	hero.level_up_free()
-	hero.level_up(hero.pending_choices()[1])
+	for node_id: StringName in SkillTree.node_ids(hero.class_id):
+		hero.learn(node_id)
 
 	var copy := Hero.from_dictionary(hero.to_dictionary())
 	assert_eq(copy.id, hero.id)
@@ -319,5 +375,5 @@ func test_aller_retour_de_serialisation() -> void:
 	assert_eq(copy.color, hero.color)
 	assert_eq(copy.level, hero.level)
 	assert_eq(copy.experience, hero.experience)
-	assert_eq(copy.choices, hero.choices)
+	assert_eq(copy.learned, hero.learned)
 	assert_eq(copy.effective_stats(), hero.effective_stats(), "mêmes statistiques")

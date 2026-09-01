@@ -288,3 +288,82 @@ PAUSE_RESUME,Reprendre le combat
 PAUSE_OPTIONS,Options
 PAUSE_ABANDON,Abandonner le combat
 PAUSE_ABANDON_CONFIRM,Confirmer — le combat est perdu
+ABILITY_CLEAVE,Fendre
+ABILITY_HAMSTRING,Entaille
+ABILITY_VOLLEY,Salve
+ABILITY_PINNING_SHOT,Tir entravant
+ABILITY_ARCANE_LANCE,Trait arcanique
+ABILITY_HOARFROST,Givre
+NODE_W_VIGOUR,Vigueur
+NODE_W_VIGOUR_DESC,PV +15. Ce qu'il faut pour traverser le plateau.
+NODE_W_CLEAVE,Fendre
+NODE_W_CLEAVE_DESC,Débloque Fendre : une ligne de deux cases, pour deux ennemis alignés.
+NODE_W_GRIP,Poigne
+NODE_W_GRIP_DESC,Force +1.
+NODE_W_PLATE,Plates
+NODE_W_PLATE_DESC,Défense +1. La voie du Tank commence ici.
+NODE_W_ENDURANCE,Endurance
+NODE_W_ENDURANCE_DESC,PV +20.
+NODE_W_ANCHOR,Ancrage
+NODE_W_ANCHOR_DESC,Défense +1.
+NODE_W_FORTRESS,Forteresse
+NODE_W_FORTRESS_DESC,PV +25, Défense +1. Plus rien ne le fait tomber vite.
+NODE_W_HAMSTRING,Entaille
+NODE_W_HAMSTRING_DESC,Débloque Entaille : peu de dégâts, mais la cible ne décroche plus.
+NODE_W_FURY,Fureur
+NODE_W_FURY_DESC,Force +1. La voie du Berserker commence ici.
+NODE_W_STRIDE,Foulée
+NODE_W_STRIDE_DESC,PM +1. Frapper suppose d'arriver.
+NODE_W_SLAYER,Pourfendeur
+NODE_W_SLAYER_DESC,Force +2, Critique +5.
+NODE_A_EYE,Œil
+NODE_A_EYE_DESC,PV +12. Il en faut un peu pour survivre à une erreur.
+NODE_A_PINNING,Tir entravant
+NODE_A_PINNING_DESC,Débloque le Tir entravant : la cible avancera moins.
+NODE_A_DRAW,Allonge
+NODE_A_DRAW_DESC,Agilité +1.
+NODE_A_AIM,Visée
+NODE_A_AIM_DESC,Critique +5. La voie du Critique commence ici.
+NODE_A_VOLLEY,Salve
+NODE_A_VOLLEY_DESC,Débloque la Salve : une zone à six cases.
+NODE_A_FOCUS,Concentration
+NODE_A_FOCUS_DESC,PA +1. Un tir de plus par activation.
+NODE_A_DEADEYE,Œil mort
+NODE_A_DEADEYE_DESC,Agilité +2, Critique +5.
+NODE_A_LIGHT,Pas léger
+NODE_A_LIGHT_DESC,PM +1. La voie de la Mobilité commence ici.
+NODE_A_WIND,Vent
+NODE_A_WIND_DESC,Initiative +3. Jouer avant, c'est choisir la distance.
+NODE_A_HIDE,Cuir
+NODE_A_HIDE_DESC,PV +18, Défense +1.
+NODE_A_GHOST,Spectre
+NODE_A_GHOST_DESC,PM +1, Agilité +1. On ne l'attrape plus.
+NODE_M_STUDY,Étude
+NODE_M_STUDY_DESC,PV +10. Le Mage part de très bas.
+NODE_M_HOARFROST,Givre
+NODE_M_HOARFROST_DESC,Débloque le Givre : cinq cases gelées pour deux activations.
+NODE_M_WILL,Volonté
+NODE_M_WILL_DESC,Intelligence +1.
+NODE_M_LANCE,Trait arcanique
+NODE_M_LANCE_DESC,Débloque le Trait : trois cases en ligne. La voie de la Destruction.
+NODE_M_SPARK,Étincelle
+NODE_M_SPARK_DESC,Intelligence +1.
+NODE_M_CHANNEL,Canalisation
+NODE_M_CHANNEL_DESC,PA +1.
+NODE_M_RUIN,Ruine
+NODE_M_RUIN_DESC,Intelligence +2, Critique +5.
+NODE_M_ROBES,Robes lourdes
+NODE_M_ROBES_DESC,PV +20. La voie de la Survie commence ici.
+NODE_M_STEP,Pas de côté
+NODE_M_STEP_DESC,PM +1.
+NODE_M_GUARD,Sauvegarde
+NODE_M_GUARD_DESC,Défense +2.
+NODE_M_SAGE,Sage
+NODE_M_SAGE_DESC,PV +25, Intelligence +1.
+SKILLS_TITLE,Compétences
+SKILLS_POINTS,%d point(s) à dépenser
+SKILLS_NONE,Aucun point à dépenser.
+SKILLS_LOCKED,Il faut d'abord %s
+SKILLS_TAKEN,Acquis
+SKILLS_UNLOCK,Apprendre
+SKILLS_LEARNED,%s appris.

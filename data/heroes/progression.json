@@ -26,58 +26,5 @@
     "_note": "Accordé aux niveaux pairs, en plus de per_level.",
     "primary": 1
   },
-  "choices": {
-    "_note": "Niveau → deux options, une seule retenue, définitivement. Les deux doivent être défendables : une option qui n'est jamais prise n'est pas un choix, c'est un piège.",
-    "3": [
-      "sturdy",
-      "sharp"
-    ],
-    "6": [
-      "swift",
-      "focused"
-    ],
-    "9": [
-      "deadly",
-      "armoured"
-    ]
-  },
-  "options": {
-    "sturdy": {
-      "name_key": "CHOICE_STURDY",
-      "grants": {
-        "hit_points": 15
-      }
-    },
-    "sharp": {
-      "name_key": "CHOICE_SHARP",
-      "grants": {
-        "primary": 2
-      }
-    },
-    "swift": {
-      "name_key": "CHOICE_SWIFT",
-      "grants": {
-        "movement_points": 1
-      }
-    },
-    "focused": {
-      "name_key": "CHOICE_FOCUSED",
-      "grants": {
-        "action_points": 1
-      },
-      "_note": "Un PA de plus vaut un tiers d'attaque de base par activation : c'est le gain le plus fort du tableau, et il fait face à un PM qui, lui, change où l'on peut se tenir."
-    },
-    "deadly": {
-      "name_key": "CHOICE_DEADLY",
-      "grants": {
-        "primary": 3
-      }
-    },
-    "armoured": {
-      "name_key": "CHOICE_ARMOURED",
-      "grants": {
-        "defence": 3
-      }
-    }
-  }
+  "_choices_note": "LES CHOIX DE NIVEAU ONT ÉTÉ RETIRÉS et remplacés par l'arbre de compétences (`data/heroes/skill_trees.json`, § 34). Les six options d'alors — Endurant, Affûté, Vif, Concentré, Mortel, Cuirassé — sont devenues des nœuds : rien n'a été perdu, et le joueur choisit maintenant dans quel ORDRE il les prend. Deux monnaies de progression pour le même acte auraient été la complexité que le § 31 refuse."
 }

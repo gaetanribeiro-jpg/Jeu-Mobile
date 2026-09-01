@@ -1,0 +1,270 @@
+{
+  "_readme": "Les arbres de compétences du § 34, un par classe.\n\nIL REMPLACE LES CHOIX DE NIVEAU, il ne s'ajoute pas à eux. Deux monnaies de progression pour le même acte — monter d'un niveau — auraient été exactement la complexité que le § 31 refuse. Les six anciennes options (Endurant, Affûté, Vif, Concentré, Mortel, Cuirassé) n'ont rien perdu : elles sont devenues des nœuds, et le joueur choisit maintenant dans quel ORDRE il les prend, pas seulement laquelle.\n\nUN TRONC, DEUX BRANCHES. Le tronc est l'identité de la classe et se prend toujours ; les branches sont les builds du § 35 — Guerrier Tank contre Guerrier Berserker, Archer Critique contre Archer Mobilité. Onze nœuds pour neuf points : on ne prend pas tout, et c'est ce qui fait qu'un Guerrier ne ressemble pas à un autre Guerrier.\n\nLA CLASSE GARDE SES TROIS COMPÉTENCES DE DÉPART. L'arbre en ajoute, il n'en reprend aucune : un héros de niveau 1 doit pouvoir jouer, et l'équilibrage mesuré de T1.11 et T1.14 suppose ces trois-là.\n\nUN NŒUD ACCORDE DES STATISTIQUES OU UNE COMPÉTENCE, jamais les deux — sinon comparer deux nœuds demanderait de comparer des choses qui ne se comparent pas.\n\n`requires` est le nœud parent. Un nœud sans parent est une racine, et il n'y en a qu'une par arbre : l'arbre se lit de haut en bas, et un joueur ne doit pas avoir à chercher par où commencer.",
+  "points_per_level": 1,
+  "_points_note": "Un point par niveau à partir du niveau 2, donc neuf au niveau 10 pour onze nœuds. Le manque est voulu : un arbre qu'on finit n'est plus un arbre, c'est une liste.",
+  "trees": {
+    "warrior": {
+      "w_vigour": {
+        "name_key": "NODE_W_VIGOUR",
+        "description_key": "NODE_W_VIGOUR_DESC",
+        "grants": {
+          "hit_points": 15
+        }
+      },
+      "w_grip": {
+        "name_key": "NODE_W_GRIP",
+        "description_key": "NODE_W_GRIP_DESC",
+        "requires": "w_vigour",
+        "grants": {
+          "strength": 1
+        }
+      },
+      "w_plate": {
+        "name_key": "NODE_W_PLATE",
+        "description_key": "NODE_W_PLATE_DESC",
+        "requires": "w_grip",
+        "grants": {
+          "defence": 1
+        }
+      },
+      "w_cleave": {
+        "name_key": "NODE_W_CLEAVE",
+        "description_key": "NODE_W_CLEAVE_DESC",
+        "requires": "w_plate",
+        "ability": "cleave"
+      },
+      "w_endurance": {
+        "name_key": "NODE_W_ENDURANCE",
+        "description_key": "NODE_W_ENDURANCE_DESC",
+        "requires": "w_cleave",
+        "grants": {
+          "hit_points": 20
+        }
+      },
+      "w_anchor": {
+        "name_key": "NODE_W_ANCHOR",
+        "description_key": "NODE_W_ANCHOR_DESC",
+        "requires": "w_endurance",
+        "grants": {
+          "defence": 1
+        }
+      },
+      "w_fortress": {
+        "name_key": "NODE_W_FORTRESS",
+        "description_key": "NODE_W_FORTRESS_DESC",
+        "requires": "w_anchor",
+        "grants": {
+          "hit_points": 25,
+          "defence": 1
+        }
+      },
+      "w_hamstring": {
+        "name_key": "NODE_W_HAMSTRING",
+        "description_key": "NODE_W_HAMSTRING_DESC",
+        "requires": "w_grip",
+        "ability": "hamstring"
+      },
+      "w_fury": {
+        "name_key": "NODE_W_FURY",
+        "description_key": "NODE_W_FURY_DESC",
+        "requires": "w_hamstring",
+        "grants": {
+          "strength": 1
+        }
+      },
+      "w_stride": {
+        "name_key": "NODE_W_STRIDE",
+        "description_key": "NODE_W_STRIDE_DESC",
+        "requires": "w_fury",
+        "grants": {
+          "movement_points": 1
+        }
+      },
+      "w_slayer": {
+        "name_key": "NODE_W_SLAYER",
+        "description_key": "NODE_W_SLAYER_DESC",
+        "requires": "w_stride",
+        "grants": {
+          "strength": 2,
+          "critical": 5
+        }
+      }
+    },
+    "archer": {
+      "a_eye": {
+        "name_key": "NODE_A_EYE",
+        "description_key": "NODE_A_EYE_DESC",
+        "grants": {
+          "hit_points": 12
+        }
+      },
+      "a_draw": {
+        "name_key": "NODE_A_DRAW",
+        "description_key": "NODE_A_DRAW_DESC",
+        "requires": "a_eye",
+        "grants": {
+          "agility": 1
+        }
+      },
+      "a_aim": {
+        "name_key": "NODE_A_AIM",
+        "description_key": "NODE_A_AIM_DESC",
+        "requires": "a_draw",
+        "grants": {
+          "critical": 5
+        }
+      },
+      "a_volley": {
+        "name_key": "NODE_A_VOLLEY",
+        "description_key": "NODE_A_VOLLEY_DESC",
+        "requires": "a_aim",
+        "ability": "volley"
+      },
+      "a_focus": {
+        "name_key": "NODE_A_FOCUS",
+        "description_key": "NODE_A_FOCUS_DESC",
+        "requires": "a_volley",
+        "grants": {
+          "action_points": 1
+        }
+      },
+      "a_deadeye": {
+        "name_key": "NODE_A_DEADEYE",
+        "description_key": "NODE_A_DEADEYE_DESC",
+        "requires": "a_focus",
+        "grants": {
+          "agility": 2,
+          "critical": 5
+        }
+      },
+      "a_pinning": {
+        "name_key": "NODE_A_PINNING",
+        "description_key": "NODE_A_PINNING_DESC",
+        "requires": "a_draw",
+        "ability": "pinning_shot"
+      },
+      "a_light": {
+        "name_key": "NODE_A_LIGHT",
+        "description_key": "NODE_A_LIGHT_DESC",
+        "requires": "a_pinning",
+        "grants": {
+          "movement_points": 1
+        }
+      },
+      "a_wind": {
+        "name_key": "NODE_A_WIND",
+        "description_key": "NODE_A_WIND_DESC",
+        "requires": "a_light",
+        "grants": {
+          "initiative": 3
+        }
+      },
+      "a_hide": {
+        "name_key": "NODE_A_HIDE",
+        "description_key": "NODE_A_HIDE_DESC",
+        "requires": "a_wind",
+        "grants": {
+          "hit_points": 18,
+          "defence": 1
+        }
+      },
+      "a_ghost": {
+        "name_key": "NODE_A_GHOST",
+        "description_key": "NODE_A_GHOST_DESC",
+        "requires": "a_hide",
+        "grants": {
+          "movement_points": 1,
+          "agility": 1
+        }
+      }
+    },
+    "mage": {
+      "m_study": {
+        "name_key": "NODE_M_STUDY",
+        "description_key": "NODE_M_STUDY_DESC",
+        "grants": {
+          "hit_points": 10
+        }
+      },
+      "m_will": {
+        "name_key": "NODE_M_WILL",
+        "description_key": "NODE_M_WILL_DESC",
+        "requires": "m_study",
+        "grants": {
+          "intelligence": 1
+        }
+      },
+      "m_lance": {
+        "name_key": "NODE_M_LANCE",
+        "description_key": "NODE_M_LANCE_DESC",
+        "requires": "m_will",
+        "ability": "arcane_lance"
+      },
+      "m_spark": {
+        "name_key": "NODE_M_SPARK",
+        "description_key": "NODE_M_SPARK_DESC",
+        "requires": "m_lance",
+        "grants": {
+          "intelligence": 1
+        }
+      },
+      "m_channel": {
+        "name_key": "NODE_M_CHANNEL",
+        "description_key": "NODE_M_CHANNEL_DESC",
+        "requires": "m_spark",
+        "grants": {
+          "action_points": 1
+        }
+      },
+      "m_ruin": {
+        "name_key": "NODE_M_RUIN",
+        "description_key": "NODE_M_RUIN_DESC",
+        "requires": "m_channel",
+        "grants": {
+          "intelligence": 2,
+          "critical": 5
+        }
+      },
+      "m_hoarfrost": {
+        "name_key": "NODE_M_HOARFROST",
+        "description_key": "NODE_M_HOARFROST_DESC",
+        "requires": "m_will",
+        "ability": "hoarfrost"
+      },
+      "m_robes": {
+        "name_key": "NODE_M_ROBES",
+        "description_key": "NODE_M_ROBES_DESC",
+        "requires": "m_hoarfrost",
+        "grants": {
+          "hit_points": 20
+        }
+      },
+      "m_step": {
+        "name_key": "NODE_M_STEP",
+        "description_key": "NODE_M_STEP_DESC",
+        "requires": "m_robes",
+        "grants": {
+          "movement_points": 1
+        }
+      },
+      "m_guard": {
+        "name_key": "NODE_M_GUARD",
+        "description_key": "NODE_M_GUARD_DESC",
+        "requires": "m_step",
+        "grants": {
+          "defence": 2
+        }
+      },
+      "m_sage": {
+        "name_key": "NODE_M_SAGE",
+        "description_key": "NODE_M_SAGE_DESC",
+        "requires": "m_guard",
+        "grants": {
+          "hit_points": 25,
+          "intelligence": 1
+        }
+      }
+    }
+  },
+  "_branch_note": "LE TRONC NE PORTE AUCUNE COMPÉTENCE, et c'est `verify_skills` qui l'a imposé. Avec Fendre dans le tronc, la branche Tank du Guerrier valait 15 au barème contre 23 pour la branche Berserker : la branche sans compétence vaut structurellement moins, et ce n'était donc plus un choix mais une bonne réponse et une erreur. Chaque branche a maintenant la sienne."
+}

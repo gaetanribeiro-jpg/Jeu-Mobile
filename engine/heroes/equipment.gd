@@ -152,6 +152,24 @@ static func rarity_name_key(rarity_id: StringName) -> String:
 
 # --- Budget ----------------------------------------------------------------
 
+## Ce que vaut un bloc de gains, au barème de `costs`.
+##
+## SORTI DE `cost_of` POUR SERVIR AILLEURS : les nœuds d'arbre accordent
+## les mêmes statistiques que les objets, et il n'y a aucune raison de les
+## peser autrement. Deux barèmes divergeraient dès la première retouche.
+static func price_of_grants(gained: Dictionary) -> float:
+	var costs: Dictionary = data().get("costs", {})
+	var total := 0.0
+	for key: Variant in gained.keys():
+		if String(key).begins_with("_"):
+			continue
+		if not costs.has(String(key)):
+			push_error("Equipment : « %s » n'a pas de coût au barème" % key)
+			continue
+		total += float(costs[String(key)]) * float(gained[key])
+	return total
+
+
 ## Ce que valent les gains d'un objet, au barème de `costs`.
 static func cost_of(item_id: StringName) -> float:
 	var costs: Dictionary = data().get("costs", {})
