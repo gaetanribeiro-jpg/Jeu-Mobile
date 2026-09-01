@@ -92,6 +92,14 @@ func combat_rng(salt: int) -> CombatRng:
 	return CombatRng.new(hash([campaign_seed, salt]))
 
 
+## Une graine neuve, pour une partie neuve. Publique parce que l'écran
+## d'options en a besoin : lui faire tirer un nombre au hasard le
+## brancherait sur un générateur qui n'est pas celui de la partie, et la
+## règle 4 tomberait sur l'action même qui la fonde.
+func new_seed() -> int:
+	return _generate_seed()
+
+
 func _generate_seed() -> int:
 	var generator := RandomNumberGenerator.new()
 	generator.randomize()

@@ -32,9 +32,14 @@ const ARG_FRAMES := "--frames"
 const ARG_PRESS := "--press"
 const DEFAULT_FRAMES := 45
 
-## Images laissées passer après chaque pression : un écran qui se construit
-## en `_ready` n'est pas encore mis en page à l'image suivante.
-const SETTLE_FRAMES := 12
+## Images laissées passer après chaque pression.
+##
+## DOUZE NE SUFFISAIENT PAS. Un écran qui se construit en `_ready` n'est
+## pas mis en page à l'image suivante, et une pression qui CHARGE UNE SCÈNE
+## — passer au combat, par exemple — en demande bien davantage. La séquence
+## échouait alors sur le bouton suivant, et la capture montrait l'écran
+## d'avant : le pire des résultats, puisqu'il ressemble à un vrai.
+const SETTLE_FRAMES := 40
 
 var _path := ""
 var _frames := DEFAULT_FRAMES
@@ -69,7 +74,12 @@ func _process(_delta: float) -> void:
 	if _frames > 0:
 		return
 	set_process(false)
-	if not _press.is_empty() and not await _walk():
+	var reached := true
+	if not _press.is_empty():
+		# `await` dans une expression booléenne composée ne se comporte pas
+		# comme on croit : on l'isole.
+		reached = await _walk()
+	if not reached:
 		# On ne photographie PAS un écran qu'on n'a pas atteint : l'image
 		# montrerait l'écran précédent, et on en conclurait que la
 		# navigation marche.
@@ -90,7 +100,10 @@ func _walk() -> bool:
 	for label: String in _press:
 		var button := _find_button(get_tree().root, label)
 		if button == null:
-			push_error("Capture : aucun bouton actif « %s »" % label)
+			var seen := PackedStringArray()
+			_collect(get_tree().root, seen)
+			push_error("Capture : aucun bouton actif « %s ». Disponibles : %s"
+				% [label, ", ".join(seen)])
 			return false
 		button.pressed.emit()
 		for i in SETTLE_FRAMES:
@@ -111,3 +124,14 @@ func _find_button(node: Node, label: String) -> Button:
 		if found != null:
 			return found
 	return null
+
+
+## Les boutons actuellement pressables, pour que l'échec dise ce qu'il y
+## avait à l'écran plutôt que seulement ce qui manquait.
+func _collect(node: Node, into: PackedStringArray) -> void:
+	if node is Button:
+		var button := node as Button
+		if not button.disabled and button.is_visible_in_tree():
+			into.append("« %s »" % button.text)
+	for child: Node in node.get_children():
+		_collect(child, into)

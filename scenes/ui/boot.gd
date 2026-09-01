@@ -19,6 +19,7 @@ const COMBAT_SCENE := "res://scenes/combat/combat_scene.tscn"
 const COMPANY_SCENE := "res://scenes/ui/company_screen.tscn"
 const WORLD_SCENE := "res://scenes/world/world_map.tscn"
 const KINGDOM_SCENE := "res://scenes/kingdom/kingdom_screen.tscn"
+const OPTIONS_SCENE := "res://scenes/ui/options_screen.tscn"
 const EXPEDITION_SCENE := "res://scenes/world/expedition_screen.tscn"
 
 ## Identifiants des héros emmenés au banc d'essai, dans l'ordre des
@@ -35,6 +36,7 @@ var _last_cycle: Dictionary = {}
 
 var _company_screen: Control = null
 var _kingdom_screen: Control = null
+var _options_screen: Control = null
 var _world_screen: Control = null
 var _expedition_screen: Control = null
 
@@ -112,6 +114,13 @@ func _build_squad_picker() -> void:
 	company.pressed.connect(_open_company)
 	row.add_child(company)
 
+	var options := Button.new()
+	options.custom_minimum_size = Vector2(200, 84)
+	options.add_theme_font_size_override("font_size", 26)
+	options.text = tr("BOOT_OPTIONS")
+	options.pressed.connect(_open_options)
+	row.add_child(options)
+
 
 func _open_company() -> void:
 	_company_screen = _open(COMPANY_SCENE, func(screen: Node) -> void:
@@ -126,6 +135,34 @@ func _close_company() -> void:
 	_reset_squad()
 	_build_squad_picker()
 	visible = true
+
+
+# --- Les options -----------------------------------------------------------
+
+func _open_options() -> void:
+	_options_screen = _open(OPTIONS_SCENE, func(screen: Node) -> void:
+		screen.closed.connect(_close_options)
+		screen.new_game_requested.connect(_start_new_game))
+
+
+func _close_options() -> void:
+	_dismiss(_options_screen)
+	_options_screen = null
+	visible = true
+
+
+## Une partie neuve efface tout : compagnie, royaume, expédition en cours.
+## Les RÉGLAGES survivent — ils vivent dans leur propre fichier, et un
+## joueur qui recommence ne veut pas re-régler son volume.
+func _start_new_game() -> void:
+	_close_options()
+	GameState.start_new_campaign(GameState.new_seed())
+	_ensure_company()
+	_reset_squad()
+	_last_cycle = {}
+	_depth = 0
+	GameState.save()
+	_build_squad_picker()
 
 
 # --- Le royaume ------------------------------------------------------------

@@ -9,6 +9,17 @@ extends Camera2D
 
 var _bounds: Rect2 = Rect2()
 
+## Tremblement en cours : amplitude restante en pixels, et son décompte.
+##
+## LE DÉCALAGE DU TREMBLEMENT EST TENU À PART DE `offset`, qui sert au
+## cadrage sous le HUD. Les mélanger ferait dériver le cadrage à chaque
+## coup — le tremblement s'ajoute au moment de dessiner et se retire tout
+## seul.
+var _shake_amplitude := 0.0
+var _shake_left := 0.0
+var _shake_total := 0.0
+var _framing := Vector2.ZERO
+
 
 ## Cadre la grille dans la zone que le HUD laisse libre.
 ##
@@ -37,9 +48,11 @@ func frame_board(
 		set_zoom_level(ViewSettings.number(&"camera", &"zoom_default", 1.0))
 
 	offset = Vector2.ZERO
+	_framing = Vector2.ZERO
 	if viewport.y > 0.0 and safe.size.y > 0.0:
 		var safe_centre := safe.position.y + safe.size.y * 0.5
 		offset.y = (viewport.y * 0.5 - safe_centre) / maxf(zoom.y, 0.001)
+	_framing = offset
 	_clamp_position()
 
 
@@ -89,3 +102,39 @@ func _clamp_position() -> void:
 		return
 	position.x = clampf(position.x, _bounds.position.x, _bounds.end.x)
 	position.y = clampf(position.y, _bounds.position.y, _bounds.end.y)
+
+
+# --- Le tremblement --------------------------------------------------------
+#
+# Le § 12 met le hit stop et le tremblement en tête du rapport impact/coût,
+# et les chiffres attendaient dans `view.json` depuis T1.9. Le réglage de
+# confort les coupe : certains joueurs ne le supportent pas, et le § 48
+# veut une interface lisible avant d'être spectaculaire.
+
+## Secoue la caméra. `pixels` et `seconds` viennent de `view.json`.
+func shake(pixels: float, seconds: float) -> void:
+	if not Settings.flag(&"display", &"screen_shake", true):
+		return
+	if pixels <= 0.0 or seconds <= 0.0:
+		return
+	# Un coup pendant un tremblement ne l'additionne pas : il le remplace
+	# s'il est plus fort. Sinon trois coups d'affilée décrochent l'écran.
+	if pixels >= _shake_amplitude:
+		_shake_amplitude = pixels
+		_shake_total = seconds
+		_shake_left = seconds
+	set_process(true)
+
+
+func _process(delta: float) -> void:
+	if _shake_left <= 0.0:
+		offset = _framing
+		set_process(false)
+		return
+	_shake_left -= delta
+	var strength := _shake_amplitude * maxf(_shake_left / maxf(_shake_total, 0.001), 0.0)
+	# Alternance franche plutôt que bruit : à trois pixels et quinze
+	# centièmes, un tirage aléatoire ne se distingue pas d'un tremblement
+	# régulier, et un tremblement régulier se code en une ligne.
+	var swing := strength * (1.0 if int(_shake_left * 60.0) % 2 == 0 else -1.0)
+	offset = _framing + Vector2(swing, -swing * 0.5) / maxf(zoom.x, 0.001)

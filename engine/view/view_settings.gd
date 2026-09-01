@@ -72,6 +72,13 @@ static func size_of(key: StringName) -> float:
 	return number(&"sizes", key, 0.0)
 
 
+## Chiffres du tremblement d'écran. Ils attendaient dans `view.json` depuis
+## T1.9 sans que rien ne les lise : le § 12 met le tremblement en tête du
+## rapport impact/coût, et c'était le coût qui n'avait pas été payé.
+static func shake(key: StringName) -> float:
+	return number(&"shake", key, 0.0)
+
+
 ## Nom du bloc de tuiles d'un terrain. Deux terrains du même bloc se
 ## touchent sans bord ; deux terrains de blocs différents ont une rive
 ## entre eux. C'est ce qui rend une colline visible au milieu de l'herbe.

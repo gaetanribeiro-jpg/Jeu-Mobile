@@ -29,6 +29,12 @@ signal end_turn_pressed
 signal undo_pressed
 signal ability_selected(ability_id: StringName)
 
+## Le joueur demande la pause. Le combat est au tour par tour, donc rien
+## ne « tourne » — mais sur mobile on est interrompu, et un écran sans
+## sortie visible est un écran dont on sort par le bouton système, ce qui
+## tue l'application.
+signal pause_pressed
+
 const TOUCH_TARGET_PX := 96
 const TOP_BAR_PX := 64
 const BOTTOM_BAR_PX := 172
@@ -145,6 +151,13 @@ func _build_top() -> Control:
 	top.add_child(_stretch())
 	_round = _label(24)
 	top.add_child(_round)
+
+	# En haut à droite, loin des compétences : une pause qu'on presse par
+	# accident au milieu d'une activation est pire que pas de pause.
+	var pause := _button("HUD_PAUSE")
+	pause.custom_minimum_size = Vector2(64, 48)
+	pause.pressed.connect(func() -> void: pause_pressed.emit())
+	top.add_child(pause)
 	return top
 
 

@@ -268,3 +268,23 @@ GRANT_HEAL_BETWEEN_STEPS,Soin entre rencontres
 KINGDOM_RECRUIT,Recruter un %s\n%s
 KINGDOM_RECRUITED,%s rejoint la compagnie (%s).
 BOOT_KINGDOM,Royaume
+OPTIONS_TITLE,Options
+OPTIONS_AUDIO,Son
+OPTIONS_MASTER,Volume général
+OPTIONS_MUSIC,Musique
+OPTIONS_SFX,Effets
+OPTIONS_COMFORT,Confort
+OPTIONS_SHAKE,Tremblement d'écran
+OPTIONS_GAME,Partie
+OPTIONS_RESET_SETTINGS,Rétablir les réglages par défaut
+OPTIONS_SETTINGS_RESET,Réglages rétablis.
+OPTIONS_NEW_GAME,Nouvelle partie
+OPTIONS_NEW_GAME_CONFIRM,Confirmer — la partie en cours sera effacée
+OPTIONS_CANCEL,Annuler
+BOOT_OPTIONS,Options
+HUD_PAUSE,II
+PAUSE_TITLE,Pause
+PAUSE_RESUME,Reprendre le combat
+PAUSE_OPTIONS,Options
+PAUSE_ABANDON,Abandonner le combat
+PAUSE_ABANDON_CONFIRM,Confirmer — le combat est perdu

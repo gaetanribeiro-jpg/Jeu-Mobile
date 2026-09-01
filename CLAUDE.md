@@ -243,6 +243,8 @@ dur : passer par `data/assets.json`.
 - **Phase 3 terminée.** T3.1 à T3.6 : `Region`, `Expedition`, les
   évènements du § 40, le marchand, l'écran d'expédition et la carte du
   monde.
+- **T1.14 :** la portée se paie. **T6.1 :** options, pause, volume,
+  tremblement d'écran.
 - **Phase 4 terminée.** T4.1 à T4.4 : `Kingdom`, `Buildings`, l'écran du
   royaume et le branchement sur la boucle. **640 tests passent** sous
   Godot 4.6 en headless.
@@ -303,6 +305,12 @@ main ne répare rien — l'échec est antérieur. D'où l'autoload `Capture`,
 inerte sans son argument, qui photographie le vrai jeu.
 
 **Toutes les valeurs de ressenti sont dans `data/combat/view.json`.**
+
+**Les réglages du joueur sont à part de la sauvegarde**, dans
+`user://settings.json` (autoload `Settings`, défauts dans
+`data/settings.json`). Une partie neuve ne doit pas remettre le volume à
+zéro. `AudioManager` crée les bus `Music` et `SFX` à l'exécution ; le choix
+des sons reste à faire, le câblage non.
 
 **Deux pièges d'interface qui font TOMBER le moteur en headless.** Un
 `ScrollContainer` dont la barre verticale apparaît selon la hauteur du

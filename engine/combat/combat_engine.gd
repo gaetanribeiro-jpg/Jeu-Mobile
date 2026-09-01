@@ -703,6 +703,30 @@ func is_victory() -> bool:
 
 # --- Interne --------------------------------------------------------------
 
+## Abandonne le combat : défaite immédiate.
+##
+## POURQUOI CETTE PORTE EXISTE. Sur mobile on est interrompu, et un combat
+## dont on ne peut pas sortir se quitte par le bouton système — ce qui tue
+## l'application et, avec elle, l'expédition. Mieux vaut une défaite que le
+## joueur a choisie qu'une partie qu'il a perdue en fermant la fenêtre.
+##
+## C'est une VRAIE défaite, pas une sortie sans frais : l'expédition la
+## traite comme n'importe quelle autre, avec la besace amputée du § 41.
+func surrender() -> Array[Dictionary]:
+	var log: Array[Dictionary] = []
+	if is_finished():
+		return log
+	outcome = CombatObjective.Outcome.DEFEAT
+	phase = Phase.FINISHED
+	log.append({"event": "surrendered"})
+	log.append({
+		"event": "combat_ended",
+		"victory": false,
+		"round": order.round_index,
+	})
+	return log
+
+
 func _round_cap() -> int:
 	return int(CombatRules.rule(&"objectives", &"max_rounds_before_draw", 0))
 

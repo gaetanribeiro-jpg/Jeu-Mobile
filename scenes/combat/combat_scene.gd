@@ -23,6 +23,16 @@ extends Node2D
 
 signal combat_finished(victory: bool)
 
+## Écran de pause en cours, ou null. Le combat est au tour par tour, donc
+## rien ne « tourne » — la pause ne suspend rien, elle offre une SORTIE.
+## Sans elle, un joueur interrompu quitte par le bouton système, ce qui
+## tue l'application et l'expédition avec.
+## Typé `Node` et pas `Control` : la scène de pause est un `CanvasLayer`,
+## pour se poser AU-DESSUS du HUD sans dépendre de l'ordre des enfants.
+## Le typer `Control` faisait échouer l'affectation à l'exécution, et le
+## menu ne s'ouvrait jamais — sans le moindre message.
+var _pause: Node = null
+
 enum Selection { NONE, UNIT, PREVIEW }
 
 const HERO_COLOR := "Blue"
@@ -131,6 +141,7 @@ func _build_scene() -> void:
 	_hud.end_turn_pressed.connect(_on_end_turn)
 	_hud.undo_pressed.connect(_on_undo)
 	_hud.ability_selected.connect(_on_ability_selected)
+	_hud.pause_pressed.connect(_open_pause)
 
 	# Le plateau se cadre dans ce que le HUD laisse libre, jamais dans le
 	# plein écran : sinon les rangées du bas passent sous la barre de
@@ -512,6 +523,14 @@ func _play_impact(target_id: int, downed: bool) -> void:
 	# Hit stop : 80 ms de gel à l'impact. Le § 12 le met en tête du rapport
 	# impact/coût, et il ne coûte effectivement qu'une attente.
 	await get_tree().create_timer(ViewSettings.duration(&"hit_stop")).timeout
+	if _camera != null:
+		# Une mise à terre secoue plus fort qu'un coup : c'est la seule
+		# chose qui distingue les deux sans une animation de mort, que le
+		# pack ne fournit pas.
+		_camera.shake(
+			ViewSettings.shake(&"death_pixels" if downed else &"hit_pixels"),
+			ViewSettings.shake(&"death_seconds" if downed else &"hit_seconds")
+		)
 	if downed:
 		await view.play_downed()
 	else:
@@ -622,3 +641,40 @@ func _refresh_deployment_overlay() -> void:
 	_overlay.ghost_cell = Vector2i(-1, -1)
 	_refresh_ghost()
 	_overlay.queue_redraw()
+
+
+# --- La pause --------------------------------------------------------------
+
+const PAUSE_SCENE := "res://scenes/ui/pause_menu.tscn"
+
+
+func _open_pause() -> void:
+	if is_instance_valid(_pause) or engine == null or engine.is_finished():
+		return
+	var packed: PackedScene = load(PAUSE_SCENE)
+	if packed == null:
+		return
+	_pause = packed.instantiate()
+	_pause.resumed.connect(_close_pause)
+	_pause.abandoned.connect(_abandon)
+	add_child(_pause)
+
+
+func _close_pause() -> void:
+	if is_instance_valid(_pause):
+		_pause.queue_free()
+	_pause = null
+
+
+## Abandonner est une vraie défaite, pas une sortie sans frais : le moteur
+## la journalise comme les autres, et l'expédition l'encaisse comme les
+## autres.
+func _abandon() -> void:
+	_close_pause()
+	if engine == null or engine.is_finished():
+		return
+	var log := engine.surrender()
+	_hud.show_result(false)
+	for entry: Dictionary in log:
+		if String(entry.get("event", "")) == "combat_ended":
+			combat_finished.emit(false)

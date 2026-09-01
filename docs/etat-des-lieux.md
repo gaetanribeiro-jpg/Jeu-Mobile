@@ -985,6 +985,75 @@ feu invisible de T1.12, deux phases plus tard.
 Ressources (bois, pierre, or, nourriture), chantiers, construction,
 amélioration des bâtiments, population, recrutement, armée.
 
+### Phase 6 — Confort ⏳
+
+| Tâche | Contenu | État |
+|---|---|---|
+| **T6.1** | Options, pause en combat, volume, tremblement d'écran | ✅ |
+
+### Ce qu'un écran d'options oblige à faire vraiment (T6.1)
+
+C'est la première chose qu'un testeur cherche, et son absence donne
+l'impression d'un prototype même quand tout le reste tourne. Mais un écran
+d'options **oblige à rendre vraies** les choses qu'il règle, sinon il est
+exactement ce que le projet s'interdit ailleurs : du décoratif.
+
+Deux choses étaient donc à écrire avant lui.
+
+**`AudioManager` était un squelette vide.** Trois curseurs qui ne
+commandent rien n'auraient rien valu. Les bus `Music` et `SFX` sont créés à
+l'exécution — trois bus ne valent pas une ressource binaire à maintenir
+hors du dépôt de texte — et la conversion linéaire → décibels vit à un seul
+endroit : un curseur qui parle en décibels ne veut rien dire pour personne.
+Le zéro coupe franchement, parce que `linear_to_db(0)` rend −∞ et que
+certains pilotes n'aiment pas ça. **Le choix des sons reste à faire, et il
+demande des oreilles** — le câblage, lui, est prêt.
+
+**Le tremblement d'écran était déclaré dans `view.json` depuis T1.9 et
+personne ne le lisait.** Le § 12 le met en tête du rapport impact/coût ;
+c'était le coût qui n'avait pas été payé. Il est maintenant tenu à part du
+décalage de cadrage — les mélanger ferait dériver le cadrage à chaque coup
+— et une mise à terre secoue plus fort qu'un coup, ce qui est la seule
+chose qui distingue les deux **sans animation de mort**, que le pack ne
+fournit pas.
+
+**Les réglages vivent à part de la sauvegarde de partie**, dans
+`user://settings.json`. Commencer une nouvelle partie ne doit pas remettre
+le volume à zéro, et un joueur qui a coupé la musique ne veut pas la voir
+revenir parce qu'il a perdu une expédition. Chaque mouvement de curseur est
+écrit tout de suite : sur mobile l'application peut mourir entre le réglage
+et la fermeture de l'écran.
+
+### La pause n'est pas une pause, c'est une sortie (T6.1)
+
+Le combat est au tour par tour : rien ne « tourne ». Ce menu ne suspend
+donc rien — il offre une **porte**. Sur mobile on est interrompu, et un
+combat dont on ne peut pas sortir se quitte par le bouton système, ce qui
+tue l'application et l'expédition avec elle. Mieux vaut une défaite que le
+joueur a choisie qu'une partie qu'il a perdue en fermant la fenêtre.
+
+`CombatEngine.surrender()` produit donc une **vraie défaite**, journalisée
+comme les autres, que l'expédition encaisse comme les autres — besace
+amputée du § 41 comprise. Abandonner demande deux pressions, et la seconde
+dit ce qu'elle coûte.
+
+### Trois pièges payés en chemin (T6.1)
+
+1. **Une lambda GDScript capture une variable locale par VALEUR.** Un
+   compteur local incrémenté dans un `connect` reste à zéro, et
+   l'assertion échoue sans que rien ne soit faux dans le code qu'elle
+   vise. Le compteur d'un test est donc un membre.
+2. **Une scène de pause est un `CanvasLayer`, pas un `Control`.** La
+   ranger dans une variable typée `Control` faisait échouer l'affectation
+   à l'exécution : le menu ne s'ouvrait jamais, **sans le moindre
+   message**. Trouvé en capture d'écran, comme d'habitude.
+3. **`--press` de `Capture` laissait douze images entre deux pressions.**
+   C'est assez pour un panneau qui se reconstruit, pas pour une pression
+   qui CHARGE UNE SCÈNE. La séquence échouait alors sur le bouton suivant
+   et la capture montrait l'écran d'avant — le pire des résultats,
+   puisqu'il ressemble à un vrai. Quarante images, et l'échec nomme
+   maintenant **les boutons qui étaient à l'écran**.
+
 ### Phase 5 — Interconnexion
 
 Loot → royaume, royaume → héros, exploration → ressources, invasions,
