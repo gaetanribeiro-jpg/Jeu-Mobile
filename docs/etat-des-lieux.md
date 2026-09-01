@@ -1626,6 +1626,62 @@ règle la question pour toutes les familles à la fois.
   lisibles, ou ternes ?
 
 
+### T9.4 — ce que Tiny Swords ne dessine pas ✅
+
+Gaetan a fourni cinq packs Kenney. **Aucun ne contient d'icône de
+compétence** — vérifié en balayant les 717 noms de fichiers : les
+`arrow_*` sont des flèches de navigation, pas des projectiles. Ce sont
+tous du chrome d'interface : panneaux, bordures, boutons, curseurs.
+
+La question des icônes de sorts reste donc entière, et j'avais d'ailleurs
+mal chiffré le manque : ce n'est pas « 12 icônes pour 15 compétences »,
+c'est **zéro**. Les 12 icônes du pack sont bois, bûche, or, viande, épées
+croisées, bouclier, deux flèches, croix, engrenage, info, note de
+musique — des icônes de ressources et de chrome.
+
+**Mais ils comblent un manque réel, et ce n'était pas celui qu'on
+cherchait.** Dix `ScrollContainer` répartis sur six écrans rendaient la
+barre grise par défaut de Godot au milieu d'une interface en bois, et le
+curseur de volume des options avec. Tiny Swords n'a ni barre de
+défilement, ni case à cocher, ni poignée : ce n'est pas un oubli de
+câblage, c'est un manque du pack.
+
+**La règle qui autorise le mélange, et qui le borne :** on ne mélange que
+là où le premier pack ne dessine rien. Un bouton ou un panneau Kenney à
+côté d'un bouton Tiny Swords se verrait ; une barre de défilement que
+Tiny Swords n'a jamais dessinée ne trahit rien. Le § 16 avait déjà
+tranché contre le mélange de deux styles — cette exception ne l'annule
+pas, elle en précise la frontière.
+
+Cinq fichiers repris, pas un de plus. Le curseur de volume, lui, reprend
+**l'auge des jauges de PV** : c'est le même objet — une valeur dans une
+gouttière — et lui donner un second dessin reviendrait à dire qu'il
+s'agit d'autre chose.
+
+**`assets/kenney/` EST dans le dépôt**, contrairement à
+`assets/tiny_swords/`, et la différence est la licence : CC0 autorise la
+redistribution, Pixel Frog l'interdit même modifiée. Un clone neuf dessine
+donc déjà ses barres de défilement. C'est le seul endroit du jeu où un
+asset manquant est un vrai défaut plutôt qu'un poste mal installé, et un
+test le vérifie à ce titre.
+
+### Trois fois le même piège, sous trois formes
+
+Chacune faisait disparaître un widget **sans un mot**, et chacune n'a été
+trouvée qu'en mesurant la capture au lieu de la regarder.
+
+1. **La barre de défilement a disparu.** Godot déduit l'épaisseur d'un
+   `ScrollBar` de la taille minimale de son style ; un `StyleBoxFlat` nu
+   en a une nulle. Mesuré : 68 de luminosité dans la colonne avant, 16
+   après — c'est-à-dire le fond.
+2. **Le rail du curseur ne se voyait pas.** Même mécanisme : Godot dessine
+   le rail à la hauteur minimale du style, nulle sans marges verticales.
+   Le bois était bien posé, sur zéro pixel de haut.
+3. **Une barre de défilement se découpe EN HAUTEUR**, pas en largeur :
+   c'est une pastille verticale dont seuls les bouts sont arrondis.
+   L'inverse exact d'une jauge, et le même piège si on ne l'écrit pas.
+
+
 ---
 
 ## 6. Ce qui est rangé, pas jeté

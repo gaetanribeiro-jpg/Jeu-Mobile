@@ -21,8 +21,11 @@
    "fx": "free",
    "ui": "free",
    "enemies": "enemy",
-   "extra": "enemy"
-  }
+   "extra": "enemy",
+   "widgets": "kenney"
+  },
+  "root_kenney": "assets/kenney/",
+  "_roots_note": "DEUX ORIGINES, ET ELLES NE SE VERSIONNENT PAS PAREIL. Tiny Swords est sous une licence qui interdit la redistribution : ses dossiers sont dans le .gitignore et chaque poste copie le pack à la main. Kenney est en CC0 — domaine public — donc `assets/kenney/` EST dans le dépôt, et un clone neuf en dessine déjà quelque chose.\n\nOn n'y met que ce que Tiny Swords ne sait pas dessiner : barres de défilement, cases à cocher, poignée de curseur. Mélanger deux styles sur un bouton ou un panneau se verrait ; sur un widget de chrome que le premier pack n'a jamais dessiné, il n'y a rien à trahir."
  },
  "units": {
   "warrior": {
@@ -2398,6 +2401,51 @@
   "key_template": "avatars_{index:02}",
   "aliases": {
    "mage": "monk"
+  }
+ },
+ "widgets": {
+  "_note": "CE QUE TINY SWORDS NE DESSINE PAS. Dix `ScrollContainer` sur six écrans rendaient la barre grise par défaut de Godot au milieu d'une interface en bois, et le curseur de volume des options avec. Le pack Tiny Swords n'a ni barre de défilement, ni case à cocher, ni poignée : ce n'est pas un oubli de ma part, c'est un manque du pack.\n\n`slice` ici ne découpe QU'EN HAUTEUR : une barre de défilement est une pastille verticale dont seuls les bouts sont arrondis.",
+  "scrollbar": {
+   "file": "widgets/scrollbar_brown.png",
+   "kind": "image",
+   "w": 16,
+   "h": 64,
+   "layout": "three_slice_vertical",
+   "slice": {
+    "corner": 6,
+    "middle": 52,
+    "gap": 0
+   }
+  },
+  "scrollbar_small": {
+   "file": "widgets/scrollbar_brown_small.png",
+   "kind": "image",
+   "w": 16,
+   "h": 24,
+   "layout": "three_slice_vertical",
+   "slice": {
+    "corner": 6,
+    "middle": 12,
+    "gap": 0
+   }
+  },
+  "checkbox_empty": {
+   "file": "widgets/checkbox_brown_empty.png",
+   "kind": "image",
+   "w": 24,
+   "h": 24
+  },
+  "checkbox_checked": {
+   "file": "widgets/checkbox_brown_checked.png",
+   "kind": "image",
+   "w": 24,
+   "h": 24
+  },
+  "checkbox_cross": {
+   "file": "widgets/checkbox_brown_cross.png",
+   "kind": "image",
+   "w": 24,
+   "h": 24
   }
  }
 }

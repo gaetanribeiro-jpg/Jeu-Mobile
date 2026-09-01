@@ -246,6 +246,106 @@ func _build_theme() -> void:
 	if panel != null:
 		theme.set_stylebox("panel", "PanelContainer", panel)
 
+	_build_widgets()
+
+
+## Les widgets que Tiny Swords ne dessine pas, pris chez Kenney (CC0).
+##
+## DIX `ScrollContainer` SUR SIX ÉCRANS rendaient la barre grise par
+## défaut de Godot au milieu d'une interface en bois, et le curseur de
+## volume des options avec. Ce n'est pas un oubli : le pack n'a ni barre
+## de défilement, ni case à cocher, ni poignée.
+##
+## MÉLANGER DEUX PACKS SUR UN BOUTON SE VERRAIT ; sur un widget que le
+## premier n'a jamais dessiné, il n'y a rien à trahir. C'est la seule
+## raison qui autorise ce mélange, et elle ne s'étend pas aux boutons ni
+## aux panneaux, qui restent en Tiny Swords.
+func _build_widgets() -> void:
+	var block := UiTheme.widget(&"scrollbar")
+	if not block.is_empty():
+		var pill := _sliced_texture(
+			StringName(block.get("asset", "")), int(block.get("scale", 1)),
+			false, 3, &"widgets", true
+		)
+		if pill != null:
+			var grabber := _boxed(
+				pill, UiTheme.color(StringName(block.get("tint", "wood_light"))), true
+			)
+			# LA PISTE DOIT PORTER LA LARGEUR DE LA BARRE. Godot déduit
+			# l'épaisseur d'un `ScrollBar` de la taille minimale de son
+			# style ; un `StyleBoxFlat` nu en a une nulle, et la barre
+			# disparaissait purement et simplement — mesuré à la capture,
+			# 68 de luminosité avant, 16 après, c'est-à-dire le fond.
+			var track := _flat(UiTheme.color(&"scroll_track"))
+			var half := UiTheme.metric(&"scrollbar_width") / 2
+			track.content_margin_left = half
+			track.content_margin_right = half
+			track.content_margin_top = half
+			track.content_margin_bottom = half
+			for bar_type: String in ["VScrollBar", "HScrollBar"]:
+				for state: String in ["grabber", "grabber_highlight", "grabber_pressed"]:
+					theme.set_stylebox(state, bar_type, grabber)
+				theme.set_stylebox("scroll", bar_type, track)
+	# LE CURSEUR DE VOLUME REPREND L'AUGE DES JAUGES. C'est le même objet —
+	# une valeur dans une gouttière — et lui donner un deuxième dessin
+	# reviendrait à dire qu'il s'agit d'autre chose. Un rectangle sombre
+	# sur un fond sombre, lui, ne se voyait simplement pas.
+	var bars := UiTheme.bars()
+	var trough := _sliced_texture(
+		StringName(bars.get("base_asset", "")), int(bars.get("scale", 1)),
+		false, 3
+	)
+	if trough != null:
+		var groove := _boxed(trough, UiTheme.color(&"wood"), false)
+		# GODOT DESSINE LE RAIL À LA HAUTEUR MINIMALE DU STYLE, et sans
+		# marges verticales cette hauteur est nulle : le bois était bien
+		# posé, sur zéro pixel de haut. Les marges de contenu la lui
+		# donnent.
+		var half := UiTheme.metric(&"bar_height") / 2
+		groove.content_margin_top = half
+		groove.content_margin_bottom = half
+		theme.set_stylebox("slider", "HSlider", groove)
+		# La part remplie du rail : sans elle Godot pose un gris qui ne
+		# veut rien dire, alors que c'est justement la valeur qu'on règle.
+		var filled := _flat(UiTheme.color(&"slider_filled"))
+		theme.set_stylebox("grabber_area", "HSlider", filled)
+		theme.set_stylebox("grabber_area_highlight", "HSlider", filled)
+
+	var boxes := UiTheme.widget(&"checkbox")
+	if boxes.is_empty():
+		return
+	var empty := _plain_texture(
+		StringName(boxes.get("empty", "")), int(boxes.get("scale", 1)),
+		false, false, false, &"widgets"
+	)
+	var checked := _plain_texture(
+		StringName(boxes.get("checked", "")), int(boxes.get("scale", 1)),
+		false, false, false, &"widgets"
+	)
+	if empty == null or checked == null:
+		return
+	# La poignée du curseur est la MÊME pastille ronde que la case à
+	# cocher : deux dessins pour deux gestes voisins se remarquent, un
+	# seul se lit.
+	theme.set_icon("grabber", "HSlider", checked)
+	theme.set_icon("grabber_highlight", "HSlider", checked)
+	theme.set_icon("grabber_disabled", "HSlider", empty)
+	for widget_type: String in ["CheckBox", "CheckButton"]:
+		theme.set_icon("unchecked", widget_type, empty)
+		theme.set_icon("checked", widget_type, checked)
+		theme.set_icon("unchecked_disabled", widget_type, empty)
+		theme.set_icon("checked_disabled", widget_type, checked)
+		theme.set_color("font_color", widget_type, UiTheme.color(&"ink_inverse"))
+	# `CheckButton` a ses propres noms d'icônes : un interrupteur, pas une
+	# case. Sans ça, l'option « tremblement d'écran » gardait le dessin de
+	# Godot au milieu de tout le reste.
+	theme.set_icon("unchecked", "CheckButton", empty)
+	theme.set_icon("checked", "CheckButton", checked)
+	theme.set_icon("off", "CheckButton", empty)
+	theme.set_icon("on", "CheckButton", checked)
+	theme.set_icon("off_disabled", "CheckButton", empty)
+	theme.set_icon("on_disabled", "CheckButton", checked)
+
 
 func _surface_style(role: StringName) -> StyleBox:
 	var block := UiTheme.surface(role)
@@ -317,15 +417,18 @@ func _corner_key(texture: Texture2D) -> StringName:
 ## pour une grille 3×3 — c'est le nombre de morceaux par axe. Une jauge
 ## n'a qu'une rangée, ce que la table dit par son `layout`.
 func _sliced_texture(
-	key: StringName, scale: int, desaturate: bool, pieces: int
+	key: StringName, scale: int, desaturate: bool, pieces: int,
+	category: StringName = &"ui", vertical_only: bool = false
 ) -> Texture2D:
 	if key.is_empty():
 		return null
-	var cache := StringName("%s|%d|%s|%d" % [key, scale, desaturate, pieces])
+	var cache := StringName(
+		"%s|%s|%d|%s|%d|%s" % [category, key, scale, desaturate, pieces, vertical_only]
+	)
 	if _textures.has(cache):
 		return _textures[cache]
 
-	var entry := AssetTable.sprite(&"ui", key)
+	var entry := AssetTable.sprite(category, key)
 	if entry.is_empty():
 		return null
 	var source := _load_image(String(entry.get("path", "")))
@@ -339,12 +442,18 @@ func _sliced_texture(
 	var corner := int(slice.get("corner", 0))
 	var middle := int(slice.get("middle", 0))
 	var gap := int(slice.get("gap", 0))
+	# UNE BARRE DE DÉFILEMENT SE DÉCOUPE EN HAUTEUR, pas en largeur : c'est
+	# une pastille verticale dont seuls les bouts sont arrondis. L'inverse
+	# exact d'une jauge, et le même piège si on ne le dit pas.
 	var horizontal := _spans(corner, middle, gap)
-	var vertical := horizontal if pieces > 1 and source.get_height() > corner * 2 else [
-		[0, 0, source.get_height()]
-	]
+	var vertical: Array = horizontal
+	if vertical_only:
+		vertical = _spans(corner, middle, gap)
+		horizontal = [[0, 0, source.get_width()]]
+	elif not (pieces > 1 and source.get_height() > corner * 2):
+		vertical = [[0, 0, source.get_height()]]
 
-	var width := corner * 2 + middle
+	var width: int = horizontal[horizontal.size() - 1][1] + horizontal[horizontal.size() - 1][2]
 	var height: int = vertical[vertical.size() - 1][1] + vertical[vertical.size() - 1][2]
 	var packed := Image.create_empty(width, height, false, source.get_format())
 	for row: Array in vertical:
@@ -384,16 +493,16 @@ func _spans(corner: int, middle: int, gap: int) -> Array:
 ## Un asset qui n'est pas découpé — le remplissage d'une jauge.
 func _plain_texture(
 	key: StringName, scale: int, desaturate: bool = false,
-	normalise: bool = false, crop: bool = false
+	normalise: bool = false, crop: bool = false, category: StringName = &"ui"
 ) -> Texture2D:
 	if key.is_empty():
 		return null
 	var cache := StringName(
-		"plain|%s|%d|%s|%s|%s" % [key, scale, desaturate, normalise, crop]
+		"plain|%s|%s|%d|%s|%s|%s" % [category, key, scale, desaturate, normalise, crop]
 	)
 	if _textures.has(cache):
 		return _textures[cache]
-	var entry := AssetTable.sprite(&"ui", key)
+	var entry := AssetTable.sprite(category, key)
 	if entry.is_empty():
 		return null
 	var image := _load_image(String(entry.get("path", "")))

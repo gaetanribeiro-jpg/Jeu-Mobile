@@ -102,6 +102,23 @@
       0.93,
       0.85,
       0.55
+    ],
+    "wood_light": [
+      1.0,
+      0.94,
+      0.86
+    ],
+    "scroll_track": [
+      0.18,
+      0.15,
+      0.12,
+      0.55
+    ],
+    "slider_filled": [
+      0.95,
+      0.74,
+      0.32,
+      0.55
     ]
   },
   "typography": {
@@ -123,7 +140,8 @@
     "bar_height_small": 16,
     "text_outline": 4,
     "bar_fill_height": 14,
-    "bar_inset": 7
+    "bar_inset": 7,
+    "scrollbar_width": 16
   },
   "surfaces": {
     "_note": "Chaque rôle dit QUEL asset du pack, à quelle RÉDUCTION, et de quelle TEINTE.\n\n`scale` est un diviseur ENTIER, et il n'y a pas d'exception à ça : le pack est du pixel art sur grille de 64, filtré en Nearest. Diviser par 2 fait tomber quatre pixels sur un ; diviser par 1,5 en fait tomber deux et demi, et la bordure bave. C'est aussi ce qui décide la taille des coins : un bouton de 72 px de haut ne peut pas porter des coins de 64, il lui faut du 32 — donc `scale: 2`.\n\n`desaturate` transforme la source en niveaux de gris AVANT de la teinter. Sans ça on ne pourrait pas sortir des deux couleurs du pack : multiplier un bouton bleu par de l'or donne du vert sale. Passé en gris, il prend n'importe quelle teinte proprement, et les six rôles ci-dessous sortent tous de la même image.",
@@ -168,5 +186,19 @@
     "fill_asset": "bigbar_fill",
     "scale": 2,
     "normalise_fill": true
+  },
+  "widgets": {
+    "_note": "LES TROIS WIDGETS QUE TINY SWORDS NE DESSINE PAS, pris chez Kenney (CC0). Une barre de défilement grise de Godot au milieu d'une interface en bois se voit plus qu'un léger écart de style entre deux packs — et sur un élément que le premier n'a jamais dessiné, il n'y a rien à trahir.\n\nIls sont TEINTÉS comme le reste : la palette décide, pas le fichier.",
+    "scrollbar": {
+      "asset": "scrollbar",
+      "scale": 1,
+      "tint": "wood_light"
+    },
+    "checkbox": {
+      "empty": "checkbox_empty",
+      "checked": "checkbox_checked",
+      "scale": 1,
+      "tint": "wood_light"
+    }
   }
 }

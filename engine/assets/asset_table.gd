@@ -24,7 +24,7 @@ const TABLE_PATH := "res://data/assets.json"
 
 ## Catégories dont les entrées sont de simples fichiers, sans couleur.
 const PLAIN_CATEGORIES: Array[StringName] = [
-	&"terrain", &"decorations", &"resources", &"fx", &"ui", &"extra"
+	&"terrain", &"decorations", &"resources", &"fx", &"ui", &"extra", &"widgets"
 ]
 
 const KIND_IMAGE := &"image"

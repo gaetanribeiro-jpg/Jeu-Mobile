@@ -26,6 +26,7 @@ func _init() -> void:
 	_check_surfaces()
 	_check_button_roles()
 	_check_bars()
+	_check_widgets()
 
 	if _problems.is_empty():
 		print("\nLe thème tient debout.")
@@ -177,3 +178,58 @@ func _check_bars() -> void:
 		_problems.append("jauge : le remplissage est absent de la table")
 	print("jauges       : auge de %d px, rainure %d en haut %d en bas, échelle %d"
 		% [height, int(groove.get("top", 0)), int(groove.get("bottom", 0)), scale])
+
+
+## Les widgets que Tiny Swords ne dessine pas, pris chez Kenney.
+##
+## Ils sont dans le dépôt (CC0), donc leur absence est un vrai défaut et
+## pas un poste mal installé — contrairement à tout le reste des assets.
+func _check_widgets() -> void:
+	var block := UiTheme.widgets()
+	if block.is_empty():
+		_problems.append("aucun widget déclaré : les barres de défilement "
+			+ "resteront celles de Godot")
+		return
+
+	var scrollbar := UiTheme.widget(&"scrollbar")
+	if scrollbar.is_empty():
+		_problems.append("pas de barre de défilement déclarée")
+	else:
+		var entry := AssetTable.sprite(
+			&"widgets", StringName(scrollbar.get("asset", ""))
+		)
+		if entry.is_empty():
+			_problems.append("barre de défilement : asset absent de la table")
+		else:
+			var slice: Dictionary = entry.get("slice", {})
+			var span := (int(slice.get("corner", 0)) * 2 + int(slice.get("middle", 0))
+				+ int(slice.get("gap", 0)) * 2)
+			# Une barre de défilement se découpe EN HAUTEUR : c'est sa
+			# hauteur que les tranches doivent couvrir, pas sa largeur.
+			if span != int(entry.get("h", 0)):
+				_problems.append(
+					"barre de défilement : les tranches couvrent %d px pour une "
+					% span + "hauteur de %d" % int(entry.get("h", 0))
+				)
+		var tint := StringName(scrollbar.get("tint", ""))
+		if not tint.is_empty() and not UiTheme.has_color(tint):
+			_problems.append("barre de défilement : teinte « %s » inconnue" % tint)
+
+	var checkbox := UiTheme.widget(&"checkbox")
+	if checkbox.is_empty():
+		_problems.append("pas de case à cocher déclarée")
+	else:
+		for key: String in ["empty", "checked"]:
+			var entry := AssetTable.sprite(
+				&"widgets", StringName(checkbox.get(key, ""))
+			)
+			if entry.is_empty():
+				_problems.append("case à cocher « %s » absente de la table" % key)
+
+	# La largeur de la barre décide de son épaisseur à l'écran : sans
+	# elle, Godot la réduit à zéro et la barre disparaît sans un mot.
+	if UiTheme.metric(&"scrollbar_width") <= 0:
+		_problems.append("largeur de barre de défilement nulle : elle sera invisible")
+
+	print("widgets      : %d déclarés, largeur de barre %d"
+		% [block.size() - 1, UiTheme.metric(&"scrollbar_width")])

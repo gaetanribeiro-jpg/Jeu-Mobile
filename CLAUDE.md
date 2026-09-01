@@ -259,7 +259,8 @@ dur : passer par `data/assets.json`.
 - **Phase 8 terminée.** T8.1 : le cycle jour / nuit du § 36, dernier item
   du périmètre annoncé de la Phase 5 qui n'avait jamais été écrit.
 - **Phase 9 terminée.** T9.1 (le thème sort du code), T9.2 (jauges et
-  panneaux du pack), T9.3 (boutons teintés). **734 tests passent.**
+  panneaux du pack), T9.3 (boutons teintés), T9.4 (les widgets que Tiny
+  Swords ne dessine pas, pris chez Kenney). **736 tests passent.**
 - **La boucle du § 3 tourne en entier :** royaume → carte du monde →
   expédition → combat → butin et expérience → compagnie → royaume. Une
   sortie conclue déclenche un cycle de production ; le royaume rend des
@@ -390,6 +391,22 @@ dessinait. Trois choses à savoir avant d'y toucher :
 - **L'échelle de réduction est un diviseur ENTIER.** Le pack est du pixel
   art sur grille de 64 en filtrage Nearest ; une division fractionnaire
   fait baver la bordure.
+
+**DEUX ORIGINES D'ASSETS, ET ELLES NE SE VERSIONNENT PAS PAREIL (T9.4).**
+Tiny Swords interdit la redistribution : ses dossiers sont dans le
+`.gitignore`. **Kenney est en CC0, donc `assets/kenney/` EST dans le
+dépôt** — un clone neuf en dessine déjà quelque chose, et un fichier
+manquant y est un vrai défaut. On n'y met QUE ce que Tiny Swords ne
+dessine pas : barre de défilement, case à cocher, poignée de curseur.
+**La règle qui borne le mélange : on ne mélange que là où le premier pack
+ne dessine rien.** Un bouton Kenney à côté d'un bouton Tiny Swords se
+verrait ; une barre de défilement que Tiny Swords n'a jamais dessinée ne
+trahit rien.
+
+**Les packs Kenney n'ont AUCUNE icône de compétence** — vérifié sur les
+717 noms de fichiers. Les 15 compétences joueur n'ont toujours pas de
+glyphe, et le pack Tiny Swords n'en a pas non plus : ses 12 icônes sont
+des ressources et du chrome.
 
 **`UiSkin`, PAS `Skin` : ce nom est pris par Godot** (la peau d'un
 squelette). L'autoload se résolvait silencieusement sur la classe native.

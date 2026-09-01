@@ -22,6 +22,23 @@ GUT est versionné dans le dépôt (`addons/gut/LICENSE.md` conservé intact).
 |---|---|---|---|
 | Tiny Swords — Free Pack | Pixel Frog | Usage commercial et modification autorisés, **redistribution des fichiers interdite même modifiés** | 2026-08-29 |
 | Tiny Swords — Enemy Pack | Pixel Frog | idem (pack payant, 9,75 $) | 2026-08-29 |
+| UI Pack — Adventure (`assets/kenney/widgets/`) | Kenney (kenney.nl) | **CC0 1.0** — domaine public | 2026-09-01 |
+
+**Les assets Kenney SONT dans le dépôt, contrairement à Tiny Swords**, et la
+différence est la licence : CC0 autorise la redistribution, Pixel Frog
+l'interdit même modifiée. Un clone neuf dessine donc déjà ses barres de
+défilement et ses cases à cocher, là où il lui manque tout le reste.
+
+On n'a repris que **cinq fichiers** — barre de défilement, trois cases à
+cocher — c'est-à-dire strictement ce que Tiny Swords ne dessine pas. Le
+reste des packs Kenney (boutons, panneaux, bordures, curseurs) ferait
+doublon avec Tiny Swords dans un autre style, et le § 16 a déjà tranché ce
+genre de mélange : « ne pas mélanger les deux, le style diffère ». La
+règle qui en découle, et qui autorise l'exception ci-dessus : **on ne
+mélange que là où le premier pack ne dessine rien.**
+
+CC0 ne demande aucune attribution ; cette ligne existe parce que le
+fichier existe, pas parce que la licence l'exige.
 
 410 PNG dans le Free Pack, 138 dans l'Enemy Pack, plus 60 fichiers Aseprite.
 

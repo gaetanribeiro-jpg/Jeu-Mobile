@@ -132,6 +132,54 @@ func test_la_jauge_declare_sa_rainure() -> void:
 	)
 
 
+func test_les_widgets_manquants_du_pack_sont_declares() -> void:
+	# CE QUE TINY SWORDS NE DESSINE PAS. Dix `ScrollContainer` sur six
+	# écrans rendaient la barre grise par défaut de Godot au milieu d'une
+	# interface en bois. Ce n'est pas un oubli : le pack n'a ni barre de
+	# défilement, ni case à cocher, ni poignée.
+	var scrollbar := UiTheme.widget(&"scrollbar")
+	assert_false(scrollbar.is_empty(), "pas de barre de défilement")
+	var entry := AssetTable.sprite(
+		&"widgets", StringName(scrollbar.get("asset", ""))
+	)
+	assert_false(entry.is_empty(), "l'asset de la barre est absent de la table")
+
+	# Elle se découpe EN HAUTEUR — c'est une pastille verticale dont seuls
+	# les bouts sont arrondis. L'inverse exact d'une jauge, et le même
+	# piège si on ne le dit pas.
+	var slice: Dictionary = entry.get("slice", {})
+	assert_false(slice.is_empty(), "la barre n'a pas de tranches")
+	var span := (int(slice.get("corner", 0)) * 2 + int(slice.get("middle", 0))
+		+ int(slice.get("gap", 0)) * 2)
+	assert_eq(span, int(entry.get("h", 0)), "les tranches couvrent la HAUTEUR")
+
+	var checkbox := UiTheme.widget(&"checkbox")
+	assert_false(checkbox.is_empty(), "pas de case à cocher")
+	for key: String in ["empty", "checked"]:
+		assert_false(
+			AssetTable.sprite(&"widgets", StringName(checkbox.get(key, ""))).is_empty(),
+			"case à cocher « %s » absente" % key
+		)
+
+	# Sans largeur, Godot réduit la barre à zéro et elle disparaît sans un
+	# mot — vu à la capture, 68 de luminosité avant, 16 après.
+	assert_gt(UiTheme.metric(&"scrollbar_width"), 0)
+
+
+func test_les_widgets_kenney_sont_dans_le_depot() -> void:
+	# LA DIFFÉRENCE AVEC TINY SWORDS EST LA LICENCE. Kenney est en CC0,
+	# donc `assets/kenney/` est versionné : ces fichiers-là DOIVENT être
+	# présents, et leur absence est un vrai défaut, pas un poste mal
+	# installé. C'est le seul endroit du jeu où on peut l'affirmer.
+	for key: StringName in [&"scrollbar", &"checkbox_empty", &"checkbox_checked"]:
+		var entry := AssetTable.sprite(&"widgets", key)
+		assert_false(entry.is_empty(), "« %s » absent de la table" % key)
+		assert_true(
+			FileAccess.file_exists(String(entry.get("path", ""))),
+			"« %s » : fichier manquant dans le dépôt" % key
+		)
+
+
 func test_les_cles_de_commentaire_ne_sont_pas_des_entrees() -> void:
 	# Tous les fichiers de données du projet portent des `_note`. La table
 	# des assets n'y échappait que parce qu'elle n'en avait pas : en

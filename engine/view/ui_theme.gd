@@ -126,6 +126,17 @@ static func bars() -> Dictionary:
 	return section(&"bars")
 
 
+## Les widgets que Tiny Swords ne dessine pas — barre de défilement, case
+## à cocher — pris chez Kenney. Vide si le thème n'en déclare pas : on
+## retombe alors sur les widgets de Godot, moins jolis mais fonctionnels.
+static func widgets() -> Dictionary:
+	return section(&"widgets")
+
+
+static func widget(name_: StringName) -> Dictionary:
+	return widgets().get(String(name_), {})
+
+
 ## La couleur d'une jauge de vie selon ce qu'il reste, en fraction.
 ## Vit ici et pas dans un écran : trois écrans dessinent des PV, et trois
 ## seuils écrits trois fois divergent au premier réglage.

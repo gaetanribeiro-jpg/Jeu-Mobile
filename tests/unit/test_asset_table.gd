@@ -116,11 +116,24 @@ func test_toutes_les_entrees_sont_coherentes() -> void:
 	var entries := AssetTable.all_entries()
 	assert_gt(entries.size(), 500, "la table doit couvrir tout le pack")
 	var kinds := [AssetTable.KIND_IMAGE, AssetTable.KIND_STRIP, AssetTable.KIND_ATLAS]
+	# LES RACINES SONT LUES DANS LA TABLE, pas écrites ici. Il y en a deux
+	# depuis que les widgets Kenney (CC0, versionnés) complètent ce que
+	# Tiny Swords ne dessine pas ; en coder une seule en dur revenait à
+	# faire échouer le test à chaque nouvelle origine, ce qui n'est pas ce
+	# qu'il vérifie.
+	var roots := PackedStringArray()
+	for key: String in AssetTable.meta().keys():
+		if key.begins_with("root_"):
+			roots.append("res://" + String(AssetTable.meta()[key]))
+	assert_gt(roots.size(), 0, "aucune racine déclarée")
+
 	for entry: Dictionary in entries:
-		assert_true(
-			entry["path"].begins_with("res://assets/tiny_swords/"),
-			"chemin hors du pack : %s" % entry["path"]
-		)
+		var inside := false
+		for root: String in roots:
+			if String(entry["path"]).begins_with(root):
+				inside = true
+				break
+		assert_true(inside, "chemin hors des racines déclarées : %s" % entry["path"])
 		assert_false(entry["path"].contains("{"), "gabarit non substitué : %s" % entry["path"])
 		assert_true(kinds.has(entry["kind"]), "%s : kind inconnu « %s »" % [entry["id"], entry["kind"]])
 		var size := AssetTable.pixel_size(entry)
