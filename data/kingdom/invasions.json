@@ -1,0 +1,32 @@
+{
+  "_readme": "Les invasions du § 37 : « pendant que le joueur explore, son royaume peut être attaqué ».\n\nCE QU'ELLES APPORTENT À LA BOUCLE, et c'est la seule raison de les écrire. Jusqu'ici, partir en expédition ne coûtait rien au royaume : il produisait pendant l'absence, sans risque. L'invasion met le royaume EN JEU pendant la sortie, et donne au § 29 une seconde question — « je rentre pour le butin » devient « je rentre pour le butin OU pour défendre ».\n\nLA MENACE MONTE AVEC L'ABSENCE. Chaque étape franchie loin du royaume ajoute `threat_per_step` ; au-delà de `threat_trigger`, une invasion se déclare. Plus on s'enfonce, plus le royaume est exposé : c'est exactement le même levier que le butin, tourné dans l'autre sens.\n\nLA MENACE MONTE AUSSI AVEC CE QU'IL Y A À PRENDRE. Un hameau n'intéresse personne. `threat_per_building` fait qu'un royaume riche attire — sinon bâtir n'aurait aucun revers, et le § 50 veut que chaque récompense soit tentante, pas gratuite.\n\nL'ARMÉE PEUT DÉFENDRE SEULE, et c'est le § 37 qui l'exige. Elle s'en sort d'autant mieux que le royaume est bâti et peuplé ; le joueur qui rentre apporte `hero_bonus` en plus. Rentrer doit être meilleur, jamais obligatoire.",
+  "threat": {
+    "_note": "La menace est un compteur, pas une probabilité : un tirage pourrait épargner un joueur toute une partie, et une mécanique qu'on peut ne jamais rencontrer n'en est pas une. `trigger` atteint, l'invasion se déclare.\n\nELLE RETOMBE À ZÉRO AU RETOUR AU ROYAUME. Être chez soi protège — sinon la menace s'accumulerait d'une sortie à l'autre et un royaume avancé vivrait sous alarme permanente.\n\nRéglé pour que le royaume de départ (11,5 par étape) voie sa première invasion vers la huitième étape — donc rarement, et seulement s'il s'attarde — et qu'un royaume au maximum (47,5) en voie une à chaque sortie. La mécanique entre dans le jeu à mesure qu'il y a quelque chose à défendre.",
+    "per_step": 10,
+    "per_building_level": 1.5,
+    "trigger": 90,
+    "warning_steps": 2
+  },
+  "strength": {
+    "_note": "Ce que vaut l'assaut. Il grandit avec le royaume — un hameau n'attire pas une armée — et avec la profondeur de la sortie, parce qu'un royaume laissé longtemps sans défenseur est repéré.",
+    "base": 20,
+    "per_building_level": 6,
+    "per_depth": 4,
+    "variance": 0.2
+  },
+  "defence": {
+    "_note": "Ce que le royaume oppose seul. Les bâtiments comptent parce qu'ils abritent, les habitants parce qu'ils tiennent une fourche. `hero_bonus` est ce que le retour du joueur ajoute : le § 37 veut que rentrer soit MEILLEUR, jamais obligatoire.",
+    "per_building_level": 7,
+    "per_pawn": 4,
+    "hero_bonus_per_level": 5
+  },
+  "losses": {
+    "_note": "Ce qu'une défense ratée coûte. Des RESSOURCES, jamais un bâtiment détruit ni un habitant tué : le § 41 refuse la punition absolue, et voir son château redescendre d'un niveau après trois heures de jeu ferait fermer l'application. Le pillage fait mal et se rattrape.",
+    "resources_fraction": 0.4,
+    "gold_fraction": 0.25
+  },
+  "spoils": {
+    "_note": "Ce qu'une défense réussie rapporte : les assaillants laissent leur barda. Modeste — repousser une invasion est déjà la récompense.",
+    "gold_per_strength": 1.5
+  }
+}

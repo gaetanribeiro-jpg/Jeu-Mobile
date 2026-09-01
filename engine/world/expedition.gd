@@ -68,6 +68,13 @@ var squad_ids: Array[int] = []
 var satchel_gold: int = 0
 var satchel_items: Array[StringName] = []
 
+## Ressources du royaume ramassées en route : { ressource → quantité }.
+##
+## ELLES SONT DANS LA BESACE, donc en jeu jusqu'au retour. C'est le maillon
+## « exploration → ressources » du § 45, et il donne au § 29 un terme de
+## plus : continuer, c'est aussi risquer le bois qui manquait à la caserne.
+var satchel_resources: Dictionary = {}
+
 ## PV portés d'une étape à l'autre : { identifiant de héros → PV }. Un
 ## héros absent de cette table part avec ses PV pleins.
 var carried: Dictionary = {}
@@ -189,7 +196,11 @@ func is_complete() -> bool:
 
 
 func satchel() -> Dictionary:
-	return {"gold": satchel_gold, "items": satchel_items.duplicate()}
+	return {
+		"gold": satchel_gold,
+		"items": satchel_items.duplicate(),
+		"resources": satchel_resources.duplicate(),
+	}
 
 
 # --- La décision du § 29 ---------------------------------------------------
@@ -227,10 +238,15 @@ func resolve_combat(summary: Dictionary, hero_units: Array[Unit], rng: CombatRng
 
 	var gained := Loot.roll(rng, summary, depth())
 	_gather(gained)
+	# La région donne ses ressources à chaque rencontre gagnée : c'est ce
+	# qui fait qu'une sortie nourrit le royaume et pas seulement les héros.
+	var harvested := Region.draw_resources(region_id, rng, depth())
+	_gather_resources(harvested)
 	_advance()
 	return {
 		"gold": int(gained.get("gold", 0)),
 		"items": gained.get("items", [] as Array[StringName]),
+		"resources": harvested,
 		"downed": downed,
 		"state": state,
 	}
@@ -405,6 +421,17 @@ func _as_items(raw: Array) -> Array[StringName]:
 	return out
 
 
+func _gather_resources(harvested: Dictionary) -> void:
+	for key: Variant in harvested.keys():
+		var resource_id := StringName(key)
+		# Une ressource retirée des données depuis le tirage disparaît de
+		# la besace, sans emporter l'expédition avec elle.
+		if ResourceTable.exists(resource_id):
+			satchel_resources[resource_id] = (
+				int(satchel_resources.get(resource_id, 0)) + int(harvested[key])
+			)
+
+
 func _gather(gained: Dictionary) -> void:
 	satchel_gold += maxi(int(gained.get("gold", 0)), 0)
 	for item_id: Variant in gained.get("items", []):
@@ -448,6 +475,10 @@ func _shed_satchel(kept: float, rng: CombatRng) -> Dictionary:
 	var safe := clampf(kept, 0.0, 1.0)
 	var lost_gold := satchel_gold - int(floor(float(satchel_gold) * safe))
 	satchel_gold -= lost_gold
+	# Les ressources se perdent au même taux que le reste : elles étaient
+	# sur le dos des mêmes porteurs.
+	for key: Variant in satchel_resources.keys():
+		satchel_resources[key] = int(floor(float(satchel_resources[key]) * safe))
 	return {"lost_gold": lost_gold, "lost_items": _shed_items(safe, rng)}
 
 
@@ -564,15 +595,22 @@ func hero_id_of_unit(unit: Unit) -> int:
 	return squad_ids[unit.id - 1]
 
 
-## Verse la besace à la compagnie et clôt l'expédition. Renvoie ce qui a
-## été versé.
-func bank(company: Company) -> Dictionary:
+## Verse la besace et clôt l'expédition. Renvoie ce qui a été versé.
+##
+## L'OR ET LES OBJETS VONT À LA COMPAGNIE, LES RESSOURCES AU ROYAUME —
+## `resources.json` dit déjà où vit chacune, et le versement suit la même
+## règle plutôt que d'en inventer une seconde. Le royaume est facultatif :
+## une expédition doit pouvoir se jouer sans, en test comme au simulateur.
+func bank(company: Company, kingdom: Kingdom = null) -> Dictionary:
 	if company == null or is_ongoing():
 		return {}
 	var payload := satchel()
 	company.collect(payload)
+	if kingdom != null:
+		kingdom.grant(satchel_resources, company)
 	satchel_gold = 0
 	satchel_items.clear()
+	satchel_resources.clear()
 	return payload
 
 
@@ -594,6 +632,7 @@ func to_dictionary() -> Dictionary:
 		"squad": squad_ids.duplicate(),
 		"gold": satchel_gold,
 		"items": items,
+		"resources": satchel_resources.duplicate(),
 		"carried": carried.duplicate(),
 		"max_health": _max_health.duplicate(),
 	}
@@ -612,6 +651,9 @@ static func from_dictionary(data: Dictionary) -> Expedition:
 	for hero_id: Variant in data.get("squad", []):
 		run.squad_ids.append(int(hero_id))
 	run.satchel_gold = int(data.get("gold", 0))
+	for key: Variant in (data.get("resources", {}) as Dictionary).keys():
+		if ResourceTable.exists(StringName(key)):
+			run.satchel_resources[StringName(key)] = int((data["resources"] as Dictionary)[key])
 	for item_id: Variant in data.get("items", []):
 		if Equipment.exists(StringName(item_id)):
 			run.satchel_items.append(StringName(item_id))

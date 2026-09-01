@@ -116,6 +116,37 @@ static func boss_map(region_id: StringName) -> StringName:
 	return StringName(entry(region_id).get("boss_map", ""))
 
 
+## Ce qu'une rencontre de cette région rapporte au royaume, avant
+## variance et profondeur. C'est le maillon « exploration → ressources » du
+## § 45 : sans lui, l'expédition et le royaume vivent chacun de leur côté.
+static func resources_per_encounter(region_id: StringName) -> Dictionary:
+	var out := {}
+	var declared: Dictionary = entry(region_id).get("resources_per_encounter", {})
+	for key: String in declared.keys():
+		if not key.begins_with("_"):
+			out[StringName(key)] = int(declared[key])
+	return out
+
+
+## Ce qu'une rencontre rapporte vraiment : la déclaration de la région,
+## augmentée par la profondeur et bousculée par la variance, exactement
+## comme l'or. Deux courbes différentes pour deux ressources qui financent
+## la même chose auraient été impossibles à équilibrer.
+static func draw_resources(region_id: StringName, rng: CombatRng, depth: int = 0) -> Dictionary:
+	var out := {}
+	if rng == null:
+		return out
+	var deeper := 1.0 + Loot.number(&"depth", &"gold_per_step", 0.0) * float(maxi(depth, 0))
+	var spread := Loot.number(&"gold", &"variance", 0.0)
+	for resource_id: StringName in resources_per_encounter(region_id).keys():
+		var base := float(resources_per_encounter(region_id)[resource_id]) * deeper
+		var swing := 1.0 + (rng.unit_float(&"region_resources") * 2.0 - 1.0) * spread
+		var gained := maxi(int(round(base * swing)), 0)
+		if gained > 0:
+			out[resource_id] = gained
+	return out
+
+
 static func chain(region_id: StringName) -> Dictionary:
 	return entry(region_id).get("chain", {})
 

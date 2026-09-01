@@ -1106,6 +1106,74 @@ maintenant à moins de 8 % d'écart (22/23, 28/27,6, 25/27).
 `initiative` a gagné un coût au barème au passage : elle décide **quand**
 on joue, ce qui vaut cher en positionnement mais ne change aucun chiffre.
 
+### Phase 5 — Interconnexion ⏳ *en cours*
+
+| Tâche | Contenu | État |
+|---|---|---|
+| **T5.1** | Exploration → ressources : une sortie nourrit le royaume | ✅ |
+| **T5.2** | Invasions (§ 37) : la menace, le choix, la défense par l'armée | ✅ |
+| **T5.3** | Bataille de défense (§ 38) : le royaume devient une carte | ⏳ |
+
+### Une sortie nourrit le royaume (T5.1)
+
+C'était le maillon manquant du § 45. Le royaume ne mangeait que ses propres
+chantiers, et une expédition ne servait qu'aux héros : les deux moitiés de
+la boucle se touchaient par l'or et par rien d'autre.
+
+**La région dicte sa nature.** Les Terres Vertes sont des prairies et des
+bosquets : beaucoup de bois, de quoi manger, peu de pierre. Une région de
+montagne inversera le tableau, et c'est ce qui donnera une raison d'aller
+ailleurs que « les ennemis y sont plus durs ».
+
+**Les ressources vont dans la besace**, donc elles sont en jeu jusqu'au
+retour, comme le butin. Le § 29 y gagne un terme de plus : continuer, c'est
+aussi risquer le bois qui manquait à la caserne. Et le versement suit la
+règle que `resources.json` posait déjà — l'or et les objets à la compagnie,
+les ressources au royaume — plutôt que d'en inventer une seconde.
+
+### Les invasions, et ce qu'elles réparent (T5.2)
+
+Jusqu'ici, **partir ne coûtait rien au royaume** : il produisait pendant
+l'absence, sans risque. L'invasion le met en jeu, et donne au § 29 une
+seconde question — « je rentre pour le butin » devient « je rentre pour le
+butin **ou pour défendre** ».
+
+**La menace est un compteur, pas une probabilité.** Un tirage pourrait
+épargner un joueur toute une partie, et une mécanique qu'on peut ne jamais
+rencontrer n'en est pas une. Elle monte avec l'absence **et avec ce qu'il y
+a à prendre** : un hameau n'intéresse personne, un royaume bâti attire.
+Bâtir a donc un revers, et le § 50 veut qu'une récompense soit tentante,
+pas gratuite.
+
+**Elle retombe à zéro au retour.** Être chez soi protège — sinon la menace
+s'accumulerait d'une sortie à l'autre et un royaume avancé vivrait sous
+alarme permanente.
+
+**L'assaut laisse deux étapes.** Sans délai, l'invasion serait une nouvelle
+et pas un choix. « Rentrer défendre » est un bouton **à part** de
+« Rentrer » : les deux referment la sortie, mais l'un ramène des héros à la
+bataille et l'autre pas, et confondre les deux ferait perdre un royaume par
+méprise.
+
+**Une défense ratée pille, elle ne détruit pas.** Ni bâtiment rasé ni
+habitant tué : le § 41 refuse la punition absolue, et voir son château
+redescendre d'un niveau après trois heures de jeu ferait fermer
+l'application. Le pillage fait mal et se rattrape.
+
+`verify_kingdom` vérifie les trois choses qui ne se voient pas à la lecture
+et qui rendraient la mécanique morte ou insupportable :
+
+| | mesuré |
+|---|---|
+| royaume de départ | première invasion vers l'étape **8** — rarement, et seulement s'il s'attarde |
+| royaume au maximum | étape **2** — la mécanique entre dans le jeu à mesure qu'il y a quelque chose à défendre |
+| royaume au maximum, seul | défense **231** contre un assaut de **170** : il repousse sans le joueur, comme le § 37 l'exige |
+| royaume de départ, seul | défense **15** contre **26** : il perd — mais quatre héros rentrés ajoutent 60, et rentrer compte |
+
+L'outil l'a d'ailleurs corrigé : à son premier réglage, un royaume au
+maximum était attaqué **dès la première étape** de chaque sortie, et la
+menace ne retombait jamais.
+
 ### Phase 5 — Interconnexion
 
 Loot → royaume, royaume → héros, exploration → ressources, invasions,

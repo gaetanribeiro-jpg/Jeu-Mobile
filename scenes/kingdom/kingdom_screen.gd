@@ -275,6 +275,33 @@ func report_cycle(report: Dictionary) -> void:
 	_note(" · ".join(pieces))
 
 
+## Le compte rendu du dernier assaut (§ 37), à afficher au retour.
+func report_defence(report: Dictionary) -> void:
+	if report.is_empty():
+		return
+	var line := ""
+	if bool(report.get("repelled", false)):
+		line = tr("INVASION_REPELLED") % [
+			int(report.get("defence", 0)), int(report.get("strength", 0)),
+			int(report.get("spoils", 0)),
+		]
+	else:
+		line = tr("INVASION_LOST") % [
+			int(report.get("defence", 0)), int(report.get("strength", 0))
+		]
+		var taken: Dictionary = report.get("plundered", {})
+		var pieces := PackedStringArray()
+		for key: Variant in taken.keys():
+			pieces.append("%s %d" % [
+				tr(ResourceTable.name_key(StringName(key))), int(taken[key])
+			])
+		if not pieces.is_empty():
+			line += "  " + ", ".join(pieces)
+	if bool(report.get("alone", false)):
+		line += "  " + tr("INVASION_ALONE")
+	_note(line)
+
+
 func _note(text: String) -> void:
 	if is_node_ready():
 		_journal.text = text

@@ -41,6 +41,15 @@ var cycles: int = 0
 ## encore bâti ».
 var levels: Dictionary = {}
 
+## Menace qui pèse sur le royaume (§ 37). Elle monte pendant que le joueur
+## explore, et déclenche une invasion au-delà du seuil.
+var threat: int = 0
+
+## L'assaut déclaré, ou null. Il tombe après quelques étapes : c'est ce
+## délai qui en fait un choix — rentrer défendre, ou continuer — plutôt
+## qu'une nouvelle.
+var invasion: Invasion = null
+
 
 static func create() -> Kingdom:
 	var kingdom := Kingdom.new()
@@ -330,6 +339,71 @@ func settle_assignments() -> void:
 		unassign(busiest)
 
 
+# --- La menace (§ 37) ------------------------------------------------------
+#
+# Jusqu'ici, partir en expédition ne coûtait rien au royaume : il produisait
+# pendant l'absence, sans risque. L'invasion le met EN JEU, et donne au § 29
+# une seconde question — « je rentre pour le butin » devient « je rentre
+# pour le butin OU pour défendre ».
+
+## Somme des niveaux bâtis. C'est la mesure de ce qu'il y a à prendre, et
+## de ce qui tient debout : elle sert à la menace comme à la défense.
+func building_levels() -> int:
+	var total := 0
+	for building_id: StringName in levels.keys():
+		if Buildings.exists(building_id):
+			total += level_of(building_id)
+	return total
+
+
+## Une étape d'expédition de plus loin du royaume. Renvoie l'assaut s'il
+## vient de se déclarer, sinon null.
+##
+## LA MENACE EST UN COMPTEUR, PAS UNE PROBABILITÉ. Un tirage pourrait
+## épargner un joueur toute une partie, et une mécanique qu'on peut ne
+## jamais rencontrer n'en est pas une.
+func raise_threat(rng: CombatRng, depth: int) -> Invasion:
+	if invasion != null:
+		invasion.advance()
+		return null
+	threat += Invasion.threat_per_step(building_levels())
+	if threat < Invasion.threat_trigger():
+		return null
+	threat = 0
+	invasion = Invasion.declare(rng, building_levels(), depth)
+	return invasion
+
+
+func defence_strength(hero_levels: int = 0) -> int:
+	return Invasion.defence_of(building_levels(), population, hero_levels)
+
+
+## Résout l'assaut. `hero_levels` est la somme des niveaux des héros
+## rentrés défendre — zéro si l'armée est seule (§ 37).
+##
+## Renvoie { repelled, strength, defence, spoils, plundered }.
+func resolve_invasion(company: Company, hero_levels: int = 0) -> Dictionary:
+	if invasion == null:
+		return {}
+	var raid := invasion
+	var defence := defence_strength(hero_levels)
+	var repelled := raid.is_repelled_by(defence)
+	var report := {
+		"repelled": repelled,
+		"strength": raid.strength,
+		"defence": defence,
+		"spoils": 0,
+		"plundered": {},
+	}
+	if repelled:
+		report["spoils"] = raid.spoils()
+		grant({&"gold": raid.spoils()}, company)
+	else:
+		report["plundered"] = Invasion.plunder(self, company)
+	invasion = null
+	return report
+
+
 # --- Le cycle de production ------------------------------------------------
 
 ## Une sortie conclue = un cycle. Renvoie de quoi le raconter au joueur :
@@ -341,6 +415,10 @@ func settle_assignments() -> void:
 ## qu'on vient de fonder.
 func run_cycle(company: Company = null) -> Dictionary:
 	cycles += 1
+	# ÊTRE CHEZ SOI PROTÈGE. La menace retombe au retour, sinon elle
+	# s'accumulerait d'une sortie à l'autre et un royaume avancé vivrait
+	# sous alarme permanente.
+	threat = 0
 	settle_assignments()
 
 	var produced := {}
@@ -395,6 +473,8 @@ func to_dictionary() -> Dictionary:
 		"assignments": saved_work,
 		"levels": saved_levels,
 		"cycles": cycles,
+		"threat": threat,
+		"invasion": invasion.to_dictionary() if invasion != null else {},
 	}
 
 
@@ -425,5 +505,7 @@ static func from_dictionary(data: Dictionary) -> Kingdom:
 				Buildings.starts_at(building_id),
 				Buildings.max_level(building_id)
 			)
+	kingdom.threat = int(data.get("threat", 0))
+	kingdom.invasion = Invasion.from_dictionary(data.get("invasion", {}))
 	kingdom.settle_assignments()
 	return kingdom

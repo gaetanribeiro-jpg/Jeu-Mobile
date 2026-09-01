@@ -28,6 +28,10 @@ signal combat_requested(map_id: StringName)
 ## L'expédition est finie — rentrée, achevée ou perdue.
 signal finished(state: int)
 
+## Le joueur rentre défendre son royaume (§ 37). L'appelant clôt la sortie
+## et résout l'assaut avec les héros présents.
+signal defence_requested
+
 ## Quelque chose a changé et mérite le disque.
 signal changed
 
@@ -35,6 +39,10 @@ const BADGE_PX := 118
 
 var _run: Expedition
 var _company: Company
+
+## Le royaume qui reçoit les ressources au retour. Facultatif : une
+## expédition doit pouvoir se jouer sans, en test comme au simulateur.
+var _kingdom: Kingdom
 ## Le générateur de l'étape en cours. Il est renouvelé quand l'étape
 ## change, et jamais autrement : le rappeler à chaque tirage repartirait du
 ## début de la séquence, et l'autel rendrait le même verdict trois fois.
@@ -49,17 +57,22 @@ var _journal := ""
 @onready var _step: VBoxContainer = %Step
 @onready var _squad: VBoxContainer = %Squad
 @onready var _journal_label: Label = %Journal
+@onready var _alarm: HBoxContainer = %Alarm
+@onready var _alarm_label: Label = %AlarmLabel
+@onready var _alarm_defend: Button = %AlarmDefend
 
 
 func _ready() -> void:
 	_retreat.pressed.connect(_on_retreat)
+	_alarm_defend.pressed.connect(_on_defend)
 	refresh()
 
 
 ## À appeler avant d'ajouter la scène à l'arbre.
-func configure(run: Expedition, company: Company) -> void:
+func configure(run: Expedition, company: Company, kingdom: Kingdom = null) -> void:
 	_run = run
 	_company = company
+	_kingdom = kingdom
 	_sync_rng()
 
 
@@ -88,6 +101,10 @@ func refresh() -> void:
 		tr("EXPEDITION_STEP_OF") % [_run.depth() + 1, _run.length()],
 	]
 	_satchel.text = tr("EXPEDITION_SATCHEL") % [_run.satchel_gold, _run.satchel_items.size()]
+	if not _run.satchel_resources.is_empty():
+		# Les ressources sont dans la besace comme le reste : les montrer à
+		# côté de l'or est ce qui fait comprendre qu'elles sont en jeu.
+		_satchel.text += "  ·  %s" % _resources_text(_run.satchel_resources)
 	_retreat.text = tr("EXPEDITION_RETREAT")
 	_retreat.disabled = not _run.can_retreat()
 	_journal_label.text = _journal
@@ -95,6 +112,27 @@ func refresh() -> void:
 	_build_route()
 	_build_squad()
 	_build_step()
+	_build_alarm()
+
+
+# --- L'alarme du § 37 ------------------------------------------------------
+
+## « 🚨 Votre royaume est attaqué ! » Le § 37 en fait une interruption de
+## l'expédition, pas une ligne de journal : elle occupe le haut de l'écran
+## tant qu'elle dure, et elle dit combien d'étapes il reste.
+##
+## RENTRER EST UN BOUTON À PART DE « Rentrer ». Les deux referment la
+## sortie, mais l'un ramène des héros à la bataille et l'autre pas, et
+## confondre les deux ferait perdre un royaume par méprise.
+func _build_alarm() -> void:
+	if _kingdom == null or _kingdom.invasion == null:
+		_alarm.visible = false
+		return
+	_alarm.visible = true
+	var steps := _kingdom.invasion.steps_left
+	_alarm_label.text = tr("INVASION_ALARM") if steps <= 0 else tr("INVASION_ALARM_IN") % steps
+	_alarm_defend.text = tr("INVASION_DEFEND")
+	_alarm_defend.disabled = not _run.can_retreat()
 
 
 # --- La route --------------------------------------------------------------
@@ -395,11 +433,21 @@ func _after_step() -> void:
 	if _run.is_over():
 		# La besace ne rejoint la compagnie qu'ici : c'est ce qui met le
 		# butin en jeu pendant toute la sortie.
-		_run.bank(_company)
+		_run.bank(_company, _kingdom)
 		changed.emit()
 	refresh()
 	if _run.is_over():
 		finished.emit(_run.state)
+
+
+## Rentrer défendre : la sortie se referme comme un retour ordinaire — la
+## besace est sauve — et l'appelant résout l'assaut.
+func _on_defend() -> void:
+	if not _run.retreat():
+		return
+	_note(tr("INVASION_RETURNING"))
+	_after_step()
+	defence_requested.emit()
 
 
 func _on_retreat() -> void:
@@ -433,6 +481,9 @@ func _report(outcome: Dictionary) -> void:
 	var items: Array = outcome.get("items", [])
 	for item_id: Variant in items:
 		pieces.append(tr(Equipment.name_key(StringName(item_id))))
+	var harvested: Dictionary = outcome.get("resources", {})
+	if not harvested.is_empty():
+		pieces.append(_resources_text(harvested))
 	var lost_gold := int(outcome.get("lost_gold", 0))
 	if lost_gold > 0:
 		pieces.append(tr("EXPEDITION_LOG_LOST") % lost_gold)
@@ -444,6 +495,15 @@ func _report(outcome: Dictionary) -> void:
 	if bool(outcome.get("combat", false)):
 		pieces.append(tr("EXPEDITION_LOG_AMBUSHED"))
 	_note(" · ".join(pieces))
+
+
+func _resources_text(harvested: Dictionary) -> String:
+	var pieces := PackedStringArray()
+	for key: Variant in harvested.keys():
+		pieces.append("%s %d" % [
+			tr(ResourceTable.name_key(StringName(key))), int(harvested[key])
+		])
+	return ", ".join(pieces)
 
 
 func _note(text: String) -> void:

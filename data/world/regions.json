@@ -38,7 +38,13 @@
           "min": 3,
           "max": 6
         }
-      }
+      },
+      "resources_per_encounter": {
+        "wood": 9,
+        "food": 6,
+        "stone": 3
+      },
+      "_resources_note": "CE QU'UNE RENCONTRE RAPPORTE AU ROYAUME, en plus de l'or et des objets. C'est le maillon « exploration → ressources » du § 45, et sans lui l'expédition et le royaume vivaient chacun de leur côté : le royaume ne mangeait que ses propres chantiers, et une sortie ne servait qu'aux héros.\n\nLA RÉGION DICTE SA NATURE. Les Terres Vertes sont des prairies et des bosquets : beaucoup de bois, de quoi manger, peu de pierre. Une région de montagne inversera le tableau, et c'est ce qui donnera une raison d'aller ailleurs que « les ennemis y sont plus durs ».\n\nCES RESSOURCES VONT DANS LA BESACE, donc elles sont en jeu jusqu'au retour, comme le butin. Le § 29 y gagne un terme de plus : continuer, c'est aussi risquer le bois qui manquait à la caserne."
     },
     "burning_dunes": {
       "name_key": "REGION_BURNING_DUNES",

@@ -31,6 +31,7 @@ func _init() -> void:
 		_check_building(building_id)
 	_check_food_balance()
 	_check_recruiting()
+	_check_invasions()
 
 	if _problems.is_empty():
 		print("\nL'économie du royaume tient debout.")
@@ -241,3 +242,58 @@ func _check_translation(owner_id: StringName, key: String) -> void:
 		_problems.append("%s : pas de clé de texte" % owner_id)
 	elif TranslationServer.translate(key) == key:
 		_problems.append("%s : la clé « %s » n'est pas traduite" % [owner_id, key])
+
+
+# --- Les invasions (§ 37) --------------------------------------------------
+#
+# Trois choses doivent être vraies en même temps, et aucune ne se voit à la
+# lecture du fichier :
+#  1. l'invasion doit ARRIVER — une mécanique qu'on peut ne jamais
+#     rencontrer n'en est pas une ;
+#  2. elle ne doit pas arriver à chaque étape, sinon l'expédition n'est
+#     plus qu'une alarme ;
+#  3. un royaume bâti doit pouvoir la repousser SEUL, sinon partir devient
+#     interdit et le § 37 dit le contraire.
+
+func _check_invasions() -> void:
+	print("")
+	var young := Kingdom.create()
+	var steps := _steps_to_invasion(young)
+	print("royaume de départ : invasion à l'étape %d" % steps)
+	if steps <= 1:
+		_problems.append("une invasion se déclare dès la première étape")
+	if steps > 20:
+		_problems.append("une invasion demande %d étapes — on ne la verra jamais" % steps)
+
+	# Un royaume au maximum, tel qu'il finira par l'être.
+	var grown := Kingdom.create()
+	for building_id: StringName in Buildings.ids():
+		grown.levels[building_id] = Buildings.max_level(building_id)
+	grown.population = grown.population_cap()
+	var rich_steps := _steps_to_invasion(grown)
+	print("royaume au maximum : invasion à l'étape %d" % rich_steps)
+	if rich_steps > steps:
+		# Un royaume riche doit attirer PLUS, pas moins.
+		_problems.append("un royaume bâti attire moins qu'un hameau")
+
+	var assault := Invasion.declare(null, grown.building_levels(), 0)
+	var alone := grown.defence_strength(0)
+	print("royaume au maximum : défense %d contre un assaut de %d"
+		% [alone, assault.strength])
+	if alone < assault.strength:
+		_problems.append(
+			"un royaume au maximum ne repousse pas un assaut seul (%d contre %d)"
+			% [alone, assault.strength])
+
+	var bare := Kingdom.create()
+	var bare_assault := Invasion.declare(null, bare.building_levels(), 0)
+	print("royaume de départ : défense %d contre un assaut de %d"
+		% [bare.defence_strength(0), bare_assault.strength])
+
+
+## Étapes d'expédition avant qu'une invasion ne se déclare.
+func _steps_to_invasion(kingdom: Kingdom) -> int:
+	for step in range(1, 200):
+		if kingdom.raise_threat(CombatRng.new(step), 0) != null:
+			return step
+	return 999

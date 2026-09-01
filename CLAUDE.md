@@ -246,6 +246,8 @@ dur : passer par `data/assets.json`.
 - **T1.14 :** la portée se paie. **T2.8 :** les arbres de compétences du
   § 34, qui remplacent les choix de niveau. **T6.1 :** options, pause,
   volume, tremblement d'écran.
+- **Phase 5 en cours.** T5.1 (l'exploration nourrit le royaume) et T5.2
+  (les invasions du § 37) sont faites. **673 tests passent.**
 - **Phase 4 terminée.** T4.1 à T4.4 : `Kingdom`, `Buildings`, l'écran du
   royaume et le branchement sur la boucle. **640 tests passent** sous
   Godot 4.6 en headless.

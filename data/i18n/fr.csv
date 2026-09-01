@@ -367,3 +367,10 @@ SKILLS_LOCKED,Il faut d'abord %s
 SKILLS_TAKEN,Acquis
 SKILLS_UNLOCK,Apprendre
 SKILLS_LEARNED,%s appris.
+INVASION_ALARM,Votre royaume est attaqué !
+INVASION_ALARM_IN,Votre royaume est attaqué — l'assaut tombe dans %d étape(s).
+INVASION_DEFEND,Rentrer défendre
+INVASION_RETURNING,Vous faites demi-tour vers le royaume.
+INVASION_REPELLED,L'assaut est repoussé (%d contre %d). Butin : %d or.
+INVASION_LOST,Le royaume est pillé (%d contre %d).
+INVASION_ALONE,L'armée a défendu seule.

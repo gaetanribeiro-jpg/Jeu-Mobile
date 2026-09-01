@@ -34,6 +34,9 @@ var _depth: int = 0
 ## ouverture du royaume.
 var _last_cycle: Dictionary = {}
 
+## Compte rendu du dernier assaut, montré au même endroit.
+var _last_defence: Dictionary = {}
+
 var _company_screen: Control = null
 var _kingdom_screen: Control = null
 var _options_screen: Control = null
@@ -178,8 +181,12 @@ func _open_kingdom() -> void:
 	# Le compte rendu du dernier cycle attend ici : le joueur revient
 	# d'expédition sur l'écran de titre, et c'est en ouvrant son royaume
 	# qu'il veut savoir ce qu'il a produit pendant son absence.
-	if is_instance_valid(_kingdom_screen) and not _last_cycle.is_empty():
-		_kingdom_screen.report_cycle(_last_cycle)
+	if is_instance_valid(_kingdom_screen):
+		if not _last_defence.is_empty():
+			_kingdom_screen.report_defence(_last_defence)
+			_last_defence = {}
+		elif not _last_cycle.is_empty():
+			_kingdom_screen.report_cycle(_last_cycle)
 
 
 func _close_kingdom() -> void:
@@ -239,9 +246,10 @@ func _open_expedition() -> void:
 	# entre deux, et une valeur dérivée qu'on garde finit par mentir.
 	_apply_kingdom_to(GameState.expedition)
 	_expedition_screen = _open(EXPEDITION_SCENE, func(screen: Node) -> void:
-		screen.configure(GameState.expedition, GameState.company)
+		screen.configure(GameState.expedition, GameState.company, GameState.kingdom)
 		screen.changed.connect(GameState.save)
 		screen.combat_requested.connect(_start_expedition_combat)
+		screen.defence_requested.connect(_defend_kingdom)
 		screen.finished.connect(_close_expedition))
 
 
@@ -258,6 +266,11 @@ func _close_expedition(_state: int) -> void:
 		# butin. Une déroute compte aussi — les bûcherons ont travaillé
 		# pendant que les héros tombaient.
 		_last_cycle = GameState.kingdom.run_cycle(GameState.company)
+		# Un assaut que le joueur n'est pas rentré défendre se résout tout
+		# seul : le § 37 dit que l'armée peut défendre seule, pas que
+		# l'assaut attend indéfiniment.
+		if GameState.kingdom.invasion != null and GameState.kingdom.invasion.is_imminent():
+			_resolve_invasion(0)
 	GameState.save()
 	_build_squad_picker()
 	visible = true
@@ -274,6 +287,34 @@ func _apply_kingdom_to(run: Expedition) -> void:
 		bonuses[class_id] = GameState.kingdom.hero_bonuses(class_id)
 	run.kingdom_bonuses = bonuses
 	run.kingdom_healing = GameState.kingdom.healing_between_steps()
+
+
+## Le joueur est rentré défendre (§ 37). Les héros de l'équipe pèsent dans
+## la balance : le § 37 veut que rentrer soit MEILLEUR, jamais obligatoire.
+func _defend_kingdom() -> void:
+	_resolve_invasion(_squad_levels())
+	GameState.save()
+
+
+## Résout l'assaut en cours, s'il y en a un. `hero_levels` vaut zéro quand
+## l'armée défend seule.
+func _resolve_invasion(hero_levels: int) -> void:
+	if GameState.kingdom.invasion == null:
+		return
+	_last_defence = GameState.kingdom.resolve_invasion(GameState.company, hero_levels)
+	_last_defence["alone"] = hero_levels <= 0
+
+
+## Somme des niveaux des héros partis. C'est ce que le retour du joueur
+## ajoute à la défense.
+func _squad_levels() -> int:
+	var run: Expedition = GameState.expedition
+	if run == null:
+		return 0
+	var total := 0
+	for hero: Hero in GameState.company.squad(run.squad_ids):
+		total += hero.level
+	return total
 
 
 func _start_expedition_combat(map_id: StringName) -> void:
@@ -305,6 +346,12 @@ func _on_expedition_combat_finished(scene: Node) -> void:
 	if is_instance_valid(_expedition_screen):
 		_expedition_screen.resolve_combat(summary, heroes)
 		_expedition_screen.visible = true
+	# Une étape de plus loin du royaume, donc une menace de plus (§ 37).
+	# L'expédition ne sait pas qu'un royaume existe : c'est ici qu'ils se
+	# parlent, comme pour les modificateurs.
+	GameState.kingdom.raise_threat(
+		CombatRng.new(hash([run.seed_value, run.index, "threat"])), run.depth()
+	)
 	GameState.save()
 
 
