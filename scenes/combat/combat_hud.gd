@@ -35,9 +35,13 @@ signal ability_selected(ability_id: StringName)
 ## tue l'application.
 signal pause_pressed
 
+## La couleur de faction des héros, la même que celle des sprites du
+## plateau : un portrait bleu au-dessus d'un guerrier rouge se remarque.
+const HERO_COLOR := "Blue"
+
 const TOUCH_TARGET_PX := 96
 const TOP_BAR_PX := 64
-const BOTTOM_BAR_PX := 172
+const BOTTOM_BAR_PX := 196
 
 var _objective: Label
 var _round: Label
@@ -130,35 +134,101 @@ func _build() -> void:
 	column.add_child(_build_top())
 	column.add_child(_build_middle())
 	column.add_child(_build_bottom())
+	_build_timeline()
+	_build_corner()
 
 
 ## Bandeau haut : objectif à gauche, timeline au centre, ronde à droite.
 func _build_top() -> Control:
+	# TROIS ZONES À LARGEUR EXPLICITE, et pas des ressorts entre des
+	# éléments libres. Un `HBoxContainer` dont la somme des minimums
+	# dépasse sa largeur rabote ses DERNIERS enfants — la ronde et la
+	# pause avaient purement disparu du bandeau, sans erreur ni trace,
+	# quand l'objectif et la timeline ont grossi. On borne donc chaque
+	# zone au lieu de laisser le conteneur arbitrer.
 	var top := HBoxContainer.new()
 	top.custom_minimum_size = Vector2(0, TOP_BAR_PX)
+	top.add_theme_constant_override("separation", 12)
 	top.mouse_filter = Control.MOUSE_FILTER_IGNORE
 
-	_objective = _label(24)
-	top.add_child(_objective)
-	top.add_child(_stretch())
+	var goal := PanelContainer.new()
+	goal.add_theme_stylebox_override(
+		"panel", UiSkin.panel_style(&"panel_strong", UiTheme.metric(&"card_margin"))
+	)
+	goal.custom_minimum_size = Vector2(UiTheme.metric(&"objective_width"), 0)
+	goal.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
+	goal.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	goal.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_objective = _label(UiTheme.font_size(&"small"))
+	_objective.add_theme_color_override("font_color", UiTheme.color(&"ink"))
+	_objective.add_theme_constant_override("outline_size", 0)
+	_objective.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_objective.clip_text = true
+	goal.add_child(_objective)
+	top.add_child(goal)
 
+	return top
+
+
+## La timeline, ANCRÉE AU CENTRE et hors du flux, pour la même raison que
+## le coin : laissée dans le `HBoxContainer`, elle s'étalait jusque sous
+## la ronde et la pause. Trois zones ancrées valent mieux que trois zones
+## qui se disputent une largeur.
+func _build_timeline() -> void:
 	_timeline = HBoxContainer.new()
 	_timeline.add_theme_constant_override("separation", 6)
 	_timeline.alignment = BoxContainer.ALIGNMENT_CENTER
+	_timeline.anchor_left = 0.5
+	_timeline.anchor_right = 0.5
+	_timeline.offset_left = -float(UiTheme.metric(&"timeline_width")) * 0.5
+	_timeline.offset_right = float(UiTheme.metric(&"timeline_width")) * 0.5
+	_timeline.offset_top = 14.0
+	_timeline.offset_bottom = 14.0 + float(TOP_BAR_PX)
 	_timeline.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	top.add_child(_timeline)
+	add_child(_timeline)
 
-	top.add_child(_stretch())
-	_round = _label(24)
-	top.add_child(_round)
+
+## La ronde et la pause, ANCRÉES EN HAUT À DROITE et hors du flux.
+##
+## ELLES AVAIENT DISPARU DEUX FOIS. Dans un `HBoxContainer`, quand la somme
+## des tailles minimales dépasse la largeur, ce sont les DERNIERS enfants
+## qui sont rabotés — sans erreur, sans trace, sans rien à l'écran. Ça
+## s'est produit dès que l'objectif a pris un panneau et que les badges de
+## timeline ont grossi, et deux tentatives de bornage n'y ont rien fait.
+##
+## Un ancrage ne dépend de personne : c'est le seul moyen de garantir que
+## le bouton de pause soit là, et sur mobile un combat dont on ne peut pas
+## sortir est le pire des défauts (§ T6.1).
+## POSÉ SUR LE `CanvasLayer`, PAS DANS LE CONTENEUR. Un `Container` écrase
+## les ancrages de ses enfants — c'est sa raison d'être — donc un ancrage
+## posé à l'intérieur du `MarginContainer` était réécrit à chaque mise en
+## page. Le calque, lui, n'est pas un conteneur : ce qu'on y ancre reste
+## où on l'a mis.
+func _build_corner() -> void:
+	var corner := HBoxContainer.new()
+	corner.add_theme_constant_override("separation", 8)
+	corner.alignment = BoxContainer.ALIGNMENT_END
+	corner.anchor_left = 1.0
+	corner.anchor_right = 1.0
+	corner.anchor_top = 0.0
+	corner.anchor_bottom = 0.0
+	corner.offset_left = -float(UiTheme.metric(&"corner_width"))
+	corner.offset_right = -18.0
+	corner.offset_top = 14.0
+	corner.offset_bottom = 14.0 + float(TOP_BAR_PX)
+	corner.grow_horizontal = Control.GROW_DIRECTION_BEGIN
+	add_child(corner)
+
+	_round = _label(UiTheme.font_size(&"small"))
+	_round.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	corner.add_child(_round)
 
 	# En haut à droite, loin des compétences : une pause qu'on presse par
 	# accident au milieu d'une activation est pire que pas de pause.
 	var pause := _button("HUD_PAUSE")
 	pause.custom_minimum_size = Vector2(64, 48)
 	pause.pressed.connect(func() -> void: pause_pressed.emit())
-	top.add_child(pause)
-	return top
+	corner.add_child(pause)
 
 
 ## Milieu : l'équipe à gauche, le reste vide pour que le plateau respire.
@@ -189,10 +259,22 @@ func _build_middle() -> Control:
 ## Bandeau bas : le personnage actif et ses jauges, ses compétences, et
 ## les deux boutons — le tout à portée de pouce.
 func _build_bottom() -> Control:
+	# LA TABLE DE BOIS DU PACK SOUS TOUTE LA BARRE. C'est le défaut que
+	# Gaetan a pointé : les boutons flottaient sur du noir. Dans les trois
+	# jeux montrés en référence, aucune zone d'interface ne touche
+	# directement le fond — tout repose sur un panneau. Et
+	# thématiquement, la table est l'endroit où l'on pose ses outils.
+	var plank := PanelContainer.new()
+	plank.custom_minimum_size = Vector2(0, BOTTOM_BAR_PX)
+	plank.add_theme_stylebox_override(
+		"panel", UiSkin.panel_style(&"frame", UiTheme.metric(&"plank_margin"))
+	)
+	plank.mouse_filter = Control.MOUSE_FILTER_IGNORE
+
 	var bottom := VBoxContainer.new()
-	bottom.custom_minimum_size = Vector2(0, BOTTOM_BAR_PX)
 	bottom.add_theme_constant_override("separation", 8)
 	bottom.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	plank.add_child(bottom)
 
 	# Ligne d'état : qui joue, ses PV, ses PA, ses PM.
 	var status := HBoxContainer.new()
@@ -233,7 +315,7 @@ func _build_bottom() -> Control:
 	_end_turn = _button("HUD_END_TURN")
 	_end_turn.pressed.connect(func() -> void: end_turn_pressed.emit())
 	actions.add_child(_end_turn)
-	return bottom
+	return plank
 
 
 # --- Mise à jour ----------------------------------------------------------
@@ -290,31 +372,38 @@ func _timeline_badge(unit: Unit, is_current: bool) -> Control:
 	badge.custom_minimum_size = Vector2(side, side)
 	badge.mouse_filter = Control.MOUSE_FILTER_IGNORE
 
-	var style := StyleBoxFlat.new()
-	style.bg_color = ViewSettings.color(
-		&"timeline_hero" if unit.is_hero() else &"timeline_enemy"
-	)
-	style.corner_radius_top_left = 6
-	style.corner_radius_top_right = 6
-	style.corner_radius_bottom_left = 6
-	style.corner_radius_bottom_right = 6
+	# UN `Panel` ET PAS UN `PanelContainer`, et la différence n'est pas
+	# cosmétique : un `PanelContainer` écarte son enfant des marges de
+	# tranches du style — 32 px de chaque côté sur un badge de 44, il ne
+	# reste rien. Ici le portrait est posé par-dessus, en plein cadre.
+	var role: StringName = &"default" if unit.is_hero() else &"danger"
 	if is_current:
-		# Le personnage actif porte un liseré clair : la question du § 16
-		# — qui joue MAINTENANT ? — doit se lire sans compter.
-		style.border_width_top = 3
-		style.border_width_bottom = 3
-		style.border_width_left = 3
-		style.border_width_right = 3
-		style.border_color = ViewSettings.color(&"timeline_now")
-	badge.add_theme_stylebox_override("panel", style)
+		role = &"primary"
+	badge.add_theme_stylebox_override("panel", UiSkin.button_style(role, false))
 
+	var face := UiSkin.portrait(unit.class_id, HERO_COLOR) if unit.is_hero() else null
+	if face != null:
+		var rect := TextureRect.new()
+		rect.texture = face
+		rect.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+		rect.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		rect.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+		rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		badge.add_child(rect)
+		return badge
+
+	# LE PACK N'A PAS DE PORTRAIT D'ENNEMI — 25 avatars humains et rien
+	# d'autre. L'initiale de l'espèce tient donc le rôle, sur le cadre
+	# rouge : mieux vaut un cadre cohérent avec une lettre qu'un visage
+	# emprunté à quelqu'un d'autre.
 	var label := _label(20)
 	label.text = _timeline_text(unit)
 	label.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-	label.add_theme_color_override("font_color", UiTheme.color(&"ink"))
-	label.add_theme_constant_override("outline_size", 0)
+	label.add_theme_color_override("font_color", UiTheme.color(&"ink_inverse"))
+	label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	badge.add_child(label)
 	return badge
 
@@ -469,27 +558,118 @@ func _refresh_squad(engine: CombatEngine) -> void:
 			listed.append(unit)
 	listed.sort_custom(func(a: Unit, b: Unit) -> bool: return a.slot < b.slot)
 
+	# LES CARTES SE RECONSTRUISENT À CHAQUE RAFRAÎCHISSEMENT, parce
+	# qu'elles portent une jauge dont la valeur change. Quatre cartes,
+	# c'est assez peu pour que ça ne coûte rien, et ça évite d'entretenir
+	# une correspondance unité → nœuds qui se désynchronise dès qu'un
+	# héros tombe.
+	for child in _squad.get_children():
+		child.queue_free()
+	_rows.clear()
+
 	var active := engine.current_unit()
 	for unit: Unit in listed:
-		var row: Label = _rows.get(unit.id, null)
-		if row == null:
-			row = _label(22)
-			_rows[unit.id] = row
-			_squad.add_child(row)
-		# Le numéro d'emplacement d'abord : avec les doublons de classe,
-		# « Guerrier 120/120 » deux fois de suite ne désigne personne.
-		row.text = "%d  %s  %d/%d" % [
-			unit.slot, tr("CLASS_%s" % String(unit.class_id).to_upper()),
-			unit.hit_points, unit.max_hit_points,
-		]
+		var state: StringName = &"ready"
 		if pending.has(unit):
-			row.modulate = ViewSettings.color(&"timeline_done")
+			state = &"pending"
 		elif not unit.is_active():
-			row.modulate = ViewSettings.color(&"timeline_downed")
+			state = &"downed"
 		elif active != null and active.id == unit.id:
-			row.modulate = ViewSettings.color(&"timeline_now")
-		else:
-			row.modulate = Color(1, 1, 1)
+			state = &"active"
+		_squad.add_child(_hero_card(unit, state))
+
+
+## La carte d'un héros : son visage, son nom, sa vie.
+##
+## C'ÉTAIT DU TEXTE SUR DU NOIR, et c'est le défaut que Gaetan a pointé en
+## comparant à d'autres jeux. Les trois montrés en référence ont tous la
+## même chose : chaque zone d'interface est posée sur un panneau, avec un
+## portrait et une jauge. Ce n'est pas de la décoration — un visage se
+## reconnaît plus vite qu'une ligne « 1 Guerrier 120/120 », et c'est ce
+## qu'on lit vingt fois par combat.
+func _hero_card(unit: Unit, state: StringName) -> Control:
+	var card := PanelContainer.new()
+	card.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	# LARGEUR FIXE. Sans elle les quatre cartes s'étiraient sur toute la
+	# hauteur et POUSSAIENT LA BARRE D'ACTION HORS DE L'ÉCRAN : 4 × 130 px
+	# plus les bandeaux dépassent les 720 px de haut, et Godot ne dit rien
+	# — il rogne en silence.
+	card.custom_minimum_size = Vector2(UiTheme.metric(&"card_width"), 0)
+	card.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
+	card.add_theme_stylebox_override(
+		"panel", UiSkin.panel_style(&"panel", UiTheme.metric(&"card_margin"))
+	)
+
+	# Pas de `MarginContainer` : le style porte déjà l'encart, et en
+	# ajouter un second par-dessus est l'erreur qui avait fait disparaître
+	# la jauge de PV en T9.2.
+	var row := HBoxContainer.new()
+	row.add_theme_constant_override("separation", UiTheme.metric(&"card_margin"))
+	row.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	card.add_child(row)
+
+	var side_px := UiTheme.metric(&"portrait_card")
+	var face := UiSkin.portrait(unit.class_id, HERO_COLOR)
+	if face != null:
+		var rect := TextureRect.new()
+		rect.texture = face
+		rect.custom_minimum_size = Vector2(side_px, side_px)
+		rect.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		rect.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+		rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		row.add_child(rect)
+
+	var column := VBoxContainer.new()
+	column.add_theme_constant_override("separation", 2)
+	column.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	column.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	row.add_child(column)
+
+	# Le numéro d'emplacement d'abord : avec les doublons de classe,
+	# « Guerrier » deux fois de suite ne désigne personne.
+	# NOM ET POINTS DE VIE SUR LA MÊME LIGNE : deux lignes de texte plus
+	# une jauge font une carte de 130 px, et quatre de celles-là ne
+	# tiennent pas dans un écran qui doit aussi loger la barre d'action.
+	var header := HBoxContainer.new()
+	header.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	column.add_child(header)
+
+	var name_ := _label_text(
+		UiTheme.font_size(&"small"),
+		"%d  %s" % [unit.slot, tr("CLASS_%s" % String(unit.class_id).to_upper())]
+	)
+	name_.add_theme_color_override("font_color", UiTheme.color(&"ink"))
+	name_.add_theme_constant_override("outline_size", 0)
+	name_.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	header.add_child(name_)
+
+	var points := _label_text(
+		UiTheme.font_size(&"small"),
+		"%d/%d" % [unit.hit_points, unit.max_hit_points]
+	)
+	points.add_theme_color_override("font_color", UiTheme.color(&"ink_soft"))
+	points.add_theme_constant_override("outline_size", 0)
+	header.add_child(points)
+
+	column.add_child(UiSkin.build_bar(
+		float(unit.hit_points), float(unit.max_hit_points),
+		UiTheme.health_color(
+			float(unit.hit_points) / maxf(float(unit.max_hit_points), 1.0)
+		),
+		UiTheme.metric(&"bar_height_card")
+	))
+
+	match state:
+		&"pending":
+			card.modulate = ViewSettings.color(&"timeline_done")
+		&"downed":
+			card.modulate = ViewSettings.color(&"timeline_downed")
+		&"active":
+			# La carte de celui qui joue s'éclaircit : la même question que
+			# la timeline, posée là où le joueur regarde ses PV.
+			card.modulate = ViewSettings.color(&"timeline_now")
+	return card
 
 
 func show_result(victory: bool) -> void:

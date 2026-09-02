@@ -59,8 +59,26 @@ func rebuild() -> void:
 # --- Ce que les écrans demandent ------------------------------------------
 
 ## Le fond d'un panneau, prêt à poser sur un `Panel` ou un `PanelContainer`.
-func panel_style(role: StringName = &"panel") -> StyleBox:
-	return _styles.get(role, _flat(UiTheme.color(&"backdrop")))
+## `pad` impose les marges de contenu. SANS LUI, CHAQUE PANNEAU GONFLE DE
+## 64 px : un `StyleBoxTexture` écarte son contenu de ses marges de
+## tranches, et le papier du pack a des coins de 32 px à l'échelle 2. Quatre
+## cartes de héros gagnaient 256 px de haut à elles seules et chassaient la
+## barre d'action hors de l'écran — sans la moindre erreur, Godot rogne en
+## silence.
+func panel_style(role: StringName = &"panel", pad: int = -1) -> StyleBox:
+	var base: StyleBox = _styles.get(role, null)
+	if base == null:
+		return _flat(UiTheme.color(&"backdrop"))
+	if pad < 0:
+		return base
+	var key := StringName("%s|pad%d" % [role, pad])
+	if _styles.has(key):
+		return _styles[key]
+	var tight: StyleBox = base.duplicate()
+	for side: String in ["left", "right", "top", "bottom"]:
+		tight.set("content_margin_%s" % side, float(pad))
+	_styles[key] = tight
+	return tight
 
 
 ## Un bouton de la couleur d'un RÔLE — « primary », « danger », « muted »…
@@ -113,7 +131,9 @@ func dress_button(button: Button, role: StringName = &"default") -> void:
 ## LE REMPLISSAGE EST DÉSATURÉ AVANT D'ÊTRE TEINTÉ, comme les boutons. Le
 ## pack le livre en rouge : tel quel, une barre de PV pleine serait rouge
 ## vif, c'est-à-dire exactement le signal qu'on réserve à une barre vide.
-func build_bar(value: float, maximum: float, fill_color: Color) -> Control:
+func build_bar(
+	value: float, maximum: float, fill_color: Color, height: int = 0
+) -> Control:
 	var block := UiTheme.bars()
 	var scale := int(block.get("scale", 1))
 	var base := _sliced_texture(
@@ -134,7 +154,9 @@ func build_bar(value: float, maximum: float, fill_color: Color) -> Control:
 		# toujours lisible, et le jeu démarre.
 		bar.add_theme_stylebox_override("background", _flat(UiTheme.color(&"ink")))
 		bar.add_theme_stylebox_override("fill", _flat(fill_color))
-		bar.custom_minimum_size = Vector2(0, UiTheme.metric(&"bar_height"))
+		bar.custom_minimum_size = Vector2(
+			0, height if height > 0 else UiTheme.metric(&"bar_height")
+		)
 		return bar
 
 	# LA RAINURE DÉCIDE DE LA HAUTEUR, et il faut la lui DONNER. Laisser
@@ -153,9 +175,8 @@ func build_bar(value: float, maximum: float, fill_color: Color) -> Control:
 	).get("groove", {})
 	var divisor := maxi(scale, 1)
 	var edges := (int(groove.get("top", 0)) + int(groove.get("bottom", 0))) / divisor
-	bar.custom_minimum_size = Vector2(
-		0, maxi(UiTheme.metric(&"bar_height") - edges, 1)
-	)
+	var box := height if height > 0 else UiTheme.metric(&"bar_height")
+	bar.custom_minimum_size = Vector2(0, maxi(box - edges, 1))
 	bar.size_flags_vertical = Control.SIZE_EXPAND_FILL
 
 	# L'ENCART VIENT DU STYLEBOX, PAS D'UN `MarginContainer`. Un
@@ -165,7 +186,12 @@ func build_bar(value: float, maximum: float, fill_color: Color) -> Control:
 	# l'auge et jamais rien dedans — deux fois de suite, avant de penser à
 	# mesurer la largeur restante plutôt que la couleur du remplissage.
 	var trough := PanelContainer.new()
-	trough.custom_minimum_size = Vector2(0, UiTheme.metric(&"bar_height"))
+	# LA HAUTEUR EST IMPOSABLE PAR L'APPELANT. Une jauge de carte de héros
+	# n'a pas la place d'une jauge d'écran d'expédition ; forcer la même
+	# des deux côtés écrasait le bois au lieu de le réduire.
+	trough.custom_minimum_size = Vector2(
+		0, height if height > 0 else UiTheme.metric(&"bar_height")
+	)
 	# SANS CE DRAPEAU, LE PANNEAU RESTE À SA TAILLE MINIMALE et la jauge
 	# lui déborde dessus : mesuré à la capture, 76 px de bois sous 105 px
 	# de vert. Un `PanelContainer` ne s'étire pas de lui-même quand son
@@ -181,6 +207,31 @@ func build_bar(value: float, maximum: float, fill_color: Color) -> Control:
 	trough.add_theme_stylebox_override("panel", wood)
 	trough.add_child(bar)
 	return trough
+
+
+## Le portrait encadré d'une classe, dans une couleur de faction.
+##
+## LES 25 AVATARS DU PACK SONT DÉJÀ ENCADRÉS — un heaume sur une plaque
+## colorée — donc il n'y a rien à recomposer : on les charge tels quels.
+## Ils dormaient dans la table depuis toujours, employés par le seul écran
+## de compagnie, alors que c'est en COMBAT qu'un visage sert le plus : les
+## trois jeux de référence en montrent partout, et sans eux la liste des
+## héros est du texte sur du noir.
+func portrait(class_id: StringName, color: String) -> Texture2D:
+	var cache := StringName("portrait|%s|%s" % [class_id, color])
+	if _textures.has(cache):
+		return _textures[cache]
+	var entry := AssetTable.portrait(class_id, color)
+	if entry.is_empty():
+		return null
+	var path := String(entry.get("path", ""))
+	if path.is_empty() or not ResourceLoader.exists(path):
+		return null
+	var texture: Texture2D = load(path)
+	if texture == null:
+		return null
+	_textures[cache] = texture
+	return texture
 
 
 ## Le glyphe d'une compétence, ou null si elle n'en a pas.

@@ -1863,6 +1863,92 @@ manque et la barre mélange icônes et texte nu, ce qui se lit plus mal que
 du texte partout.
 
 
+### T9.6 — l'écran de combat, pas seulement ses boutons ✅
+
+Gaetan a mis trois jeux à côté d'une capture et posé la question : « la
+l'interface te gêne pas ? Je trouve ça très fade. » Il avait raison, et le
+diagnostic était précis : **j'avais habillé les BOUTONS, pas l'ÉCRAN.**
+
+Les trois références — un tactique low-poly, un gacha mobile, Dofus —
+n'ont pas grand-chose en commun sauf une seule chose, et c'est exactement
+celle qui manquait : **aucune zone d'interface ne touche le fond.** Tout
+repose sur un panneau, tout porte un portrait, tout a un cadre. Chez moi
+le plateau flottait dans du noir et la liste des héros était du texte nu.
+
+**Ce qui a changé :**
+
+- **Les héros sont des cartes**, sur du papier, avec leur portrait, leur
+  nom et une jauge de bois. C'était `1 Guerrier 120/120` en texte. Un
+  visage se reconnaît plus vite qu'une ligne, et c'est ce qu'on lit vingt
+  fois par combat.
+- **La timeline porte des visages.** Le § 16 demande de lire « qui joue
+  maintenant » d'un coup d'œil ; un portrait encadré s'y prête mieux
+  qu'un chiffre dans une pastille. Cadre or pour l'actif, acier pour les
+  héros, rouge pour les ennemis.
+- **La barre d'action repose sur la table de bois du pack.** Thématiquement
+  c'est l'endroit où l'on pose ses outils ; visuellement, c'est ce qui
+  arrête les boutons de flotter.
+- **L'objectif est sur du parchemin**, dernière ligne qui touchait
+  encore le fond.
+
+**Les 25 avatars du pack dormaient dans la table depuis toujours**,
+employés par le seul écran de compagnie. C'est en combat qu'un visage sert
+le plus.
+
+**Le pack n'a pas de portrait d'ennemi** — 25 avatars humains et rien
+d'autre. L'initiale de l'espèce tient donc le rôle sur le cadre rouge :
+mieux vaut un cadre cohérent avec une lettre qu'un visage emprunté à
+quelqu'un d'autre.
+
+### Le même piège, quatre fois : les marges d'un StyleBox
+
+Un `StyleBoxTexture` **écarte son contenu de ses marges de tranches**.
+C'est logique et c'est ce qu'on veut — sauf que ces marges valent 32 px à
+l'échelle 2, et que rien ne le signale.
+
+1. **Les cartes de héros gonflaient de 64 px chacune.** Quatre cartes
+   prenaient 256 px de trop et **chassaient la barre d'action hors de
+   l'écran**. Godot rogne en silence.
+2. **La table de bois refusait de mesurer moins de 256 px de haut** : elle
+   est en 448 px avec des coins de 128, donc 128 minimum à l'échelle 2.
+   Échelle 4, et le bandeau tient.
+3. **Le portrait d'un badge de timeline disparaissait** dans un
+   `PanelContainer` de 44 px avec 32 px de marge de chaque côté. Un
+   `Panel` avec le portrait ancré par-dessus, et le cadre redevient un
+   cadre.
+4. **La ligne d'état chevauchait le bord du plateau de bois.**
+
+`UiSkin.panel_style(role, pad)` prend maintenant un encart explicite.
+C'est le même défaut que la jauge de T9.2 — un `MarginContainer` ajouté
+par-dessus un style qui écartait déjà — et il a fallu se le reprendre
+quatre fois pour aller le mettre à sa place.
+
+### Un conteneur rabote ses DERNIERS enfants, sans rien dire
+
+La ronde et le bouton de pause ont **purement disparu du bandeau** dès que
+l'objectif a pris un panneau et que les badges ont grossi. Pas d'erreur,
+pas de trace : quand la somme des tailles minimales d'un
+`HBoxContainer` dépasse sa largeur, il rabote, et ce sont les derniers
+qui trinquent.
+
+Deux tentatives de bornage n'y ont rien fait. **La timeline et le coin
+sont donc ANCRÉS sur le `CanvasLayer`, hors du flux** — et pas dans le
+`MarginContainer`, parce qu'un `Container` écrase les ancrages de ses
+enfants, c'est sa raison d'être. Trois zones ancrées valent mieux que
+trois zones qui se disputent une largeur.
+
+Ce n'est pas un détail cosmétique : sur mobile, un combat dont on ne peut
+pas sortir est le pire des défauts (§ T6.1), et le bouton de pause était
+invisible.
+
+### Ce qui reste
+
+**L'écran d'expédition et celui de compagnie n'ont pas eu le même
+traitement.** Ils ont le thème, les boutons et les jauges, mais pas les
+cartes à portrait — leurs listes de héros sont encore du texte au-dessus
+d'une jauge. C'est le même travail, appliqué ailleurs.
+
+
 ---
 
 ## 6. Ce qui est rangé, pas jeté

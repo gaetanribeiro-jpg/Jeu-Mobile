@@ -119,6 +119,16 @@
       0.74,
       0.32,
       0.55
+    ],
+    "card_gold": [
+      1.0,
+      0.9,
+      0.62
+    ],
+    "wood_dim": [
+      0.72,
+      0.66,
+      0.6
     ]
   },
   "typography": {
@@ -141,7 +151,16 @@
     "text_outline": 4,
     "bar_fill_height": 14,
     "bar_inset": 7,
-    "scrollbar_width": 16
+    "scrollbar_width": 16,
+    "portrait_small": 44,
+    "portrait_card": 44,
+    "card_margin": 10,
+    "card_width": 240,
+    "bar_height_card": 30,
+    "plank_margin": 24,
+    "objective_width": 300,
+    "corner_width": 170,
+    "timeline_width": 420
   },
   "surfaces": {
     "_note": "Chaque rôle dit QUEL asset du pack, à quelle RÉDUCTION, et de quelle TEINTE.\n\n`scale` est un diviseur ENTIER, et il n'y a pas d'exception à ça : le pack est du pixel art sur grille de 64, filtré en Nearest. Diviser par 2 fait tomber quatre pixels sur un ; diviser par 1,5 en fait tomber deux et demi, et la bordure bave. C'est aussi ce qui décide la taille des coins : un bouton de 72 px de haut ne peut pas porter des coins de 64, il lui faut du 32 — donc `scale: 2`.\n\n`desaturate` transforme la source en niveaux de gris AVANT de la teinter. Sans ça on ne pourrait pas sortir des deux couleurs du pack : multiplier un bouton bleu par de l'or donne du vert sale. Passé en gris, il prend n'importe quelle teinte proprement, et les six rôles ci-dessous sortent tous de la même image.",
@@ -166,9 +185,9 @@
     },
     "frame": {
       "asset": "woodtable",
-      "scale": 2,
+      "scale": 4,
       "desaturate": false,
-      "tint": "wood"
+      "tint": "wood_dim"
     }
   },
   "button_tints": {

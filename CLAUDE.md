@@ -444,6 +444,20 @@ choses à savoir :
 réponse valable. Mais `verify_ui` exige un glyphe pour **chaque
 compétence de héros et chaque potion**.
 
+**L'ÉCRAN DE COMBAT EST HABILLÉ, PAS SEULEMENT SES BOUTONS (T9.6).**
+Cartes de héros à portrait sur papier, timeline à visages, barre d'action
+sur la table de bois, objectif sur parchemin. Deux pièges à retenir, tous
+deux SILENCIEUX :
+- **Un `StyleBoxTexture` écarte son contenu de ses marges de tranches**
+  (32 px à l'échelle 2). Quatre cartes gonflées de 64 px chassaient la
+  barre d'action hors de l'écran, et Godot rogne sans rien dire. D'où
+  `UiSkin.panel_style(role, pad)`. Ne jamais ajouter un `MarginContainer`
+  par-dessus un style qui écarte déjà.
+- **Un `HBoxContainer` trop étroit rabote ses DERNIERS enfants**, sans
+  erreur : la ronde et le bouton de pause avaient disparu. La timeline et
+  le coin sont donc ANCRÉS sur le `CanvasLayer` — pas dans un
+  `Container`, qui écrase les ancrages de ses enfants.
+
 **`UiSkin`, PAS `Skin` : ce nom est pris par Godot** (la peau d'un
 squelette). L'autoload se résolvait silencieusement sur la classe native.
 Même piège que `reload()` en T7.4 — un nom d'autoload se vérifie avant de

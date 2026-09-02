@@ -318,7 +318,7 @@
   "slot_font_size": 22,
   "pip_radius_px": 7.0,
   "pip_spacing_px": 19.0,
-  "timeline_badge_px": 34.0,
+  "timeline_badge_px": 50.0,
   "decoration_max_tiles": 1.6,
   "_decoration_max_tiles_note": "Largeur maximale d'un décor, en cases. Les bâtiments du pack font 128 à 320 pixels de large pour des cases de 64 : posés à leur taille native sur une carte de défense, ils se recouvraient les uns les autres et débordaient du plateau. Les décors plus petits qu'une case et demie ne sont pas touchés — un arbre garde sa taille."
  },
