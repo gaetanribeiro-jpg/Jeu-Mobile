@@ -18,7 +18,17 @@ extends RefCounted
 ## là que vient le choix à chaque tour (§ 50).
 
 const HERO_CLASSES_PATH := "res://data/units/hero_classes.json"
-const ENEMIES_PATH := "res://data/enemies/act1.json"
+## LE BESTIAIRE EST DÉCOUPÉ PAR ACTE, et les fichiers se FONDENT (T11.7).
+##
+## Un seul fichier aurait fini à quarante bêtes mélangées ; un fichier par
+## acte se lit et se relit. La fusion se fait ici plutôt que dans chaque
+## appelant, parce qu'un ennemi n'appartient à son acte que pour être
+## ÉCRIT — une fois en jeu, c'est une carte qui décide qui apparaît, pas
+## un numéro d'acte.
+const ENEMY_PATHS: Array[String] = [
+	"res://data/enemies/act1.json",
+	"res://data/enemies/act2.json",
+]
 
 ## Les deux camps et les deux états d'une unité. Stockés en `int` plutôt
 ## qu'en type énuméré : GDScript refuse d'annoter un champ avec une
@@ -227,7 +237,14 @@ static func from_stats(
 
 static func enemies() -> Dictionary:
 	if _enemies.is_empty():
-		_enemies = _read_json(ENEMIES_PATH)
+		for path: String in ENEMY_PATHS:
+			for key: Variant in _read_json(path).keys():
+				# Deux actes qui déclarent le même identifiant serait une
+				# faute silencieuse : le second écraserait le premier et
+				# une carte de l'acte 1 changerait de bête. `verify_world`
+				# le refuse ; ici on garde le premier écrit.
+				if not _enemies.has(key):
+					_enemies[key] = _read_json(path)[key]
 	return _enemies
 
 

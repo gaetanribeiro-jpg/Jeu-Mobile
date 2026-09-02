@@ -459,5 +459,133 @@
   "animation": "attack",
   "effect": "dust_01"
  },
- "_consumables_note": "LES TROIS DERNIÈRES SONT DES POTIONS (§ 44, § 48), et elles sont ici parce qu'une potion EST une compétence : un coût en PA, une portée, une zone, un effet. Leur donner un second système aurait doublé la surface du moteur pour rien — le § 46 demande l'inverse.\n\nCe qui les distingue d'une compétence vit ailleurs : elles se consomment. Le stock est dans `data/items/consumables.json` et dans la besace ; le moteur ne connaît qu'un compteur.\n\nTROIS VERBES DIFFÉRENTS, pas trois puissances : soigner, se dégager, frapper en zone. Trois potions qui soignent plus ou moins fort ne seraient qu'un seul choix, déguisé en trois."
+ "_consumables_note": "LES TROIS DERNIÈRES SONT DES POTIONS (§ 44, § 48), et elles sont ici parce qu'une potion EST une compétence : un coût en PA, une portée, une zone, un effet. Leur donner un second système aurait doublé la surface du moteur pour rien — le § 46 demande l'inverse.\n\nCe qui les distingue d'une compétence vit ailleurs : elles se consomment. Le stock est dans `data/items/consumables.json` et dans la besace ; le moteur ne connaît qu'un compteur.\n\nTROIS VERBES DIFFÉRENTS, pas trois puissances : soigner, se dégager, frapper en zone. Trois potions qui soignent plus ou moins fort ne seraient qu'un seul choix, déguisé en trois.",
+ "lizard_bite": {
+  "class": "lizard",
+  "kind": "attack",
+  "action_points": 3,
+  "range_min": 1,
+  "range_max": 1,
+  "needs_line_of_sight": true,
+  "area": {
+   "shape": "single"
+  },
+  "damage": 20,
+  "scaling": "strength",
+  "cooldown": 0,
+  "note": "Plus fort que la lance du gobelin, mais SANS allonge : c'est l'échange qui définit la bête ordinaire des dunes."
+ },
+ "serpent_strike": {
+  "class": "sand_serpent",
+  "kind": "attack",
+  "action_points": 3,
+  "range_min": 1,
+  "range_max": 1,
+  "needs_line_of_sight": true,
+  "area": {
+   "shape": "single"
+  },
+  "damage": 22,
+  "scaling": "agility",
+  "cooldown": 0,
+  "note": "Frappe à l'AGILITÉ et pas à la force : le serpent est rapide, pas puissant, et sa statistique le dit. Combinée à sept PM, elle atteint la ligne arrière avant qu'elle ait joué."
+ },
+ "web_spit": {
+  "class": "dune_spider",
+  "kind": "attack",
+  "action_points": 3,
+  "range_min": 2,
+  "range_max": 4,
+  "needs_line_of_sight": true,
+  "area": {
+   "shape": "single"
+  },
+  "damage": 8,
+  "scaling": "agility",
+  "cooldown": 1,
+  "status": {
+   "id": "chilled",
+   "duration": 1
+  },
+  "note": "HUIT DE DÉGÂTS, ET C'EST VOULU : elle n'est pas là pour blesser. Le gel existe depuis la Phase 1 et n'était infligé que par les héros ; c'est la première fois que le joueur le SUBIT, et une ronde de retard vaut plus que huit points de vie."
+ },
+ "bat_swoop": {
+  "class": "carrion_bat",
+  "kind": "attack",
+  "action_points": 3,
+  "range_min": 1,
+  "range_max": 2,
+  "needs_line_of_sight": true,
+  "area": {
+   "shape": "single"
+  },
+  "damage": 14,
+  "scaling": "agility",
+  "cooldown": 0,
+  "note": "Une allonge de deux : elle mord depuis une case où le Guerrier ne la rejoint pas d'un pas. Le décrochage vient de ses six PM, pas de la compétence."
+ },
+ "shell_slam": {
+  "class": "bone_turtle",
+  "kind": "attack",
+  "action_points": 4,
+  "range_min": 1,
+  "range_max": 1,
+  "needs_line_of_sight": true,
+  "area": {
+   "shape": "single"
+  },
+  "damage": 16,
+  "scaling": "strength",
+  "cooldown": 0,
+  "note": "Peu de dégâts pour beaucoup de points de vie : la tortue est un OBSTACLE, et un obstacle qui frapperait fort serait une brute. Le laisser inoffensif est ce qui rend « la contourner » jouable."
+ },
+ "cinder_bolt": {
+  "class": "skull_wisp",
+  "kind": "attack",
+  "action_points": 5,
+  "range_min": 3,
+  "range_max": 6,
+  "needs_line_of_sight": true,
+  "area": {
+   "shape": "cross",
+   "radius": 1
+  },
+  "damage": 12,
+  "scaling": "intelligence",
+  "cooldown": 1,
+  "leaves_terrain": "fire",
+  "note": "LA ZONE DU CHAMAN, PLUS LE FEU DU GOBELIN À TORCHE. Les deux existaient séparément depuis l'acte 1 ; ensemble, ils se contredisent — se serrer pour encaisser la croix, c'est se serrer sur un terrain qui brûle."
+ },
+ "heavy_paw": {
+  "class": "dune_panda",
+  "kind": "attack",
+  "action_points": 5,
+  "range_min": 1,
+  "range_max": 1,
+  "needs_line_of_sight": true,
+  "area": {
+   "shape": "line",
+   "length": 2
+  },
+  "damage": 32,
+  "scaling": "strength",
+  "cooldown": 0,
+  "note": "La charge du minotaure, en plus dur. Partagée avec l'ours : c'est la MÊME menace, et la reconnaître d'un boss à l'autre est ce qui fait qu'on apprend un bestiaire au lieu de le subir."
+ },
+ "rending_swipe": {
+  "class": "dune_bear",
+  "kind": "attack",
+  "action_points": 5,
+  "range_min": 1,
+  "range_max": 1,
+  "needs_line_of_sight": true,
+  "area": {
+   "shape": "cross",
+   "radius": 1
+  },
+  "damage": 26,
+  "scaling": "strength",
+  "cooldown": 1,
+  "note": "LA SECONDE COMPÉTENCE D'UN ENNEMI, une première dans le jeu. Avec `heavy_paw`, l'ours punit la file ET le groupe : il n'y a plus de formation sûre, seulement une formation qui perd moins."
+ }
 }

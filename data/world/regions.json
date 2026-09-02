@@ -58,7 +58,51 @@
       "description_key": "REGION_BURNING_DUNES_DESC",
       "act": 2,
       "unlocked": false,
-      "accent": "sand"
+      "accent": "sand",
+      "encounter_maps": [
+        "dunes_06",
+        "dunes_01",
+        "dunes_07",
+        "dunes_02",
+        "dunes_03",
+        "dunes_04",
+        "dunes_05"
+      ],
+      "miniboss_map": "dunes_09",
+      "boss_map": "dunes_08",
+      "map_window": {
+        "_note": "L'ORDRE EST MESURÉ, PAS SUPPOSÉ — même règle qu'aux Terres Vertes, et il a fallu la réapprendre. Rangé à l'intuition, il était faux : `dunes_02` et `dunes_06` coûtaient ZÉRO POUR CENT des PV, ce qu'un acte 2 ne peut pas se permettre.\n\nCoût moyen mesuré sur cinquante graines, de jour : 06 → 0 %, 01 → 10 %, 07 → 13 %, 02 → 18 %, 03 → 29 %, 04 → 30 %, 05 → 35 %. Mini-boss 09 → 26 %, boss 08 → 49 %.\n\n`dunes_06` RESTE À ZÉRO APRÈS CORRECTION, et c'est assumé : un essaim de bêtes rapides et fragiles se fait concentrer avant d'agir, quel que soit son nombre. Elle sert donc d'ouverture à la région, exactement comme `vallee_01` aux Terres Vertes — une première rencontre qui présente le bestiaire sans le faire payer.\n\nLE BOSS EST PLUS DUR QUE CELUI DE L'ACTE 1 (49 % contre 35 %), ce qui est le seul chiffre qui devait absolument monter.",
+        "size": 3,
+        "slide": 0.5
+      },
+      "chain": {
+        "pattern": [
+          "combat",
+          "event",
+          "combat",
+          "merchant"
+        ],
+        "tail": [
+          "miniboss",
+          "reward",
+          "boss"
+        ],
+        "body": {
+          "min": 4,
+          "max": 7
+        }
+      },
+      "resources_per_encounter": {
+        "wood": 5,
+        "food": 5,
+        "stone": 9,
+        "gold": 2
+      },
+      "night_roster": [
+        "lizard",
+        "skull_wisp"
+      ],
+      "_night_note": "NI SERPENT NI CHAUVE-SOURIS DANS LE VIVIER DE NUIT. La leçon de T8.1 tient : un renfort doit ajouter de la PRESSION, pas de la durée, et une bête qui décroche allonge le combat au lieu de le durcir. Le gnoll avait fait passer `vallee_02` de 5,0 à 9,8 rondes ; le serpent et la chauve-souris feraient pire, l'un traversant la carte et l'autre s'enfuyant."
     },
     "frozen_mountains": {
       "name_key": "REGION_FROZEN_MOUNTAINS",

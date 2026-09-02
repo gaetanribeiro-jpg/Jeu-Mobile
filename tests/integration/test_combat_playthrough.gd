@@ -167,9 +167,13 @@ func _run(map_id: StringName, seed_value: int) -> Dictionary:
 	}
 
 
-func test_les_cartes_de_l_acte_i_se_chargent() -> void:
+func test_chaque_carte_declaree_se_charge() -> void:
+	# LE COMPTE N'EST PLUS FIXÉ. Il valait 9 — les cartes de l'Acte I —
+	# et l'acte 2 en a ajouté neuf : un test qui compte les cartes échoue
+	# à chaque ajout de contenu sans que rien ne soit faux. Ce qui compte
+	# est que CHACUNE se charge entière.
 	var ids := CombatMap.map_ids()
-	assert_eq(ids.size(), 9, "les cartes de l'Acte I, mini-boss compris")
+	assert_gt(ids.size(), 9, "les deux actes, mini-boss et boss compris")
 	for id: StringName in ids:
 		var map := CombatMap.load_map(id, CombatRules.ADJACENCY_ORTHOGONAL)
 		assert_not_null(map, String(id))

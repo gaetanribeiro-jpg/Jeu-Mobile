@@ -1,0 +1,90 @@
+{
+ "_note": "LE MINI-BOSS. Le panda frappe en LIGNE : deux héros alignés devant lui, c'est deux héros à terre. Les deux chauves-souris existent pour empêcher de le prendre tranquillement — elles obligent à garder un œil derrière pendant qu'on gère le télégraphe devant.",
+ "act": 2,
+ "name_key": "MAP_DUNES_09",
+ "rows": [
+  "............",
+  "....#...#...",
+  "............",
+  "............",
+  "..#......#..",
+  "............",
+  "............",
+  "....#...#...",
+  "............"
+ ],
+ "objective": {
+  "kind": "eliminate"
+ },
+ "deployment_cells": [
+  [
+   0,
+   2
+  ],
+  [
+   0,
+   3
+  ],
+  [
+   0,
+   4
+  ],
+  [
+   0,
+   5
+  ],
+  [
+   0,
+   6
+  ],
+  [
+   1,
+   3
+  ],
+  [
+   1,
+   4
+  ],
+  [
+   1,
+   5
+  ]
+ ],
+ "enemies": [
+  {
+   "type": "dune_panda",
+   "cell": [
+    8,
+    4
+   ]
+  },
+  {
+   "type": "carrion_bat",
+   "cell": [
+    10,
+    2
+   ]
+  },
+  {
+   "type": "carrion_bat",
+   "cell": [
+    10,
+    6
+   ]
+  },
+  {
+   "type": "lizard",
+   "cell": [
+    10,
+    4
+   ]
+  },
+  {
+   "type": "dune_spider",
+   "cell": [
+    11,
+    4
+   ]
+  }
+ ]
+}

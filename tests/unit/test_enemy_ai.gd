@@ -46,8 +46,11 @@ func _ai() -> EnemyAI:
 
 
 func test_les_ennemis_des_terres_vertes_sont_declares() -> void:
+	# LE COMPTE N'EST PLUS FIXÉ : le bestiaire fond désormais deux actes
+	# (T11.7). Ce que ce test protège, c'est que les NEUF bêtes des Terres
+	# Vertes soient toujours là — pas qu'il n'y en ait que neuf au monde.
 	var ids := Unit.enemy_ids()
-	assert_eq(ids.size(), 9)
+	assert_gt(ids.size(), 8)
 	for expected: StringName in [
 		&"spear_goblin", &"gnome", &"slingshot_gnome", &"torch_goblin",
 		&"thief", &"troll", &"gnoll", &"hex_shaman", &"minotaur"

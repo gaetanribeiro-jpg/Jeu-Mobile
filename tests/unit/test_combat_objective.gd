@@ -174,11 +174,28 @@ func test_le_nom_du_type_fait_l_aller_retour() -> void:
 		assert_eq(CombatObjective.from_dictionary({"kind": name_}).kind_name(), name_)
 
 
-func test_les_cartes_sont_listees_dans_l_ordre() -> void:
-	# Le lanceur les affiche dans cet ordre, et l'Acte I est une
-	# progression : vallee_01 est le tutoriel, vallee_08 le gardien.
+func test_les_cartes_sont_listees_dans_un_ordre_stable() -> void:
+	# LE BANC D'ESSAI LES AFFICHE DANS CET ORDRE, et un ordre qui change
+	# d'une exécution à l'autre déplacerait les boutons sous le doigt.
+	#
+	# IL NE SUPPOSE PLUS UN SEUL ACTE. Le test attendait littéralement
+	# « vallee_01 … vallee_n » ; l'acte 2 (T11.7) a ajouté neuf cartes
+	# `dunes_*`, et un test qui fixe une convention de nommage casse au
+	# premier acte suivant sans que rien ne soit faux.
+	# ET « STABLE » NE VEUT PAS DIRE « TRIÉ » : `sort()` sur un tableau de
+	# `StringName` compare des pointeurs internes, pas du texte. Ce qui se
+	# vérifie ici est donc que deux lectures rendent le même ordre.
 	var ids := CombatMap.map_ids()
-	var expected: Array[StringName] = []
-	for i in range(1, ids.size() + 1):
-		expected.append(StringName("vallee_%02d" % i))
-	assert_eq(ids, expected)
+	assert_eq(ids, CombatMap.map_ids(), "l'ordre doit se rejouer à l'identique")
+	assert_gt(ids.size(), 1)
+	assert_eq(ids.size(), _distinct(ids).size(), "aucun doublon")
+
+
+func _distinct(ids: Array[StringName]) -> Array[StringName]:
+	var seen := {}
+	var out: Array[StringName] = []
+	for id_: StringName in ids:
+		if not seen.has(id_):
+			seen[id_] = true
+			out.append(id_)
+	return out

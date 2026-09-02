@@ -17,6 +17,31 @@ MAP_VALLEE_03,La crête aux corbeaux
 MAP_VALLEE_04,La brèche
 MAP_VALLEE_05,Le pont de bois
 MAP_VALLEE_06,La route basse
+MAP_DUNES_01,La piste ouverte
+MAP_DUNES_02,Le champ de pierres
+MAP_DUNES_03,Le goulet de sable
+MAP_DUNES_04,Le brasier
+MAP_DUNES_05,La crête rouge
+MAP_DUNES_06,L'essaim
+MAP_DUNES_07,La halte des caravanes
+MAP_DUNES_08,La tanière de l'ours
+MAP_DUNES_09,Le cirque du panda
+ENEMY_LIZARD,Lézard des sables
+ENEMY_SAND_SERPENT,Serpent des dunes
+ENEMY_DUNE_SPIDER,Araignée des dunes
+ENEMY_CARRION_BAT,Chauve-souris charognarde
+ENEMY_BONE_TURTLE,Tortue d'os
+ENEMY_SKULL_WISP,Feu follet
+ENEMY_DUNE_PANDA,Colosse des dunes
+ENEMY_DUNE_BEAR,Ours des sables
+ABILITY_LIZARD_BITE,Morsure
+ABILITY_SERPENT_STRIKE,Frappe du serpent
+ABILITY_WEB_SPIT,Crachat de toile
+ABILITY_BAT_SWOOP,Fondre
+ABILITY_SHELL_SLAM,Coup de carapace
+ABILITY_CINDER_BOLT,Gerbe de braises
+ABILITY_HEAVY_PAW,Coup de patte
+ABILITY_RENDING_SWIPE,Lacération
 MAP_VALLEE_07,Les ruines noyées
 MAP_VALLEE_08,La tanière
 HUD_ROUND,Ronde %d

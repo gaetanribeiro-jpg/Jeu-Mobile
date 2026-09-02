@@ -1,0 +1,104 @@
+{
+ "_note": "LA CARTE QUI POSE LA QUESTION DE LA TORTUE. Deux barrages au milieu d'un couloir, un lanceur derrière : les abattre coûte trois rondes pendant lesquelles la gerbe tombe, les contourner demande de traverser un goulet qu'elles tiennent. C'est le premier plateau du jeu où « ignorer » est la bonne réponse.",
+ "act": 2,
+ "name_key": "MAP_DUNES_03",
+ "rows": [
+  "#####..#####",
+  "#####..#####",
+  "............",
+  "............",
+  "............",
+  "............",
+  "............",
+  "#####..#####",
+  "#####..#####"
+ ],
+ "objective": {
+  "kind": "eliminate"
+ },
+ "deployment_cells": [
+  [
+   0,
+   2
+  ],
+  [
+   0,
+   3
+  ],
+  [
+   0,
+   4
+  ],
+  [
+   0,
+   5
+  ],
+  [
+   0,
+   6
+  ],
+  [
+   1,
+   3
+  ],
+  [
+   1,
+   4
+  ],
+  [
+   1,
+   5
+  ]
+ ],
+ "enemies": [
+  {
+   "type": "bone_turtle",
+   "cell": [
+    6,
+    3
+   ]
+  },
+  {
+   "type": "bone_turtle",
+   "cell": [
+    6,
+    5
+   ]
+  },
+  {
+   "type": "skull_wisp",
+   "cell": [
+    10,
+    4
+   ]
+  },
+  {
+   "type": "lizard",
+   "cell": [
+    8,
+    2
+   ]
+  },
+  {
+   "type": "lizard",
+   "cell": [
+    8,
+    6
+   ]
+  },
+  {
+   "type": "skull_wisp",
+   "cell": [
+    11,
+    2
+   ]
+  },
+  {
+   "type": "lizard",
+   "cell": [
+    9,
+    4
+   ]
+  }
+ ]
+}

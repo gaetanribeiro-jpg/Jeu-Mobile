@@ -235,9 +235,10 @@ dur : passer par `data/assets.json`.
 *(à tenir à jour à chaque fin de session)*
 
 - **Phase courante : 11 — la bêta.** Cinq chantiers, listés avec leur
-  constat vérifié dans `docs/etat-des-lieux.md` § 5 : T11.1 le téléphone,
-  T11.2 le son, ~~T11.3 l'écran de titre~~ **fait**, T11.4 une fin,
-  T11.5 le tutoriel. **782 tests passent.**
+  constat vérifié dans `docs/etat-des-lieux.md` § 5. **Faits :** T11.3
+  l'écran de titre, T11.4 le déverrouillage et la fin, T11.6 la couleur
+  partout, T11.7 l'acte 2. **Restent :** T11.1 le téléphone, T11.2 le
+  son, T11.5 le tutoriel. **798 tests passent.**
   Le pivot vers la vision Tiny Kingdoms a été acté le 2026-08-31.
 - **Phase 1 terminée.** T1.1 à T1.14 sont faites et testées.
 - **Phase 2 terminée.** T2.1 à T2.7 : le `Hero`, les niveaux,
@@ -347,6 +348,28 @@ pas défaire :
   piège de T9.6 pris par l'autre bout.
 - **Le banc d'essai se replie, il ne disparaît pas.** Deux clics, comme
   avant : seize défauts n'ont été trouvés que par lui.
+
+**LE MONDE S'OUVRE PAR LES ACTES (T11.4).** `Campaign` vit dans la
+SAUVEGARDE, pas dans `regions.json` : le fichier dit ce qui est ouvert au
+départ d'une partie neuve, la partie dit ce qui s'est ouvert depuis. La
+région d'acte n + 1 s'ouvre quand une région d'acte n est conclue —
+ajouter une région ne demande donc rien d'autre qu'un numéro d'acte. La
+campagne est finie quand tout le JOUABLE est conclu, pas tout le déclaré.
+
+**UN ACTE 2 N'EST PAS UN ACTE 1 AUX CHIFFRES GONFLÉS (T11.7).** Chaque
+ennemi porte une `question`, et c'est son critère d'admission : `verify_world`
+et un test refusent une bête qui n'en pose pas de neuve. Trois choses à
+ne pas défaire :
+- **Le bestiaire se découpe par acte et se FOND dans `Unit.enemies()`.**
+  Deux actes qui déclareraient le même identifiant se marcheraient dessus
+  EN SILENCE, et une carte de l'acte 1 changerait de bête. Le moteur garde
+  le premier écrit ; le vérificateur refuse la situation.
+- **On corrige une carte molle en CORPS, pas en statistiques.** Gonfler
+  les PV rend le combat plus long, pas plus dur — leçon du renfort de
+  nuit. Plafond de sept ennemis par carte : la marge que la nuit occupe.
+- **Aucune mécanique n'a été inventée pour l'acte 2.** `chilled` et le feu
+  au sol existaient depuis la Phase 1 ; ce qui est neuf, c'est qui les
+  emploie et contre qui.
 
 **LA COULEUR PORTE UNE INFORMATION, JAMAIS UNE DÉCORATION (T11.6).**
 Six régions dans six boîtes identiques obligent à LIRE. Trois choses à ne

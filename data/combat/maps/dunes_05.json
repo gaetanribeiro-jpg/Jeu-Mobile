@@ -1,0 +1,90 @@
+{
+ "_note": "LE RELIEF PAIE LA PORTÉE, et pour la première fois c'est l'ennemi qui en profite : deux lanceurs sur les collines couvrent tout le centre. Y monter coûte le tour d'un héros ; ne pas y monter laisse la croix tomber six rondes durant.",
+ "act": 2,
+ "name_key": "MAP_DUNES_05",
+ "rows": [
+  "............",
+  "......^^....",
+  "......^^....",
+  "............",
+  "............",
+  "............",
+  "......^^....",
+  "......^^....",
+  "............"
+ ],
+ "objective": {
+  "kind": "eliminate"
+ },
+ "deployment_cells": [
+  [
+   0,
+   2
+  ],
+  [
+   0,
+   3
+  ],
+  [
+   0,
+   4
+  ],
+  [
+   0,
+   5
+  ],
+  [
+   0,
+   6
+  ],
+  [
+   1,
+   3
+  ],
+  [
+   1,
+   4
+  ],
+  [
+   1,
+   5
+  ]
+ ],
+ "enemies": [
+  {
+   "type": "skull_wisp",
+   "cell": [
+    7,
+    1
+   ]
+  },
+  {
+   "type": "skull_wisp",
+   "cell": [
+    7,
+    7
+   ]
+  },
+  {
+   "type": "lizard",
+   "cell": [
+    9,
+    4
+   ]
+  },
+  {
+   "type": "lizard",
+   "cell": [
+    10,
+    3
+   ]
+  },
+  {
+   "type": "sand_serpent",
+   "cell": [
+    10,
+    5
+   ]
+  }
+ ]
+}

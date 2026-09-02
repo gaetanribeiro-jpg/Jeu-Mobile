@@ -2306,7 +2306,7 @@ souvenir.**
 | **T11.2** | Brancher le son | 473 fichiers, 30 entrées déclarées, **0 appel** à `AudioManager` depuis le jeu | ⬜ |
 | **T11.3** | Un vrai écran de titre | `BOOT_TEMPORARY` : « Écran de test provisoire — le vrai menu viendra plus tard » | ✅ |
 | **T11.4** | Le déverrouillage et la fin | 5 régions sur 6 sont des coquilles vides, rien n'écrit jamais `unlocked` | ✅ |
-| **T11.7** | L'acte 2 — les Dunes Ardentes | la région n'a que son nom | 🚧 |
+| **T11.7** | L'acte 2 — les Dunes Ardentes | la région n'avait que son nom | ✅ |
 | **T11.5** | Apprendre à jouer | aucun tutoriel, aucune aide, aucune première partie guidée | ⬜ |
 
 **L'ordre est celui-là et il se justifie.** Le téléphone d'abord parce que
@@ -2514,6 +2514,79 @@ ouverte » serait faux.
 Il reprend le **ruban du titre**, et c'est le seul autre endroit du jeu
 où il apparaît : le même objet qui porte le nom du jeu au lancement porte
 ici ce qu'on vient d'accomplir.
+
+
+### T11.7 — l'acte 2, les Dunes Ardentes ✅
+
+Six régions étaient déclarées, cinq n'avaient que leur nom. La deuxième
+en a maintenant un bestiaire, neuf cartes et une chaîne.
+
+### Le critère d'admission n'est pas « une bête de plus »
+
+**Un acte 2 qui ne serait qu'un acte 1 aux chiffres gonflés n'apprend
+rien** : le joueur rejoue le même combat plus lentement. Chaque entrée du
+bestiaire porte donc un champ `question`, et il n'est pas décoratif —
+c'est ce qui décide de son admission. `verify_world` et un test refusent
+une bête qui n'en pose pas.
+
+Ce que l'acte 1 demandait déjà : tenir une ligne, aller chercher un
+tireur, sortir d'une zone, encaisser une charge. Ce que l'acte 2 ajoute :
+
+| Bête | Ce qu'elle demande de neuf |
+|---|---|
+| **Serpent des dunes** | Sept PM et l'initiative : il atteint la ligne arrière avant qu'elle ait joué. Le premier ennemi du jeu contre qui la distance ne protège plus. |
+| **Araignée des dunes** | Elle ne blesse pas, elle RALENTIT. Le gel existait depuis la Phase 1 et n'était infligé que par les héros ; c'est la première fois qu'on le subit. |
+| **Tortue d'os** | Huit de défense, presque aucun dégât. Le premier ennemi qu'il vaut mieux **ignorer** — et c'est ce qui rend son rôle de barrage lisible. |
+| **Chauve-souris charognarde** | Elle frappe et décroche. La poursuivre casse la formation, l'ignorer coûte quatorze par ronde. |
+| **Feu follet** | La zone du chaman **plus** le feu du gobelin à torche. Les deux réponses de l'acte 1 se contredisent enfin : se serrer pour encaisser la croix, c'est se serrer sur un terrain qui brûle. |
+| **Ours des sables** | Deux compétences — ce qu'aucun ennemi n'avait. La file et le groupe. Il n'y a plus de formation sûre, seulement une qui perd moins. |
+
+**Aucune mécanique n'a été inventée.** `chilled` et le feu au sol
+existent depuis la Phase 1 ; ce qui est neuf, c'est qui les emploie et
+contre qui.
+
+### Le bestiaire se découpe par acte et se FOND à la lecture
+
+Un seul fichier aurait fini à quarante bêtes mélangées. `Unit.enemies()`
+fusionne les fichiers, parce qu'un ennemi n'appartient à son acte que
+pour être **écrit** : une fois en jeu, c'est une carte qui décide qui
+apparaît.
+
+Ce qui rend l'oubli dangereux : **deux actes qui déclareraient le même
+identifiant se marcheraient dessus en silence**, et une carte de l'acte 1
+changerait de bête sans qu'une ligne de code ait bougé. Le moteur garde
+le premier écrit ; `verify_world` et un test refusent la situation.
+
+### Ce que la mesure a corrigé
+
+Rangées à l'intuition, mes cartes étaient **trop douces pour un acte 2** :
+`dunes_02` et `dunes_06` coûtaient **zéro pour cent** des PV. Le boss,
+lui, était juste du premier coup — 51 % de PV restants contre 65 % pour
+celui de l'acte 1.
+
+La correction est venue en **corps, pas en chiffres** : plus de bêtes sur
+les cartes molles, aucune statistique retouchée. Gonfler les points de
+vie aurait rendu les combats plus longs sans les rendre plus durs — c'est
+exactement la leçon du renfort de nuit (T8.1).
+
+`verify_maps` a attrapé trois placements sur du rocher et trois cartes à
+huit ennemis, où le plafond est de sept : la marge que le renfort de nuit
+occupe.
+
+### Trois tests fixaient une convention plutôt qu'un fait
+
+- un comptait les cartes (« 9, les cartes de l'Acte I ») ;
+- un attendait littéralement `vallee_01 … vallee_n` ;
+- un comptait les bêtes du bestiaire.
+
+Les trois échouaient au premier ajout de contenu **sans que rien ne soit
+faux**. Ils vérifient maintenant ce qui compte : que chaque carte se
+charge entière, que l'ordre se rejoue à l'identique, et que les neuf
+bêtes des Terres Vertes soient toujours là.
+
+Au passage : `sort()` sur un tableau de `StringName` compare des
+**pointeurs internes**, pas du texte. Un test qui s'y fiait pour vérifier
+un tri alphabétique échouait sur un ordre qui n'avait rien d'aléatoire.
 
 
 ---

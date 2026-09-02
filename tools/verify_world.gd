@@ -32,6 +32,7 @@ func _init() -> void:
 	_check_events()
 	_check_merchant()
 	_check_supplies()
+	_check_bestiary()
 	_check_expedition_rules()
 	_check_day_night()
 
@@ -393,6 +394,65 @@ func _check_supplies() -> void:
 	# une potion effacerait la dépense.
 	if Loot.number(&"supplies", &"on_defeat", 0.0) > 0.0:
 		_problems.append("une défaite rend des potions : la dépense s'annule")
+
+
+## LE BESTIAIRE, ACTE PAR ACTE (T11.7).
+##
+## `Unit.enemies()` FOND les fichiers d'acte en une seule table, et c'est
+## ce qui rend l'oubli dangereux : deux actes qui déclareraient le même
+## identifiant se marcheraient dessus en silence, et une carte de l'acte 1
+## changerait de bête sans qu'une ligne de code ait bougé. Le moteur garde
+## le premier écrit ; ce contrôle refuse la situation.
+func _check_bestiary() -> void:
+	print("\nLe bestiaire :\n")
+	var seen := {}
+	var per_act := {}
+	for path: String in Unit.ENEMY_PATHS:
+		if not FileAccess.file_exists(path):
+			_problems.append("bestiaire : %s introuvable" % path)
+			continue
+		var file := FileAccess.open(path, FileAccess.READ)
+		var parsed: Variant = JSON.parse_string(file.get_as_text())
+		file.close()
+		if typeof(parsed) != TYPE_DICTIONARY:
+			_problems.append("bestiaire : %s n'est pas un objet JSON" % path)
+			continue
+		var count := 0
+		for key: Variant in (parsed as Dictionary).keys():
+			if String(key).begins_with("_"):
+				continue
+			count += 1
+			if seen.has(key):
+				_problems.append(
+					"l'ennemi « %s » est déclaré deux fois — %s et %s"
+					% [key, seen[key], path]
+				)
+			seen[key] = path
+		per_act[path] = count
+		print("  %-30s %2d bêtes" % [path.get_file(), count])
+
+	# CHAQUE BÊTE DOIT ÊTRE DESSINÉE ET SAVOIR FRAPPER. Une entrée sans
+	# sprite rend un rectangle, une entrée sans compétence rend un ennemi
+	# qui passe son tour — deux défauts qui se JOUENT sans rien casser.
+	for enemy_id: StringName in Unit.enemy_ids():
+		var entry := Unit.enemy_stats(enemy_id)
+		var sprite := StringName(entry.get("sprite", ""))
+		if sprite.is_empty() or AssetTable.enemy_animation(sprite, &"idle").is_empty():
+			_problems.append("l'ennemi « %s » n'a pas de sprite d'attente" % enemy_id)
+		var abilities: Array = entry.get("abilities", [])
+		if abilities.is_empty():
+			_problems.append("l'ennemi « %s » n'a aucune compétence" % enemy_id)
+		for ability_id: Variant in abilities:
+			if Ability.of(StringName(ability_id)) == null:
+				_problems.append(
+					"l'ennemi « %s » veut la compétence inconnue « %s »"
+					% [enemy_id, ability_id]
+				)
+		if String(entry.get("question", "")).is_empty():
+			# LA QUESTION EST LE CRITÈRE D'ADMISSION, pas un commentaire :
+			# un ennemi qui n'en pose pas de neuve n'ajoute que des points
+			# de vie à tuer.
+			_problems.append("l'ennemi « %s » ne dit pas quelle question il pose" % enemy_id)
 
 
 ## Le cycle jour / nuit (§ 36), et la seule chose qu'il ne doit pas être :

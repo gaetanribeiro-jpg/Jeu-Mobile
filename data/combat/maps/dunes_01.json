@@ -1,0 +1,97 @@
+{
+ "_note": "LA PREMIÈRE DES DUNES, ET ELLE N'ENSEIGNE QU'UNE CHOSE : le serpent arrive tout de suite. Un plateau presque nu, quatre bêtes, aucun terrain pour se cacher — le joueur voit sept PM traverser la carte et comprend, sans qu'on le lui écrive, que sa ligne arrière n'est plus à l'abri de la distance.",
+ "act": 2,
+ "name_key": "MAP_DUNES_01",
+ "rows": [
+  "............",
+  "..#.........",
+  "............",
+  ".....#......",
+  "............",
+  ".....#......",
+  "............",
+  "..#.........",
+  "............"
+ ],
+ "objective": {
+  "kind": "eliminate"
+ },
+ "deployment_cells": [
+  [
+   0,
+   2
+  ],
+  [
+   0,
+   3
+  ],
+  [
+   0,
+   4
+  ],
+  [
+   0,
+   5
+  ],
+  [
+   0,
+   6
+  ],
+  [
+   1,
+   3
+  ],
+  [
+   1,
+   4
+  ],
+  [
+   1,
+   5
+  ]
+ ],
+ "enemies": [
+  {
+   "type": "lizard",
+   "cell": [
+    9,
+    3
+   ]
+  },
+  {
+   "type": "lizard",
+   "cell": [
+    9,
+    5
+   ]
+  },
+  {
+   "type": "sand_serpent",
+   "cell": [
+    10,
+    4
+   ]
+  },
+  {
+   "type": "dune_spider",
+   "cell": [
+    11,
+    4
+   ]
+  },
+  {
+   "type": "lizard",
+   "cell": [
+    11,
+    2
+   ]
+  },
+  {
+   "type": "lizard",
+   "cell": [
+    11,
+    6
+   ]
+  }
+ ]
+}
