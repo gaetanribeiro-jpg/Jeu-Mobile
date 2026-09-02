@@ -48,6 +48,8 @@ var _round: Label
 var _timeline: HBoxContainer
 var _squad: VBoxContainer
 var _active_name: Label
+var _active_face: TextureRect
+var _detail: VBoxContainer
 var _action_pips: Control
 var _movement_pips: Control
 var _abilities: HBoxContainer
@@ -136,6 +138,7 @@ func _build() -> void:
 	column.add_child(_build_bottom())
 	_build_timeline()
 	_build_corner()
+	_build_detail()
 
 
 ## Bandeau haut : objectif à gauche, timeline au centre, ronde à droite.
@@ -152,19 +155,28 @@ func _build_top() -> Control:
 	top.mouse_filter = Control.MOUSE_FILTER_IGNORE
 
 	var goal := PanelContainer.new()
-	goal.add_theme_stylebox_override(
-		"panel", UiSkin.panel_style(&"panel_strong", UiTheme.metric(&"card_margin"))
-	)
+	goal.add_theme_stylebox_override("panel", UiSkin.framed_style(
+		&"frame_panel", &"panel_fill", &"panel_edge", UiTheme.metric(&"card_margin")
+	))
 	goal.custom_minimum_size = Vector2(UiTheme.metric(&"objective_width"), 0)
 	goal.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
 	goal.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	goal.mouse_filter = Control.MOUSE_FILTER_IGNORE
+
+	var stack := VBoxContainer.new()
+	stack.add_theme_constant_override("separation", 2)
+	stack.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	goal.add_child(stack)
+
+	# UN EN-TÊTE EN PETITES CAPITALES DORÉES au-dessus de chaque panneau :
+	# c'est ce qui, dans le modèle, dit à quoi sert la zone avant qu'on
+	# lise son contenu. Sans lui un panneau n'est qu'une boîte.
+	stack.add_child(_caption("HUD_OBJECTIVE_TITLE"))
 	_objective = _label(UiTheme.font_size(&"small"))
 	_objective.add_theme_color_override("font_color", UiTheme.color(&"ink"))
 	_objective.add_theme_constant_override("outline_size", 0)
-	_objective.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	_objective.clip_text = true
-	goal.add_child(_objective)
+	stack.add_child(_objective)
 	top.add_child(goal)
 
 	return top
@@ -199,6 +211,87 @@ func _build_timeline() -> void:
 ## Un ancrage ne dépend de personne : c'est le seul moyen de garantir que
 ## le bouton de pause soit là, et sur mobile un combat dont on ne peut pas
 ## sortir est le pire des défauts (§ T6.1).
+## Le panneau de détail de la compétence visée, ancré à droite.
+##
+## C'EST CE QUE LE MODÈLE AJOUTE ET QUE LE JEU N'AVAIT PAS : le § 48 veut
+## que le joueur sache ce qu'une action coûte ET ce qu'elle fait AVANT de
+## la choisir. Le coût était sur le bouton ; les dégâts, la portée et
+## l'effet ne se lisaient nulle part, sinon en la lançant.
+func _build_detail() -> void:
+	var panel := PanelContainer.new()
+	panel.anchor_left = 1.0
+	panel.anchor_right = 1.0
+	panel.offset_left = -float(UiTheme.metric(&"detail_width")) - 18.0
+	panel.offset_right = -18.0
+	panel.offset_top = 14.0 + float(TOP_BAR_PX)
+	panel.offset_bottom = panel.offset_top + float(UiTheme.metric(&"detail_height"))
+	panel.add_theme_stylebox_override("panel", UiSkin.framed_style(
+		&"frame_panel", &"panel_fill", &"panel_edge", UiTheme.metric(&"card_margin")
+	))
+	panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	add_child(panel)
+
+	_detail = VBoxContainer.new()
+	_detail.add_theme_constant_override("separation", 6)
+	_detail.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	panel.add_child(_detail)
+
+
+## Remplit le panneau de détail à partir de la compétence choisie.
+func _refresh_detail(engine: CombatEngine) -> void:
+	for child in _detail.get_children():
+		child.queue_free()
+	var unit := engine.current_unit()
+	if unit == null or not unit.is_hero() or _selected_ability.is_empty():
+		return
+	var ability := Ability.of(_selected_ability)
+	if ability == null:
+		return
+
+	var head := HBoxContainer.new()
+	head.add_theme_constant_override("separation", 10)
+	head.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_detail.add_child(head)
+	var mark := UiSkin.glyph(_selected_ability)
+	if mark != null:
+		var icon := TextureRect.new()
+		icon.texture = mark
+		icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		icon.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+		icon.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		head.add_child(icon)
+	var title := VBoxContainer.new()
+	title.add_theme_constant_override("separation", 0)
+	title.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	head.add_child(title)
+	var name_ := _label_text(UiTheme.font_size(&"subheading"), _ability_name(_selected_ability))
+	name_.add_theme_color_override("font_color", UiTheme.color(&"ink_gold"))
+	name_.add_theme_constant_override("outline_size", 0)
+	title.add_child(name_)
+	title.add_child(_detail_value(tr("HUD_ABILITY_COST") % ability.action_points))
+
+	_detail.add_child(_caption("HUD_DETAIL_DAMAGE"))
+	_detail.add_child(_detail_value(
+		tr("HUD_DETAIL_NONE") if ability.damage <= 0 else str(ability.damage)
+	))
+	_detail.add_child(_caption("HUD_DETAIL_RANGE"))
+	_detail.add_child(_detail_value(
+		tr("HUD_DETAIL_CELLS") % [ability.range_min, ability.range_max]
+	))
+	_detail.add_child(_caption("HUD_DETAIL_EFFECT"))
+	_detail.add_child(_detail_value(
+		tr("HUD_DETAIL_NONE") if ability.status_id.is_empty()
+		else tr("STATUS_%s" % String(ability.status_id).to_upper())
+	))
+
+
+func _detail_value(text: String) -> Label:
+	var value := _label_text(UiTheme.font_size(&"small"), text)
+	value.add_theme_color_override("font_color", UiTheme.color(&"ink"))
+	value.add_theme_constant_override("outline_size", 0)
+	return value
+
+
 ## POSÉ SUR LE `CanvasLayer`, PAS DANS LE CONTENEUR. Un `Container` écrase
 ## les ancrages de ses enfants — c'est sa raison d'être — donc un ancrage
 ## posé à l'intérieur du `MarginContainer` était réécrit à chaque mise en
@@ -219,14 +312,39 @@ func _build_corner() -> void:
 	corner.grow_horizontal = Control.GROW_DIRECTION_BEGIN
 	add_child(corner)
 
-	_round = _label(UiTheme.font_size(&"small"))
+	# LA RONDE DANS SON PROPRE CADRE, comme le reste. Une ligne de texte
+	# nue au milieu de panneaux ornés se voit autant qu'un panneau
+	# manquant.
+	var badge := PanelContainer.new()
+	badge.add_theme_stylebox_override("panel", UiSkin.framed_style(
+		&"frame_card", &"panel_fill", &"panel_edge", 10
+	))
+	badge.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	badge.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	corner.add_child(badge)
+
+	var inner := HBoxContainer.new()
+	inner.add_theme_constant_override("separation", 8)
+	inner.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	badge.add_child(inner)
+	inner.add_child(_caption("HUD_ROUND_TITLE"))
+	_round = _label(UiTheme.font_size(&"subheading"))
+	_round.add_theme_color_override("font_color", UiTheme.color(&"ink"))
+	_round.add_theme_constant_override("outline_size", 0)
 	_round.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-	corner.add_child(_round)
+	inner.add_child(_round)
 
 	# En haut à droite, loin des compétences : une pause qu'on presse par
 	# accident au milieu d'une activation est pire que pas de pause.
 	var pause := _button("HUD_PAUSE")
-	pause.custom_minimum_size = Vector2(64, 48)
+	pause.custom_minimum_size = Vector2(56, 56)
+	pause.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	for state: String in ["normal", "hover", "focus", "pressed"]:
+		pause.add_theme_stylebox_override(state, UiSkin.framed_style(
+			&"frame_card", &"panel_fill", &"panel_edge", 6
+		))
+	pause.add_theme_color_override("font_color", UiTheme.color(&"ink_gold"))
+	pause.add_theme_constant_override("outline_size", 0)
 	pause.pressed.connect(func() -> void: pause_pressed.emit())
 	corner.add_child(pause)
 
@@ -259,22 +377,47 @@ func _build_middle() -> Control:
 ## Bandeau bas : le personnage actif et ses jauges, ses compétences, et
 ## les deux boutons — le tout à portée de pouce.
 func _build_bottom() -> Control:
-	# LA TABLE DE BOIS DU PACK SOUS TOUTE LA BARRE. C'est le défaut que
-	# Gaetan a pointé : les boutons flottaient sur du noir. Dans les trois
-	# jeux montrés en référence, aucune zone d'interface ne touche
-	# directement le fond — tout repose sur un panneau. Et
-	# thématiquement, la table est l'endroit où l'on pose ses outils.
+	# UN PANNEAU SOMBRE À LISERÉ ORNÉ, comme tout le reste. La table de
+	# bois du pack faisait le travail — plus rien ne flottait — mais elle
+	# jurait avec le sombre et l'or du modèle : deux matières pour une
+	# seule interface.
 	var plank := PanelContainer.new()
 	plank.custom_minimum_size = Vector2(0, BOTTOM_BAR_PX)
-	plank.add_theme_stylebox_override(
-		"panel", UiSkin.panel_style(&"frame", UiTheme.metric(&"plank_margin"))
-	)
+	plank.add_theme_stylebox_override("panel", UiSkin.framed_style(
+		&"frame_panel", &"panel_deep", &"panel_edge",
+		UiTheme.metric(&"plank_margin")
+	))
 	plank.mouse_filter = Control.MOUSE_FILTER_IGNORE
+
+	var strip := HBoxContainer.new()
+	strip.add_theme_constant_override("separation", 14)
+	strip.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	plank.add_child(strip)
+
+	# LE GRAND PORTRAIT DE CELUI QUI JOUE, à gauche. C'est ce que le modèle
+	# met en premier, et c'est justifié : la barre du bas parle d'UN
+	# personnage, et rien ne le disait à part une ligne de texte.
+	_active_face = TextureRect.new()
+	var side := UiTheme.metric(&"portrait_hero")
+	_active_face.custom_minimum_size = Vector2(side, side)
+	_active_face.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	_active_face.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	_active_face.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	_active_face.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	var frame := PanelContainer.new()
+	frame.add_theme_stylebox_override("panel", UiSkin.framed_style(
+		&"frame_card", &"panel_fill", &"panel_edge", 4
+	))
+	frame.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	frame.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	frame.add_child(_active_face)
+	strip.add_child(frame)
 
 	var bottom := VBoxContainer.new()
 	bottom.add_theme_constant_override("separation", 8)
+	bottom.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	bottom.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	plank.add_child(bottom)
+	strip.add_child(bottom)
 
 	# Ligne d'état : qui joue, ses PV, ses PA, ses PM.
 	var status := HBoxContainer.new()
@@ -282,14 +425,15 @@ func _build_bottom() -> Control:
 	status.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	bottom.add_child(status)
 
-	_active_name = _label(26)
+	_active_name = _label(UiTheme.font_size(&"subheading"))
+	_active_name.add_theme_color_override("font_color", UiTheme.color(&"ink_gold"))
 	status.add_child(_active_name)
 
-	status.add_child(_label_text(24, tr("HUD_AP")))
+	status.add_child(_caption_text(tr("HUD_AP")))
 	_action_pips = PipRow.new()
 	status.add_child(_action_pips)
 
-	status.add_child(_label_text(24, tr("HUD_MP")))
+	status.add_child(_caption_text(tr("HUD_MP")))
 	_movement_pips = PipRow.new()
 	status.add_child(_movement_pips)
 
@@ -318,9 +462,16 @@ func _build_bottom() -> Control:
 	return plank
 
 
-# --- Mise à jour ----------------------------------------------------------
+## Une étiquette en petites capitales dorées, pour un texte déjà traduit.
+func _caption_text(text: String) -> Label:
+	var caption := _label(UiTheme.font_size(&"caption"))
+	caption.text = text.to_upper()
+	caption.add_theme_color_override("font_color", UiTheme.color(&"ink_gold"))
+	caption.add_theme_constant_override("outline_size", 0)
+	caption.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	return caption
 
-## Met le HUD en accord avec l'état du moteur.
+
 func refresh(engine: CombatEngine) -> void:
 	if engine == null:
 		return
@@ -336,7 +487,7 @@ func refresh(engine: CombatEngine) -> void:
 		_end_turn.disabled = not engine.can_begin_combat()
 		_undo.disabled = _placed_count(engine) == 0
 	else:
-		_round.text = tr("HUD_ROUND") % engine.round_index()
+		_round.text = str(engine.round_index())
 		_end_turn.text = tr("HUD_END_TURN")
 		_end_turn.disabled = not engine.is_player_turn()
 		_undo.disabled = not engine.can_undo()
@@ -345,6 +496,7 @@ func refresh(engine: CombatEngine) -> void:
 	_refresh_active(engine)
 	_refresh_abilities(engine)
 	_refresh_squad(engine)
+	_refresh_detail(engine)
 
 
 ## La timeline : qui joue maintenant, et qui joue ensuite (§ 16).
@@ -376,10 +528,16 @@ func _timeline_badge(unit: Unit, is_current: bool) -> Control:
 	# cosmétique : un `PanelContainer` écarte son enfant des marges de
 	# tranches du style — 32 px de chaque côté sur un badge de 44, il ne
 	# reste rien. Ici le portrait est posé par-dessus, en plein cadre.
-	var role: StringName = &"default" if unit.is_hero() else &"danger"
+	# Le liseré porte le camp et le tour : or vif pour celui qui joue,
+	# doré éteint pour les héros, rouge pour les ennemis.
+	var edge: StringName = &"panel_edge_soft"
 	if is_current:
-		role = &"primary"
-	badge.add_theme_stylebox_override("panel", UiSkin.button_style(role, false))
+		edge = &"panel_edge"
+	elif not unit.is_hero():
+		edge = &"rust"
+	badge.add_theme_stylebox_override("panel", UiSkin.framed_style(
+		&"frame_slot", &"panel_fill", edge, 2
+	))
 
 	var face := UiSkin.portrait(unit.class_id, HERO_COLOR) if unit.is_hero() else null
 	if face != null:
@@ -427,9 +585,11 @@ func _refresh_active(engine: CombatEngine) -> void:
 	var unit := engine.current_unit()
 	if unit == null or not unit.is_hero():
 		_active_name.text = ""
+		_active_face.texture = null
 		_action_pips.set_points(0, 0, ViewSettings.color(&"ap_pip"))
 		_movement_pips.set_points(0, 0, ViewSettings.color(&"mp_pip"))
 		return
+	_active_face.texture = UiSkin.portrait(unit.class_id, HERO_COLOR)
 	_active_name.text = tr("HUD_ACTIVE") % [
 		unit.slot, tr("CLASS_%s" % String(unit.class_id).to_upper()),
 		unit.hit_points, unit.max_hit_points,
@@ -513,22 +673,39 @@ func _clear_abilities() -> void:
 func _ability_button(ability_id: StringName) -> Button:
 	var button := Button.new()
 	button.toggle_mode = true
-	button.custom_minimum_size = Vector2(TOUCH_TARGET_PX * 2, TOUCH_TARGET_PX * 0.75)
-	button.add_theme_font_size_override("font_size", UiTheme.font_size(&"button"))
+	button.custom_minimum_size = Vector2(
+		UiTheme.metric(&"ability_card_width"), TOUCH_TARGET_PX * 0.9
+	)
+	button.add_theme_font_size_override("font_size", UiTheme.font_size(&"small"))
 	# UNE POTION N'EST PAS UN SORT, ET ÇA DOIT SE VOIR AVANT DE LIRE. Elle
 	# se consomme : la confondre avec une compétence gratuite au moment de
 	# choisir, c'est brûler la dernière du sac par distraction.
-	var role: StringName = &"default"
-	if not Consumable.item_for_ability(ability_id).is_empty():
-		role = &"arcane"
-	UiSkin.dress_button(button, role)
+	var carried := not Consumable.item_for_ability(ability_id).is_empty()
+	var edge: StringName = &"plum" if carried else &"panel_edge_soft"
+	var fill: StringName = &"panel_potion" if carried else &"panel_fill"
+	for state: String in ["normal", "hover", "focus"]:
+		button.add_theme_stylebox_override(
+			state, UiSkin.framed_style(&"frame_card", fill, edge, 10)
+		)
+	button.add_theme_stylebox_override("pressed", UiSkin.framed_style(
+		&"frame_card", fill, &"panel_edge", 10
+	))
+	button.add_theme_stylebox_override("disabled", UiSkin.framed_style(
+		&"frame_card", &"panel_deep", &"panel_edge_soft", 10
+	))
+	for key: String in ["font_color", "font_hover_color", "font_pressed_color"]:
+		button.add_theme_color_override(key, UiTheme.color(&"ink"))
+	button.add_theme_color_override("font_disabled_color", UiTheme.color(&"ink_muted"))
+	button.add_theme_constant_override("outline_size", 0)
+	button.alignment = HORIZONTAL_ALIGNMENT_LEFT
+
 	# LE GLYPHE DU § 48. Une compétence sans icône garde son texte seul :
-	# l'absence est une réponse valable, pas un défaut — c'est ce qui
-	# permet d'en ajouter une à la fois.
+	# l'absence est une réponse valable, pas un défaut.
 	var mark := UiSkin.glyph(ability_id)
 	if mark != null:
 		button.icon = mark
 		button.expand_icon = false
+
 	button.pressed.connect(func() -> void:
 		_selected_ability = ability_id
 		ability_selected.emit(ability_id))
@@ -588,87 +765,18 @@ func _refresh_squad(engine: CombatEngine) -> void:
 ## reconnaît plus vite qu'une ligne « 1 Guerrier 120/120 », et c'est ce
 ## qu'on lit vingt fois par combat.
 func _hero_card(unit: Unit, state: StringName) -> Control:
-	var card := PanelContainer.new()
-	card.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	# LARGEUR FIXE. Sans elle les quatre cartes s'étiraient sur toute la
-	# hauteur et POUSSAIENT LA BARRE D'ACTION HORS DE L'ÉCRAN : 4 × 130 px
-	# plus les bandeaux dépassent les 720 px de haut, et Godot ne dit rien
-	# — il rogne en silence.
+	var card := UiSkin.hero_card(
+		UiSkin.portrait(unit.class_id, HERO_COLOR),
+		"%d  %s" % [unit.slot, tr("CLASS_%s" % String(unit.class_id).to_upper())],
+		unit.hit_points, unit.max_hit_points, state == &"active"
+	)
 	card.custom_minimum_size = Vector2(UiTheme.metric(&"card_width"), 0)
 	card.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
-	card.add_theme_stylebox_override(
-		"panel", UiSkin.panel_style(&"panel", UiTheme.metric(&"card_margin"))
-	)
-
-	# Pas de `MarginContainer` : le style porte déjà l'encart, et en
-	# ajouter un second par-dessus est l'erreur qui avait fait disparaître
-	# la jauge de PV en T9.2.
-	var row := HBoxContainer.new()
-	row.add_theme_constant_override("separation", UiTheme.metric(&"card_margin"))
-	row.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	card.add_child(row)
-
-	var side_px := UiTheme.metric(&"portrait_card")
-	var face := UiSkin.portrait(unit.class_id, HERO_COLOR)
-	if face != null:
-		var rect := TextureRect.new()
-		rect.texture = face
-		rect.custom_minimum_size = Vector2(side_px, side_px)
-		rect.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-		rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-		rect.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
-		rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		row.add_child(rect)
-
-	var column := VBoxContainer.new()
-	column.add_theme_constant_override("separation", 2)
-	column.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	column.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	row.add_child(column)
-
-	# Le numéro d'emplacement d'abord : avec les doublons de classe,
-	# « Guerrier » deux fois de suite ne désigne personne.
-	# NOM ET POINTS DE VIE SUR LA MÊME LIGNE : deux lignes de texte plus
-	# une jauge font une carte de 130 px, et quatre de celles-là ne
-	# tiennent pas dans un écran qui doit aussi loger la barre d'action.
-	var header := HBoxContainer.new()
-	header.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	column.add_child(header)
-
-	var name_ := _label_text(
-		UiTheme.font_size(&"small"),
-		"%d  %s" % [unit.slot, tr("CLASS_%s" % String(unit.class_id).to_upper())]
-	)
-	name_.add_theme_color_override("font_color", UiTheme.color(&"ink"))
-	name_.add_theme_constant_override("outline_size", 0)
-	name_.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	header.add_child(name_)
-
-	var points := _label_text(
-		UiTheme.font_size(&"small"),
-		"%d/%d" % [unit.hit_points, unit.max_hit_points]
-	)
-	points.add_theme_color_override("font_color", UiTheme.color(&"ink_soft"))
-	points.add_theme_constant_override("outline_size", 0)
-	header.add_child(points)
-
-	column.add_child(UiSkin.build_bar(
-		float(unit.hit_points), float(unit.max_hit_points),
-		UiTheme.health_color(
-			float(unit.hit_points) / maxf(float(unit.max_hit_points), 1.0)
-		),
-		UiTheme.metric(&"bar_height_card")
-	))
-
 	match state:
 		&"pending":
 			card.modulate = ViewSettings.color(&"timeline_done")
 		&"downed":
 			card.modulate = ViewSettings.color(&"timeline_downed")
-		&"active":
-			# La carte de celui qui joue s'éclaircit : la même question que
-			# la timeline, posée là où le joueur regarde ses PV.
-			card.modulate = ViewSettings.color(&"timeline_now")
 	return card
 
 
@@ -699,6 +807,17 @@ func _stretch() -> Control:
 	spacer.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	spacer.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	return spacer
+
+
+## Un en-tête de zone : petites capitales dorées. Le modèle en met un sur
+## chaque panneau, et c'est ce qui distingue une interface d'une pile de
+## boîtes.
+func _caption(key: String) -> Label:
+	var caption := _label(UiTheme.font_size(&"caption"))
+	caption.text = tr(key).to_upper()
+	caption.add_theme_color_override("font_color", UiTheme.color(&"ink_gold"))
+	caption.add_theme_constant_override("outline_size", 0)
+	return caption
 
 
 func _label(size: int) -> Label:

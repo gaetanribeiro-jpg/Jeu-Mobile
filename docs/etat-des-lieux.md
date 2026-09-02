@@ -1949,6 +1949,89 @@ cartes à portrait — leurs listes de héros sont encore du texte au-dessus
 d'une jauge. C'est le même travail, appliqué ailleurs.
 
 
+### T9.7 — sombre et or, sur tous les écrans ✅
+
+Gaetan a fourni une maquette : « ça reste léger… j'aimerais plutôt
+quelque chose dans ce style, mais avec nos portraits et avec les éléments
+que tu as en stock ». La maquette dit une chose que T9.6 n'avait pas
+comprise — **le parchemin clair n'était pas le bon matériau.**
+
+Le modèle est **sombre à liseré doré** : des panneaux presque noirs, un
+trait d'or ouvragé sur chaque bord, des en-têtes en petites capitales
+dorées. Un papier clair teinté en sombre devient une tache boueuse ; il
+fallait autre chose.
+
+**Cet autre chose dormait dans un pack jamais ouvert.** `kenney_fantasyuiborders`
+— 302 fichiers, arrivé avec les autres, jamais regardé. Ce sont
+exactement les cadres de la maquette : des 9-tranches de 48 px,
+monochromes, avec des ornements de coin.
+
+### Composer un cadre et un fond en une seule image
+
+Un `StyleBox` ne s'empile pas : on ne peut pas poser un cadre sur un
+aplat. Il faut donc **composer la texture**.
+
+Les cadres de Kenney sont un tracé **blanc pleinement opaque** sur un
+centre à demi transparent. On ne garde que les pixels dont l'alpha
+dépasse 0,9 — le tracé — on les repeint en or, et on pose le tout sur un
+aplat sombre. Le centre reste uniforme, ce qui est la condition pour
+qu'un 9-tranches s'étire proprement.
+
+**Le seuil haut est volontaire :** prendre le centre à demi transparent
+pour du tracé remplirait le panneau d'or.
+
+### Le rôle passe du fond au TRAIT
+
+Les six teintes de bouton de T9.3 étaient justes tant que l'interface
+était claire. Sur des panneaux sombres, un bouton en acier plein faisait
+**deux matières pour une seule interface**.
+
+Le rôle porte donc maintenant le sens dans la **couleur du liseré** :
+l'or pour l'action principale, le vert pour le royaume, la prune pour les
+potions, le rouge pour l'abandon. `framed_style` accepte indifféremment
+une couleur de la palette ou un rôle de bouton — un écran demande
+toujours « danger », jamais « rouge ».
+
+### Ce que la maquette ajoutait et que le jeu n'avait pas
+
+**Un panneau de détail de compétence.** Le § 48 veut que le joueur sache
+ce qu'une action coûte ET ce qu'elle fait avant de la choisir. Le coût
+était sur le bouton ; les dégâts, la portée et l'effet ne se lisaient
+nulle part, sinon en lançant la compétence. Le panneau de droite les
+montre.
+
+**Un grand portrait du personnage actif**, en bas à gauche. La barre du
+bas parle d'UN personnage, et rien ne le disait à part une ligne de texte.
+
+**Des en-têtes en petites capitales dorées** sur chaque zone. C'est ce
+qui, dans la maquette, dit à quoi sert un panneau avant qu'on lise son
+contenu. Sans eux, un panneau n'est qu'une boîte.
+
+### Une carte de héros, trois écrans
+
+`UiSkin.hero_card()` est partagée par le combat, l'expédition et la
+compagnie. C'est la même information partout — un visage, un nom, une
+jauge — et **trois dessins pour une même chose est précisément ce qui
+donnait à l'ensemble son air de brouillon** : chaque écran avait inventé
+sa façon d'afficher un héros.
+
+Les pastilles de route de l'expédition prennent le même cadre, et
+gardent l'heure du § 36 dans la couleur de leur fond : gris-vert le jour,
+brun au crépuscule, bleu la nuit.
+
+### Deux tests qui vérifiaient la forme au lieu du fond
+
+`test_la_route_montre_toutes_les_etapes` lisait `badges[i].get_child(0)`
+en supposant un `Label` ; une pastille est devenue un panneau encadré qui
+empile plusieurs enfants. Et le test des PV portés cherchait `"7 / 72"`
+là où la carte partagée écrit `"7/72"`.
+
+Ils cherchent désormais le texte **dans l'arbre**, à n'importe quelle
+profondeur. La profondeur d'une carte est un détail d'habillage : un test
+qui la fixe casse au premier changement de style sans que rien ne soit
+faux.
+
+
 ---
 
 ## 6. Ce qui est rangé, pas jeté

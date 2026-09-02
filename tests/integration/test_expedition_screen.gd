@@ -121,8 +121,16 @@ func test_la_route_montre_toutes_les_etapes_et_marque_celle_en_cours() -> void:
 	assert_eq(badges.size(), _run.length())
 	# Le badge de l'étape en cours porte son numéro : c'est ce qui permet
 	# de lire « il me reste trois combats » d'un coup d'œil.
-	var here: Label = badges[_run.depth()].get_child(0)
-	assert_string_contains(here.text, str(_run.depth() + 1))
+	# ON CHERCHE LE TEXTE DANS L'ARBRE, pas à une place fixe. Une pastille
+	# est passée d'un `Panel` à un seul enfant à un panneau encadré qui en
+	# empile plusieurs, et le test tombait sur la FORME alors qu'il veut
+	# vérifier le CONTENU.
+	assert_true(
+		_texts_of(badges[_run.depth()]).any(
+			func(t: String) -> bool: return t.contains(str(_run.depth() + 1))
+		),
+		"le badge de l'étape en cours doit porter son numéro"
+	)
 
 
 func test_l_equipe_montre_les_pv_portes() -> void:
@@ -133,10 +141,25 @@ func test_l_equipe_montre_les_pv_portes() -> void:
 	await wait_process_frames(1)
 	var found := false
 	for row: Node in _screen._squad.get_children():
-		for child: Node in row.get_children():
-			if child is Label and String((child as Label).text).begins_with("7 /"):
+		for text: String in _texts_of(row):
+			if text.begins_with("7/") or text.begins_with("7 /"):
 				found = true
 	assert_true(found, "les PV portés ne sont pas affichés")
+
+
+## Tous les textes d'un sous-arbre. Les cartes de héros sont maintenant
+## partagées entre trois écrans (`UiSkin.hero_card`) : leur profondeur est
+## un détail d'habillage, et un test qui la fixe casse au premier
+## changement de style sans que rien ne soit faux.
+func _texts_of(node: Node) -> Array[String]:
+	var out: Array[String] = []
+	if node is Label:
+		out.append((node as Label).text)
+	elif node is Button:
+		out.append((node as Button).text)
+	for child: Node in node.get_children():
+		out.append_array(_texts_of(child))
+	return out
 
 
 # --- La décision du § 29 ---------------------------------------------------

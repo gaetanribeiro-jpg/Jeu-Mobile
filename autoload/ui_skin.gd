@@ -96,11 +96,22 @@ func button_style(role: StringName = &"default", pressed: bool = false) -> Style
 ## Habille un bouton d'un rôle, d'un coup : fond, survol, appui, et la
 ## couleur de texte qui va avec.
 func dress_button(button: Button, role: StringName = &"default") -> void:
-	button.add_theme_stylebox_override("normal", button_style(role, false))
-	button.add_theme_stylebox_override("hover", button_style(role, false))
-	button.add_theme_stylebox_override("pressed", button_style(role, true))
-	button.add_theme_stylebox_override("focus", button_style(role, false))
-	button.add_theme_stylebox_override("disabled", button_style(&"muted", false))
+	# LE CADRE ORNÉ SOMBRE, ET LE RÔLE DANS LE LISERÉ. Les boutons du pack
+	# — acier, or, prune — étaient justes tant que l'interface était
+	# claire ; sur des panneaux sombres à liseré doré, ils faisaient deux
+	# matières pour une seule interface. Le rôle porte toujours le sens,
+	# mais il le porte maintenant dans la couleur du TRAIT.
+	var pad := UiTheme.metric(&"button_pad")
+	for state: String in ["normal", "hover", "focus"]:
+		button.add_theme_stylebox_override(
+			state, framed_style(&"frame_card", &"panel_fill", role, pad)
+		)
+	button.add_theme_stylebox_override(
+		"pressed", framed_style(&"frame_card", &"panel_deep", role, pad)
+	)
+	button.add_theme_stylebox_override(
+		"disabled", framed_style(&"frame_card", &"panel_deep", &"stone", pad)
+	)
 	# TEXTE CLAIR SUR CERCLÉ DE SOMBRE. Les six teintes sont des tons
 	# moyens : ni le clair ni le sombre ne passe sur toutes. Le contour
 	# règle la question une fois pour toutes, et c'est ce que fait déjà le
@@ -234,6 +245,76 @@ func portrait(class_id: StringName, color: String) -> Texture2D:
 	return texture
 
 
+## La carte d'un personnage : portrait encadré, nom, jauge de vie.
+##
+## PARTAGÉE PAR TROIS ÉCRANS — combat, expédition, compagnie. C'est la
+## même information partout, et trois dessins pour une même chose est
+## exactement ce qui donnait à l'ensemble son air de brouillon : chaque
+## écran avait inventé sa façon d'afficher un héros.
+func hero_card(
+	face: Texture2D, title: String, hit_points: int, maximum: int,
+	highlighted: bool = false, note: String = ""
+) -> Control:
+	var card := PanelContainer.new()
+	card.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	card.add_theme_stylebox_override("panel", framed_style(
+		&"frame_card", &"panel_fill",
+		&"panel_edge" if highlighted else &"panel_edge_soft",
+		UiTheme.metric(&"card_margin")
+	))
+
+	var row := HBoxContainer.new()
+	row.add_theme_constant_override("separation", UiTheme.metric(&"card_margin"))
+	row.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	card.add_child(row)
+
+	if face != null:
+		var side := UiTheme.metric(&"portrait_card")
+		var rect := TextureRect.new()
+		rect.texture = face
+		rect.custom_minimum_size = Vector2(side, side)
+		rect.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		rect.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+		rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		row.add_child(rect)
+
+	var column := VBoxContainer.new()
+	column.add_theme_constant_override("separation", 3)
+	column.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	column.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	row.add_child(column)
+
+	var header := HBoxContainer.new()
+	header.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	column.add_child(header)
+	var name_ := Label.new()
+	name_.text = title
+	name_.add_theme_font_size_override("font_size", UiTheme.font_size(&"small"))
+	name_.add_theme_color_override(
+		"font_color",
+		UiTheme.color(&"ink_gold") if highlighted else UiTheme.color(&"ink")
+	)
+	name_.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	name_.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	header.add_child(name_)
+
+	var points := Label.new()
+	points.text = note if not note.is_empty() else "%d/%d" % [hit_points, maximum]
+	points.add_theme_font_size_override("font_size", UiTheme.font_size(&"small"))
+	points.add_theme_color_override("font_color", UiTheme.color(&"ink_soft"))
+	points.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	header.add_child(points)
+
+	if maximum > 0:
+		column.add_child(build_bar(
+			float(hit_points), float(maximum),
+			UiTheme.health_color(float(hit_points) / maxf(float(maximum), 1.0)),
+			UiTheme.metric(&"bar_height_card")
+		))
+	return card
+
+
 ## Le glyphe d'une compétence, ou null si elle n'en a pas.
 ##
 ## LE SEUL ENDROIT DU JEU OÙ L'ON MÊLE DU VECTORIEL AU PIXEL ART, et
@@ -310,6 +391,82 @@ func has_pack() -> bool:
 	return not _textures.is_empty()
 
 
+## Un panneau SOMBRE À LISERÉ ORNÉ : le style demandé par le modèle.
+##
+## LE CADRE ET LE FOND SONT COMPOSÉS EN UNE SEULE IMAGE, parce qu'un
+## `StyleBox` ne s'empile pas. Les cadres de Kenney sont monochromes — un
+## tracé BLANC OPAQUE sur un centre à demi transparent — donc on ne garde
+## que les pixels pleinement opaques, on les repeint en or, et on pose le
+## tout sur un aplat sombre. Le centre reste uniforme, ce qui est la
+## condition pour qu'un 9-tranches s'étire proprement.
+##
+## POURQUOI PAS LE PAPIER DU PACK : le modèle est sombre à liseré doré, et
+## un parchemin clair teinté en sombre devient une tache boueuse. Tiny
+## Swords ne dessine pas de cadre ; la règle tient — on ne mélange que là
+## où le premier pack ne dessine rien.
+func framed_style(
+	frame: StringName = &"frame_panel", fill: StringName = &"panel_fill",
+	edge: StringName = &"panel_edge", pad: int = -1
+) -> StyleBox:
+	var key := StringName("framed|%s|%s|%s|%d" % [frame, fill, edge, pad])
+	if _styles.has(key):
+		return _styles[key]
+
+	# Le trait accepte une couleur de la palette OU un rôle de bouton : un
+	# écran demande « danger », pas « rouge ».
+	var line: StringName = edge
+	if not UiTheme.has_color(line):
+		line = StringName(UiTheme.section(&"button_tints").get(String(edge), "panel_edge"))
+	var built: StyleBox = null
+	var texture := _frame_texture(frame, fill, line)
+	if texture == null:
+		built = _flat(UiTheme.color(fill))
+		(built as StyleBoxFlat).border_color = UiTheme.color(line)
+		(built as StyleBoxFlat).set_border_width_all(2)
+	else:
+		var box := StyleBoxTexture.new()
+		box.texture = texture
+		var corner: int = _textures.get(_corner_key(texture), 0)
+		for side: String in ["left", "right", "top", "bottom"]:
+			box.set("texture_margin_%s" % side, float(corner))
+		built = box
+	if pad >= 0:
+		for side: String in ["left", "right", "top", "bottom"]:
+			built.set("content_margin_%s" % side, float(pad))
+	_styles[key] = built
+	return built
+
+
+func _frame_texture(frame: StringName, fill: StringName, edge: StringName) -> Texture2D:
+	var cache := StringName("frametex|%s|%s|%s" % [frame, fill, edge])
+	if _textures.has(cache):
+		return _textures[cache]
+	var entry := AssetTable.sprite(&"widgets", frame)
+	if entry.is_empty():
+		return null
+	var source := _load_image(String(entry.get("path", "")))
+	if source == null:
+		return null
+
+	var ground := UiTheme.color(fill)
+	var line := UiTheme.color(edge)
+	var painted := Image.create_empty(
+		source.get_width(), source.get_height(), false, Image.FORMAT_RGBA8
+	)
+	painted.fill(ground)
+	for y in source.get_height():
+		for x in source.get_width():
+			# SEUIL HAUT VOLONTAIRE : le centre de ces cadres est du blanc
+			# à demi transparent, pas du vide. Le prendre pour du tracé
+			# remplirait le panneau d'or.
+			if source.get_pixel(x, y).a > 0.9:
+				painted.set_pixel(x, y, line)
+	var texture := ImageTexture.create_from_image(painted)
+	_textures[cache] = texture
+	_textures[_corner_key(texture)] = int(entry.get("slice", {}).get("corner", 16))
+	return texture
+
+
 # --- Construction ----------------------------------------------------------
 
 func _build_styles() -> void:
@@ -341,14 +498,20 @@ func _build_theme() -> void:
 	theme.set_color("font_outline_color", "Button", UiTheme.color(&"ink"))
 	theme.set_constant("outline_size", "Button", UiTheme.metric(&"text_outline"))
 
+	var pad := UiTheme.metric(&"button_pad")
 	for state: String in ["normal", "hover", "focus"]:
-		theme.set_stylebox(state, "Button", button_style(&"default", false))
-	theme.set_stylebox("pressed", "Button", button_style(&"default", true))
-	theme.set_stylebox("disabled", "Button", button_style(&"muted", false))
-
-	var panel := panel_style(&"panel")
-	if panel != null:
-		theme.set_stylebox("panel", "PanelContainer", panel)
+		theme.set_stylebox(
+			state, "Button", framed_style(&"frame_card", &"panel_fill", &"default", pad)
+		)
+	theme.set_stylebox(
+		"pressed", "Button", framed_style(&"frame_card", &"panel_deep", &"default", pad)
+	)
+	theme.set_stylebox(
+		"disabled", "Button", framed_style(&"frame_card", &"panel_deep", &"stone", pad)
+	)
+	theme.set_stylebox("panel", "PanelContainer", framed_style(
+		&"frame_panel", &"panel_fill", &"panel_edge", UiTheme.metric(&"panel_margin")
+	))
 
 	_build_widgets()
 

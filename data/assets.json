@@ -2448,6 +2448,43 @@
    "kind": "image",
    "w": 24,
    "h": 24
+  },
+  "_frames_note": "LES CADRES ORNÉS (T9.7), pris chez Kenney (Fantasy UI Borders, CC0). Ils sont monochromes : un tracé BLANC OPAQUE sur un centre à demi transparent. `UiSkin` n'en garde que les pixels pleinement opaques — le tracé — et les repeint en or sur un fond sombre. Le centre à demi transparent n'est jamais dessiné.\n\nPourquoi eux et pas le papier de Tiny Swords : le modèle demandé est SOMBRE À LISERÉ DORÉ, et un parchemin clair teinté en sombre devient une tache boueuse. Le pack ne dessine pas de cadre ; la règle du § 16 tient donc — on ne mélange que là où le premier pack ne dessine rien.",
+  "frame_panel": {
+   "file": "frames/frame_panel.png",
+   "kind": "image",
+   "w": 48,
+   "h": 48,
+   "layout": "nine_slice_solid",
+   "slice": {
+    "corner": 16,
+    "middle": 16,
+    "gap": 0
+   }
+  },
+  "frame_card": {
+   "file": "frames/frame_card.png",
+   "kind": "image",
+   "w": 48,
+   "h": 48,
+   "layout": "nine_slice_solid",
+   "slice": {
+    "corner": 16,
+    "middle": 16,
+    "gap": 0
+   }
+  },
+  "frame_slot": {
+   "file": "frames/frame_slot.png",
+   "kind": "image",
+   "w": 48,
+   "h": 48,
+   "layout": "nine_slice_solid",
+   "slice": {
+    "corner": 16,
+    "middle": 16,
+    "gap": 0
+   }
   }
  },
  "glyphs": {

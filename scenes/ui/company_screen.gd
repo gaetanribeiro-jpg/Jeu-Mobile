@@ -81,10 +81,22 @@ func _build_roster() -> void:
 
 func _roster_row(hero: Hero) -> Button:
 	var button := Button.new()
-	button.custom_minimum_size = Vector2(300, PORTRAIT_PX + 12)
+	button.custom_minimum_size = Vector2(300, PORTRAIT_PX + 20)
 	button.toggle_mode = true
 	button.button_pressed = hero.id == _selected_id
-	button.add_theme_font_size_override("font_size", 22)
+	button.add_theme_font_size_override("font_size", UiTheme.font_size(&"small"))
+	# LE HÉROS SÉLECTIONNÉ PORTE LE LISERÉ DORÉ VIF, comme la carte de
+	# celui qui joue en combat. C'est la même question posée au même
+	# endroit : lequel je regarde ?
+	var edge: StringName = (
+		&"panel_edge" if hero.id == _selected_id else &"panel_edge_soft"
+	)
+	for state: String in ["normal", "hover", "focus", "pressed"]:
+		button.add_theme_stylebox_override(state, UiSkin.framed_style(
+			&"frame_card", &"panel_fill", edge, UiTheme.metric(&"card_margin")
+		))
+	button.add_theme_color_override("font_color", UiTheme.color(&"ink"))
+	button.add_theme_constant_override("outline_size", 0)
 	button.pressed.connect(func() -> void:
 		_selected_id = hero.id
 		refresh())
@@ -102,7 +114,12 @@ func _roster_row(hero: Hero) -> Button:
 	var text := Label.new()
 	text.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	text.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-	text.add_theme_font_size_override("font_size", 22)
+	text.add_theme_font_size_override("font_size", UiTheme.font_size(&"small"))
+	text.add_theme_color_override(
+		"font_color",
+		UiTheme.color(&"ink_gold") if hero.id == _selected_id else UiTheme.color(&"ink")
+	)
+	text.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	text.text = "%s\n%s · %s" % [
 		hero.display_name(),
 		tr("CLASS_%s" % String(hero.class_id).to_upper()),

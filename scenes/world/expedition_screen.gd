@@ -153,49 +153,58 @@ func _build_route() -> void:
 		_route.add_child(_badge(i))
 
 
-func _badge(step_index: int) -> Panel:
+func _badge(step_index: int) -> Control:
 	var kind := _run.step_kind(step_index)
 	var done := step_index < _run.depth()
 	var here := step_index == _run.depth()
 
-	var panel := Panel.new()
-	panel.custom_minimum_size = Vector2(BADGE_PX, 84)
-	var style := StyleBoxFlat.new()
-	# LA ROUTE SE LIT COMME UNE JOURNÉE. Chaque pastille prend la couleur
-	# de son heure, donc le joueur VOIT où la nuit commence avant d'y être
-	# — c'est ce qui transforme « je continue ? » en « je continue dans le
-	# noir ? ». Un moment qu'on ne découvre qu'en arrivant ne se décide pas.
-	style.bg_color = _badge_color(_run.moment_at(step_index))
-	if done:
-		style.bg_color = style.bg_color.darkened(0.4)
-	if here:
-		# On ÉCLAIRCIT l'heure au lieu de la remplacer : la pastille où l'on
-		# se trouve est aussi celle dont on veut savoir si elle est de nuit.
-		style.bg_color = style.bg_color.lightened(0.18)
-		style.border_color = UiTheme.color(&"ink_gold")
-		style.set_border_width_all(3)
-	style.set_corner_radius_all(6)
-	panel.add_theme_stylebox_override("panel", style)
+	# LE MÊME CADRE ORNÉ QUE PARTOUT AILLEURS, et l'heure dans la couleur
+	# du trait : la route se lit comme une journée (§ 36), et un moment
+	# qu'on ne voit qu'en arrivant ne se décide pas.
+	var panel := PanelContainer.new()
+	panel.custom_minimum_size = Vector2(BADGE_PX, 92)
+	panel.add_theme_stylebox_override("panel", UiSkin.framed_style(
+		&"frame_card", _moment_fill(_run.moment_at(step_index)),
+		&"panel_edge" if here else &"panel_edge_soft", UiTheme.metric(&"card_margin")
+	))
 
-	var label := Label.new()
-	label.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-	label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	label.add_theme_font_size_override("font_size", 18)
+	var column := VBoxContainer.new()
+	column.add_theme_constant_override("separation", 2)
+	column.alignment = BoxContainer.ALIGNMENT_CENTER
+	panel.add_child(column)
+
+	var number := Label.new()
+	number.text = str(step_index + 1)
+	number.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	number.add_theme_font_size_override("font_size", UiTheme.font_size(&"subheading"))
+	number.add_theme_color_override(
+		"font_color",
+		UiTheme.color(&"ink_gold") if here else UiTheme.color(&"ink")
+	)
+	column.add_child(number)
+
+	var name_ := Label.new()
+	name_.text = tr(_kind_key(kind))
+	name_.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	name_.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	name_.add_theme_font_size_override("font_size", UiTheme.font_size(&"caption"))
+	name_.add_theme_color_override("font_color", UiTheme.color(&"ink_soft"))
+	column.add_child(name_)
+
 	if done:
-		label.add_theme_color_override("font_color", UiTheme.color(&"ink_muted"))
-	label.text = "%d\n%s" % [step_index + 1, tr(_kind_key(kind))]
-	panel.add_child(label)
+		panel.modulate = Color(0.55, 0.55, 0.55)
 	return panel
+
+
+## Le fond d'une pastille de route dit l'heure : gris-vert le jour, brun au
+## crépuscule, bleu la nuit.
+func _moment_fill(moment: StringName) -> StringName:
+	return StringName("moment_%s_fill" % moment)
 
 
 func _kind_key(kind: StringName) -> String:
 	return "STEP_%s" % String(kind).to_upper()
 
-
-func _badge_color(moment: StringName) -> Color:
-	return ViewSettings.color(StringName("badge_%s" % moment))
 
 
 # --- L'équipe --------------------------------------------------------------
@@ -217,31 +226,17 @@ func _build_squad() -> void:
 		var hero := _company.hero_by_id(_run.hero_id_of_unit(unit))
 		if hero == null:
 			continue
-		var row := VBoxContainer.new()
-		row.add_theme_constant_override("separation", 2)
-		_squad.add_child(row)
-
-		var name_label := Label.new()
-		name_label.add_theme_font_size_override("font_size", UiTheme.font_size(&"body"))
-		name_label.text = "%s · %s" % [
-			hero.display_name(), tr("CLASS_%s" % String(hero.class_id).to_upper())
-		]
-		row.add_child(name_label)
-
-		# Teintée : c'est le chiffre qui décide si l'on continue, et il doit
-		# se lire sans être lu. Gris sur gris ne dit rien de plus qu'une
-		# ligne de texte, et prend la place d'une information.
-		row.add_child(UiSkin.build_bar(
-			float(unit.hit_points), float(unit.max_hit_points),
-			UiTheme.health_color(
-				float(unit.hit_points) / maxf(float(unit.max_hit_points), 1.0)
-			)
+		# LA MÊME CARTE QU'EN COMBAT. C'est la même information — un
+		# visage, un nom, une jauge — et trois dessins pour une même chose
+		# est ce qui donnait à l'ensemble son air de brouillon.
+		_squad.add_child(UiSkin.hero_card(
+			UiSkin.portrait(hero.class_id, hero.color),
+			"%s · %s" % [
+				hero.display_name(),
+				tr("CLASS_%s" % String(hero.class_id).to_upper())
+			],
+			unit.hit_points, unit.max_hit_points
 		))
-
-		var pv := Label.new()
-		pv.add_theme_font_size_override("font_size", UiTheme.font_size(&"small"))
-		pv.text = "%d / %d" % [unit.hit_points, unit.max_hit_points]
-		row.add_child(pv)
 
 
 # --- L'étape en cours ------------------------------------------------------

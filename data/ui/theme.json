@@ -3,34 +3,34 @@
   "palette": {
     "_note": "Les couleurs sont [r, v, b] ou [r, v, b, a] en 0–1, comme dans view.json — une seule convention pour tout le projet.",
     "ink": [
-      0.13,
-      0.1,
-      0.07
+      0.93,
+      0.89,
+      0.8
     ],
     "ink_soft": [
-      0.34,
-      0.28,
-      0.22
+      0.66,
+      0.61,
+      0.52
     ],
     "ink_inverse": [
       0.96,
       0.93,
-      0.85
+      0.86
     ],
     "ink_muted": [
-      0.55,
-      0.52,
-      0.48
+      0.48,
+      0.44,
+      0.38
     ],
     "ink_gold": [
-      1.0,
-      0.85,
-      0.35
+      0.91,
+      0.78,
+      0.44
     ],
     "backdrop": [
-      0.09,
-      0.1,
-      0.09
+      0.055,
+      0.048,
+      0.04
     ],
     "parchment": [
       1.0,
@@ -43,34 +43,34 @@
       1.0
     ],
     "steel": [
-      0.7,
-      0.86,
-      0.96
+      0.55,
+      0.72,
+      0.86
     ],
     "gold": [
-      1.0,
-      0.8,
-      0.34
-    ],
-    "moss": [
-      0.6,
-      0.88,
-      0.46
-    ],
-    "rust": [
-      0.96,
-      0.46,
+      0.91,
+      0.76,
       0.36
     ],
+    "moss": [
+      0.55,
+      0.82,
+      0.44
+    ],
+    "rust": [
+      0.88,
+      0.42,
+      0.34
+    ],
     "plum": [
-      0.78,
-      0.62,
-      0.98
+      0.72,
+      0.56,
+      0.92
     ],
     "stone": [
-      0.62,
-      0.62,
-      0.64
+      0.42,
+      0.4,
+      0.36
     ],
     "health_high": [
       0.4,
@@ -109,10 +109,10 @@
       0.86
     ],
     "scroll_track": [
-      0.18,
-      0.15,
-      0.12,
-      0.55
+      0.09,
+      0.08,
+      0.065,
+      0.85
     ],
     "slider_filled": [
       0.95,
@@ -129,6 +129,46 @@
       0.72,
       0.66,
       0.6
+    ],
+    "panel_fill": [
+      0.105,
+      0.092,
+      0.075
+    ],
+    "panel_deep": [
+      0.072,
+      0.063,
+      0.052
+    ],
+    "panel_edge": [
+      0.72,
+      0.6,
+      0.34
+    ],
+    "panel_edge_soft": [
+      0.42,
+      0.35,
+      0.22
+    ],
+    "panel_potion": [
+      0.145,
+      0.105,
+      0.165
+    ],
+    "moment_day_fill": [
+      0.105,
+      0.115,
+      0.088
+    ],
+    "moment_dusk_fill": [
+      0.155,
+      0.098,
+      0.07
+    ],
+    "moment_night_fill": [
+      0.075,
+      0.085,
+      0.145
     ]
   },
   "typography": {
@@ -139,12 +179,13 @@
     "body": 20,
     "small": 18,
     "button": 22,
-    "button_large": 26
+    "button_large": 26,
+    "caption": 16
   },
   "metrics": {
     "button_height": 72,
     "button_height_small": 56,
-    "panel_margin": 18,
+    "panel_margin": 14,
     "row_spacing": 10,
     "bar_height": 32,
     "bar_height_small": 16,
@@ -154,13 +195,18 @@
     "scrollbar_width": 16,
     "portrait_small": 44,
     "portrait_card": 44,
-    "card_margin": 10,
-    "card_width": 240,
+    "card_margin": 12,
+    "card_width": 268,
     "bar_height_card": 30,
-    "plank_margin": 24,
+    "plank_margin": 22,
     "objective_width": 300,
-    "corner_width": 170,
-    "timeline_width": 420
+    "corner_width": 260,
+    "timeline_width": 420,
+    "portrait_hero": 96,
+    "ability_card_width": 212,
+    "detail_width": 250,
+    "detail_height": 330,
+    "button_pad": 12
   },
   "surfaces": {
     "_note": "Chaque rôle dit QUEL asset du pack, à quelle RÉDUCTION, et de quelle TEINTE.\n\n`scale` est un diviseur ENTIER, et il n'y a pas d'exception à ça : le pack est du pixel art sur grille de 64, filtré en Nearest. Diviser par 2 fait tomber quatre pixels sur un ; diviser par 1,5 en fait tomber deux et demi, et la bordure bave. C'est aussi ce qui décide la taille des coins : un bouton de 72 px de haut ne peut pas porter des coins de 64, il lui faut du 32 — donc `scale: 2`.\n\n`desaturate` transforme la source en niveaux de gris AVANT de la teinter. Sans ça on ne pourrait pas sortir des deux couleurs du pack : multiplier un bouton bleu par de l'or donne du vert sale. Passé en gris, il prend n'importe quelle teinte proprement, et les six rôles ci-dessous sortent tous de la même image.",
@@ -192,7 +238,7 @@
   },
   "button_tints": {
     "_note": "SIX COULEURS À PARTIR DE DEUX IMAGES. Le pack ne livre que du bleu et du rouge — une langue « confirmer / renoncer » qui ne suffit pas à un menu de sept entrées. La source est donc passée en gris et reteintée par rôle.\n\nLe rôle porte le SENS, pas la couleur : un écran demande « default » ou « danger », jamais « bleu ». Le jour où la palette change, aucun écran ne bouge.",
-    "default": "steel",
+    "default": "panel_edge_soft",
     "primary": "gold",
     "positive": "moss",
     "danger": "rust",
@@ -211,13 +257,13 @@
     "scrollbar": {
       "asset": "scrollbar",
       "scale": 1,
-      "tint": "wood_light"
+      "tint": "panel_edge_soft"
     },
     "checkbox": {
       "empty": "checkbox_empty",
       "checked": "checkbox_checked",
       "scale": 1,
-      "tint": "wood_light"
+      "tint": "panel_edge"
     }
   },
   "glyphs": {

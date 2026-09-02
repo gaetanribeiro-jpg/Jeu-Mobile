@@ -444,6 +444,27 @@ choses à savoir :
 réponse valable. Mais `verify_ui` exige un glyphe pour **chaque
 compétence de héros et chaque potion**.
 
+**L'INTERFACE EST SOMBRE À LISERÉ DORÉ (T9.7), sur TOUS les écrans.** Le
+parchemin clair de T9.1–T9.6 n'était pas le bon matériau : la maquette de
+Gaetan demande des panneaux presque noirs à trait d'or ouvragé. Quatre
+choses à ne pas défaire :
+- **Les cadres viennent de `kenney_fantasyuiborders`** (CC0), un pack
+  arrivé avec les autres et jamais ouvert. `UiSkin.framed_style()`
+  COMPOSE le cadre et le fond en une seule image, parce qu'un `StyleBox`
+  ne s'empile pas : on ne garde du cadre que les pixels d'alpha > 0,9 —
+  le tracé — et on les repeint sur un aplat sombre. Le seuil haut est
+  volontaire ; le centre de ces cadres est du blanc à demi transparent,
+  pas du vide.
+- **Le rôle est passé du FOND au TRAIT.** Un bouton en acier plein sur un
+  panneau sombre faisait deux matières pour une interface.
+  `framed_style` accepte une couleur de palette OU un rôle de bouton.
+- **`UiSkin.hero_card()` est partagée par trois écrans** — combat,
+  expédition, compagnie. Trois dessins pour une même information est ce
+  qui donnait à l'ensemble son air de brouillon.
+- **Un test ne doit pas fixer la profondeur d'un nœud d'habillage.** Deux
+  tests d'expédition lisaient `get_child(0)` et une chaîne « 7 / 72 » ;
+  ils cherchent maintenant le texte dans l'arbre.
+
 **L'ÉCRAN DE COMBAT EST HABILLÉ, PAS SEULEMENT SES BOUTONS (T9.6).**
 Cartes de héros à portrait sur papier, timeline à visages, barre d'action
 sur la table de bois, objectif sur parchemin. Deux pièges à retenir, tous
