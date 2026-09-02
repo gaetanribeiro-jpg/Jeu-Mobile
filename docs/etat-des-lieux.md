@@ -2294,6 +2294,61 @@ lisibilité avant le spectacle, et une ombre qui traverse une case en
 change la couleur. À faire quand il y aura de quoi les borner.
 
 
+### Phase 11 — la bêta 🚧
+
+Le moteur est fini ; c'est la coquille autour qui manque. **Chaque
+constat ci-dessous vient d'une commande lancée dans le dépôt, pas d'un
+souvenir.**
+
+| Tâche | Contenu | Constat vérifié | État |
+|---|---|---|---|
+| **T11.1** | Le mettre sur le téléphone | `export_presets.cfg` absent, `installation.md` § 4 à 6 jamais faits | ⬜ |
+| **T11.2** | Brancher le son | 473 fichiers, 30 entrées déclarées, **0 appel** à `AudioManager` depuis le jeu | ⬜ |
+| **T11.3** | Un vrai écran de titre | `BOOT_TEMPORARY` : « Écran de test provisoire — le vrai menu viendra plus tard » | ⬜ |
+| **T11.4** | Une fin à la campagne | 5 régions sur 6 sont des coquilles vides, rien n'écrit jamais `unlocked` | ⬜ |
+| **T11.5** | Apprendre à jouer | aucun tutoriel, aucune aide, aucune première partie guidée | ⬜ |
+
+**L'ordre est celui-là et il se justifie.** Le téléphone d'abord parce que
+tout le reste se juge dessus, et parce que deux questions n'ont de réponse
+que sur l'appareil — la taille réelle des cibles tactiles et les 60 images
+par seconde. Le son ensuite : c'est le meilleur rapport effet/coût de la
+liste, la plomberie est entièrement faite et il ne manque que les appels.
+Le titre et la fin referment la coquille. **Le tutoriel passe en dernier
+volontairement** : écrit avant les quatre autres, il enseignerait le jeu
+tel qu'il est aujourd'hui et serait à refaire.
+
+### T11.4 — les deux sorties, et pourquoi je conseille la seconde
+
+- **(a) Bâtir l'acte 2.** Nouveau biome — le tileset a cinq variantes de
+  couleur, gratuites —, nouveaux ennemis, nouvelles cartes. C'est une
+  phase de contenu, trois à cinq séances.
+- **(b) Assumer l'acte 1 comme le périmètre de la bêta** et lui donner une
+  vraie fin : battre le boss clôt la campagne, montre ce que le royaume
+  est devenu, propose de recommencer. Une séance.
+
+Faire (b) ne gâche pas (a) : **le mécanisme de déverrouillage manque dans
+les deux cas**, et c'est lui qu'on écrit.
+
+### Ce qui se voit sans bloquer
+
+- **Le rail de défilement flotte** sur un panneau vide (expédition,
+  compagnie). C'est le mode « toujours visible » qui évite l'effondrement
+  du moteur en headless. Purement cosmétique.
+- **Pas d'écran de récompense.** Une bannière, deux secondes, fini. Le
+  butin d'une rencontre mérite un temps d'arrêt : c'est la moitié de la
+  raison de continuer.
+- **L'usure longue n'a jamais été mesurée.** L'instrument mesure une
+  expédition ; une campagne entière, du niveau 1 au plafond de 10, n'a
+  jamais été simulée.
+
+### Ce que je ne peux pas trancher seul
+
+Seul un téléphone répond à la taille réelle des cibles tactiles et aux 60
+images par seconde. Et seul Gaetan juge le ressenti d'un coup, les
+affectations sonores — faites au nom des fichiers, jamais écoutées — et la
+densité de la mer de T9.10.
+
+
 ---
 
 ## 6. Ce qui est rangé, pas jeté

@@ -234,8 +234,10 @@ dur : passer par `data/assets.json`.
 
 *(à tenir à jour à chaque fin de session)*
 
-- **Phase courante : 10 — les consommables.** Le pivot vers la vision
-  Tiny Kingdoms a été acté le 2026-08-31.
+- **Phase courante : 11 — la bêta.** Cinq chantiers, listés avec leur
+  constat vérifié dans `docs/etat-des-lieux.md` § 5 : T11.1 le téléphone,
+  T11.2 le son, T11.3 l'écran de titre, T11.4 une fin, T11.5 le tutoriel.
+  Le pivot vers la vision Tiny Kingdoms a été acté le 2026-08-31.
 - **Phase 1 terminée.** T1.1 à T1.14 sont faites et testées.
 - **Phase 2 terminée.** T2.1 à T2.7 : le `Hero`, les niveaux,
   l'équipement, le butin, la `Company`, la sauvegarde, l'écran de
