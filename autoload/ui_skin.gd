@@ -344,16 +344,27 @@ func lay_backdrop(root: Node) -> void:
 ## même information partout, et trois dessins pour une même chose est
 ## exactement ce qui donnait à l'ensemble son air de brouillon : chaque
 ## écran avait inventé sa façon d'afficher un héros.
+## `accent` teinte le liseré à la couleur de la CLASSE du héros.
+##
+## QUATRE HÉROS EN RANG DANS QUATRE BOÎTES IDENTIQUES ne se distinguent
+## que par leur nom, qu'il faut lire. Teintés, ils se comptent d'un coup
+## d'œil. Le liseré, jamais le fond : c'est la règle de T9.7 — un fond
+## coloré ferait deux matières pour une interface.
+##
+## Le héros qui joue garde la priorité sur sa classe : mis en avant, il
+## reprend l'or, parce que « c'est à lui » est plus urgent à lire que
+## « c'est un archer ».
 func hero_card(
 	face: Texture2D, title: String, hit_points: int, maximum: int,
-	highlighted: bool = false, note: String = ""
+	highlighted: bool = false, note: String = "", accent: StringName = &""
 ) -> Control:
+	var edge := &"panel_edge" if highlighted else &"panel_edge_soft"
+	if not highlighted and not accent.is_empty() and UiTheme.has_color(accent):
+		edge = accent
 	var card := PanelContainer.new()
 	card.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	card.add_theme_stylebox_override("panel", framed_style(
-		&"frame_card", &"panel_fill",
-		&"panel_edge" if highlighted else &"panel_edge_soft",
-		UiTheme.metric(&"card_margin")
+		&"frame_card", &"panel_fill", edge, UiTheme.metric(&"card_margin")
 	))
 
 	var row := HBoxContainer.new()
@@ -406,6 +417,64 @@ func hero_card(
 			UiTheme.metric(&"bar_height_card")
 		))
 	return card
+
+
+## Un carré de terre du tileset, teinté à la couleur d'une région.
+##
+## SIX RÉGIONS, CINQ VARIANTES DE VERT. Le pack livre bien cinq tilesets
+## de couleur, mais ce sont cinq nuances de la MÊME herbe : aucune ne fait
+## un désert ni une banquise. Désaturée puis reteintée, la même tuile
+## donne du sable, du gel et de la cendre — sans qu'un pixel ait été
+## redessiné.
+##
+## C'EST LE PROCÉDÉ DES SIX BOUTONS DE T9.3, appliqué au terrain : on ne
+## teinte proprement que ce qu'on a d'abord passé en gris, sinon le vert
+## de l'herbe se mêle à la teinte et rend du vert sale.
+##
+## La tuile prise est le CENTRE du bloc de terre — celle qui n'a aucun
+## bord — parce qu'une tuile de rive porterait un morceau d'écume, et
+## qu'un carré d'échantillon n'a pas de rivage.
+func terrain_swatch(tint: Color, side: int) -> Texture2D:
+	var cache := StringName("swatch|%s|%d" % [tint.to_html(false), side])
+	if _textures.has(cache):
+		return _textures[cache]
+
+	var entry := AssetTable.sprite(&"terrain", &"tilemap_color1")
+	if entry.is_empty():
+		return null
+	var source := _load_image(String(entry.get("path", "")))
+	if source == null:
+		return null
+
+	var tile := AssetTable.tile_size()
+	var block: Array = ViewSettings.section(&"terrain_blocks").get("land", [0, 0])
+	# [colonne, rangée] désigne le coin du bloc 4 × 4 ; la tuile sans
+	# aucun bord est à (1, 1) dedans.
+	var region := Rect2i(
+		(int(block[0]) + 1) * tile, (int(block[1]) + 1) * tile, tile, tile
+	)
+	var cut := Image.create_empty(tile, tile, false, source.get_format())
+	cut.blit_rect(source, region, Vector2i.ZERO)
+	if cut.is_compressed():
+		cut.decompress()
+	cut.convert(Image.FORMAT_RGBA8)
+	_desaturate(cut, true)
+	for y in cut.get_height():
+		for x in cut.get_width():
+			var pixel := cut.get_pixel(x, y)
+			if pixel.a <= 0.0:
+				continue
+			cut.set_pixel(x, y, Color(
+				pixel.r * tint.r, pixel.g * tint.g, pixel.b * tint.b, pixel.a
+			))
+	# Agrandi en NEAREST et par un facteur ENTIER quand c'est possible :
+	# du pixel art redimensionné autrement bave, et c'est la règle que le
+	# projet applique déjà à tous ses assets.
+	if side != tile:
+		cut.resize(side, side, Image.INTERPOLATE_NEAREST)
+	var texture := ImageTexture.create_from_image(cut)
+	_textures[cache] = texture
+	return texture
 
 
 ## Le glyphe d'une compétence, ou null si elle n'en a pas.

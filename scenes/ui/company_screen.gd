@@ -89,8 +89,12 @@ func _roster_row(hero: Hero) -> Button:
 	# LE HÉROS SÉLECTIONNÉ PORTE LE LISERÉ DORÉ VIF, comme la carte de
 	# celui qui joue en combat. C'est la même question posée au même
 	# endroit : lequel je regarde ?
+	# LE HÉROS NON SÉLECTIONNÉ PORTE LA COULEUR DE SA CLASSE. Quatre
+	# lignes identiques ne se distinguent que par leur nom, qu'il faut
+	# lire ; teintées, elles se comptent d'un coup d'œil.
 	var edge: StringName = (
-		&"panel_edge" if hero.id == _selected_id else &"panel_edge_soft"
+		&"panel_edge" if hero.id == _selected_id
+		else Unit.class_accent(hero.class_id)
 	)
 	for state: String in ["normal", "hover", "focus", "pressed"]:
 		button.add_theme_stylebox_override(state, UiSkin.framed_style(
@@ -243,7 +247,16 @@ func _skill_row(hero: Hero, node_id: StringName) -> Control:
 			tr("SKILLS_LOCKED") % tr(SkillTree.name_key(SkillTree.requires(node_id))),
 		]
 
-	var button := _button(label)
+	# TROIS ÉTATS, TROIS COULEURS DE LISERÉ. Un arbre de onze nœuds tous
+	# gris demande de lire chaque ligne pour savoir laquelle est prise,
+	# laquelle est ouverte et laquelle attend un prérequis — alors que
+	# c'est justement la seule question qu'on se pose en l'ouvrant.
+	var role: StringName = &"muted"
+	if blocked == &"learned":
+		role = &"positive"
+	elif blocked.is_empty():
+		role = Unit.class_accent(hero.class_id)
+	var button := _button(label, role)
 	button.custom_minimum_size = Vector2(520, 46)
 	button.add_theme_font_size_override("font_size", 18)
 	button.disabled = not blocked.is_empty()
@@ -362,11 +375,12 @@ func _label(text: String, size: int) -> Label:
 	return label
 
 
-func _button(text: String) -> Button:
+func _button(text: String, role: StringName = &"default") -> Button:
 	var button := Button.new()
 	button.text = text
 	button.custom_minimum_size = Vector2(210, 64)
 	button.add_theme_font_size_override("font_size", 20)
+	UiSkin.dress_button(button, role)
 	return button
 
 

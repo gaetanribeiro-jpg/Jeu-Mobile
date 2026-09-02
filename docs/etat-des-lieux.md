@@ -2414,6 +2414,64 @@ ligne au détour d'un remaniement d'écran ne serait pas un défaut de
 style.
 
 
+### T11.6 — de la couleur, et pas seulement sur le titre ✅
+
+« Je veux pas de menus moches tous gris. » Le reproche visait juste : la
+carte du monde était **six boîtes brunes portant six noms**, et la
+compagnie **quatre lignes identiques**. Il fallait LIRE pour savoir ce
+qu'on regardait.
+
+### Six régions, six terres
+
+Chaque région déclare sa couleur — mousse, sable, gel, rouille, prune,
+cendre — et elle teinte deux choses : le **liseré** de sa rangée, et un
+**carré de terre** pris dans le tileset.
+
+**Le pack ne livre pourtant que cinq nuances de vert.** Aucune ne fait un
+désert ni une banquise. Mais désaturée puis reteintée, la même tuile
+d'herbe donne du sable, du gel et de la cendre — **sans qu'un pixel ait
+été redessiné**. C'est exactement le procédé des six boutons de T9.3,
+appliqué au terrain, et la règle qui va avec : on ne teinte proprement
+que ce qu'on a d'abord passé en gris, sinon le vert se mêle à la teinte
+et rend du vert sale.
+
+Une région verrouillée garde son carré, **éteint** : on voit qu'il y a
+une terre là-bas, on ne sait pas encore de quelle couleur elle est.
+
+### Trois classes, trois couleurs
+
+Rouille au contact, mousse à la portée, prune à la magie — les rôles de
+bouton existants, pas de nouvelles couleurs. Quatre héros en rang se
+comptent maintenant d'un coup d'œil : deux guerriers, un archer, un mage.
+
+La teinte va dans le **liseré**, jamais dans le fond : un fond coloré
+ferait deux matières pour une interface, ce que T9.7 a déjà tranché. Et
+le héros qui joue garde l'or, parce que « c'est à lui » est plus urgent à
+lire que « c'est un archer ».
+
+L'arbre de compétences suit : vert pour ce qui est pris, la couleur de la
+classe pour ce qui est ouvert, éteint pour ce qui attend un prérequis —
+la seule question qu'on se pose en l'ouvrant.
+
+### La carte du monde montre enfin des visages
+
+Elle affichait ses héros en texte nu quand le combat, l'expédition et la
+compagnie leur donnaient déjà un portrait. Trois dessins pour une même
+information est ce qui donne à un jeu son air de brouillon (T9.7) ; n'en
+donner aucun est pire.
+
+**Un `HBoxContainer` prend la hauteur minimale de ses enfants**, et une
+carte posée en ancrage plein n'en déclare aucune : la rangée se rabotait
+et les portraits sortaient par le bas. La hauteur est donc imposée.
+
+### Ce que `verify_ui` refuse désormais
+
+Une classe ou une région dont la couleur n'existe pas dans la palette —
+l'oubli est muet, la valeur retombe sur `stone`, et on obtient exactement
+la liste grise qu'on essayait d'éviter. Et **deux régions de la même
+couleur**, qui ne se distinguent pas : autant ne pas en avoir.
+
+
 ---
 
 ## 6. Ce qui est rangé, pas jeté

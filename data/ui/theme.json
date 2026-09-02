@@ -67,6 +67,22 @@
       0.56,
       0.92
     ],
+    "_biome_note": "TROIS TEINTES DE BIOME (T11.6). La palette n'avait que six couleurs de rôle — acier, or, mousse, rouille, prune, pierre — et six régions à distinguer. Une carte du monde où toutes les régions se ressemblent n'est pas une carte, c'est une liste : le joueur ne peut pas savoir d'un coup d'œil ce qui l'attend.\n\nELLES TEINTENT LA TERRE, PAS SEULEMENT LE TRAIT. Chaque région montre un carré d'herbe du tileset, désaturé puis reteinté à sa couleur — exactement le procédé des six boutons de T9.3. Le pack ne livre que cinq variantes de VERT ; teintées, elles donnent du sable, du gel et de la cendre sans qu'aucun pixel n'ait été redessiné.",
+    "sand": [
+      0.85,
+      0.72,
+      0.42
+    ],
+    "frost": [
+      0.62,
+      0.79,
+      0.88
+    ],
+    "ash": [
+      0.55,
+      0.36,
+      0.38
+    ],
     "stone": [
       0.42,
       0.4,

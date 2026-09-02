@@ -140,6 +140,19 @@ static func hero_class_ids() -> Array[StringName]:
 
 
 ## Statistiques de base d'une classe de héros, telles qu'écrites en données.
+## La couleur d'une classe, nommée dans la palette du thème.
+##
+## QUATRE HÉROS EN RANG DANS QUATRE BOÎTES IDENTIQUES ne se distinguent
+## que par leur nom, qu'il faut lire. Teintés, ils se comptent d'un coup
+## d'œil : deux guerriers, un archer, un mage. Sur un téléphone, où la
+## liste se parcourt au pouce, la différence n'est pas cosmétique.
+##
+## LA CLÉ EST CELLE D'UNE COULEUR, jamais un code hexadécimal : `Unit`
+## reste ignorant de ce qu'est une couleur.
+static func class_accent(class_to_find: StringName) -> StringName:
+	return StringName(hero_class(class_to_find).get("accent", "stone"))
+
+
 static func hero_class(class_to_find: StringName) -> Dictionary:
 	var found: Dictionary = hero_classes().get(String(class_to_find), {})
 	if found.is_empty():

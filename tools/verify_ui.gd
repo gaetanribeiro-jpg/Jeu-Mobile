@@ -38,6 +38,7 @@ func _init() -> void:
 	_check_glyphs()
 	_check_title()
 	_check_credits()
+	_check_accents()
 
 	if _problems.is_empty():
 		print("\nLe thème tient debout.")
@@ -264,6 +265,52 @@ func _check_widgets() -> void:
 ##
 ## Ce contrôle borne la teinte entre ces deux fautes, en calculant la
 ## crête réelle — l'alpha du fichier MULTIPLIÉ par celui du thème.
+## Les couleurs de classe et de région (T11.6).
+##
+## « JE NE VEUX PAS DE MENUS MOCHES TOUS GRIS. » Six régions dans six
+## boîtes identiques, quatre héros dans quatre lignes identiques : il faut
+## LIRE pour savoir ce qu'on regarde. Une teinte par classe et par région
+## rend la liste comptable d'un coup d'œil — et sur un téléphone, où l'on
+## parcourt au pouce, ce n'est pas de la décoration.
+##
+## CE CONTRÔLE EXISTE PARCE QUE L'OUBLI EST MUET : une classe sans teinte
+## déclarée retombe sur `stone`, et on obtient exactement la liste grise
+## qu'on essayait d'éviter, sans qu'aucune erreur ne le dise.
+func _check_accents() -> void:
+	var seen := PackedStringArray()
+	for class_id: StringName in Unit.hero_class_ids():
+		var accent := Unit.class_accent(class_id)
+		seen.append("%s→%s" % [class_id, accent])
+		if not UiTheme.has_color(accent):
+			_problems.append(
+				"la classe « %s » veut la couleur « %s », absente de la palette"
+				% [class_id, accent]
+			)
+	print("classes     : %s" % ", ".join(seen))
+
+	# DEUX RÉGIONS DE LA MÊME COULEUR NE SE DISTINGUENT PAS, et c'est
+	# précisément le défaut qu'on répare : la teinte doit être unique,
+	# sinon autant ne pas en avoir.
+	var taken := {}
+	var listed := PackedStringArray()
+	for region_id: StringName in Region.ids():
+		var accent := Region.accent_of(region_id)
+		listed.append("%s→%s" % [region_id, accent])
+		if not UiTheme.has_color(accent):
+			_problems.append(
+				"la région « %s » veut la couleur « %s », absente de la palette"
+				% [region_id, accent]
+			)
+			continue
+		if taken.has(accent):
+			_problems.append(
+				"« %s » et « %s » portent la même couleur « %s »"
+				% [taken[accent], region_id, accent]
+			)
+		taken[accent] = region_id
+	print("régions     : %s" % ", ".join(listed))
+
+
 ## L'écran de titre (T11.3) et son décor.
 ##
 ## IL A ANNONCÉ « ÉCRAN DE TEST PROVISOIRE » PENDANT TROIS MOIS, et rien

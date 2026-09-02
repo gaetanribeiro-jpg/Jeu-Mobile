@@ -22,6 +22,12 @@ signal departed(region_id: StringName, squad_ids: Array)
 
 signal closed
 
+## Hauteur d'une rangée de région, et côté de son carré de terre.
+const ROW_HEIGHT_PX := 84
+const SWATCH_PX := 56
+const SQUAD_CARD_PX := 250
+const SQUAD_CARD_HEIGHT_PX := 112
+
 var _company: Company
 var _selected: StringName = &""
 var _squad_ids: Array[int] = []
@@ -90,26 +96,81 @@ func _build_regions() -> void:
 		_regions.add_child(_region_row(region_id))
 
 
+## Une région : son carré de terre, son nom, son état.
+##
+## SIX RANGÉES IDENTIQUES NE FONT PAS UNE CARTE, elles font une liste —
+## et c'est exactement ce que la carte du monde était : six boîtes brunes
+## portant six noms. Chaque région a maintenant SA couleur, qui teinte à
+## la fois son carré d'herbe et le liseré de sa rangée. On reconnaît les
+## Dunes Ardentes sans lire leur nom, ce qui est la seule chose qu'une
+## carte doit savoir faire.
+##
+## UN BOUTON, PAS UN PANNEAU, malgré les apparences : la rangée se
+## clique, donc elle doit être un `Button`. Le décor est posé DEDANS, en
+## `MOUSE_FILTER_IGNORE`, sinon le carré d'herbe avale le clic.
 func _region_row(region_id: StringName) -> Button:
 	var open := Region.is_unlocked(region_id)
+	var accent := Region.accent_of(region_id)
+
 	var button := Button.new()
-	button.custom_minimum_size = Vector2(0, 72)
+	button.custom_minimum_size = Vector2(0, ROW_HEIGHT_PX)
 	button.toggle_mode = true
 	button.button_pressed = region_id == _selected
 	# Une région verrouillée reste LISIBLE et cliquable : le joueur a le
 	# droit de lire ce qui l'attend. Elle ne peut simplement pas être
 	# choisie pour partir, et le bouton du bas le dit.
 	button.disabled = false
-	button.add_theme_font_size_override("font_size", 24)
-	button.text = "%s   ·   %s" % [
-		tr(Region.name_key(region_id)),
-		tr("WORLD_ACT") % Region.act_of(region_id) if open else tr("WORLD_LOCKED"),
-	]
-	if not open:
-		button.add_theme_color_override("font_color", UiTheme.color(&"ink_muted"))
+	UiSkin.dress_button(button, accent if open else &"muted")
 	button.pressed.connect(func() -> void:
 		_selected = region_id
 		refresh())
+
+	var row := HBoxContainer.new()
+	row.add_theme_constant_override("separation", UiTheme.metric(&"card_margin"))
+	row.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	row.offset_left = UiTheme.metric(&"card_margin")
+	row.offset_right = -UiTheme.metric(&"card_margin")
+	row.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	button.add_child(row)
+
+	var swatch := TextureRect.new()
+	swatch.texture = UiSkin.terrain_swatch(UiTheme.color(accent), SWATCH_PX)
+	swatch.custom_minimum_size = Vector2(SWATCH_PX, SWATCH_PX)
+	swatch.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	swatch.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	swatch.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	swatch.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	# UNE RÉGION VERROUILLÉE EST ÉTEINTE, pas cachée : on voit qu'il y a
+	# une terre là-bas, on ne sait pas encore de quelle couleur elle est.
+	swatch.modulate = Color(1, 1, 1, 1.0 if open else 0.35)
+	row.add_child(swatch)
+
+	var column := VBoxContainer.new()
+	column.add_theme_constant_override("separation", 0)
+	column.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	column.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	column.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	row.add_child(column)
+
+	var name_ := Label.new()
+	name_.text = tr(Region.name_key(region_id))
+	name_.add_theme_font_size_override("font_size", UiTheme.font_size(&"subheading"))
+	name_.add_theme_color_override(
+		"font_color", UiTheme.color(accent) if open else UiTheme.color(&"ink_muted")
+	)
+	name_.add_theme_constant_override("outline_size", 0)
+	name_.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	column.add_child(name_)
+
+	var state := Label.new()
+	state.text = (
+		tr("WORLD_ACT") % Region.act_of(region_id) if open else tr("WORLD_LOCKED")
+	)
+	state.add_theme_font_size_override("font_size", UiTheme.font_size(&"small"))
+	state.add_theme_color_override("font_color", UiTheme.color(&"ink_soft"))
+	state.add_theme_constant_override("outline_size", 0)
+	state.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	column.add_child(state)
 	return button
 
 
@@ -160,15 +221,34 @@ func _build_squad() -> void:
 		var hero := _company.hero_by_id(_squad_ids[slot])
 		if hero == null:
 			continue
+		# LE MÊME VISAGE QU'AILLEURS, mais SANS JAUGE : au départ tout le
+		# monde est au complet, et une barre pleine sur quatre héros ne
+		# dit rien. Ici ce qui compte est qui part, pas dans quel état.
+		# Cet écran affichait ses héros en
+		# texte nu quand le combat, l'expédition et la compagnie leur
+		# donnaient déjà un portrait : trois dessins pour une même
+		# information est ce qui donne à un jeu son air de brouillon
+		# (T9.7), et n'en donner aucun est pire.
 		var button := Button.new()
-		button.custom_minimum_size = Vector2(240, 68)
-		button.add_theme_font_size_override("font_size", 20)
-		button.text = "%s\n%s · %s" % [
-			hero.display_name(),
-			tr("CLASS_%s" % String(hero.class_id).to_upper()),
-			tr("COMPANY_LEVEL") % hero.level,
-		]
+		# HAUTEUR IMPOSÉE : un `HBoxContainer` prend la hauteur minimale de
+		# ses enfants, et une carte de héros posée en ancrage plein n'en
+		# déclare aucune. Sans ça, la rangée se rabote et les portraits
+		# sortent par le bas.
+		button.custom_minimum_size = Vector2(SQUAD_CARD_PX, SQUAD_CARD_HEIGHT_PX)
 		button.pressed.connect(_cycle.bind(slot))
+		UiSkin.dress_button(button, &"default")
+		var card := UiSkin.hero_card(
+			UiSkin.portrait(hero.class_id, hero.color),
+			"%s · %s" % [
+				hero.display_name(),
+				tr("CLASS_%s" % String(hero.class_id).to_upper()),
+			],
+			0, 0, false, tr("COMPANY_LEVEL") % hero.level,
+			Unit.class_accent(hero.class_id)
+		)
+		card.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+		card.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		button.add_child(card)
 		_squad.add_child(button)
 
 

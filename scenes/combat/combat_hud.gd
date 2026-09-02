@@ -780,7 +780,8 @@ func _hero_card(unit: Unit, state: StringName) -> Control:
 	var card := UiSkin.hero_card(
 		UiSkin.portrait(unit.class_id, HERO_COLOR),
 		"%d  %s" % [unit.slot, tr("CLASS_%s" % String(unit.class_id).to_upper())],
-		unit.hit_points, unit.max_hit_points, state == &"active"
+		unit.hit_points, unit.max_hit_points, state == &"active", "",
+		Unit.class_accent(unit.class_id)
 	)
 	card.custom_minimum_size = Vector2(UiTheme.metric(&"card_width"), 0)
 	card.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN

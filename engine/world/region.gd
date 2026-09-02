@@ -104,6 +104,20 @@ static func act_of(region_id: StringName) -> int:
 	return int(entry(region_id).get("act", 1))
 
 
+## La couleur de la région, nommée dans la palette du thème.
+##
+## SIX RÉGIONS QUI SE RESSEMBLENT NE FONT PAS UNE CARTE, elles font une
+## liste. Le joueur doit pouvoir reconnaître les Dunes Ardentes sans lire
+## leur nom — et c'est encore plus vrai sur un téléphone, où la carte se
+## parcourt au pouce.
+##
+## LA CLÉ EST CELLE D'UNE COULEUR, jamais un code hexadécimal : `Region`
+## reste ignorant de ce qu'est une couleur, et le jour où la palette
+## change, aucune région ne bouge.
+static func accent_of(region_id: StringName) -> StringName:
+	return StringName(entry(region_id).get("accent", "stone"))
+
+
 static func is_unlocked(region_id: StringName) -> bool:
 	return bool(entry(region_id).get("unlocked", false))
 

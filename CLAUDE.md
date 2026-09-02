@@ -348,6 +348,20 @@ pas défaire :
 - **Le banc d'essai se replie, il ne disparaît pas.** Deux clics, comme
   avant : seize défauts n'ont été trouvés que par lui.
 
+**LA COULEUR PORTE UNE INFORMATION, JAMAIS UNE DÉCORATION (T11.6).**
+Six régions dans six boîtes identiques obligent à LIRE. Trois choses à ne
+pas défaire :
+- **Chaque classe et chaque région déclare sa couleur dans SES données**
+  (`hero_classes.json`, `regions.json`), par le NOM d'une couleur de la
+  palette et jamais par un code. `verify_ui` refuse une couleur inconnue,
+  et deux régions de la même teinte.
+- **La teinte va dans le LISERÉ, jamais dans le fond** — règle de T9.7. Le
+  héros qui joue garde l'or : « c'est à lui » prime sur « c'est un archer ».
+- **Le carré de terre d'une région est DÉSATURÉ puis reteinté.** Le pack
+  ne livre que cinq nuances de vert ; c'est ce qui donne du sable, du gel
+  et de la cendre sans redessiner un pixel. Quatrième fois que la règle
+  « une source ne se teinte que si elle est claire » sert.
+
 **LES CRÉDITS SONT UNE OBLIGATION, PAS UNE POLITESSE (T11.3).** CC BY 3.0
 exige l'attribution des dix-huit icônes de game-icons.net. `verify_ui` et
 un test refusent que l'entrée disparaisse ou qu'un des trois auteurs

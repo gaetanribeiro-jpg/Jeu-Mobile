@@ -42,10 +42,30 @@ func before_each() -> void:
 
 
 func _region_button(region_id: StringName) -> Button:
+	# LE TEXTE SE CHERCHE DANS L'ARBRE, pas sur le bouton. Depuis T11.6 une
+	# rangée de région est un bouton qui CONTIENT un carré de terre, un nom
+	# et un état : le libellé n'est plus sur le bouton lui-même. Un test qui
+	# fixe la forme d'un nœud d'habillage casse au premier changement de
+	# style sans que rien ne soit faux — la leçon des deux tests
+	# d'expédition de T9.7.
 	for child: Node in _screen._regions.get_children():
-		if child is Button and (child as Button).text.begins_with(tr(Region.name_key(region_id))):
+		if child is Button and _texts_of(child).any(
+			func(text: String) -> bool:
+				return text.begins_with(tr(Region.name_key(region_id)))
+		):
 			return child
 	return null
+
+
+func _texts_of(node: Node) -> Array[String]:
+	var out: Array[String] = []
+	if node is Label:
+		out.append((node as Label).text)
+	elif node is Button:
+		out.append((node as Button).text)
+	for child: Node in node.get_children():
+		out.append_array(_texts_of(child))
+	return out
 
 
 # --- Le monde se voit en entier -------------------------------------------
@@ -59,7 +79,10 @@ func test_une_region_verrouillee_se_lit() -> void:
 	var button := _region_button(&"black_empire")
 	assert_not_null(button)
 	assert_false(button.disabled, "on ne peut même pas la consulter")
-	assert_string_contains(button.text, tr("WORLD_LOCKED"))
+	assert_true(
+		_texts_of(button).has(tr("WORLD_LOCKED")),
+		"une région verrouillée doit le dire"
+	)
 
 
 func test_consulter_une_region_verrouillee_interdit_le_depart() -> void:

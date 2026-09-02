@@ -18,7 +18,8 @@
       "heavy_strike",
       "taunt"
     ],
-    "primary_stat": "strength"
+    "primary_stat": "strength",
+    "accent": "rust"
   },
   "archer": {
     "sprite": "archer",
@@ -39,7 +40,8 @@
       "hop_back"
     ],
     "primary_stat": "agility",
-    "hit_points_note": "Descendu de 85 à 72 en T1.14. Tant que rien ne pouvait le toucher, ses PV ne voulaient rien dire ; une fois le bestiaire doté de deux tireurs de plus, la fragilité annoncée par sa fiche est devenue une fragilité réelle. Les deux corrections vont ensemble et l'une sans l'autre ne changeait rien."
+    "hit_points_note": "Descendu de 85 à 72 en T1.14. Tant que rien ne pouvait le toucher, ses PV ne voulaient rien dire ; une fois le bestiaire doté de deux tireurs de plus, la fragilité annoncée par sa fiche est devenue une fragilité réelle. Les deux corrections vont ensemble et l'une sans l'autre ne changeait rien.",
+    "accent": "moss"
   },
   "mage": {
     "sprite": "monk",
@@ -60,6 +62,8 @@
       "fireball",
       "frost"
     ],
-    "primary_stat": "intelligence"
-  }
+    "primary_stat": "intelligence",
+    "accent": "plum"
+  },
+  "_accent_note": "LA COULEUR D'UNE CLASSE (T11.6). Elle teinte le liseré d'une fiche de héros, partout où il en apparaît une — compagnie, carte du monde, expédition. Quatre héros en rang dans quatre boîtes identiques ne se distinguent que par leur nom, qu'il faut lire ; teintés, ils se comptent d'un coup d'œil : deux guerriers, un archer, un mage.\n\nROUILLE, MOUSSE, PRUNE — le contact, la portée, la magie. Ce sont les rôles de bouton existants, pas de nouvelles couleurs : le jour où la palette change, aucune classe ne bouge. Et la prune est déjà celle des potions, donc celle de ce qui n'est pas une arme."
 }

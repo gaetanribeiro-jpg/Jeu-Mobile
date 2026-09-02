@@ -244,7 +244,8 @@ func _build_squad() -> void:
 				hero.display_name(),
 				tr("CLASS_%s" % String(hero.class_id).to_upper())
 			],
-			unit.hit_points, unit.max_hit_points
+			unit.hit_points, unit.max_hit_points, false, "",
+			Unit.class_accent(hero.class_id)
 		))
 
 
