@@ -2303,7 +2303,7 @@ souvenir.**
 | Tâche | Contenu | Constat vérifié | État |
 |---|---|---|---|
 | **T11.1** | Le mettre sur le téléphone | `export_presets.cfg` absent, `installation.md` § 4 à 6 jamais faits | ⬜ |
-| **T11.2** | Brancher le son | 473 fichiers, 30 entrées déclarées, **0 appel** à `AudioManager` depuis le jeu | ⬜ |
+| **T11.2** | Brancher le son | 473 fichiers, 30 entrées déclarées, **0 appel** à `AudioManager` depuis le jeu | ✅ |
 | **T11.3** | Un vrai écran de titre | `BOOT_TEMPORARY` : « Écran de test provisoire — le vrai menu viendra plus tard » | ✅ |
 | **T11.4** | Le déverrouillage et la fin | 5 régions sur 6 sont des coquilles vides, rien n'écrit jamais `unlocked` | ✅ |
 | **T11.7** | L'acte 2 — les Dunes Ardentes | la région n'avait que son nom | ✅ |
@@ -2630,6 +2630,68 @@ d'au moins cinq images.
 même arithmétique, 3072 des deux façons. Personne ne l'aurait cherché :
 la hutte n'est encore dessinée nulle part, et le défaut serait apparu le
 jour où on l'aurait posée, sans qu'on sache pourquoi.
+
+
+### T11.2 — le son, enfin branché ✅
+
+**Le jeu était muet, et rien ne s'en plaignait.** 473 fichiers dans le
+dépôt, `AudioManager` câblé sur trois bus, trois musiques et vingt-sept
+effets déclarés, les curseurs de volume commandant de vrais bus — et
+`grep -r "AudioManager\." scenes/ engine/` rendait **zéro résultat**.
+Deux squelettes se faisaient face : `EventBus` a exactement la même
+maladie, tous ses signaux déclarés et presque rien qui les émette.
+
+### Le code demande un MOMENT, jamais un fichier
+
+Une couche de **repères** s'intercale : `data/audio.json` associe un
+moment de jeu — « une lame frappe », « un héros tombe », « une terre
+s'ouvre » — à un effet déclaré. Le code appelle
+`AudioManager.play_cue(&"unit_downed")` et ne sait rien du reste.
+
+C'est la règle des rôles de bouton de T9.3 portée au son, et **elle
+compte double ici** : les affectations de `sfx` ont été faites au nom des
+fichiers et **jamais écoutées**. Elles vont donc changer, et elles
+doivent pouvoir changer sans qu'on rouvre un seul `.gd`.
+
+**Un repère vide fait silence, sans se plaindre.** Tous les moments du
+jeu n'ont pas besoin d'un bruit, et retirer un son doit coûter une ligne
+de données.
+
+### Le clic de tous les boutons du jeu tient en un endroit
+
+Chaque écran passe déjà par `UiSkin.dress_button` : le brancher une fois
+donne sa voix à l'interface entière, là où le faire écran par écran
+aurait garanti qu'un bouton l'oublie. Et un bouton **désactivé** n'émet
+pas de `pressed` — le silence du refus est gratuit.
+
+### La voix d'une attaque vient de la COMPÉTENCE
+
+Un arc claque pareil dans les mains d'un Archer et dans celles d'un
+gnoll ; ce qui change le bruit, c'est la portée et la nature du coup.
+Trois voix suffisent — le contact, le tir, le sort — et les distinguer
+permet d'entendre, **sans regarder**, ce qui vient de se passer pendant
+le tour ennemi.
+
+**Le son porte ce que le sprite ne dit pas.** Le pack ne fournit aucune
+animation de mort sauf pour le Troll : à l'écran, tomber et encaisser se
+ressemblent. C'est le son qui fait la différence.
+
+### Ce que `verify_audio` refuse désormais
+
+**Un repère qui pointe sur un son inexistant ne fait pas de bruit et ne
+se plaint pas.** C'est le pire des défauts sonores : le jeu tourne,
+l'action se joue, et il manque un son que personne ne cherchait. Renommer
+une entrée de `sfx` suffit à le provoquer.
+
+### Ce qui reste, et qui demande des oreilles
+
+Les vingt repères sont posés et vérifiés ; **aucun n'a été écouté**. Ce
+qui reste à juger : est-ce que le pas ne fatigue pas, est-ce que le clic
+n'est pas trop sec, est-ce que la musique de boss se distingue de celle
+de bataille. Tout se règle dans `data/audio.json`, sans toucher au code.
+
+Et huit sons manquent toujours, listés comme tels dans la table : chute
+dans l'eau, boucle de feu, fanfare de victoire, montée de niveau.
 
 
 ---

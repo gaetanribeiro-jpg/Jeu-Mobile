@@ -79,6 +79,10 @@ func _ready() -> void:
 	_reset_squad()
 	_build_scrim()
 	_build_menu()
+	# LA MUSIQUE SUIT L'ÉCRAN, PAS LA SCÈNE. `play_music` ignore une piste
+	# déjà en cours, donc revenir au menu depuis la compagnie ne la reprend
+	# pas au début — c'est ce garde qui rend l'appel posable partout.
+	AudioManager.play_music(&"town")
 	_frame_diorama()
 	get_viewport().size_changed.connect(_frame_diorama)
 
@@ -295,6 +299,18 @@ func _gap(height: int) -> Control:
 	return spacer
 
 
+## Cette carte est-elle le gardien d'une région ?
+##
+## LA QUESTION SE POSE AUX RÉGIONS, PAS À LA CARTE. Une carte ne sait pas
+## qu'elle est un boss — c'est la région qui la désigne comme tel, et la
+## même carte pourrait servir ailleurs autrement.
+func _is_boss_map(map_id: StringName) -> bool:
+	for region_id: StringName in Region.ids():
+		if Region.boss_map(region_id) == map_id:
+			return true
+	return false
+
+
 func _open_ending(headline: String, body: String) -> void:
 	_ending_screen = _open(ENDING_SCENE, func(screen: Node) -> void:
 		screen.configure(headline, body)
@@ -491,6 +507,7 @@ func _close_expedition(_state: int) -> void:
 	GameState.save()
 	_build_menu()
 	visible = true
+	AudioManager.play_music(&"town")
 	if _defending:
 		_start_defence()
 	elif not _opened.is_empty() or GameState.campaign.is_complete():
@@ -771,6 +788,11 @@ func _launch_with_map(
 		return
 	var scene: Node2D = packed.instantiate()
 	scene.moment = moment
+	# LE BOSS A SA PROPRE PISTE, et c'est le seul endroit qui sait que
+	# c'en est un : `CombatMap` porte l'identifiant, la région dit lequel
+	# est son gardien. Le combat, lui, n'a pas à le savoir.
+	AudioManager.play_music(&"boss" if _is_boss_map(map.id) else &"battle")
+	AudioManager.play_cue(&"combat_start")
 	scene.configure_with_map(map, units, rng)
 	# LE MOTEUR VIT DANS `GameState` DÈS SA CRÉATION. Sur mobile
 	# l'application meurt à tout moment, y compris à la première

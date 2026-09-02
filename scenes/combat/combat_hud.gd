@@ -794,6 +794,7 @@ func _hero_card(unit: Unit, state: StringName) -> Control:
 
 
 func show_result(victory: bool) -> void:
+	AudioManager.play_cue(&"victory" if victory else &"defeat")
 	_banner.text = tr("RESULT_VICTORY" if victory else "RESULT_DEFEAT")
 	_banner.visible = true
 

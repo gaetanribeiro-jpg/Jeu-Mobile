@@ -126,6 +126,18 @@ func dress_button(button: Button, role: StringName = &"default") -> void:
 	# se rejoignent et le texte s'épaissit jusqu'à devenir illisible.
 	button.add_theme_constant_override("outline_size", 0)
 
+	# LE CLIC DE TOUS LES BOUTONS DU JEU TIENT ICI (T11.2). Chaque écran
+	# passe déjà par `dress_button` : le brancher une fois donne sa voix à
+	# l'interface entière, là où le faire écran par écran aurait garanti
+	# qu'un bouton l'oublie. Un bouton DÉSACTIVÉ n'émet pas de `pressed`,
+	# donc le silence du refus est gratuit.
+	if not button.pressed.is_connected(_click):
+		button.pressed.connect(_click)
+
+
+func _click() -> void:
+	AudioManager.play_cue(&"ui_press")
+
 
 ## Fabrique une jauge complète : l'auge de bois du pack, et dedans le
 ## remplissage teinté par ce qu'il mesure.

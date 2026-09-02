@@ -132,6 +132,23 @@ func play_sfx(sound_id: StringName) -> void:
 	player.play()
 
 
+## Joue le son attaché à un MOMENT de jeu.
+##
+## C'EST LA SEULE PORTE QUE LE JEU DOIT UTILISER. Un écran demande
+## « ui_press » ou « unit_downed », jamais un identifiant de fichier :
+## le choix des sons vit dans `data/audio.json` et doit pouvoir changer
+## sans qu'on rouvre un `.gd`. Ça compte particulièrement ici — les
+## affectations ont été faites au nom des fichiers et jamais écoutées.
+##
+## UN MOMENT SANS SON FAIT SILENCE, sans se plaindre : retirer un bruit
+## doit coûter une ligne de données, pas une relecture de code.
+func play_cue(moment: StringName) -> void:
+	var sound_id := AudioTable.cue(moment)
+	if sound_id.is_empty():
+		return
+	play_sfx(sound_id)
+
+
 ## Un son absent ne fait pas tomber le jeu : la règle est la même que pour
 ## les images du pack, qui ne sont pas dans le dépôt.
 func _load(path: String) -> AudioStream:

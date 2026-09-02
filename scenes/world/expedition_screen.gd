@@ -451,6 +451,7 @@ func _purchase(slot: int) -> void:
 	var bought := _run.buy(slot, _company)
 	if bought.is_empty():
 		return
+	AudioManager.play_cue(&"loot_item")
 	_note(tr("EXPEDITION_BOUGHT") % tr(Merchant.name_key_of(bought)))
 	changed.emit()
 	refresh()
@@ -519,8 +520,11 @@ func _report(outcome: Dictionary) -> void:
 	var pieces := PackedStringArray()
 	var gold := int(outcome.get("gold", 0))
 	if gold != 0:
+		AudioManager.play_cue(&"loot_gold")
 		pieces.append(tr("EXPEDITION_LOG_GOLD") % gold)
 	var items: Array = outcome.get("items", [])
+	if not items.is_empty():
+		AudioManager.play_cue(&"loot_item")
 	for item_id: Variant in items:
 		pieces.append(tr(Equipment.name_key(StringName(item_id))))
 	# LA POTION SE DIT AUTREMENT QUE L'ÉQUIPEMENT : elle ne rejoint pas la

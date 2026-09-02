@@ -229,6 +229,7 @@ func _upgrade(building_id: StringName) -> void:
 	var reached := _kingdom.build(building_id, _company)
 	if reached <= 0:
 		return
+	AudioManager.play_cue(&"build")
 	_note(tr("KINGDOM_BUILT") % [tr(Buildings.name_key(building_id)), reached])
 	changed.emit()
 	refresh()
@@ -236,6 +237,8 @@ func _upgrade(building_id: StringName) -> void:
 
 func _recruit(building_id: StringName) -> void:
 	var hero := _kingdom.recruit(building_id, _company, _rng)
+	if hero != null:
+		AudioManager.play_cue(&"recruit")
 	if hero == null:
 		return
 	_note(tr("KINGDOM_RECRUITED") % [

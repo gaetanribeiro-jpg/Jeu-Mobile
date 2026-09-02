@@ -235,10 +235,10 @@ dur : passer par `data/assets.json`.
 *(à tenir à jour à chaque fin de session)*
 
 - **Phase courante : 11 — la bêta.** Cinq chantiers, listés avec leur
-  constat vérifié dans `docs/etat-des-lieux.md` § 5. **Faits :** T11.3
-  l'écran de titre, T11.4 le déverrouillage et la fin, T11.6 la couleur
-  partout, T11.7 l'acte 2. **Restent :** T11.1 le téléphone, T11.2 le
-  son, T11.5 le tutoriel. **798 tests passent.**
+  constat vérifié dans `docs/etat-des-lieux.md` § 5. **Faits :** T11.2 le
+  son, T11.3 l'écran de titre, T11.4 le déverrouillage et la fin, T11.6
+  la couleur partout, T11.7 l'acte 2. **Restent :** T11.1 le téléphone
+  (il te faut le SDK) et T11.5 le tutoriel. **802 tests passent.**
   Le pivot vers la vision Tiny Kingdoms a été acté le 2026-08-31.
 - **Phase 1 terminée.** T1.1 à T1.14 sont faites et testées.
 - **Phase 2 terminée.** T2.1 à T2.7 : le `Hero`, les niveaux,
@@ -358,6 +358,22 @@ transparentes) et pas dans le dessin ; il a trouvé un second cas tout
 seul, `goblin_hut`, que personne n'aurait cherché. **Les feuilles ne sont
 pas carrées** : 192 de large pour 256 de haut, et prendre la hauteur pour
 la largeur est l'erreur naturelle.
+
+**LE JEU A UNE VOIX, ET ELLE EST DANS LES DONNÉES (T11.2).** Le code
+demande un MOMENT — `play_cue(&"unit_downed")` —, jamais un fichier. Les
+repères vivent dans `data/audio.json`, parce que les affectations ont été
+faites au nom des fichiers et jamais écoutées : elles changeront, et sans
+rouvrir un `.gd`. Trois choses à ne pas défaire :
+- **Le clic de tous les boutons tient dans `UiSkin.dress_button`.** Chaque
+  écran y passe déjà ; le faire écran par écran garantissait qu'un bouton
+  l'oublie. Un bouton désactivé n'émet pas `pressed` — le silence du refus
+  est gratuit.
+- **La voix d'une attaque vient de la COMPÉTENCE, pas de l'unité.** Le
+  contact, le tir, le sort : trois voix, et les distinguer permet
+  d'entendre le tour ennemi sans le regarder.
+- **`verify_audio` refuse un repère qui pointe sur un son inexistant.**
+  Il ne ferait aucun bruit et ne se plaindrait pas — renommer une entrée
+  de `sfx` suffit à le provoquer.
 
 **LE MONDE S'OUVRE PAR LES ACTES (T11.4).** `Campaign` vit dans la
 SAUVEGARDE, pas dans `regions.json` : le fichier dit ce qui est ouvert au
@@ -723,4 +739,5 @@ assemblage passe de 97 % à 92 % de PV et l'écart entre compositions de 14 à
 3. **Ferme, scierie et mine en chantiers plutôt qu'en bâtiments** — c'est
    ce que le pack sait dessiner, mais ça change la tête du royaume.
 4. **Les affectations de `data/audio.json`**, faites au nom des fichiers,
-   jamais écoutées.
+   jamais écoutées. Le câblage est fait (T11.2), le choix des sons reste
+   à juger à l'oreille — tout est dans `cues`, sans toucher au code.

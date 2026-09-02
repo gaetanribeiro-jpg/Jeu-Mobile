@@ -57,6 +57,26 @@ static func sfx(sound_id: StringName) -> Dictionary:
 	return _lookup(&"sfx", sound_id, "effet sonore")
 
 
+## Le son attaché à un MOMENT de jeu, ou rien.
+##
+## LE CODE DEMANDE UN MOMENT, JAMAIS UN FICHIER : « une lame frappe », pas
+## « drawKnife1.ogg ». C'est la règle des rôles de bouton de T9.3 portée au
+## son — et elle compte double ici, parce que les affectations de
+## `sfx` ont été faites au nom des fichiers et JAMAIS ÉCOUTÉES. Elles vont
+## changer ; elles doivent pouvoir changer sans qu'on rouvre un `.gd`.
+##
+## UN REPÈRE ABSENT FAIT SILENCE, sans se plaindre. Tous les moments du jeu
+## n'ont pas besoin d'un bruit, et retirer un son doit être aussi simple
+## que d'effacer une ligne de données.
+static func cue(moment: StringName) -> StringName:
+	var block: Dictionary = table().get("cues", {})
+	return StringName(block.get(String(moment), ""))
+
+
+static func cue_ids() -> Array[StringName]:
+	return _ids(&"cues")
+
+
 static func music_ids() -> Array[StringName]:
 	return _ids(&"music")
 

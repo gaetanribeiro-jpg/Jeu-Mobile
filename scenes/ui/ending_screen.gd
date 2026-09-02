@@ -31,6 +31,7 @@ func configure(headline: String, body: String) -> void:
 func _ready() -> void:
 	theme = UiSkin.theme
 	UiSkin.lay_backdrop(self)
+	AudioManager.play_cue(&"region_opened")
 	_build()
 
 

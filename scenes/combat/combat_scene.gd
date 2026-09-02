@@ -569,6 +569,9 @@ func _animate_move(unit: Unit, from: Vector2i, to: Vector2i) -> void:
 	# second tap pendant l'animation lancerait une action par-dessus, et
 	# la coroutine en cours resterait pendante avec tout ce qu'elle tient.
 	_resolving = true
+	# UN PAS PAR CASE, pas un par déplacement : c'est le nombre de cases
+	# qu'on entend, et c'est exactement l'information que le PM porte.
+	AudioManager.play_cue(&"step")
 	await view.move_along(path)
 	if not is_inside_tree():
 		return
@@ -580,6 +583,7 @@ func _play_attack(attacker: Unit, target: Unit, report: Dictionary) -> void:
 	_resolving = true
 	var view: Node2D = _views.get(attacker.id, null)
 	if view != null:
+		AudioManager.play_cue(_attack_cue(StringName(report.get("ability", ""))))
 		view.play_attack(target.cell - attacker.cell)
 		await get_tree().create_timer(ViewSettings.duration(&"attack_strike")).timeout
 	await _play_impact(target.id, bool(report.get("downed", false)))
@@ -588,6 +592,24 @@ func _play_attack(attacker: Unit, target: Unit, report: Dictionary) -> void:
 	_resolving = false
 	_sync_views()
 	_refresh_all()
+
+
+## La voix d'une attaque vient de la COMPÉTENCE, pas de qui la lance.
+##
+## Un arc claque pareil dans les mains d'un Archer et dans celles d'un
+## gnoll ; ce qui change le bruit, c'est la PORTÉE et la nature du coup.
+## Trois voix suffisent — le contact, le tir, le sort — et les distinguer
+## est ce qui permet d'entendre, sans regarder, ce qui vient de se passer
+## pendant le tour ennemi.
+func _attack_cue(ability_id: StringName) -> StringName:
+	var ability := Ability.of(ability_id)
+	if ability == null:
+		return &"attack_melee"
+	if ability.kind == Ability.KIND_HEAL:
+		return &"potion"
+	if ability.range_max > 1:
+		return &"attack_spell" if ability.scaling == &"intelligence" else &"attack_ranged"
+	return &"attack_melee"
 
 
 func _play_impact(target_id: int, downed: bool) -> void:
@@ -605,6 +627,10 @@ func _play_impact(target_id: int, downed: bool) -> void:
 			ViewSettings.shake(&"death_pixels" if downed else &"hit_pixels"),
 			ViewSettings.shake(&"death_seconds" if downed else &"hit_seconds")
 		)
+	# LE SON DIT CE QUE LE SPRITE NE DIT PAS. Le pack ne fournit aucune
+	# animation de mort sauf pour le Troll : à l'écran, tomber et encaisser
+	# se ressemblent. C'est le son qui porte la différence.
+	AudioManager.play_cue(&"unit_downed" if downed else &"hit")
 	if downed:
 		await view.play_downed()
 	else:
