@@ -349,6 +349,16 @@ pas défaire :
 - **Le banc d'essai se replie, il ne disparaît pas.** Deux clics, comme
   avant : seize défauts n'ont été trouvés que par lui.
 
+**UN TOTAL JUSTE NE PROUVE PAS UN DÉCOUPAGE JUSTE.** Deux arbres étaient
+déclarés en 6 images de 256 alors qu'ils en font 8 de 192 — et
+`6 × 256 = 8 × 192 = 1536`, donc `verify_assets` était satisfait. Chaque
+image portait un arbre entier PLUS une tranche de son voisin. Il vérifie
+désormais que les coupes tombent dans les GOUTTIÈRES (colonnes
+transparentes) et pas dans le dessin ; il a trouvé un second cas tout
+seul, `goblin_hut`, que personne n'aurait cherché. **Les feuilles ne sont
+pas carrées** : 192 de large pour 256 de haut, et prendre la hauteur pour
+la largeur est l'erreur naturelle.
+
 **LE MONDE S'OUVRE PAR LES ACTES (T11.4).** `Campaign` vit dans la
 SAUVEGARDE, pas dans `regions.json` : le fichier dit ce qui est ouvert au
 départ d'une partie neuve, la partie dit ce qui s'est ouvert depuis. La

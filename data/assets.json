@@ -1172,8 +1172,8 @@
   "goblin_hut_goblin_hut": {
    "file": "Extra/Goblin Hut/Goblin Hut.png",
    "kind": "strip",
-   "frames": 12,
-   "frame_w": 256,
+   "frames": 16,
+   "frame_w": 192,
    "frame_h": 256
   },
   "hex_shaman_transformation_spell_hex_shaman_explosion_spell": {
@@ -1793,15 +1793,15 @@
   "tree1": {
    "file": "Terrain/Resources/Wood/Trees/Tree1.png",
    "kind": "strip",
-   "frames": 6,
-   "frame_w": 256,
+   "frames": 8,
+   "frame_w": 192,
    "frame_h": 256
   },
   "tree2": {
    "file": "Terrain/Resources/Wood/Trees/Tree2.png",
    "kind": "strip",
-   "frames": 6,
-   "frame_w": 256,
+   "frames": 8,
+   "frame_w": 192,
    "frame_h": 256
   },
   "tree3": {
@@ -1823,7 +1823,8 @@
    "kind": "image",
    "w": 64,
    "h": 64
-  }
+  },
+  "_trees_note": "LES QUATRE ARBRES SONT EN 8 IMAGES DE 192 PX DE LARGE, et deux d'entre eux étaient déclarés en 6 de 256. LE TOTAL TOMBAIT JUSTE — 6 × 256 = 8 × 192 = 1536 — donc `verify_assets` ne voyait rien : il vérifiait le produit, pas le découpage. Chaque image contenait donc un arbre entier PLUS une tranche de son voisin, et l'écran de titre montrait des arbres coupés en deux.\n\nLes arbres font 192 de LARGE et 256 de HAUT : le cadre n'est pas carré, ce qui est justement ce qui rend l'erreur facile à commettre."
  },
  "fx": {
   "dust_01": {

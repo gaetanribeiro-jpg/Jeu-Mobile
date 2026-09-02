@@ -2589,6 +2589,49 @@ Au passage : `sort()` sur un tableau de `StringName` compare des
 un tri alphabétique échouait sur un ordre qui n'avait rien d'aléatoire.
 
 
+### Les arbres coupés en deux, et le contrôle qui manquait ✅
+
+Gaetan, sur une capture de l'écran de titre : « il y a des arbres
+coupés ». Il y en avait — une tranche verticale d'arbre, large de
+quelques pixels, posée à côté d'un arbre entier.
+
+**Ce n'était pas un arbre coupé, c'était un mauvais découpage.**
+`Tree1` et `Tree2` étaient déclarés en **6 images de 256 px** alors
+qu'ils en font **8 de 192**. Chaque image contenait donc un arbre entier
+plus une tranche de son voisin.
+
+### Pourquoi `verify_assets` ne voyait rien
+
+Il vérifiait que `frames × frame_w` égale la largeur du fichier. Or
+**6 × 256 = 8 × 192 = 1536** : le contrôle était satisfait. Il validait
+le produit, pas le découpage.
+
+Le piège est d'autant plus facile que ces arbres ne sont **pas carrés** —
+192 de large pour 256 de haut. Prendre la hauteur pour la largeur est
+l'erreur naturelle.
+
+### Ce qui trahit un mauvais découpage
+
+Une bande bien découpée a des **gouttières** : des colonnes entièrement
+transparentes là où on la coupe. Le nouveau contrôle vérifie que les
+coupes tombent dans le vide et pas dans le dessin.
+
+**Le seuil est indulgent, et il le faut.** Un sprite peut légitimement
+toucher le bord de son cadre : la poussière qui remplit son image, le
+canard qui l'occupe en entier, l'anneau d'écume d'un rocher qui déborde.
+Mesuré sur les trente-quatre bandes du pack, ces cas dépassent rarement
+un quart des coupes, quand les deux arbres en rataient **quatre sur
+cinq**. On refuse donc à partir de la moitié, et seulement sur les bandes
+d'au moins cinq images.
+
+### Il a trouvé un second cas tout seul
+
+`goblin_hut` était déclaré en 12 images de 256 et en fait **16 de 192** —
+même arithmétique, 3072 des deux façons. Personne ne l'aurait cherché :
+la hutte n'est encore dessinée nulle part, et le défaut serait apparu le
+jour où on l'aurait posée, sans qu'on sache pourquoi.
+
+
 ---
 
 ## 6. Ce qui est rangé, pas jeté
