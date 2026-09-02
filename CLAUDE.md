@@ -265,8 +265,9 @@ dur : passer par `data/assets.json`.
   jamais écrit), les potions du § 44, le sac commun. **759 tests
   passent.**
 - **T9.8 :** les trois reproches de Gaetan — texte illisible, plateau
-  trop petit, fond fade. **T9.9 :** la mer autour du plateau. **761 tests
-  passent.**
+  trop petit, fond fade. **T9.9 :** la mer autour du plateau.
+  **T9.10 :** l'écume du rivage et les rochers, pour qu'elle fasse
+  naturel. **761 tests passent.**
 - **La boucle du § 3 tourne en entier :** royaume → carte du monde →
   expédition → combat → butin et expérience → compagnie → royaume. Une
   sortie conclue déclenche un cycle de production ; le royaume rend des
@@ -503,6 +504,24 @@ pas défaire :
   et ne bouge donc JAMAIS quand on rétrécit un panneau. C'est pour ça que
   `card_width` et `detail_width` sont passés de 250 à 200 — 45 px d'eau
   contre 95.
+
+**LA MER EST VIVANTE, AVEC CE QUE LE PACK DESSINAIT DÉJÀ (T9.10).**
+Un aplat turquoise n'est pas naturel. Trois choses à ne pas défaire :
+- **`Water Foam` se pose SOUS une case de TERRE**, jamais sur l'eau. La
+  plaque fait 192 px pour une case de 64 : la terre par-dessus n'en
+  laisse voir que le débord, et les plaques voisines se recouvrent. C'est
+  ce qui donne un rivage continu sans morceau par orientation — que le
+  pack ne fournit pas. La note qui la disait inutilisable avait raison
+  sur un point seulement : ce n'est pas une tuile d'eau.
+- **La position des rochers est une FONCTION, pas un tirage.** Le décor
+  n'a pas à consommer une graine, et surtout pas celle du combat qu'il
+  décalerait — même leçon que le renfort de nuit. Ils sont décalés dans
+  leur case (sinon la bande trahit la grille) et dessinés AVANT le fondu
+  (sinon ils flottent, nets, sur du noir).
+- **Trois quarts de case d'eau en haut et en bas : c'est l'ÉPAISSEUR DU
+  RIVAGE, pas une bande.** Sans elle l'écume se pose à même le fond et
+  l'île a un contour blanc. Le fondu porte sur les quatre côtés, sinon
+  cette épaisseur fait une barre turquoise au-dessus de l'île.
 
 **LE FOND A DE LA MATIÈRE, ET ELLE SE RÈGLE À LA MESURE (T9.8).** Un
 motif de diagonales se carrelle derrière tous les écrans. Quatre choses à

@@ -435,14 +435,20 @@ func test_la_mer_borde_le_plateau_sans_le_cadrer() -> void:
 	var sea: Rect2 = terrain._sea()
 	assert_lt(sea.position.x, 0.0, "la mer déborde à gauche")
 	assert_gt(sea.end.x, span.x, "et à droite")
-	# PAS EN HAUTEUR : une mer qui déborde des quatre côtés remplit
-	# l'écran entier et le fond sombre disparaît.
-	assert_eq(sea.position.y, 0.0, "la mer ne monte pas au-dessus du plateau")
-	assert_eq(sea.end.y, span.y, "ni ne descend en dessous")
+	# EN HAUTEUR, JUSTE L'ÉPAISSEUR DU RIVAGE. Une mer qui déborde autant
+	# en haut qu'en large remplit l'écran entier et le fond sombre
+	# disparaît ; mais sans un liseré, l'écume se pose à même le noir et
+	# l'île a un contour blanc au lieu d'un rivage.
+	var side := ViewSettings.number(&"sizes", &"sea_side_tiles", 0.0)
+	var edge := ViewSettings.number(&"sizes", &"sea_edge_tiles", 0.0)
+	assert_gt(edge, 0.0, "sans liseré, l'écume déborde sur le fond")
+	assert_lt(edge, 1.0, "le rivage est un liseré, pas une bande")
+	assert_lt(edge, side, "la mer déborde bien plus en large qu'en haut")
+	assert_almost_eq(sea.position.y, -edge * tile, 0.001)
+	assert_almost_eq(sea.end.y, span.y + edge * tile, 0.001)
 
 	# Le fondu tient DANS la marge : sinon la mer se termine par une
 	# coupure franche au lieu de s'éteindre.
-	var side := ViewSettings.number(&"sizes", &"sea_side_tiles", 0.0)
 	var fade := ViewSettings.number(&"sizes", &"sea_fade_tiles", 0.0)
 	assert_gt(fade, 0.0, "sans fondu, le bord de la mer est tranché")
 	assert_lt(fade, side, "il reste de l'eau franche contre l'île")

@@ -2173,6 +2173,66 @@ l'eau, c'est rétrécir les panneaux, et le plateau ne bouge dans aucun des
 deux cas.
 
 
+### T9.10 — la mer vivante ✅
+
+« C'est déjà mieux, mais ça fait moins naturel. » Ce qui n'était pas
+naturel, c'était l'aplat : deux bandes de turquoise uni, tranchées net
+contre le vert de l'île.
+
+**Ce qu'il fallait dormait dans le pack depuis le premier jour.**
+
+- **`Water Foam`** — une plaque d'écume animée en 16 images, de 192 px
+  pour une case de 64. Une note de T1.15 la disait « inutilisable, posée
+  case par case elle donne des blocs de glace », et c'était vrai : elle
+  n'est pas une tuile d'eau. Elle est faite pour être posée **SOUS** une
+  case de TERRE. Centrée, elle déborde d'une trentaine de pixels, la
+  terre dessinée par-dessus n'en laisse voir que ce débord, et les
+  plaques des cases voisines se recouvrent — le rivage est continu sans
+  qu'on ait à choisir un morceau par orientation, ce que le pack ne
+  fournit pas.
+- **`Water Rocks`** — quatre tailles de rocher, chacune animée avec son
+  anneau d'écume qui bat. Ils vont dans les deux bandes.
+
+### Où tombent les rochers : une fonction, pas un tirage
+
+La règle 4 veut une graine, mais **le décor n'a pas à en consommer une**
+— et surtout pas celle du combat, qu'il décalerait. C'est exactement la
+leçon du renfort de nuit (T8.1). La position des rochers est donc une
+**fonction** du plateau et de la case : reproductible par construction,
+et différente d'une carte à l'autre parce que le terrain change.
+
+Ils sont **décalés dans leur case**, sinon la bande trahit la grille :
+des rochers alignés au pixel près sur des colonnes ne ressemblent à rien
+de naturel. Et ils sont dessinés **avant** le fondu, pour s'éteindre avec
+l'eau qui les porte au lieu de flotter, nets, sur du noir.
+
+### Le liseré de rivage, trouvé en le ratant
+
+Premier essai avec l'écume : l'île avait un **contour blanc** au lieu
+d'un rivage. La mer ne débordait qu'à l'horizontale, donc en haut et en
+bas la plaque d'écume se posait à même le fond sombre.
+
+D'où trois quarts de case d'eau au-dessus et au-dessous — **l'épaisseur
+du rivage, pas une bande.** Et tranchée net, cette épaisseur faisait une
+barre turquoise au-dessus de l'île : le fondu porte donc maintenant sur
+**les quatre côtés**, ce qui l'éteint au lieu de la couper.
+
+### L'animation ne tourne pas en headless
+
+`queue_redraw()` dans un `_process` y empile une file que rien ne vide,
+et le moteur tombe sur un signal 11 dont la trace ne désigne personne. Le
+projet s'est déjà cogné à ça pour les jauges. Le nœud ne redessine par
+ailleurs **que quand l'image change** — dix fois par seconde, le rythme
+du pack, pas soixante.
+
+### Encore en réserve dans le pack
+
+Huit nuages de 576 × 256 et une gerbe d'eau. Les nuages passeraient bien
+au-dessus de la mer, mais pas au-dessus du plateau : le § 48 veut la
+lisibilité avant le spectacle, et une ombre qui traverse une case en
+change la couleur. À faire quand il y aura de quoi les borner.
+
+
 ---
 
 ## 6. Ce qui est rangé, pas jeté
