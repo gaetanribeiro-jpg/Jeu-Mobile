@@ -2121,27 +2121,39 @@ Rien à inventer côté rendu : `_is_land` compte déjà le hors-grille comme
 de l'eau pour dessiner les rives, et l'eau était déjà le fond du plateau.
 **Le plateau était déjà une île** — il lui manquait sa mer.
 
-### La mer devait s'assombrir, sinon le décor se retournait contre l'UI
+### Deux bandes, pas un océan
 
-Premier essai : un aplat turquoise vif d'un bord à l'autre. L'écran est
-bien rempli, mais les panneaux presque noirs de T9.7 s'y posent comme sur
-une piscine, et l'île perd son rôle de sujet — tout est également clair.
+Premier essai : l'eau débordait des **quatre** côtés, sur seize cases.
+Verdict de Gaetan : « ça fait trop d'eau, le fond est entièrement bleu ».
+Il avait raison — le fond sombre à motif de T9.8 avait purement disparu,
+et la mer était devenue le fond au lieu d'entourer l'île.
 
-Deux cases de **haut-fond** restent donc en pleine couleur autour du
-plateau — c'est exactement le liseré d'eau demandé — puis la teinte
-descend vers l'eau profonde, qui rejoint la matière de l'interface.
-Quatre trapèzes en `draw_polygon`, qui interpole entre les couleurs de
-ses sommets ; ils se rejoignent sur les diagonales des coins, où les deux
-voisins portent déjà la même valeur.
+**La mer ne déborde donc qu'à l'horizontale**, sur trois cases, et sa
+hauteur est exactement celle de la grille. Ce qui se voit, ce sont les
+deux bandes entre les panneaux et l'île ; le reste de l'écran garde son
+fond sombre.
 
-**La distance du dégradé est MESURÉE, pas choisie.** Réglée à 9 cases —
-une valeur prise à vue — le bord de l'écran était encore à mi-chemin et
-les coins restaient turquoise. Au cadrage de combat, le bord gauche de la
-fenêtre tombe à 5,75 cases de la grille : c'est là que la mer doit avoir
-fini de foncer. En hauteur il n'y a que 2,1 cases avant le bord, donc le
-dégradé n'y commence même pas — et c'est très bien, cette bande-là est le
-haut-fond qui entoure l'île, et elle passe de toute façon sous les
-bandeaux du HUD.
+**Et elle ne peut pas simplement s'arrêter sous les panneaux**, parce
+qu'ils ne descendent pas jusqu'en bas de l'écran : sous eux, le turquoise
+redevenait visible jusqu'au bord de la fenêtre. Les deux bords extérieurs
+se fondent donc vers **la couleur du fond de l'interface** — pas vers une
+eau profonde inventée : la cible est exactement `backdrop`, lue dans
+`UiTheme`, et la recopier dans `view.json` garantirait qu'un jour les deux
+ne disent plus la même chose. Une case d'eau franche contre l'île, deux
+d'extinction.
+
+### Les panneaux latéraux ont rétréci pour lui faire place
+
+`card_width` et `detail_width` passent de 250 à 200. **Le plateau ne
+bouge pas d'un pixel** : il est centré dans la zone sûre, et le calcul se
+simplifie — l'écart entre le bord d'un panneau et le bord du plateau vaut
+`295,5 − largeur`, quelle que soit cette largeur. À 250 il valait 45 px,
+soit moins d'une case ; à 200 il en vaut 95, soit 1,75 case. C'est la
+place de l'eau.
+
+Rien n'a débordé dans les panneaux rétrécis : la carte de héros garde son
+portrait de 44 px et ses deux libellés, le panneau de détail garde ses
+quatre lignes.
 
 ### Un banc d'essai qui mentait sur ce qu'il ouvre
 
@@ -2153,9 +2165,12 @@ fait gagner.
 ### À juger à l'œil
 
 L'équilibrage est intact — c'est du décor, `simulate_combats` rend les
-mêmes chiffres. Ce qui reste à juger : **la couleur de l'eau profonde**
-et **la largeur du haut-fond**, toutes deux dans `data/combat/view.json`
-(`sea_deep`, `sea_shallow_tiles`, `sea_deep_tiles`).
+mêmes chiffres. Ce qui reste à juger : **la largeur des deux bandes**
+(`sea_side_tiles`, `sea_fade_tiles` dans `data/combat/view.json`) et
+**celle des panneaux** (`card_width`, `detail_width` dans
+`data/ui/theme.json`), qui sont les deux faces du même réglage : élargir
+l'eau, c'est rétrécir les panneaux, et le plateau ne bouge dans aucun des
+deux cas.
 
 
 ---

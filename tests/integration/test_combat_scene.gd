@@ -420,12 +420,12 @@ func test_les_panneaux_lateraux_sont_reserves_eux_aussi() -> void:
 	)
 
 
-func test_la_mer_entoure_le_plateau_sans_le_cadrer() -> void:
-	# T9.9 : la mer est du DÉCOR. Elle déborde largement la grille pour
-	# remplir l'écran, mais la caméra continue de cadrer sur la grille
-	# SEULE — cadrer sur la mer coûterait 17 % de la taille des cases,
-	# puisque c'est la hauteur qui contraint et qu'élargir ferait passer
-	# la contrainte en largeur.
+func test_la_mer_borde_le_plateau_sans_le_cadrer() -> void:
+	# T9.9 : la mer est du DÉCOR. Elle déborde À L'HORIZONTALE pour
+	# remplir l'écart entre les panneaux et l'île, mais la caméra continue
+	# de cadrer sur la grille SEULE — cadrer sur la mer coûterait 17 % de
+	# la taille des cases, puisque c'est la hauteur qui contraint et
+	# qu'élargir ferait passer la contrainte en largeur.
 	await _deploy_and_start()
 	var terrain: Node2D = _scene._terrain
 	var grid := _engine().board.grid
@@ -434,21 +434,18 @@ func test_la_mer_entoure_le_plateau_sans_le_cadrer() -> void:
 
 	var sea: Rect2 = terrain._sea()
 	assert_lt(sea.position.x, 0.0, "la mer déborde à gauche")
-	assert_lt(sea.position.y, 0.0, "et en haut")
 	assert_gt(sea.end.x, span.x, "et à droite")
-	assert_gt(sea.end.y, span.y, "et en bas")
+	# PAS EN HAUTEUR : une mer qui déborde des quatre côtés remplit
+	# l'écran entier et le fond sombre disparaît.
+	assert_eq(sea.position.y, 0.0, "la mer ne monte pas au-dessus du plateau")
+	assert_eq(sea.end.y, span.y, "ni ne descend en dessous")
 
-	# Les trois anneaux vont du plus proche au plus lointain : le
-	# haut-fond, la fin du dégradé, puis le bord de la mer.
-	var shallow: Rect2 = terrain._sea_ring(
-		ViewSettings.number(&"sizes", &"sea_shallow_tiles", 0.0)
-	)
-	var deep: Rect2 = terrain._sea_ring(
-		ViewSettings.number(&"sizes", &"sea_deep_tiles", 0.0)
-	)
-	assert_lt(shallow.position.x, 0.0, "le haut-fond entoure l'île")
-	assert_lt(deep.position.x, shallow.position.x, "le dégradé finit plus loin")
-	assert_lt(sea.position.x, deep.position.x, "la mer finit après le dégradé")
+	# Le fondu tient DANS la marge : sinon la mer se termine par une
+	# coupure franche au lieu de s'éteindre.
+	var side := ViewSettings.number(&"sizes", &"sea_side_tiles", 0.0)
+	var fade := ViewSettings.number(&"sizes", &"sea_fade_tiles", 0.0)
+	assert_gt(fade, 0.0, "sans fondu, le bord de la mer est tranché")
+	assert_lt(fade, side, "il reste de l'eau franche contre l'île")
 
 	# LE CADRAGE NE CONNAÎT QUE LA GRILLE.
 	var hud: CanvasLayer = _scene._hud

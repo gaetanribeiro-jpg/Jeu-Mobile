@@ -490,13 +490,19 @@ pas défaire :
   le cadrage (0,85 contre 0,94), donc ajouter des colonnes fait passer la
   contrainte en largeur et tout rétrécit d'un coup. Le décor vit en
   dehors du cadrage, et le clamp de déplacement ne bouge pas.
-- **La mer s'assombrit vers les bords.** Un aplat turquoise d'un bord à
-  l'autre remplit l'écran mais fait flotter les panneaux sombres sur une
-  piscine. Deux cases de haut-fond en pleine couleur, puis l'eau profonde
-  qui rejoint la matière de l'interface.
-- **La distance du dégradé est MESURÉE :** au cadrage de combat, le bord
-  gauche de la fenêtre tombe à 5,75 cases de la grille, donc le dégradé
-  finit à 5,5. Une valeur prise à vue (9) laissait les coins turquoise.
+- **Elle ne déborde QU'À L'HORIZONTALE**, et sa hauteur est celle de la
+  grille. Un premier essai débordait des quatre côtés : le fond sombre
+  disparaissait et la mer devenait le fond. Ce qu'on veut voir, ce sont
+  les deux bandes entre les panneaux et l'île.
+- **Ses bords extérieurs se fondent vers `backdrop`**, lu dans `UiTheme`
+  et jamais recopié dans `view.json`. Elle ne peut pas simplement
+  s'arrêter sous les panneaux : ils ne descendent pas jusqu'en bas, et
+  sous eux le turquoise repartait jusqu'au bord de la fenêtre.
+- **L'écart entre un panneau et le plateau vaut `295,5 − largeur`**,
+  quelle que soit cette largeur : le plateau est centré dans la zone sûre
+  et ne bouge donc JAMAIS quand on rétrécit un panneau. C'est pour ça que
+  `card_width` et `detail_width` sont passés de 250 à 200 — 45 px d'eau
+  contre 95.
 
 **LE FOND A DE LA MATIÈRE, ET ELLE SE RÈGLE À LA MESURE (T9.8).** Un
 motif de diagonales se carrelle derrière tous les écrans. Quatre choses à

@@ -286,13 +286,6 @@
    0.4,
    1.0
   ],
-  "sea_deep": [
-   0.045,
-   0.062,
-   0.07,
-   1.0
-  ],
-  "_sea_deep_note": "L'EAU LOINTAINE, ET ELLE N'EST PAS DÉCORATIVE : sans elle la mer du décor est un aplat turquoise vif d'un bord à l'autre de l'écran, et les panneaux presque noirs de T9.7 flottent dessus comme sur une piscine. En s'assombrissant vers les bords, la mer garde l'île lisible, remplit l'écran, et rejoint la matière de l'interface au lieu de la contredire. Deux cases de haut-fond restent en pleine couleur autour du plateau — c'est le liseré d'eau demandé.",
   "terrain_fallback": [
    0.35,
    0.45,
@@ -326,11 +319,9 @@
   "pip_radius_px": 7.0,
   "pip_spacing_px": 19.0,
   "timeline_badge_px": 50.0,
-  "sea_margin_tiles": 16,
-  "sea_shallow_tiles": 2,
-  "_sea_fade_note": "LE DÉGRADÉ EST MESURÉ SUR L'ÉCRAN, PAS CHOISI. Au cadrage de combat, le bord GAUCHE de la fenêtre tombe à 5,75 cases de la grille : c'est là que la mer doit avoir fini de foncer, donc 5,5. Réglé à 9 — une valeur choisie à vue — le bord d'écran était encore à mi-chemin et les coins restaient turquoise. En HAUTEUR il n'y a que 2,1 cases avant le bord : le dégradé n'y commence même pas, et c'est très bien — cette bande-là est le haut-fond qui entoure l'île, et elle passe de toute façon sous les bandeaux du HUD.",
-  "sea_deep_tiles": 5.5,
-  "_sea_margin_note": "LA MER AUTOUR DU PLATEAU (T9.9). Le plateau est une île : l'eau est déjà son fond, et hors grille compte déjà comme de l'eau pour le dessin des rives. On étend simplement ce fond bien au-delà de la grille, pour que l'écran soit rempli au lieu de laisser le plateau flotter dans du noir.\n\nCE N'EST PAS DU JEU, ET ÇA NE DOIT JAMAIS LE DEVENIR : la grille reste 12 × 9, la caméra cadre TOUJOURS sur elle seule, et le clamp de déplacement ne bouge pas. Élargir la zone cadrée coûterait 17 % de la taille des cases — c'est la hauteur qui contraint le cadrage (0,85 contre 0,94), donc ajouter deux colonnes fait passer la contrainte en largeur et TOUT rétrécit.\n\n16 est calculé, pas choisi : au zoom minimal (0,8) et à la caméra poussée au bout de son clamp (1,5 case), il faut 14 cases pour que l'eau atteigne encore le bord de l'écran. Ça ne coûte rien — c'est UN appel de dessin carrelé, quelle que soit sa taille.",
+  "sea_side_tiles": 3,
+  "sea_fade_tiles": 2,
+  "_sea_side_note": "LA MER AUTOUR DU PLATEAU (T9.9). Le plateau est une île : l'eau est déjà son fond, et hors grille compte déjà comme de l'eau pour le dessin des rives. Il lui manquait sa mer.\n\nÀ L'HORIZONTALE SEULEMENT. Un premier essai débordait des quatre côtés : l'écran devenait entièrement bleu et le fond sombre à motif disparaissait. La mer ne fait donc que deux bandes, à gauche et à droite, là où il y avait du vide entre les panneaux et l'île.\n\nCE N'EST PAS DU JEU, ET ÇA NE DOIT JAMAIS LE DEVENIR : la grille reste 12 × 9, la caméra cadre TOUJOURS sur elle seule, et le clamp de déplacement ne bouge pas. Élargir la zone cadrée coûterait 17 % de la taille des cases — c'est la hauteur qui contraint le cadrage (0,85 contre 0,94), donc ajouter deux colonnes fait passer la contrainte en largeur et TOUT rétrécit.\n\nTROIS CASES, DONT DEUX DE FONDU. La mer ne peut pas simplement s'arrêter sous les panneaux : ceux-ci ne descendent pas jusqu'en bas de l'écran, et sous eux le turquoise redeviendrait visible jusqu'au bord de la fenêtre — c'est ce qui donnait « le fond est entièrement bleu ». Elle s'éteint donc vers la couleur du FOND de l'interface, ce qui laisse une case d'eau franche contre l'île puis deux d'extinction. Ce qu'on voit entre un panneau et le plateau vaut environ 1,75 case.",
   "decoration_max_tiles": 1.6,
   "_decoration_max_tiles_note": "Largeur maximale d'un décor, en cases. Les bâtiments du pack font 128 à 320 pixels de large pour des cases de 64 : posés à leur taille native sur une carte de défense, ils se recouvraient les uns les autres et débordaient du plateau. Les décors plus petits qu'une case et demie ne sont pas touchés — un arbre garde sa taille."
  },

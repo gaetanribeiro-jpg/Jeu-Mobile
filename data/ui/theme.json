@@ -202,7 +202,7 @@
     "portrait_small": 44,
     "portrait_card": 44,
     "card_margin": 12,
-    "card_width": 250,
+    "card_width": 200,
     "bar_height_card": 30,
     "plank_margin": 14,
     "objective_width": 300,
@@ -210,7 +210,7 @@
     "timeline_width": 420,
     "portrait_hero": 80,
     "ability_card_width": 212,
-    "detail_width": 250,
+    "detail_width": 200,
     "detail_height": 330,
     "button_pad": 12
   },

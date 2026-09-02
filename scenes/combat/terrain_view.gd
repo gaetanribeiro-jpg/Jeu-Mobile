@@ -42,10 +42,9 @@ func _draw() -> void:
 	# qui suppose de l'eau dessous. On peint donc tout en eau, puis on pose
 	# la terre par-dessus avec le bord qui convient.
 	#
-	# ET ELLE DÉBORDE LARGEMENT LA GRILLE. Le plateau est une île — c'est
-	# déjà ce que dit `_is_land`, qui compte le hors-grille comme de l'eau
-	# pour dessiner les rives. Sans mer autour, cette île flotte dans du
-	# noir et l'écran paraît vide ; avec elle, le décor va jusqu'aux bords.
+	# ET ELLE DÉBORDE LA GRILLE À GAUCHE ET À DROITE. Le plateau est une
+	# île — c'est déjà ce que dit `_is_land`, qui compte le hors-grille
+	# comme de l'eau pour dessiner les rives. Il lui manquait sa mer.
 	#
 	# CE N'EST QUE DU DÉCOR, et ça ne doit jamais devenir autre chose : la
 	# grille reste 12 × 9, la caméra cadre TOUJOURS sur elle seule, et le
@@ -55,7 +54,7 @@ func _draw() -> void:
 	# largeur et tout rétrécit d'un coup.
 	if _water != null:
 		draw_texture_rect(_water, _sea(), true)
-		_draw_deep_water()
+		_fade_sea_edges()
 	for cell: Vector2i in board.grid.cells():
 		var tile := board.tile_at(cell)
 		var origin := Vector2(cell.x * _tile_size, cell.y * _tile_size)
@@ -70,80 +69,56 @@ func _draw() -> void:
 		_draw_cliff(cell)
 
 
-## Le rectangle de mer : la grille, plus une marge de décor tout autour.
+## Le rectangle de mer : la grille, élargie À L'HORIZONTALE seulement.
 ##
-## La marge se lit dans `view.json` et vaut assez de cases pour que l'eau
-## atteigne encore le bord de l'écran au zoom minimal, caméra poussée au
-## bout de son clamp. Un seul appel de dessin carrelé : la taille ne
-## coûte rien.
+## HORIZONTALE SEULEMENT, ET C'EST TOUT LE RÉGLAGE. Une mer qui déborde
+## aussi en haut et en bas remplit l'écran entier — « ça fait trop d'eau,
+## le fond est entièrement bleu ». Le fond sombre à motif reste le fond ;
+## la mer ne fait que deux bandes, à gauche et à droite du plateau, là où
+## il y avait du vide entre les panneaux et l'île.
+##
+## LA MARGE EST BIEN PLUS LARGE QUE CE QU'ON VOIT, et exprès : ce qui se
+## voit, c'est l'écart entre le bord d'un panneau et le bord du plateau —
+## environ deux cases. Le reste passe SOUS les panneaux, qui sont opaques.
+## Déborder largement est ce qui empêche une couture d'apparaître quand le
+## joueur fait glisser la caméra ou l'écarte au pincement.
 func _sea() -> Rect2:
-	return _sea_ring(ViewSettings.number(&"sizes", &"sea_margin_tiles", 0.0))
-
-
-## La mer s'assombrit vers les bords de l'écran.
-##
-## SANS ÇA, LE DÉCOR SE RETOURNE CONTRE L'INTERFACE. Un aplat turquoise
-## vif d'un bord à l'autre remplit bien l'écran, mais les panneaux
-## presque noirs de T9.7 s'y posent comme sur une piscine, et l'île perd
-## son rôle de sujet : tout est également clair.
-##
-## Deux cases de HAUT-FOND restent en pleine couleur autour du plateau —
-## c'est exactement le liseré d'eau demandé — puis la teinte descend vers
-## l'eau profonde, qui rejoint la matière de l'interface.
-##
-## QUATRE TRAPÈZES PLUTÔT QU'UN DÉGRADÉ RADIAL, parce que `draw_polygon`
-## interpole entre les couleurs de ses sommets et qu'un écran est
-## rectangulaire : les quatre se rejoignent sur les diagonales des coins,
-## où les deux voisins portent déjà la même valeur.
-func _draw_deep_water() -> void:
-	var near := _sea_ring(ViewSettings.number(&"sizes", &"sea_shallow_tiles", 0.0))
-	var far := _sea_ring(ViewSettings.number(&"sizes", &"sea_deep_tiles", 0.0))
-	var deep := ViewSettings.color(&"sea_deep")
-	var clear := Color(deep.r, deep.g, deep.b, 0.0)
-	var inner := [
-		near.position, Vector2(near.end.x, near.position.y),
-		near.end, Vector2(near.position.x, near.end.y),
-	]
-	var outer := [
-		far.position, Vector2(far.end.x, far.position.y),
-		far.end, Vector2(far.position.x, far.end.y),
-	]
-	for side in 4:
-		var next := (side + 1) % 4
-		draw_polygon(
-			PackedVector2Array([
-				outer[side], outer[next], inner[next], inner[side]
-			]),
-			PackedColorArray([deep, deep, clear, clear])
-		)
-	# AU-DELÀ DU DERNIER TRAPÈZE, l'eau profonde est PLEINE : le dégradé
-	# s'arrête bien avant le bord de la mer, et sans ce remplissage on
-	# verrait le turquoise revenir derrière lui.
-	var edge := _sea()
-	for side in 4:
-		var next := (side + 1) % 4
-		var corner := [
-			edge.position, Vector2(edge.end.x, edge.position.y),
-			edge.end, Vector2(edge.position.x, edge.end.y),
-		]
-		draw_polygon(
-			PackedVector2Array([
-				corner[side], corner[next], outer[next], outer[side]
-			]),
-			PackedColorArray([deep, deep, deep, deep])
-		)
-
-
-## Le rectangle de la grille élargi de `tiles` cases sur les quatre côtés.
-func _sea_ring(tiles: float) -> Rect2:
-	var margin := tiles * float(_tile_size)
+	var margin := ViewSettings.number(&"sizes", &"sea_side_tiles", 0.0) * float(_tile_size)
 	return Rect2(
-		Vector2(-margin, -margin),
-		Vector2(
-			board.grid.width * _tile_size + margin * 2.0,
-			board.grid.height * _tile_size + margin * 2.0
-		)
+		Vector2(-margin, 0.0),
+		Vector2(board.grid.width * _tile_size + margin * 2.0, board.grid.height * _tile_size)
 	)
+
+
+## Les deux bords extérieurs de la mer se fondent dans le fond de l'écran.
+##
+## SANS ÇA, LA MER SE TERMINE PAR UNE COUPURE FRANCHE. Elle ne peut pas
+## s'arrêter sous les panneaux : ceux-ci ne descendent pas jusqu'en bas,
+## et sous eux le turquoise redevient visible jusqu'au bord de la fenêtre.
+## Un dégradé vers la couleur du FOND — pas vers une eau profonde
+## inventée — fait que la bande s'éteint au lieu d'être tranchée, et la
+## mer n'occupe plus que l'écart entre le panneau et l'île.
+##
+## `UiTheme` plutôt qu'une couleur de `view.json` : la cible est
+## exactement le fond de l'interface, et la recopier ici garantirait
+## qu'un jour les deux ne diront plus la même chose.
+func _fade_sea_edges() -> void:
+	var fade := ViewSettings.number(&"sizes", &"sea_fade_tiles", 0.0) * float(_tile_size)
+	if fade <= 0.0:
+		return
+	var sea := _sea()
+	var ground := UiTheme.color(&"backdrop")
+	var clear := Color(ground.r, ground.g, ground.b, 0.0)
+	for side in [-1.0, 1.0]:
+		var outer: float = sea.position.x if side < 0.0 else sea.end.x
+		var inner: float = outer + fade * side * -1.0
+		draw_polygon(
+			PackedVector2Array([
+				Vector2(outer, sea.position.y), Vector2(inner, sea.position.y),
+				Vector2(inner, sea.end.y), Vector2(outer, sea.end.y),
+			]),
+			PackedColorArray([ground, clear, clear, ground])
+		)
 
 
 ## Une case est « de la terre » si ce n'est pas de l'eau — et surtout PAS
