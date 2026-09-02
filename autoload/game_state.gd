@@ -32,6 +32,14 @@ var expedition: Expedition = null
 ## verrouillée et le § 2 refuse le free-to-play.
 var kingdom := Kingdom.create()
 
+## L'avancement dans le monde : ce qui est conclu, donc ce qui est ouvert.
+##
+## IL VIT DANS LA SAUVEGARDE ET PAS DANS `regions.json` : le fichier de
+## données dit ce qui est ouvert au DÉPART d'une partie neuve, la partie
+## dit ce qui s'est ouvert depuis. Les confondre rendrait l'avancement
+## commun à toutes les parties, et impossible à effacer.
+var campaign := Campaign.new()
+
 ## Le combat en cours, ou null.
 ##
 ## SUR MOBILE L'APPLICATION MEURT À TOUT MOMENT. L'expédition survivait
@@ -73,6 +81,7 @@ func start_new_campaign(seed_value: int) -> void:
 	company = Company.new()
 	expedition = null
 	kingdom = Kingdom.create()
+	campaign = Campaign.new()
 	combat = null
 	combat_map_id = &""
 	combat_moment = DayNight.DEFAULT_MOMENT
@@ -84,6 +93,7 @@ func to_save() -> Dictionary:
 		"seed": campaign_seed,
 		"company": company.to_dictionary(),
 		"kingdom": kingdom.to_dictionary(),
+		"campaign": campaign.to_dictionary(),
 	}
 	if expedition != null:
 		data["expedition"] = expedition.to_dictionary()
@@ -105,6 +115,9 @@ func from_save(data: Dictionary) -> bool:
 	rng.seed = campaign_seed
 	company = Company.from_dictionary(data.get("company", {}))
 	kingdom = Kingdom.from_dictionary(data.get("kingdom", {}))
+	# Une sauvegarde d'avant T11.4 n'a pas d'avancement : elle repart d'un
+	# monde où seul l'acte 1 est ouvert, ce qui est exactement son état.
+	campaign = Campaign.from_dictionary(data.get("campaign", {}))
 	expedition = null
 	if data.has("expedition"):
 		expedition = Expedition.from_dictionary(data["expedition"])

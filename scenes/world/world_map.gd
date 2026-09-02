@@ -29,6 +29,7 @@ const SQUAD_CARD_PX := 250
 const SQUAD_CARD_HEIGHT_PX := 112
 
 var _company: Company
+var _campaign := Campaign.new()
 var _selected: StringName = &""
 var _squad_ids: Array[int] = []
 
@@ -52,8 +53,13 @@ func _ready() -> void:
 
 
 ## À appeler avant d'ajouter la scène à l'arbre.
-func configure(company: Company) -> void:
+## `campaign` dit ce qui est OUVERT aujourd'hui. Sans lui, l'écran lisait
+## `regions.json`, qui ne dit que l'état d'une partie neuve : battre le
+## boss de l'acte 1 n'ouvrait rien.
+func configure(company: Company, campaign: Campaign = null) -> void:
 	_company = company
+	if campaign != null:
+		_campaign = campaign
 	_reset_squad()
 
 
@@ -76,7 +82,7 @@ func refresh() -> void:
 	if _company == null or not is_node_ready():
 		return
 	if _selected.is_empty():
-		var open := Region.unlocked_ids()
+		var open := _campaign.open_ids()
 		_selected = open[0] if not open.is_empty() else Region.ids()[0]
 	_gold.text = tr("COMPANY_GOLD") % _company.gold
 	_build_regions()
@@ -84,7 +90,7 @@ func refresh() -> void:
 	_build_squad()
 
 	_depart.text = tr("WORLD_DEPART") % tr(Region.name_key(_selected))
-	_depart.disabled = not Region.is_unlocked(_selected) or _squad_ids.is_empty()
+	_depart.disabled = not _campaign.is_open(_selected) or _squad_ids.is_empty()
 
 
 # --- Les régions -----------------------------------------------------------
@@ -109,7 +115,7 @@ func _build_regions() -> void:
 ## clique, donc elle doit être un `Button`. Le décor est posé DEDANS, en
 ## `MOUSE_FILTER_IGNORE`, sinon le carré d'herbe avale le clic.
 func _region_row(region_id: StringName) -> Button:
-	var open := Region.is_unlocked(region_id)
+	var open := _campaign.is_open(region_id)
 	var accent := Region.accent_of(region_id)
 
 	var button := Button.new()
@@ -181,7 +187,7 @@ func _build_brief() -> void:
 	_line(tr(Region.name_key(_selected)), 28)
 	_line(tr(Region.description_key(_selected)), 20)
 
-	if not Region.is_unlocked(_selected):
+	if not _campaign.is_open(_selected):
 		_line(tr("WORLD_LOCKED_TEXT"), 20)
 		return
 
@@ -272,7 +278,7 @@ func _cycle(slot: int) -> void:
 
 
 func _on_depart() -> void:
-	if not Region.is_unlocked(_selected) or _squad_ids.is_empty():
+	if not _campaign.is_open(_selected) or _squad_ids.is_empty():
 		return
 	departed.emit(_selected, _squad_ids.duplicate())
 

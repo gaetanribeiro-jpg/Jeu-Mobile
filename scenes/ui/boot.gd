@@ -22,6 +22,7 @@ const KINGDOM_SCENE := "res://scenes/kingdom/kingdom_screen.tscn"
 const OPTIONS_SCENE := "res://scenes/ui/options_screen.tscn"
 const EXPEDITION_SCENE := "res://scenes/world/expedition_screen.tscn"
 const CREDITS_SCENE := "res://scenes/ui/credits_screen.tscn"
+const ENDING_SCENE := "res://scenes/ui/ending_screen.tscn"
 
 ## Marge du menu au bord de l'écran, et largeur de sa colonne.
 const MENU_MARGIN_PX := 72
@@ -54,6 +55,11 @@ var _options_screen: Control = null
 var _world_screen: Control = null
 var _expedition_screen: Control = null
 var _credits_screen: Control = null
+var _ending_screen: Control = null
+
+## La région qu'une expédition conclue vient d'ouvrir, le temps de
+## l'annoncer.
+var _opened: StringName = &""
 
 @onready var _diorama: Node2D = $Diorama
 @onready var _scrim: TextureRect = %Scrim
@@ -289,6 +295,19 @@ func _gap(height: int) -> Control:
 	return spacer
 
 
+func _open_ending(headline: String, body: String) -> void:
+	_ending_screen = _open(ENDING_SCENE, func(screen: Node) -> void:
+		screen.configure(headline, body)
+		screen.closed.connect(_close_ending))
+
+
+func _close_ending() -> void:
+	_dismiss(_ending_screen)
+	_ending_screen = null
+	_build_menu()
+	visible = true
+
+
 func _open_credits() -> void:
 	_credits_screen = _open(CREDITS_SCENE, func(screen: Node) -> void:
 		screen.closed.connect(_close_credits))
@@ -390,7 +409,7 @@ func _close_kingdom() -> void:
 
 func _open_world() -> void:
 	_world_screen = _open(WORLD_SCENE, func(screen: Node) -> void:
-		screen.configure(GameState.company)
+		screen.configure(GameState.company, GameState.campaign)
 		screen.closed.connect(_close_world)
 		screen.departed.connect(_depart))
 
@@ -448,6 +467,12 @@ func _close_expedition(_state: int) -> void:
 	# Une expédition finie ne doit pas rester dans la sauvegarde : au
 	# prochain lancement, « Reprendre » proposerait une sortie déjà close.
 	if GameState.expedition != null and GameState.expedition.is_over():
+		# UNE CHAÎNE MENÉE JUSQU'AU BOSS CONCLUT LA RÉGION, et ouvre la
+		# suivante (T11.4). C'est le maillon qui manquait depuis toujours :
+		# `regions.json` déclarait cinq régions verrouillées et rien au
+		# monde n'écrivait jamais leur ouverture.
+		if GameState.expedition.is_complete():
+			_opened = GameState.campaign.clear_region(GameState.expedition.region_id)
 		GameState.expedition = null
 		# UNE SORTIE CONCLUE = UN CYCLE DE PRODUCTION. C'est la couture des
 		# deux moitiés de la boucle du § 3, et elle tient en une ligne :
@@ -468,6 +493,26 @@ func _close_expedition(_state: int) -> void:
 	visible = true
 	if _defending:
 		_start_defence()
+	elif not _opened.is_empty() or GameState.campaign.is_complete():
+		_announce_progress()
+
+
+## Ce qu'une région conclue vient de changer.
+##
+## LA FIN DE LA CAMPAGNE PASSE AVANT L'OUVERTURE : quand la dernière
+## région tombe, il n'y en a pas de suivante à annoncer, et « une terre
+## s'est ouverte » serait faux.
+func _announce_progress() -> void:
+	var opened := _opened
+	_opened = &""
+	if GameState.campaign.is_complete():
+		_open_ending(tr("ENDING_COMPLETE"), tr("ENDING_COMPLETE_BODY"))
+		return
+	if not opened.is_empty():
+		_open_ending(
+			tr("ENDING_UNLOCKED") % tr(Region.name_key(opened)),
+			tr(Region.description_key(opened))
+		)
 
 
 ## Le royaume ne parle pas à l'expédition : c'est l'écran de titre qui les

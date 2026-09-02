@@ -2305,7 +2305,8 @@ souvenir.**
 | **T11.1** | Le mettre sur le téléphone | `export_presets.cfg` absent, `installation.md` § 4 à 6 jamais faits | ⬜ |
 | **T11.2** | Brancher le son | 473 fichiers, 30 entrées déclarées, **0 appel** à `AudioManager` depuis le jeu | ⬜ |
 | **T11.3** | Un vrai écran de titre | `BOOT_TEMPORARY` : « Écran de test provisoire — le vrai menu viendra plus tard » | ✅ |
-| **T11.4** | Une fin à la campagne | 5 régions sur 6 sont des coquilles vides, rien n'écrit jamais `unlocked` | ⬜ |
+| **T11.4** | Le déverrouillage et la fin | 5 régions sur 6 sont des coquilles vides, rien n'écrit jamais `unlocked` | ✅ |
+| **T11.7** | L'acte 2 — les Dunes Ardentes | la région n'a que son nom | 🚧 |
 | **T11.5** | Apprendre à jouer | aucun tutoriel, aucune aide, aucune première partie guidée | ⬜ |
 
 **L'ordre est celui-là et il se justifie.** Le téléphone d'abord parce que
@@ -2470,6 +2471,49 @@ Une classe ou une région dont la couleur n'existe pas dans la palette —
 l'oubli est muet, la valeur retombe sur `stone`, et on obtient exactement
 la liste grise qu'on essayait d'éviter. Et **deux régions de la même
 couleur**, qui ne se distinguent pas : autant ne pas en avoir.
+
+
+### T11.4 — le monde s'ouvre, et il se finit ✅
+
+**Le maillon manquait depuis toujours, et son absence ne cassait rien.**
+`regions.json` déclarait six régions dont cinq `"unlocked": false`, et
+aucune ligne du jeu n'écrivait jamais leur ouverture. Battre le boss de
+l'acte 1 changeait une ligne de texte et renvoyait le joueur sur la même
+carte. Rien n'échouait — une boucle sans terme se joue parfaitement, elle
+ne mène simplement nulle part.
+
+### L'avancement vit dans la SAUVEGARDE, pas dans les données
+
+`regions.json` dit ce qui est ouvert **au départ d'une partie neuve** ;
+`Campaign` dit ce qui s'est ouvert **depuis**. Les confondre rendrait
+l'avancement commun à toutes les parties, et impossible à effacer par
+« nouvelle partie ».
+
+Une sauvegarde d'avant T11.4 n'a pas d'avancement : elle repart d'un
+monde où seul l'acte 1 est ouvert, ce qui est exactement son état.
+
+### L'ordre vient des ACTES, pas d'une liste
+
+Chaque région déclare son acte ; celle de l'acte n + 1 s'ouvre quand une
+région de l'acte n est menée à son terme. **Ajouter une région ne demande
+donc rien d'autre que de lui donner un numéro d'acte** — ce qui est
+précisément ce dont T11.7 va avoir besoin.
+
+Et la campagne est finie quand toute région **jouable** est conclue —
+jouable, pas déclarée : une région d'acte 7 écrite alors que l'acte 6
+n'existe pas encore ne doit pas repousser l'écran de fin dans le vide.
+
+### Un palier qui se voit
+
+Battre le boss rendait exactement la même main que rentrer en chemin. Un
+écran d'annonce marque maintenant les deux moments : une terre qui
+s'ouvre, ou la campagne finie. **La fin passe avant l'ouverture** — quand
+la dernière région tombe, il n'y a pas de suivante, et « une terre s'est
+ouverte » serait faux.
+
+Il reprend le **ruban du titre**, et c'est le seul autre endroit du jeu
+où il apparaît : le même objet qui porte le nom du jeu au lancement porte
+ici ce qu'on vient d'accomplir.
 
 
 ---

@@ -284,6 +284,10 @@ OPTIONS_NEW_GAME_CONFIRM,Confirmer — la partie en cours sera effacée
 OPTIONS_CANCEL,Annuler
 BOOT_OPTIONS,Options
 BOOT_CREDITS,Crédits
+ENDING_ONWARD,Continuer
+ENDING_UNLOCKED,Une terre s'ouvre : %s
+ENDING_COMPLETE,La campagne est finie
+ENDING_COMPLETE_BODY,Toutes les terres connues sont pacifiées. Votre royaume tient debout, vos héros ont survécu, et le monde attend la suite. Vous pouvez continuer à mener des sorties : le butin et l'expérience restent acquis.
 CREDITS_TITLE,Crédits
 CREDITS_ART,Graphismes
 CREDITS_ENGINE,Moteur et outils
