@@ -1,6 +1,7 @@
-[gd_scene load_steps=2 format=3]
+[gd_scene load_steps=3 format=3]
 
 [ext_resource type="Script" path="res://scenes/ui/boot.gd" id="1_boot"]
+[ext_resource type="Script" path="res://scenes/ui/title_diorama.gd" id="2_diorama"]
 
 [node name="Boot" type="Control"]
 layout_mode = 3
@@ -18,46 +19,27 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-color = Color(0.05, 0.05, 0.06, 1)
+color = Color(0.032, 0.028, 0.023, 1)
 
-[node name="Center" type="VBoxContainer" parent="."]
+[node name="Diorama" type="Node2D" parent="."]
+script = ExtResource("2_diorama")
+
+[node name="Scrim" type="TextureRect" parent="."]
+unique_name_in_owner = true
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-alignment = 1
+mouse_filter = 2
 
-[node name="Title" type="Label" parent="Center"]
+[node name="Menu" type="Control" parent="."]
 unique_name_in_owner = true
-layout_mode = 2
-theme_override_font_sizes/font_size = 64
-text = "Reconquête"
-horizontal_alignment = 1
-
-[node name="Subtitle" type="Label" parent="Center"]
-unique_name_in_owner = true
-layout_mode = 2
-theme_override_colors/font_color = Color(0.6, 0.6, 0.62, 1)
-theme_override_font_sizes/font_size = 20
-text = "Chargement…"
-horizontal_alignment = 1
-
-[node name="Gap" type="Control" parent="Center"]
-custom_minimum_size = Vector2(0, 28)
-layout_mode = 2
-
-[node name="Squad" type="VBoxContainer" parent="Center"]
-unique_name_in_owner = true
-layout_mode = 2
-theme_override_constants/separation = 10
-
-[node name="Gap2" type="Control" parent="Center"]
-custom_minimum_size = Vector2(0, 22)
-layout_mode = 2
-
-[node name="Maps" type="VBoxContainer" parent="Center"]
-unique_name_in_owner = true
-layout_mode = 2
-theme_override_constants/separation = 14
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2

@@ -21,6 +21,12 @@ const WORLD_SCENE := "res://scenes/world/world_map.tscn"
 const KINGDOM_SCENE := "res://scenes/kingdom/kingdom_screen.tscn"
 const OPTIONS_SCENE := "res://scenes/ui/options_screen.tscn"
 const EXPEDITION_SCENE := "res://scenes/world/expedition_screen.tscn"
+const CREDITS_SCENE := "res://scenes/ui/credits_screen.tscn"
+
+## Marge du menu au bord de l'écran, et largeur de sa colonne.
+const MENU_MARGIN_PX := 72
+const MENU_WIDTH_PX := 340
+const TESTBENCH_WIDTH_PX := 230
 
 ## Identifiants des héros emmenés au banc d'essai, dans l'ordre des
 ## emplacements. L'expédition tient sa propre équipe.
@@ -47,26 +53,54 @@ var _kingdom_screen: Control = null
 var _options_screen: Control = null
 var _world_screen: Control = null
 var _expedition_screen: Control = null
+var _credits_screen: Control = null
 
-@onready var _title: Label = %Title
-@onready var _subtitle: Label = %Subtitle
-@onready var _maps: VBoxContainer = %Maps
-@onready var _squad: VBoxContainer = %Squad
+@onready var _diorama: Node2D = $Diorama
+@onready var _scrim: TextureRect = %Scrim
+@onready var _menu: Control = %Menu
+
+## Le banc d'essai est REPLIÉ par défaut, pas supprimé. Ouvrir une carte
+## précise en deux clics reste la seule façon de vérifier un combat sans
+## traverser une expédition entière — mais dix boutons de carte sous le
+## titre, c'est ce qui faisait « écran de test provisoire ».
+var _testbench_open := false
 
 
 func _ready() -> void:
 	theme = UiSkin.theme
-	_lay_backdrop()
-	_title.add_theme_font_size_override("font_size", UiTheme.font_size(&"title"))
-	_title.add_theme_color_override("font_color", UiTheme.color(&"ink_gold"))
-	_subtitle.add_theme_color_override("font_color", UiTheme.color(&"ink_muted"))
-	_title.text = tr("GAME_TITLE")
-	_subtitle.text = tr("BOOT_TEMPORARY")
 	GameState.load_saved()
 	_ensure_company()
 	_reset_squad()
-	_build_squad_picker()
-	_build_map_list()
+	_build_scrim()
+	_build_menu()
+	_frame_diorama()
+	get_viewport().size_changed.connect(_frame_diorama)
+
+
+func _frame_diorama() -> void:
+	if is_instance_valid(_diorama):
+		_diorama.frame_to(get_viewport_rect().size)
+
+
+## Le voile sous le menu.
+##
+## LE DÉCOR EST CLAIR — de l'eau turquoise et de l'herbe verte — et les
+## panneaux sombres à liseré doré de T9.7 s'y poseraient comme des
+## autocollants. Un dégradé vertical leur redonne le fond qu'ils
+## supposent, sans effacer l'île, qui reste entière en bas de l'écran.
+func _build_scrim() -> void:
+	var block := TitleSet.scrim()
+	var ground := UiTheme.color(&"backdrop")
+	var ramp := Gradient.new()
+	ramp.set_color(0, Color(ground.r, ground.g, ground.b, float(block.get("top_alpha", 0.8))))
+	ramp.set_color(1, Color(ground.r, ground.g, ground.b, float(block.get("bottom_alpha", 0.0))))
+	ramp.set_offset(1, clampf(float(block.get("stop", 0.7)), 0.0, 1.0))
+	var texture := GradientTexture2D.new()
+	texture.gradient = ramp
+	texture.fill_from = Vector2(0, 0)
+	texture.fill_to = Vector2(0, 1)
+	_scrim.texture = texture
+	_scrim.stretch_mode = TextureRect.STRETCH_SCALE
 
 
 ## Une compagnie vide n'a rien à montrer et rien à envoyer au combat : on
@@ -94,24 +128,36 @@ func _reset_squad() -> void:
 			_squad_ids.append(hero.id)
 
 
-# --- Le haut de l'écran : l'expédition et la compagnie ---------------------
+# --- Le menu ---------------------------------------------------------------
 
-func _build_squad_picker() -> void:
-	for child in _squad.get_children():
+## L'écran de titre : une enseigne, une colonne de choix, et le décor
+## vivant derrière (T11.3).
+##
+## LA COLONNE EST À GAUCHE PARCE QUE L'ÎLE EST À DROITE. Le décor n'est
+## pas un fond qu'on recouvre — c'est la seule image du jeu où l'on voit
+## les trois classes, le château et la mer d'un coup — donc le menu se
+## range à côté, pas dessus.
+func _build_menu() -> void:
+	for child in _menu.get_children():
 		child.queue_free()
 
-	var centre := CenterContainer.new()
-	_squad.add_child(centre)
-	var row := HBoxContainer.new()
-	row.add_theme_constant_override("separation", 12)
-	centre.add_child(row)
+	var column := VBoxContainer.new()
+	column.add_theme_constant_override("separation", UiTheme.metric(&"row_spacing"))
+	column.set_anchors_and_offsets_preset(Control.PRESET_LEFT_WIDE)
+	column.offset_left = MENU_MARGIN_PX
+	column.offset_top = 0
+	column.alignment = BoxContainer.ALIGNMENT_CENTER
+	column.custom_minimum_size = Vector2(MENU_WIDTH_PX, 0)
+	column.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
+	_menu.add_child(column)
 
-	# Une expédition en cours passe avant tout le reste : elle a la
-	# priorité sur le disque comme à l'écran, sinon on la perdrait en
-	# repartant de zéro sans s'en apercevoir.
-	# UN COMBAT INTERROMPU PASSE AVANT TOUT. C'est l'état le plus fragile
-	# de la partie et le plus coûteux à perdre : sept rondes de décisions.
-	var go := _menu_button(&"primary", 400)
+	column.add_child(_title_banner())
+	column.add_child(_gap(UiTheme.metric(&"row_spacing")))
+
+	# UNE EXPÉDITION EN COURS PASSE AVANT TOUT LE RESTE, et un combat
+	# interrompu avant elle : c'est l'état le plus fragile de la partie et
+	# le plus coûteux à perdre — sept rondes de décisions.
+	var go := _menu_button(&"primary")
 	if GameState.combat != null and not GameState.combat.is_finished():
 		go.text = tr("BOOT_RESUME_COMBAT")
 		go.pressed.connect(_resume_combat)
@@ -121,22 +167,137 @@ func _build_squad_picker() -> void:
 	else:
 		go.text = tr("BOOT_EXPEDITION")
 		go.pressed.connect(_open_world)
-	row.add_child(go)
+	column.add_child(go)
 
-	var kingdom := _menu_button(&"positive", 240)
+	var kingdom := _menu_button(&"positive")
 	kingdom.text = tr("BOOT_KINGDOM")
 	kingdom.pressed.connect(_open_kingdom)
-	row.add_child(kingdom)
+	column.add_child(kingdom)
 
-	var company := _menu_button(&"arcane", 240)
+	var company := _menu_button(&"arcane")
 	company.text = tr("BOOT_COMPANY")
 	company.pressed.connect(_open_company)
-	row.add_child(company)
+	column.add_child(company)
 
-	var options := _menu_button(&"default", 200)
+	var options := _menu_button(&"default")
 	options.text = tr("BOOT_OPTIONS")
 	options.pressed.connect(_open_options)
-	row.add_child(options)
+	column.add_child(options)
+
+	var credits := _menu_button(&"muted")
+	credits.text = tr("BOOT_CREDITS")
+	credits.pressed.connect(_open_credits)
+	column.add_child(credits)
+
+	_build_testbench()
+
+
+## L'enseigne du pack, et le nom du jeu dessus.
+##
+## LE SEUL POINT CHAUD DE L'ÉCRAN. Le pack livre ce ruban de parchemin en
+## 9-tranches, à extrémités roulées : c'est la seule pièce d'interface
+## qu'il dessine comme une ENSEIGNE et pas comme une boîte. Il n'apparaît
+## que sur cet écran — un ruban qui reviendrait partout cesserait
+## d'annoncer quoi que ce soit.
+##
+## Texte SOMBRE sur le crème, contrairement à tout le reste du jeu : c'est
+## le seul fond clair de l'interface.
+func _title_banner() -> Control:
+	var plate := PanelContainer.new()
+	# AUCUNE MARGE IMPOSÉE, contrairement au reste de l'interface. Un
+	# `StyleBoxTexture` écarte son contenu de ses marges de TRANCHES ; lui
+	# donner une marge plus PETITE que ses coins fait passer le texte sous
+	# les extrémités roulées du ruban, ce qui s'est vu tout de suite. C'est
+	# le même piège qu'en T9.6, pris par l'autre bout.
+	plate.add_theme_stylebox_override("panel", UiSkin.panel_style(&"banner"))
+	plate.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
+
+	var name_ := Label.new()
+	name_.text = tr("GAME_TITLE")
+	name_.add_theme_font_size_override("font_size", UiTheme.font_size(&"game_title"))
+	name_.add_theme_color_override("font_color", UiTheme.color(&"backdrop"))
+	name_.add_theme_constant_override("outline_size", 0)
+	name_.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	name_.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	plate.add_child(name_)
+	return plate
+
+
+## Le banc d'essai, replié.
+##
+## IL RESTE, ET IL LE FAUT : ouvrir une carte précise en deux clics est la
+## seule façon de vérifier un combat sans traverser une expédition
+## entière, et seize défauts n'ont été trouvés que comme ça. Mais dix
+## boutons de carte sous le titre, c'est exactement ce qui faisait « écran
+## de test provisoire ». Il se déplie donc, en bas à droite, là où il ne
+## dispute rien à l'île.
+func _build_testbench() -> void:
+	var corner := VBoxContainer.new()
+	corner.add_theme_constant_override("separation", 8)
+	corner.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_RIGHT)
+	corner.grow_horizontal = Control.GROW_DIRECTION_BEGIN
+	corner.grow_vertical = Control.GROW_DIRECTION_BEGIN
+	corner.offset_right = -MENU_MARGIN_PX
+	corner.offset_bottom = -MENU_MARGIN_PX
+	corner.alignment = BoxContainer.ALIGNMENT_END
+	_menu.add_child(corner)
+
+	if _testbench_open:
+		var grid := GridContainer.new()
+		grid.columns = 4
+		grid.add_theme_constant_override("h_separation", 8)
+		grid.add_theme_constant_override("v_separation", 8)
+		corner.add_child(grid)
+		for map_id: StringName in CombatMap.map_ids():
+			var map := CombatMap.load_map(map_id)
+			grid.add_child(_testbench_button(
+				tr(map.name_key) if map != null else String(map_id),
+				_start_test_combat.bind(map_id)
+			))
+		var night_map := CombatMap.load_map(NIGHT_TESTBENCH_MAP)
+		grid.add_child(_testbench_button(
+			tr("BOOT_TESTBENCH_NIGHT") % [
+				tr(night_map.name_key) if night_map != null
+				else String(NIGHT_TESTBENCH_MAP)
+			],
+			_start_test_combat.bind(NIGHT_TESTBENCH_MAP, &"night")
+		))
+
+	var toggle := _testbench_button(tr("BOOT_TESTBENCH"), func() -> void:
+		_testbench_open = not _testbench_open
+		_build_menu())
+	toggle.size_flags_horizontal = Control.SIZE_SHRINK_END
+	corner.add_child(toggle)
+
+
+func _testbench_button(label: String, action: Callable) -> Button:
+	var button := Button.new()
+	button.text = label
+	button.custom_minimum_size = Vector2(
+		TESTBENCH_WIDTH_PX, UiTheme.metric(&"button_height_small")
+	)
+	button.add_theme_font_size_override("font_size", UiTheme.font_size(&"small"))
+	UiSkin.dress_button(button, &"muted")
+	button.pressed.connect(action)
+	return button
+
+
+func _gap(height: int) -> Control:
+	var spacer := Control.new()
+	spacer.custom_minimum_size = Vector2(0, height)
+	spacer.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	return spacer
+
+
+func _open_credits() -> void:
+	_credits_screen = _open(CREDITS_SCENE, func(screen: Node) -> void:
+		screen.closed.connect(_close_credits))
+
+
+func _close_credits() -> void:
+	_dismiss(_credits_screen)
+	_credits_screen = null
+	visible = true
 
 
 func _open_company() -> void:
@@ -150,7 +311,7 @@ func _close_company() -> void:
 	_dismiss(_company_screen)
 	_company_screen = null
 	_reset_squad()
-	_build_squad_picker()
+	_build_menu()
 	visible = true
 
 
@@ -179,17 +340,17 @@ func _start_new_game() -> void:
 	_last_cycle = {}
 	_depth = 0
 	GameState.save()
-	_build_squad_picker()
+	_build_menu()
 
 
 ## Un bouton du menu principal : sa largeur, et le RÔLE qui lui donne sa
 ## couleur. Six rôles sortent de la même image du pack — sans quoi le menu
 ## serait bleu et rouge, une langue « confirmer / renoncer » qui ne veut
 ## rien dire sur « Royaume » ou « Compagnie ».
-func _menu_button(role: StringName, width: int) -> Button:
+func _menu_button(role: StringName) -> Button:
 	var button := Button.new()
 	button.custom_minimum_size = Vector2(
-		width, UiTheme.metric(&"button_height")
+		MENU_WIDTH_PX, UiTheme.metric(&"button_height")
 	)
 	button.add_theme_font_size_override("font_size", UiTheme.font_size(&"button_large"))
 	UiSkin.dress_button(button, role)
@@ -221,7 +382,7 @@ func _close_kingdom() -> void:
 	_dismiss(_kingdom_screen)
 	_kingdom_screen = null
 	_reset_squad()
-	_build_squad_picker()
+	_build_menu()
 	visible = true
 
 
@@ -237,7 +398,7 @@ func _open_world() -> void:
 func _close_world() -> void:
 	_dismiss(_world_screen)
 	_world_screen = null
-	_build_squad_picker()
+	_build_menu()
 	visible = true
 
 
@@ -303,7 +464,7 @@ func _close_expedition(_state: int) -> void:
 				and GameState.kingdom.invasion.is_imminent()):
 			_resolve_invasion(0)
 	GameState.save()
-	_build_squad_picker()
+	_build_menu()
 	visible = true
 	if _defending:
 		_start_defence()
@@ -381,7 +542,7 @@ func _on_defence_finished(scene: Node) -> void:
 	_last_defence["alone"] = false
 	_last_defence["fought"] = true
 	GameState.save()
-	_build_squad_picker()
+	_build_menu()
 	visible = true
 
 
@@ -463,59 +624,6 @@ func _on_expedition_combat_finished(scene: Node) -> void:
 const NIGHT_TESTBENCH_MAP := &"vallee_02"
 
 
-func _build_map_list() -> void:
-	for child in _maps.get_children():
-		child.queue_free()
-
-	var header := Label.new()
-	header.text = tr("BOOT_TESTBENCH")
-	header.add_theme_font_size_override("font_size", UiTheme.font_size(&"subheading"))
-	header.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	header.add_theme_color_override("font_color", UiTheme.color(&"ink_muted"))
-	_maps.add_child(header)
-
-	# Un GridContainer prend sa taille minimale et se cale à gauche : sans
-	# CenterContainer autour, la première colonne sort de l'écran.
-	var centre := CenterContainer.new()
-	_maps.add_child(centre)
-
-	var grid := GridContainer.new()
-	grid.columns = 4
-	grid.add_theme_constant_override("h_separation", 10)
-	grid.add_theme_constant_override("v_separation", 10)
-	centre.add_child(grid)
-
-	for map_id: StringName in CombatMap.map_ids():
-		var map := CombatMap.load_map(map_id)
-		var button := Button.new()
-		button.text = tr(map.name_key) if map != null else String(map_id)
-		button.custom_minimum_size = Vector2(250, UiTheme.metric(&"button_height_small"))
-		button.add_theme_font_size_override("font_size", UiTheme.font_size(&"small"))
-		UiSkin.dress_button(button, &"muted")
-		button.pressed.connect(_start_test_combat.bind(map_id))
-		grid.add_child(button)
-
-	# UNE CARTE DE NUIT AU BANC D'ESSAI (§ 36). La nuit ne tombe qu'au fond
-	# d'une expédition : sans ce bouton, vérifier une rencontre de nuit
-	# demande de gagner cinq combats d'abord, et personne ne le fera —
-	# c'est exactement le raisonnement qui a fait exister ce banc.
-	#
-	# LE LIBELLÉ SORT DE LA CARTE, pas d'une chaîne écrite à la main : il
-	# annonçait « La route basse » et ouvrait `vallee_02`, qui est le gué
-	# de Cendre. Un banc d'essai qui ment sur ce qu'il ouvre fait perdre
-	# plus de temps qu'il n'en fait gagner.
-	var night_map := CombatMap.load_map(NIGHT_TESTBENCH_MAP)
-	var night := Button.new()
-	night.text = tr("BOOT_TESTBENCH_NIGHT") % [
-		tr(night_map.name_key) if night_map != null else String(NIGHT_TESTBENCH_MAP)
-	]
-	night.custom_minimum_size = Vector2(250, UiTheme.metric(&"button_height_small"))
-	night.add_theme_font_size_override("font_size", UiTheme.font_size(&"small"))
-	UiSkin.dress_button(night, &"muted")
-	night.pressed.connect(_start_test_combat.bind(NIGHT_TESTBENCH_MAP, &"night"))
-	grid.add_child(night)
-
-
 func _start_test_combat(
 	map_id: StringName, moment: StringName = DayNight.DEFAULT_MOMENT
 ) -> void:
@@ -546,7 +654,7 @@ func _on_test_combat_finished(scene: Node) -> void:
 	GameState.company.collect(Loot.roll(GameState.combat_rng(_depth + 1), summary, _depth))
 	_depth += 1
 	GameState.save()
-	_build_squad_picker()
+	_build_menu()
 	visible = true
 
 
@@ -558,7 +666,7 @@ func _save_and_leave_combat(scene: Node) -> void:
 	GameState.save()
 	if is_instance_valid(scene):
 		scene.queue_free()
-	_build_squad_picker()
+	_build_menu()
 	visible = true
 
 
@@ -666,9 +774,3 @@ func _open(path: String, setup: Callable) -> Control:
 func _dismiss(screen: Node) -> void:
 	if is_instance_valid(screen):
 		screen.queue_free()
-
-
-## Le motif de fond, posé DERRIÈRE tout le reste. Un aplat noir est fade :
-## rien n'y accroche la lumière et les panneaux flottent sur du vide.
-func _lay_backdrop() -> void:
-	UiSkin.lay_backdrop(self)

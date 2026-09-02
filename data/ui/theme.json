@@ -179,6 +179,7 @@
   },
   "typography": {
     "_note": "Silver est une police pixel : elle ne rend proprement qu'à certaines tailles. Les valeurs ici sont des multiples pairs, et ne doivent le rester.",
+    "game_title": 56,
     "title": 40,
     "heading": 26,
     "subheading": 22,
@@ -240,6 +241,13 @@
       "scale": 4,
       "desaturate": false,
       "tint": "wood_dim"
+    },
+    "banner": {
+      "_note": "LE RUBAN DE TITRE (T11.3). Le pack le livre en 9-tranches de 448 px : un parchemin crème à extrémités roulées, la seule pièce d'interface qu'il dessine comme une ENSEIGNE et pas comme une boîte. Il porte le nom du jeu sur l'écran de titre, et nulle part ailleurs — un ruban qui reviendrait sur chaque écran cesserait d'annoncer quoi que ce soit.\n\nNI DÉSATURÉ NI RETEINTÉ, contrairement à tout le reste : sa couleur crème EST ce qu'on vient chercher. Un écran sombre a besoin d'un point chaud, et c'est celui-là.",
+      "asset": "banner",
+      "scale": 2,
+      "desaturate": false,
+      "tint": "parchment"
     }
   },
   "button_tints": {

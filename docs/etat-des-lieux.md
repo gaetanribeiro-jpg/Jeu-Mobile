@@ -2304,7 +2304,7 @@ souvenir.**
 |---|---|---|---|
 | **T11.1** | Le mettre sur le téléphone | `export_presets.cfg` absent, `installation.md` § 4 à 6 jamais faits | ⬜ |
 | **T11.2** | Brancher le son | 473 fichiers, 30 entrées déclarées, **0 appel** à `AudioManager` depuis le jeu | ⬜ |
-| **T11.3** | Un vrai écran de titre | `BOOT_TEMPORARY` : « Écran de test provisoire — le vrai menu viendra plus tard » | ⬜ |
+| **T11.3** | Un vrai écran de titre | `BOOT_TEMPORARY` : « Écran de test provisoire — le vrai menu viendra plus tard » | ✅ |
 | **T11.4** | Une fin à la campagne | 5 régions sur 6 sont des coquilles vides, rien n'écrit jamais `unlocked` | ⬜ |
 | **T11.5** | Apprendre à jouer | aucun tutoriel, aucune aide, aucune première partie guidée | ⬜ |
 
@@ -2347,6 +2347,71 @@ Seul un téléphone répond à la taille réelle des cibles tactiles et aux 60
 images par seconde. Et seul Gaetan juge le ressenti d'un coup, les
 affectations sonores — faites au nom des fichiers, jamais écoutées — et la
 densité de la mer de T9.10.
+
+
+### T11.3 — l'écran de titre ✅
+
+Il annonçait lui-même « écran de test provisoire — le vrai menu viendra
+plus tard », sous une grille de dix boutons de carte, depuis le premier
+jour.
+
+### Le décor est une CARTE, pas une image
+
+L'île est un vrai `CombatBoard`, bâti par `CombatBoard.from_rows` à
+partir de onze rangées écrites dans `data/ui/title.json`, et rendue par le
+**même `terrain_view` que les combats**. Elle hérite donc gratuitement des
+rives du tileset, de l'écume animée de T9.10, des rochers et de la mer — et
+**elle ne pourra jamais diverger du jeu**, parce que c'est le même code
+qui la dessine. Un décor peint à la main aurait fallu redessiner tout ça,
+et aurait vieilli au premier changement de terrain.
+
+### Ce que le pack animait déjà et que personne n'utilisait
+
+Huit nuages, une barque, deux moutons, des arbres qui frémissent, et les
+animations d'attente des trois classes. Tout était catalogué, vérifié, et
+**dessiné nulle part**. Un écran de titre est exactement l'endroit où ça
+se voit, et ça n'a coûté que de les poser.
+
+Les nuages dérivent à quatre vitesses différentes : à la même, ils
+restent en formation et l'œil voit une image qui glisse au lieu d'un
+ciel. La barque monte et descend — une barque immobile sur une eau qui
+bouge est ce qui trahit le décor collé.
+
+### Deux pièges, tous deux pris en le faisant
+
+- **Un nombre de JSON arrive en FLOTTANT.** `entry["cell"][0] % n` a fait
+  tomber le décor entier — sans que la scène cesse de tourner, donc sans
+  qu'aucun test le dise. L'écran s'affichait, simplement vide.
+- **Le ruban de titre est un `StyleBoxTexture`**, et lui donner une marge
+  de contenu plus PETITE que ses coins fait passer le texte SOUS les
+  extrémités roulées. C'est le piège de T9.6 pris par l'autre bout : là on
+  avait trop de marge, ici pas assez. Le ruban garde donc les siennes.
+
+### Le banc d'essai ne disparaît pas, il se replie
+
+Ouvrir une carte précise en deux clics reste la seule façon de vérifier
+un combat sans traverser une expédition entière — **seize défauts n'ont
+été trouvés que comme ça**. Mais dix boutons de carte sous le titre,
+c'est précisément ce qui faisait « écran de test provisoire ». Il vit
+maintenant dans un coin, replié, à deux clics comme avant.
+
+### Les crédits ne sont pas décoratifs
+
+C'est la seule page du jeu dont on peut dire ça pour une raison
+juridique : les dix-huit icônes de compétences viennent de
+game-icons.net, en **CC BY 3.0**, et CC BY **exige** l'attribution. CC0
+n'en demande aucune, Pixel Frog non plus.
+
+Les trois régimes sont donc distingués à l'écran, pas fondus dans une
+liste — **le liseré porte le régime**, comme les boutons portent leur
+rôle depuis T9.7 : or pour l'attribution obligatoire, vert pour le
+domaine public, éteint pour le reste. Les mettre au même rang laisserait
+croire qu'on peut les traiter pareil.
+
+`verify_ui` refuse désormais que l'entrée CC BY disparaisse, et qu'un des
+trois auteurs cesse d'être nommé. Un test le refuse aussi. Perdre cette
+ligne au détour d'un remaniement d'écran ne serait pas un défaut de
+style.
 
 
 ---

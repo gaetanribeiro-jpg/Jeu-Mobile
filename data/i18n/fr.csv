@@ -70,7 +70,6 @@ CHOICE_FOCUSED,Concentré
 CHOICE_DEADLY,Redoutable
 CHOICE_ARMOURED,Cuirassé
 BOOT_PICK_MAP,Choisir un combat
-BOOT_TEMPORARY,Écran de test provisoire — le vrai menu viendra plus tard
 COMBAT_BACK,Retour
 BOOT_SQUAD,Équipe — toucher pour changer de classe
 HUD_BEGIN_COMBAT,Commencer
@@ -284,6 +283,17 @@ OPTIONS_NEW_GAME,Nouvelle partie
 OPTIONS_NEW_GAME_CONFIRM,Confirmer — la partie en cours sera effacée
 OPTIONS_CANCEL,Annuler
 BOOT_OPTIONS,Options
+BOOT_CREDITS,Crédits
+CREDITS_TITLE,Crédits
+CREDITS_ART,Graphismes
+CREDITS_ENGINE,Moteur et outils
+CREDITS_FONT,Police
+CREDITS_LICENCE_TINYSWORDS,Usage et modification autorisés — redistribution des fichiers interdite. C'est pourquoi le pack n'est pas dans le dépôt.
+CREDITS_LICENCE_CC0,CC0 1.0 — domaine public. Aucune attribution exigée ; celle-ci est une politesse.
+CREDITS_LICENCE_CCBY,CC BY 3.0 — attribution OBLIGATOIRE. La seule ligne de cet écran qui ne soit pas facultative.
+CREDITS_LICENCE_MIT,Licence MIT
+CREDITS_LICENCE_FONT,Police pixel — licence à confirmer auprès de l'auteur
+CREDITS_PERSONAL,Projet personnel. Le jeu n'est ni vendu ni publié : aucune licence d'asset n'est bloquante tant que ce cadre tient.
 HUD_PAUSE,II
 PAUSE_TITLE,Pause
 PAUSE_RESUME,Reprendre le combat

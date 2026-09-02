@@ -236,7 +236,8 @@ dur : passer par `data/assets.json`.
 
 - **Phase courante : 11 — la bêta.** Cinq chantiers, listés avec leur
   constat vérifié dans `docs/etat-des-lieux.md` § 5 : T11.1 le téléphone,
-  T11.2 le son, T11.3 l'écran de titre, T11.4 une fin, T11.5 le tutoriel.
+  T11.2 le son, ~~T11.3 l'écran de titre~~ **fait**, T11.4 une fin,
+  T11.5 le tutoriel. **782 tests passent.**
   Le pivot vers la vision Tiny Kingdoms a été acté le 2026-08-31.
 - **Phase 1 terminée.** T1.1 à T1.14 sont faites et testées.
 - **Phase 2 terminée.** T2.1 à T2.7 : le `Hero`, les niveaux,
@@ -331,6 +332,27 @@ vaut un budget de points, et les gains d'un objet doivent le valoir
 exactement. Le barème est dans `data/items/equipment.json`, et
 `verify_items` refuse tout écart. **Ne jamais ajouter un objet sans le
 faire passer par là.**
+
+**L'ÉCRAN DE TITRE EST UNE CARTE, PAS UNE IMAGE (T11.3).** L'île est un
+vrai `CombatBoard` bâti par `from_rows` et rendue par le MÊME
+`terrain_view` que les combats : elle hérite des rives, de l'écume, des
+rochers et de la mer, et ne peut pas diverger du jeu. Quatre choses à ne
+pas défaire :
+- **Tout le décor est dans `data/ui/title.json`** — forme de l'île, place
+  du château, vitesse de chaque nuage. C'est du ressenti (règle 1).
+- **Un nombre de JSON arrive en FLOTTANT.** Un `%` dessus a fait tomber le
+  décor entier sans qu'aucun test le dise : l'écran s'affichait, vide.
+- **Le ruban de titre garde ses marges de tranches.** Lui en donner de
+  plus PETITES fait passer le texte sous ses extrémités roulées — le
+  piège de T9.6 pris par l'autre bout.
+- **Le banc d'essai se replie, il ne disparaît pas.** Deux clics, comme
+  avant : seize défauts n'ont été trouvés que par lui.
+
+**LES CRÉDITS SONT UNE OBLIGATION, PAS UNE POLITESSE (T11.3).** CC BY 3.0
+exige l'attribution des dix-huit icônes de game-icons.net. `verify_ui` et
+un test refusent que l'entrée disparaisse ou qu'un des trois auteurs
+cesse d'être nommé. Le liseré porte le RÉGIME de licence, comme un bouton
+porte son rôle.
 
 **L'expédition se joue, sur PC.** Écran de titre → carte du monde →
 composition de l'équipe → départ → route du § 28 (combats, évènements,

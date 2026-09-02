@@ -36,6 +36,8 @@ func _init() -> void:
 	_check_widgets()
 	_check_weave()
 	_check_glyphs()
+	_check_title()
+	_check_credits()
 
 	if _problems.is_empty():
 		print("\nLe thème tient debout.")
@@ -262,6 +264,80 @@ func _check_widgets() -> void:
 ##
 ## Ce contrôle borne la teinte entre ces deux fautes, en calculant la
 ## crête réelle — l'alpha du fichier MULTIPLIÉ par celui du thème.
+## L'écran de titre (T11.3) et son décor.
+##
+## IL A ANNONCÉ « ÉCRAN DE TEST PROVISOIRE » PENDANT TROIS MOIS, et rien
+## ne s'en plaignait : un écran de titre raté n'échoue aucun test, il
+## accueille simplement mal. Ce contrôle vérifie ce qu'un test unitaire ne
+## dit pas — que le décor a de quoi vivre.
+func _check_title() -> void:
+	var rows := TitleSet.island_rows()
+	if rows.is_empty():
+		_problems.append("l'écran de titre n'a pas d'île")
+		return
+	var board := CombatBoard.from_rows(rows)
+	if board == null:
+		_problems.append("l'île du titre n'est pas un plateau valide")
+		return
+
+	var props := TitleSet.props().size()
+	var actors := TitleSet.actors().size()
+	var clouds: Array = TitleSet.clouds().get("keys", [])
+	print("écran de titre: île %d × %d · %d décors · %d personnages · %d nuages"
+		% [board.grid.width, board.grid.height, props, actors, clouds.size()])
+
+	# UN DÉCOR IMMOBILE N'EST PAS UN ÉCRAN DE TITRE. C'est la seule chose
+	# que Gaetan a demandée en toutes lettres — « un véritable écran titre
+	# DYNAMIQUE » — et c'est celle qu'un test de données ne saurait pas
+	# juger : ce qui bouge ici, ce sont les nuages et les personnages.
+	if clouds.size() < 2:
+		_problems.append("moins de deux nuages : le ciel ne bougera pas")
+	if actors <= 0:
+		_problems.append("aucun personnage sur le titre")
+	if props <= 0:
+		_problems.append("une île nue : ni château ni arbre")
+
+
+## Les crédits, et la seule obligation juridique du projet.
+##
+## CC BY 3.0 EXIGE L'ATTRIBUTION. Ce n'est ni une politesse ni un style :
+## c'est la condition à laquelle les dix-huit icônes de compétences
+## peuvent être utilisées. La perdre au détour d'un remaniement d'écran
+## serait une violation de licence, et rien d'autre ne le dirait.
+func _check_credits() -> void:
+	var entries := CreditsTable.entries()
+	if entries.is_empty():
+		_problems.append("aucun crédit déclaré : l'attribution CC BY manque")
+		return
+
+	var attributed := false
+	for entry: Variant in entries:
+		var block := entry as Dictionary
+		for field: String in ["name", "author", "licence_key"]:
+			if String(block.get(field, "")).is_empty():
+				_problems.append(
+					"crédit « %s » : « %s » manque" % [block.get("name", "?"), field]
+				)
+		var licence := String(block.get("licence_key", ""))
+		if not licence.is_empty() and TranslationServer.translate(licence) == licence:
+			_problems.append("crédits : la clé « %s » n'est pas traduite" % licence)
+		if licence == "CREDITS_LICENCE_CCBY":
+			attributed = true
+			for author: String in ["Lorc", "Delapouite", "Caro Asercion"]:
+				if not String(block.get("author", "")).contains(author):
+					_problems.append("crédits : « %s » n'est plus nommé" % author)
+
+	for section: Variant in CreditsTable.sections():
+		var key := String((section as Dictionary).get("title_key", ""))
+		if not key.is_empty() and TranslationServer.translate(key) == key:
+			_problems.append("crédits : la clé « %s » n'est pas traduite" % key)
+
+	if not attributed:
+		_problems.append("crédits : l'entrée CC BY a disparu — c'est une obligation")
+	print("crédits     : %d entrées, attribution CC BY %s"
+		% [entries.size(), "présente" if attributed else "ABSENTE"])
+
+
 func _check_weave() -> void:
 	var entry := AssetTable.sprite(&"widgets", &"weave")
 	if entry.is_empty():

@@ -1,0 +1,57 @@
+{
+  "_readme": "L'ÉCRAN DES CRÉDITS (T11.3). Il existe pour une raison qui n'est pas la politesse : les icônes de compétences viennent de game-icons.net, en CC BY 3.0, et CC BY exige une attribution. C'est la seule ligne du projet où nommer l'auteur est une OBLIGATION.\n\nLES TROIS RÉGIMES SONT DISTINGUÉS À L'ÉCRAN, pas fondus dans une liste : ils ne disent pas la même chose. Tiny Swords interdit la redistribution — c'est pour ça que ses dossiers sont dans le `.gitignore`. Kenney est en CC0, donc versionné et sans obligation. game-icons.net est en CC BY, donc versionné ET obligatoire.\n\nCE FICHIER DOUBLE `CREDITS.md`, ET C'EST VOULU. Le fichier Markdown est la trace du dépôt, tenue au moment du téléchargement ; celui-ci est ce que le joueur lit. Les faire diverger serait une faute, mais les fondre en un seul obligerait l'écran à savoir lire du Markdown.",
+
+  "sections": [
+    {
+      "title_key": "CREDITS_ART",
+      "entries": [
+        {
+          "name": "Tiny Swords",
+          "author": "Pixel Frog",
+          "licence_key": "CREDITS_LICENCE_TINYSWORDS",
+          "tone": "muted"
+        },
+        {
+          "name": "UI Pack — Adventure · Fantasy UI Borders",
+          "author": "Kenney",
+          "licence_key": "CREDITS_LICENCE_CC0",
+          "tone": "positive"
+        },
+        {
+          "name": "18 icônes de compétences",
+          "author": "Lorc · Delapouite · Caro Asercion — game-icons.net",
+          "licence_key": "CREDITS_LICENCE_CCBY",
+          "tone": "primary"
+        }
+      ]
+    },
+    {
+      "title_key": "CREDITS_ENGINE",
+      "entries": [
+        {
+          "name": "Godot Engine 4.6",
+          "author": "Godot Engine contributors",
+          "licence_key": "CREDITS_LICENCE_MIT",
+          "tone": "muted"
+        },
+        {
+          "name": "GUT 9.5",
+          "author": "Tom « Butch » Wesley",
+          "licence_key": "CREDITS_LICENCE_MIT",
+          "tone": "muted"
+        }
+      ]
+    },
+    {
+      "title_key": "CREDITS_FONT",
+      "entries": [
+        {
+          "name": "Silver",
+          "author": "Poppy Works",
+          "licence_key": "CREDITS_LICENCE_FONT",
+          "tone": "muted"
+        }
+      ]
+    }
+  ]
+}
