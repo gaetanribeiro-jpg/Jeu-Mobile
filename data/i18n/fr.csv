@@ -383,7 +383,7 @@ MAP_VALLEE_09,Le goulet du minotaure
 MOMENT_DAY,Jour
 MOMENT_DUSK,Crépuscule
 MOMENT_NIGHT,Nuit
-BOOT_TESTBENCH_NIGHT,La route basse — de nuit
+BOOT_TESTBENCH_NIGHT,%s — de nuit
 HUD_CONSUMABLE,%s · %d PA · ×%d
 ITEM_DRAUGHT_OF_MENDING,Élixir de réparation
 ITEM_PHILTRE_OF_HASTE,Philtre de hâte

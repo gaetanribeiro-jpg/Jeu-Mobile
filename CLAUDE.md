@@ -265,7 +265,8 @@ dur : passer par `data/assets.json`.
   jamais écrit), les potions du § 44, le sac commun. **759 tests
   passent.**
 - **T9.8 :** les trois reproches de Gaetan — texte illisible, plateau
-  trop petit, fond fade.
+  trop petit, fond fade. **T9.9 :** la mer autour du plateau. **761 tests
+  passent.**
 - **La boucle du § 3 tourne en entier :** royaume → carte du monde →
   expédition → combat → butin et expérience → compagnie → royaume. Une
   sortie conclue déclenche un cycle de production ; le royaume rend des
@@ -480,6 +481,22 @@ deux SILENCIEUX :
   erreur : la ronde et le bouton de pause avaient disparu. La timeline et
   le coin sont donc ANCRÉS sur le `CanvasLayer` — pas dans un
   `Container`, qui écrase les ancrages de ses enfants.
+
+**LE PLATEAU EST UNE ÎLE DANS UNE MER DE DÉCOR (T9.9).** L'eau déborde
+de 16 cases sur les quatre côtés pour remplir l'écran. Trois choses à ne
+pas défaire :
+- **La caméra cadre la GRILLE, jamais la mer.** Élargir la zone cadrée
+  coûterait 17 % de la taille des cases : c'est la HAUTEUR qui contraint
+  le cadrage (0,85 contre 0,94), donc ajouter des colonnes fait passer la
+  contrainte en largeur et tout rétrécit d'un coup. Le décor vit en
+  dehors du cadrage, et le clamp de déplacement ne bouge pas.
+- **La mer s'assombrit vers les bords.** Un aplat turquoise d'un bord à
+  l'autre remplit l'écran mais fait flotter les panneaux sombres sur une
+  piscine. Deux cases de haut-fond en pleine couleur, puis l'eau profonde
+  qui rejoint la matière de l'interface.
+- **La distance du dégradé est MESURÉE :** au cadrage de combat, le bord
+  gauche de la fenêtre tombe à 5,75 cases de la grille, donc le dégradé
+  finit à 5,5. Une valeur prise à vue (9) laissait les coins turquoise.
 
 **LE FOND A DE LA MATIÈRE, ET ELLE SE RÈGLE À LA MESURE (T9.8).** Un
 motif de diagonales se carrelle derrière tous les écrans. Quatre choses à

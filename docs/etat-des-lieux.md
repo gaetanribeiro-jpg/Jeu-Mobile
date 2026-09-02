@@ -2091,6 +2091,73 @@ copies : si l'écran a déjà un fond, on le repeint et on lui accroche le
 motif ; sinon seulement on en insère un.
 
 
+### T9.9 — l'île dans la mer ✅
+
+Gaetan : « la map de jeu ne pourrait pas être étirée à l'horizontal ? […]
+on ajouterait 2 carrés d'eau à droite et 2 carrés d'eau à gauche en
+décor, ce qui augmente l'écran de jeu sans toucher réellement à la map ».
+
+**L'intuition est juste, mais l'arithmétique impose de la faire hors du
+cadrage.** Ajouter deux colonnes à ce que la caméra cadre ferait
+RÉTRÉCIR le plateau de 17 % :
+
+| | span | zone sûre | rapport |
+|---|---|---|---|
+| largeur | 12 × 64 = 768 | 720 | 0,94 |
+| hauteur | 9 × 64 = 576 | 490 | **0,85** ← contraint |
+
+C'est la **hauteur** qui contraint le cadrage. Passer à 16 colonnes porte
+le span horizontal à 1024, le rapport en largeur tombe à 0,70, et c'est
+lui qui contraint désormais : les cases passeraient de 54 px à 45.
+
+**Le décor va donc en dehors de ce que la caméra cadre.** La grille reste
+12 × 9, `frame_board` ne connaît que la grille, le clamp de déplacement
+ne bouge pas — et l'eau déborde de 16 cases sur les quatre côtés, assez
+pour atteindre le bord de l'écran au zoom minimal, caméra poussée au bout
+de son clamp. Ça ne coûte rien : c'est **un** appel de dessin carrelé,
+quelle que soit sa taille.
+
+Rien à inventer côté rendu : `_is_land` compte déjà le hors-grille comme
+de l'eau pour dessiner les rives, et l'eau était déjà le fond du plateau.
+**Le plateau était déjà une île** — il lui manquait sa mer.
+
+### La mer devait s'assombrir, sinon le décor se retournait contre l'UI
+
+Premier essai : un aplat turquoise vif d'un bord à l'autre. L'écran est
+bien rempli, mais les panneaux presque noirs de T9.7 s'y posent comme sur
+une piscine, et l'île perd son rôle de sujet — tout est également clair.
+
+Deux cases de **haut-fond** restent donc en pleine couleur autour du
+plateau — c'est exactement le liseré d'eau demandé — puis la teinte
+descend vers l'eau profonde, qui rejoint la matière de l'interface.
+Quatre trapèzes en `draw_polygon`, qui interpole entre les couleurs de
+ses sommets ; ils se rejoignent sur les diagonales des coins, où les deux
+voisins portent déjà la même valeur.
+
+**La distance du dégradé est MESURÉE, pas choisie.** Réglée à 9 cases —
+une valeur prise à vue — le bord de l'écran était encore à mi-chemin et
+les coins restaient turquoise. Au cadrage de combat, le bord gauche de la
+fenêtre tombe à 5,75 cases de la grille : c'est là que la mer doit avoir
+fini de foncer. En hauteur il n'y a que 2,1 cases avant le bord, donc le
+dégradé n'y commence même pas — et c'est très bien, cette bande-là est le
+haut-fond qui entoure l'île, et elle passe de toute façon sous les
+bandeaux du HUD.
+
+### Un banc d'essai qui mentait sur ce qu'il ouvre
+
+Le bouton de nuit annonçait « La route basse » et ouvrait `vallee_02`,
+qui est **le gué de Cendre**. Le libellé sort désormais de la carte
+elle-même. Un banc d'essai qui ment fait perdre plus de temps qu'il n'en
+fait gagner.
+
+### À juger à l'œil
+
+L'équilibrage est intact — c'est du décor, `simulate_combats` rend les
+mêmes chiffres. Ce qui reste à juger : **la couleur de l'eau profonde**
+et **la largeur du haut-fond**, toutes deux dans `data/combat/view.json`
+(`sea_deep`, `sea_shallow_tiles`, `sea_deep_tiles`).
+
+
 ---
 
 ## 6. Ce qui est rangé, pas jeté

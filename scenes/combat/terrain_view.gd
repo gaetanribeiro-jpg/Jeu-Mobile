@@ -41,14 +41,21 @@ func _draw() -> void:
 	# L'eau est le FOND, pas une tuile : le tileset dessine des rives, ce
 	# qui suppose de l'eau dessous. On peint donc tout en eau, puis on pose
 	# la terre par-dessus avec le bord qui convient.
+	#
+	# ET ELLE DÉBORDE LARGEMENT LA GRILLE. Le plateau est une île — c'est
+	# déjà ce que dit `_is_land`, qui compte le hors-grille comme de l'eau
+	# pour dessiner les rives. Sans mer autour, cette île flotte dans du
+	# noir et l'écran paraît vide ; avec elle, le décor va jusqu'aux bords.
+	#
+	# CE N'EST QUE DU DÉCOR, et ça ne doit jamais devenir autre chose : la
+	# grille reste 12 × 9, la caméra cadre TOUJOURS sur elle seule, et le
+	# clamp de déplacement ne bouge pas. Élargir la zone CADRÉE coûterait
+	# 17 % de la taille des cases — c'est la hauteur qui contraint le
+	# cadrage, donc ajouter des colonnes fait passer la contrainte en
+	# largeur et tout rétrécit d'un coup.
 	if _water != null:
-		draw_texture_rect(
-			_water,
-			Rect2(Vector2.ZERO, Vector2(
-				board.grid.width * _tile_size, board.grid.height * _tile_size
-			)),
-			true
-		)
+		draw_texture_rect(_water, _sea(), true)
+		_draw_deep_water()
 	for cell: Vector2i in board.grid.cells():
 		var tile := board.tile_at(cell)
 		var origin := Vector2(cell.x * _tile_size, cell.y * _tile_size)
@@ -61,6 +68,82 @@ func _draw() -> void:
 	# donc elles doivent passer après toutes les tuiles de base.
 	for cell: Vector2i in board.grid.cells():
 		_draw_cliff(cell)
+
+
+## Le rectangle de mer : la grille, plus une marge de décor tout autour.
+##
+## La marge se lit dans `view.json` et vaut assez de cases pour que l'eau
+## atteigne encore le bord de l'écran au zoom minimal, caméra poussée au
+## bout de son clamp. Un seul appel de dessin carrelé : la taille ne
+## coûte rien.
+func _sea() -> Rect2:
+	return _sea_ring(ViewSettings.number(&"sizes", &"sea_margin_tiles", 0.0))
+
+
+## La mer s'assombrit vers les bords de l'écran.
+##
+## SANS ÇA, LE DÉCOR SE RETOURNE CONTRE L'INTERFACE. Un aplat turquoise
+## vif d'un bord à l'autre remplit bien l'écran, mais les panneaux
+## presque noirs de T9.7 s'y posent comme sur une piscine, et l'île perd
+## son rôle de sujet : tout est également clair.
+##
+## Deux cases de HAUT-FOND restent en pleine couleur autour du plateau —
+## c'est exactement le liseré d'eau demandé — puis la teinte descend vers
+## l'eau profonde, qui rejoint la matière de l'interface.
+##
+## QUATRE TRAPÈZES PLUTÔT QU'UN DÉGRADÉ RADIAL, parce que `draw_polygon`
+## interpole entre les couleurs de ses sommets et qu'un écran est
+## rectangulaire : les quatre se rejoignent sur les diagonales des coins,
+## où les deux voisins portent déjà la même valeur.
+func _draw_deep_water() -> void:
+	var near := _sea_ring(ViewSettings.number(&"sizes", &"sea_shallow_tiles", 0.0))
+	var far := _sea_ring(ViewSettings.number(&"sizes", &"sea_deep_tiles", 0.0))
+	var deep := ViewSettings.color(&"sea_deep")
+	var clear := Color(deep.r, deep.g, deep.b, 0.0)
+	var inner := [
+		near.position, Vector2(near.end.x, near.position.y),
+		near.end, Vector2(near.position.x, near.end.y),
+	]
+	var outer := [
+		far.position, Vector2(far.end.x, far.position.y),
+		far.end, Vector2(far.position.x, far.end.y),
+	]
+	for side in 4:
+		var next := (side + 1) % 4
+		draw_polygon(
+			PackedVector2Array([
+				outer[side], outer[next], inner[next], inner[side]
+			]),
+			PackedColorArray([deep, deep, clear, clear])
+		)
+	# AU-DELÀ DU DERNIER TRAPÈZE, l'eau profonde est PLEINE : le dégradé
+	# s'arrête bien avant le bord de la mer, et sans ce remplissage on
+	# verrait le turquoise revenir derrière lui.
+	var edge := _sea()
+	for side in 4:
+		var next := (side + 1) % 4
+		var corner := [
+			edge.position, Vector2(edge.end.x, edge.position.y),
+			edge.end, Vector2(edge.position.x, edge.end.y),
+		]
+		draw_polygon(
+			PackedVector2Array([
+				corner[side], corner[next], outer[next], outer[side]
+			]),
+			PackedColorArray([deep, deep, deep, deep])
+		)
+
+
+## Le rectangle de la grille élargi de `tiles` cases sur les quatre côtés.
+func _sea_ring(tiles: float) -> Rect2:
+	var margin := tiles * float(_tile_size)
+	return Rect2(
+		Vector2(-margin, -margin),
+		Vector2(
+			board.grid.width * _tile_size + margin * 2.0,
+			board.grid.height * _tile_size + margin * 2.0
+		)
+	)
 
 
 ## Une case est « de la terre » si ce n'est pas de l'eau — et surtout PAS

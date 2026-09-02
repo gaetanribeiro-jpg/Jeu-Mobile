@@ -406,6 +406,64 @@ func test_le_plateau_ne_passe_pas_sous_le_hud() -> void:
 	assert_gt(safe.size.y, viewport.y * 0.5, "il reste plus de la moitié pour le plateau")
 
 
+func test_les_panneaux_lateraux_sont_reserves_eux_aussi() -> void:
+	# T9.8 : la zone sûre ne bornait que le haut et le bas. Depuis T9.7 il
+	# y a une colonne de cartes à gauche et un panneau de détail à droite,
+	# et le plateau était cadré sur une zone dont un tiers était couvert.
+	var hud: CanvasLayer = _scene._hud
+	var viewport := Vector2(1280, 720)
+	var safe: Rect2 = hud.safe_area(viewport)
+	assert_gt(safe.position.x, 0.0, "la colonne de cartes est réservée")
+	assert_lt(
+		safe.position.x + safe.size.x, viewport.x,
+		"le panneau de détail aussi"
+	)
+
+
+func test_la_mer_entoure_le_plateau_sans_le_cadrer() -> void:
+	# T9.9 : la mer est du DÉCOR. Elle déborde largement la grille pour
+	# remplir l'écran, mais la caméra continue de cadrer sur la grille
+	# SEULE — cadrer sur la mer coûterait 17 % de la taille des cases,
+	# puisque c'est la hauteur qui contraint et qu'élargir ferait passer
+	# la contrainte en largeur.
+	await _deploy_and_start()
+	var terrain: Node2D = _scene._terrain
+	var grid := _engine().board.grid
+	var tile := AssetTable.tile_size()
+	var span := Vector2(grid.width * tile, grid.height * tile)
+
+	var sea: Rect2 = terrain._sea()
+	assert_lt(sea.position.x, 0.0, "la mer déborde à gauche")
+	assert_lt(sea.position.y, 0.0, "et en haut")
+	assert_gt(sea.end.x, span.x, "et à droite")
+	assert_gt(sea.end.y, span.y, "et en bas")
+
+	# Les trois anneaux vont du plus proche au plus lointain : le
+	# haut-fond, la fin du dégradé, puis le bord de la mer.
+	var shallow: Rect2 = terrain._sea_ring(
+		ViewSettings.number(&"sizes", &"sea_shallow_tiles", 0.0)
+	)
+	var deep: Rect2 = terrain._sea_ring(
+		ViewSettings.number(&"sizes", &"sea_deep_tiles", 0.0)
+	)
+	assert_lt(shallow.position.x, 0.0, "le haut-fond entoure l'île")
+	assert_lt(deep.position.x, shallow.position.x, "le dégradé finit plus loin")
+	assert_lt(sea.position.x, deep.position.x, "la mer finit après le dégradé")
+
+	# LE CADRAGE NE CONNAÎT QUE LA GRILLE.
+	var hud: CanvasLayer = _scene._hud
+	var viewport := Vector2(1280, 720)
+	var safe: Rect2 = hud.safe_area(viewport)
+	var camera: Camera2D = _scene._camera
+	camera.frame_board(grid, tile, safe, viewport)
+	assert_almost_eq(
+		camera.zoom_level(),
+		minf(safe.size.x / span.x, safe.size.y / span.y),
+		0.001,
+		"le zoom se calcule sur la grille, jamais sur le décor"
+	)
+
+
 func test_le_fantome_ne_parait_que_sur_un_deplacement() -> void:
 	await _deploy_and_start()
 	var hero := _engine().current_unit()

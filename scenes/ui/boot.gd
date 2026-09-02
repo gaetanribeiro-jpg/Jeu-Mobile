@@ -458,6 +458,11 @@ func _on_expedition_combat_finished(scene: Node) -> void:
 
 # --- Le banc d'essai : un combat seul, hors expédition ---------------------
 
+## La carte que le bouton « de nuit » ouvre. Le § 36 veut qu'une
+## rencontre de nuit soit vérifiable sans gagner cinq combats d'abord.
+const NIGHT_TESTBENCH_MAP := &"vallee_02"
+
+
 func _build_map_list() -> void:
 	for child in _maps.get_children():
 		child.queue_free()
@@ -494,12 +499,20 @@ func _build_map_list() -> void:
 	# d'une expédition : sans ce bouton, vérifier une rencontre de nuit
 	# demande de gagner cinq combats d'abord, et personne ne le fera —
 	# c'est exactement le raisonnement qui a fait exister ce banc.
+	#
+	# LE LIBELLÉ SORT DE LA CARTE, pas d'une chaîne écrite à la main : il
+	# annonçait « La route basse » et ouvrait `vallee_02`, qui est le gué
+	# de Cendre. Un banc d'essai qui ment sur ce qu'il ouvre fait perdre
+	# plus de temps qu'il n'en fait gagner.
+	var night_map := CombatMap.load_map(NIGHT_TESTBENCH_MAP)
 	var night := Button.new()
-	night.text = tr("BOOT_TESTBENCH_NIGHT")
+	night.text = tr("BOOT_TESTBENCH_NIGHT") % [
+		tr(night_map.name_key) if night_map != null else String(NIGHT_TESTBENCH_MAP)
+	]
 	night.custom_minimum_size = Vector2(250, UiTheme.metric(&"button_height_small"))
 	night.add_theme_font_size_override("font_size", UiTheme.font_size(&"small"))
 	UiSkin.dress_button(night, &"muted")
-	night.pressed.connect(_start_test_combat.bind(&"vallee_02", &"night"))
+	night.pressed.connect(_start_test_combat.bind(NIGHT_TESTBENCH_MAP, &"night"))
 	grid.add_child(night)
 
 
