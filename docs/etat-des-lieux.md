@@ -2032,6 +2032,65 @@ qui la fixe casse au premier changement de style sans que rien ne soit
 faux.
 
 
+### T9.8 — lisible, plus grand, et un fond qui a de la matière ✅
+
+Trois reproches en une phrase : « certains textes sont illisibles, et
+l'écran de jeu reste trop petit, et j'aimerais apporter de la texture sur
+le fond noir pour le rendre moins fade ». Trois causes distinctes.
+
+### Le contour était devenu clair sur clair
+
+Chaque libellé du HUD portait un contour de 6 px tiré de `ink` — un
+contour SOMBRE, du temps où le fond était du parchemin. `ink` est passé
+au crème avec T9.7, et personne n'a rouvert `_label()` : le texte clair
+se retrouvait cerclé de clair. Sur une police pixel, les glyphes se
+rejoignent et le mot devient une tache.
+
+**Le contour est retiré partout** — boutons et libellés, thème global
+compris. Il ne reste que là où il sert : `_outlined()`, pour le texte
+posé SUR LE PLATEAU, où le fond n'est pas maîtrisé.
+
+### La zone sûre ignorait les panneaux latéraux
+
+`safe_area()` rendait toute la largeur de la fenêtre moins les deux
+bandeaux. Depuis T9.7 il y a une colonne de cartes à gauche et un panneau
+de détail à droite : le plateau était cadré sur une zone dont un tiers
+était couvert. Il est maintenant borné à gauche et à droite, et la caméra
+recentre sur **les deux axes** — jusqu'ici seul le vertical était corrigé,
+parce que jusqu'ici seul le vertical était borné.
+
+### Un aplat noir n'est pas un fond
+
+Le motif de Kenney se carrelle derrière tous les écrans. Deux pièges,
+tous deux silencieux, et tous deux trouvés à la mesure :
+
+- **Le motif est NOIR à la source.** Kenney le livre comme une ombre à
+  poser sur du clair. Teinté d'or par-dessus un fond presque noir, il
+  n'éclaircissait rien : mesuré, le fond passait de (14,12,10) à
+  (12,11,9) — il s'assombrissait. `UiSkin` le REPEINT en blanc en gardant
+  son alpha, comme le remplissage d'une jauge et comme un glyphe. **Une
+  source ne se teinte que si elle est claire** ; c'est la troisième fois
+  que le projet se cogne à cette règle.
+- **Deux alphas se multiplient.** Le fichier plafonne à 51/255 et la
+  teinte du thème vient par-dessus.
+
+**La règle qui fixe la valeur, et elle vaut au-delà du motif : la crête
+du fond reste SOUS le panneau le plus sombre.** Montée trop haut, elle
+atteignait 32 quand `panel_deep` valait 18 — le fond devenait plus clair
+que ce qu'on pose dessus, et un nœud de compétence désactivé s'y noyait.
+`verify_ui` et un test le vérifient maintenant dans les deux sens : un
+motif invisible est un défaut, un motif qui passe devant aussi.
+
+### Six écrans portaient déjà un fond, et il recouvrait le nouveau
+
+`_lay_backdrop()` insérait le motif à l'indice 0 — donc DERRIÈRE le
+`Background` que chaque `.tscn` dessine déjà. L'écran de titre est resté
+noir uni sans qu'aucune erreur ne le dise : **un nœud qui en cache un
+autre ne se plaint pas.** `UiSkin.lay_backdrop()` remplace les six
+copies : si l'écran a déjà un fond, on le repeint et on lui accroche le
+motif ; sinon seulement on en insère un.
+
+
 ---
 
 ## 6. Ce qui est rangé, pas jeté

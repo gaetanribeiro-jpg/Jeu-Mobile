@@ -2485,7 +2485,15 @@
     "middle": 16,
     "gap": 0
    }
-  }
+  },
+  "weave": {
+   "file": "patterns/weave.png",
+   "kind": "image",
+   "w": 32,
+   "h": 32,
+   "layout": "tile"
+  },
+  "_weave_note": "LE MOTIF DE FOND (T9.8). Un aplat noir derrière une interface, c'est ce que Gaetan a appelé « fade » : rien n'accroche la lumière, et les panneaux flottent sur du vide. Ce motif de 32 px se carrelle sur toute la fenêtre, en diagonales à peine visibles — assez pour que le fond ait une matière, pas assez pour concurrencer ce qui est posé dessus.\n\nDEUX PIÈGES, ET IL A FALLU LES MESURER. Le motif est NOIR à la source — Kenney le livre comme une ombre à poser sur du clair — donc le teinter d'or ne fait rien : sur un fond déjà presque noir, le fond passait de (14,12,10) à (12,11,9), il s'assombrissait. `UiSkin` le REPEINT en blanc en gardant son alpha, comme le remplissage d'une jauge et comme un glyphe. Et deux alphas se multiplient : le motif plafonne à 51/255 et la teinte `weave` vient PAR-DESSUS, donc à 0,16 comme les autres voiles l'opacité vraie tombait à 0,03.\n\nLA RÈGLE QUI FIXE LA VALEUR : la CRÊTE du motif doit rester SOUS le panneau le plus sombre. À 0,38 elle montait à 32 quand `panel_deep` vaut 18 — le fond était plus clair que ce qu'on pose dessus, et un nœud de compétence désactivé s'y noyait. À 0,18 la crête vaut 22, sous `panel_fill` (26) comme sous tout le reste, et les diagonales se lisent encore."
  },
  "glyphs": {
   "_note": "UN GLYPHE PAR COMPÉTENCE (§ 48). La clé EST l'identifiant de la compétence : c'est ce qui permet à la barre d'action de trouver son icône sans table de correspondance, et à une compétence sans glyphe de rester en texte au lieu de planter.\n\nCE SONT DES SVG, seul format où les quinze existaient. Ni Tiny Swords ni les packs Kenney n'ont d'icône de sort : le premier en a douze, toutes de ressources et de chrome ; le second est thématique jeu de plateau et n'offre que l'épée, l'arc, le feu et le bouclier.\n\nLE FOND NOIR A ÉTÉ RETIRÉ À L'IMPORT. Chaque icône de game-icons.net est un carré noir plein SUIVI du tracé blanc ; laisser le premier aurait posé un carré noir sur chaque bouton.\n\n`UiSkin` les réduit à 64 px et SEUILLE leur alpha au démarrage : rendues en vectoriel, elles sont lisses, et une silhouette lisse à côté du pixel art de Tiny Swords se voit immédiatement. Seuillées, elles redeviennent un masque franc, qui se teinte comme le reste.",

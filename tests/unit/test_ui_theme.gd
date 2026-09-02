@@ -244,3 +244,37 @@ func test_les_cles_de_commentaire_ne_sont_pas_des_entrees() -> void:
 	assert_true(AssetTable.sprite(&"ui", &"_slice_note").is_empty())
 	for role: StringName in UiTheme.surface_roles():
 		assert_false(AssetTable.is_note(String(role)), "rôle « %s »" % role)
+
+
+func test_le_motif_du_fond_reste_sous_les_panneaux() -> void:
+	# LA HIÉRARCHIE DU FOND, ET ELLE SE CASSE DANS LES DEUX SENS. Le
+	# motif de Kenney est NOIR et son alpha plafonne à 51/255 : teinté
+	# d'or sur un fond presque noir, il ne bougeait rien du tout. Monté
+	# trop haut, sa crête passait AU-DESSUS du panneau le plus sombre, et
+	# un nœud de compétence désactivé se noyait dans le fond.
+	var entry := AssetTable.sprite(&"widgets", &"weave")
+	assert_false(entry.is_empty(), "le motif de fond doit être déclaré")
+	var texture: Texture2D = load(String(entry.get("path", "")))
+	assert_not_null(texture, "le motif de fond est dans le dépôt (CC0)")
+	var image := texture.get_image()
+	if image.is_compressed():
+		image.decompress()
+	var peak := 0.0
+	for y in image.get_height():
+		for x in image.get_width():
+			peak = maxf(peak, image.get_pixel(x, y).a)
+	assert_gt(peak, 0.0, "un motif entièrement transparent n'existe pas")
+
+	# LES DEUX ALPHAS SE MULTIPLIENT : celui du fichier et celui du thème.
+	var tint := UiTheme.color(&"weave")
+	var ground := UiTheme.color(&"backdrop")
+	var crest := ground.lerp(Color(tint.r, tint.g, tint.b), peak * tint.a)
+	assert_gt(
+		crest.get_luminance() - ground.get_luminance(), 0.01,
+		"le motif doit se voir"
+	)
+	for role: StringName in [&"panel_fill", &"panel_deep"]:
+		assert_lt(
+			crest.get_luminance(), UiTheme.color(role).get_luminance(),
+			"la crête du motif doit rester sous « %s »" % role
+		)

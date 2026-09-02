@@ -40,6 +40,7 @@ var _rng: CombatRng
 
 func _ready() -> void:
 	theme = UiSkin.theme
+	_lay_backdrop()
 	_back.text = tr("COMBAT_BACK")
 	_back.pressed.connect(func() -> void: closed.emit())
 	_view.picked.connect(_on_picked)
@@ -340,3 +341,9 @@ func _grants(gained: Dictionary) -> String:
 				tr("GRANT_%s" % String(field).to_upper()), int(gained[key])
 			])
 	return ", ".join(pieces) if not pieces.is_empty() else tr("EFFECT_NOTHING")
+
+
+## Le motif de fond, posé DERRIÈRE tout le reste. Un aplat noir est fade :
+## rien n'y accroche la lumière et les panneaux flottent sur du vide.
+func _lay_backdrop() -> void:
+	UiSkin.lay_backdrop(self)

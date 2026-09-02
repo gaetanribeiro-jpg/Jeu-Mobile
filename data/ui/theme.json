@@ -28,9 +28,9 @@
       0.44
     ],
     "backdrop": [
-      0.055,
-      0.048,
-      0.04
+      0.032,
+      0.028,
+      0.023
     ],
     "parchment": [
       1.0,
@@ -101,7 +101,7 @@
       0.96,
       0.93,
       0.85,
-      0.55
+      0.38
     ],
     "wood_light": [
       1.0,
@@ -118,7 +118,7 @@
       0.95,
       0.74,
       0.32,
-      0.55
+      0.38
     ],
     "card_gold": [
       1.0,
@@ -136,9 +136,9 @@
       0.075
     ],
     "panel_deep": [
-      0.072,
-      0.063,
-      0.052
+      0.086,
+      0.076,
+      0.062
     ],
     "panel_edge": [
       0.72,
@@ -169,6 +169,12 @@
       0.075,
       0.085,
       0.145
+    ],
+    "weave": [
+      1.0,
+      0.88,
+      0.62,
+      0.17
     ]
   },
   "typography": {
@@ -196,13 +202,13 @@
     "portrait_small": 44,
     "portrait_card": 44,
     "card_margin": 12,
-    "card_width": 268,
+    "card_width": 250,
     "bar_height_card": 30,
-    "plank_margin": 22,
+    "plank_margin": 14,
     "objective_width": 300,
     "corner_width": 260,
     "timeline_width": 420,
-    "portrait_hero": 96,
+    "portrait_hero": 80,
     "ability_card_width": 212,
     "detail_width": 250,
     "detail_height": 330,

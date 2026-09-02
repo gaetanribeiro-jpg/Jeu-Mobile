@@ -56,6 +56,7 @@ var _expedition_screen: Control = null
 
 func _ready() -> void:
 	theme = UiSkin.theme
+	_lay_backdrop()
 	_title.add_theme_font_size_override("font_size", UiTheme.font_size(&"title"))
 	_title.add_theme_color_override("font_color", UiTheme.color(&"ink_gold"))
 	_subtitle.add_theme_color_override("font_color", UiTheme.color(&"ink_muted"))
@@ -652,3 +653,9 @@ func _open(path: String, setup: Callable) -> Control:
 func _dismiss(screen: Node) -> void:
 	if is_instance_valid(screen):
 		screen.queue_free()
+
+
+## Le motif de fond, posé DERRIÈRE tout le reste. Un aplat noir est fade :
+## rien n'y accroche la lumière et les panneaux flottent sur du vide.
+func _lay_backdrop() -> void:
+	UiSkin.lay_backdrop(self)

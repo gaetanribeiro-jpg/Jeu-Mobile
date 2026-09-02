@@ -121,10 +121,10 @@ func dress_button(button: Button, role: StringName = &"default") -> void:
 	button.add_theme_color_override(
 		"font_disabled_color", UiTheme.color(&"ink_disabled")
 	)
-	button.add_theme_color_override("font_outline_color", UiTheme.color(&"ink"))
-	button.add_theme_constant_override(
-		"outline_size", UiTheme.metric(&"text_outline")
-	)
+	# AUCUN CONTOUR. Sur un panneau sombre il ne sert à rien, et avec un
+	# texte clair il est clair sur clair : les glyphes d'une police pixel
+	# se rejoignent et le texte s'épaissit jusqu'à devenir illisible.
+	button.add_theme_constant_override("outline_size", 0)
 
 
 ## Fabrique une jauge complète : l'auge de bois du pack, et dedans le
@@ -243,6 +243,99 @@ func portrait(class_id: StringName, color: String) -> Texture2D:
 		return null
 	_textures[cache] = texture
 	return texture
+
+
+## Le fond de l'écran : un aplat sombre, et un motif carrelé par-dessus.
+##
+## UN APLAT NOIR EST FADE, et c'est le mot qu'a employé Gaetan. Rien n'y
+## accroche la lumière, et les panneaux flottent sur du vide. Le motif est
+## en diagonales à peine visibles : assez pour que le fond ait une
+## matière, pas assez pour concurrencer ce qui est posé dessus — un fond
+## qu'on remarque est un fond raté.
+##
+## DEUX PIÈGES, TOUS DEUX SILENCIEUX, et il a fallu deux mesures pour les
+## voir :
+## - **Le motif du pack est NOIR**, pas blanc : Kenney le livre comme une
+##   ombre à poser sur du clair. Multiplié par une teinte dorée, du noir
+##   reste du noir, et sur un fond déjà presque noir il ne fait rien —
+##   mesuré, le fond passait de (14,12,10) à (12,11,9). On le REPEINT
+##   donc en blanc en gardant son alpha, exactement comme le
+##   remplissage d'une jauge et comme un glyphe : une source ne se teinte
+##   que si elle est claire.
+## - **Deux alphas se multiplient.** Le motif plafonne à 51/255, et la
+##   teinte `weave` vient PAR-DESSUS. Réglée à 0,16 comme les autres
+##   voiles, l'opacité vraie tombait à 0,03.
+##
+## LA RÈGLE QUI FIXE LA TEINTE : la CRÊTE du motif reste SOUS le panneau
+## le plus sombre. Montée trop haut, elle passait à 32 quand `panel_deep`
+## vaut 18 : le fond devenait plus clair que ce qu'on pose dessus, et un
+## nœud de compétence désactivé s'y noyait.
+##
+## Rendu par `add_child` en PREMIER, donc derrière tout le reste — mais
+## passer par `lay_backdrop` plutôt que par `add_child` : six écrans
+## portent DÉJÀ leur propre `Background`, qui le recouvrait.
+func backdrop() -> Control:
+	var ground := ColorRect.new()
+	ground.color = UiTheme.color(&"backdrop")
+	ground.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	ground.mouse_filter = Control.MOUSE_FILTER_IGNORE
+
+	var entry := AssetTable.sprite(&"widgets", &"weave")
+	if entry.is_empty():
+		return ground
+	var path := String(entry.get("path", ""))
+	if path.is_empty() or not ResourceLoader.exists(path):
+		return ground
+	var image := _load_image(path)
+	if image == null:
+		return ground
+	_whiten(image)
+	var weave := TextureRect.new()
+	weave.texture = ImageTexture.create_from_image(image)
+	weave.stretch_mode = TextureRect.STRETCH_TILE
+	weave.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	# STRETCH_TILE ne carrelle que si la répétition est autorisée sur le
+	# nœud : une `ImageTexture` n'en décide pas elle-même.
+	weave.texture_repeat = CanvasItem.TEXTURE_REPEAT_ENABLED
+	weave.modulate = UiTheme.color(&"weave")
+	weave.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	weave.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	ground.add_child(weave)
+	return ground
+
+
+## Pose le fond sous un écran, en tenant compte de ce qu'il a déjà.
+##
+## SIX ÉCRANS PORTENT UN `Background` DESSINÉ DANS LEUR `.tscn`, et le
+## premier réglage l'ignorait : le motif était bien inséré à l'indice 0,
+## donc DERRIÈRE cet aplat, qui le recouvrait entièrement. L'écran de
+## titre est resté noir uni sans qu'aucune erreur ne le dise — un nœud
+## qui en cache un autre ne se plaint pas.
+##
+## D'où la règle : si l'écran a déjà un fond, on le REPEINT et on lui
+## accroche le motif ; sinon seulement on en insère un.
+##
+## `root` est un `Node` et pas un `Control` : la scène de combat est un
+## `Node2D`, et son fond doit rester SOUS le monde. Posé sur le
+## `CanvasLayer` du HUD il passait devant le plateau et le cachait — un
+## calque d'interface se dessine par-dessus le monde, c'est sa raison
+## d'être.
+func lay_backdrop(root: Node) -> void:
+	var existing := root.get_node_or_null(^"Background")
+	if existing is ColorRect:
+		var ground := existing as ColorRect
+		ground.color = UiTheme.color(&"backdrop")
+		if ground.get_child_count() == 0:
+			var weave := backdrop()
+			# On ne garde que le motif : l'aplat est déjà là.
+			for child in weave.get_children():
+				weave.remove_child(child)
+				ground.add_child(child)
+			weave.queue_free()
+		return
+	var fresh := backdrop()
+	root.add_child(fresh)
+	root.move_child(fresh, 0)
 
 
 ## La carte d'un personnage : portrait encadré, nom, jauge de vie.
@@ -366,6 +459,21 @@ func _threshold(image: Image, level: float) -> void:
 				# franc, sinon les pixels à demi couverts gardent leur
 				# gris et le seuil ne sert à rien.
 				image.set_pixel(x, y, Color(1, 1, 1, 1))
+
+
+## Repeint chaque pixel en blanc, en gardant son alpha.
+##
+## Une source SOMBRE ne se teinte pas : `modulate` multiplie, et tout ce
+## qui multiplie du noir rend du noir. C'est la même raison que
+## `_desaturate(normalise)` pour les jauges — sauf qu'ici le motif n'a
+## aucun relief à préserver, seulement une forme.
+func _whiten(image: Image) -> void:
+	for y in image.get_height():
+		for x in image.get_width():
+			var pixel := image.get_pixel(x, y)
+			if pixel.a <= 0.0:
+				continue
+			image.set_pixel(x, y, Color(1, 1, 1, pixel.a))
 
 
 ## Les deux textures d'une jauge : { base, fill }. Vides si le pack
@@ -495,8 +603,8 @@ func _build_theme() -> void:
 	theme.set_color("font_disabled_color", "Button", UiTheme.color(&"ink_disabled"))
 	theme.set_color("font_hover_color", "Button", UiTheme.color(&"ink_inverse"))
 	theme.set_color("font_pressed_color", "Button", UiTheme.color(&"ink_inverse"))
-	theme.set_color("font_outline_color", "Button", UiTheme.color(&"ink"))
-	theme.set_constant("outline_size", "Button", UiTheme.metric(&"text_outline"))
+	theme.set_constant("outline_size", "Button", 0)
+	theme.set_constant("outline_size", "Label", 0)
 
 	var pad := UiTheme.metric(&"button_pad")
 	for state: String in ["normal", "hover", "focus"]:

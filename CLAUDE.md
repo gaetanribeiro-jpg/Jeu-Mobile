@@ -262,8 +262,10 @@ dur : passer par `data/assets.json`.
   panneaux du pack), T9.3 (boutons teintés), T9.4 (les widgets que Tiny
   Swords ne dessine pas, pris chez Kenney).
 - **Phase 10 en cours.** T10.1 : le soin (`KIND_HEAL` était déclaré et
-  jamais écrit), les potions du § 44, le sac commun. **754 tests
+  jamais écrit), les potions du § 44, le sac commun. **759 tests
   passent.**
+- **T9.8 :** les trois reproches de Gaetan — texte illisible, plateau
+  trop petit, fond fade.
 - **La boucle du § 3 tourne en entier :** royaume → carte du monde →
   expédition → combat → butin et expérience → compagnie → royaume. Une
   sortie conclue déclenche un cycle de production ; le royaume rend des
@@ -478,6 +480,36 @@ deux SILENCIEUX :
   erreur : la ronde et le bouton de pause avaient disparu. La timeline et
   le coin sont donc ANCRÉS sur le `CanvasLayer` — pas dans un
   `Container`, qui écrase les ancrages de ses enfants.
+
+**LE FOND A DE LA MATIÈRE, ET ELLE SE RÈGLE À LA MESURE (T9.8).** Un
+motif de diagonales se carrelle derrière tous les écrans. Quatre choses à
+ne pas défaire :
+- **Une source ne se teinte que si elle est CLAIRE.** Le motif de Kenney
+  est noir — il est fait pour ombrer du clair — donc le teinter d'or ne
+  faisait rien : le fond s'ASSOMBRISSAIT de deux niveaux. `UiSkin` le
+  repeint en blanc en gardant son alpha, comme le remplissage d'une jauge
+  et comme un glyphe. Troisième fois que le projet se cogne à cette règle.
+- **Deux alphas se multiplient** : celui du fichier (51/255) et celui du
+  thème.
+- **La crête du fond reste SOUS le panneau le plus sombre.** Sinon le
+  fond passe devant ce qu'on pose dessus, et un nœud désactivé s'y noie.
+  `verify_ui` et un test le refusent dans les deux sens — invisible ET
+  trop marqué.
+- **Passer par `UiSkin.lay_backdrop()`, jamais par `add_child`.** Six
+  écrans portent déjà un `Background` dans leur `.tscn`, qui recouvrait
+  le motif inséré derrière lui. Un nœud qui en cache un autre ne se
+  plaint pas.
+
+**AUCUN CONTOUR DE TEXTE DANS L'INTERFACE (T9.8).** Le contour de 6 px
+datait du parchemin clair ; `ink` étant passé au crème, il était devenu
+clair sur clair et les glyphes de la police pixel se rejoignaient. Il ne
+reste que sur le texte posé SUR LE PLATEAU (`_outlined()`), où le fond
+n'est pas maîtrisé.
+
+**La zone sûre du combat est bornée à GAUCHE ET À DROITE** depuis que
+T9.7 a posé des panneaux latéraux, et la caméra recentre sur les deux
+axes. Cadrer sur toute la largeur mettait un tiers du plateau sous les
+cartes.
 
 **`UiSkin`, PAS `Skin` : ce nom est pris par Godot** (la peau d'un
 squelette). L'autoload se résolvait silencieusement sur la classe native.

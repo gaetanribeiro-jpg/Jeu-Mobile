@@ -47,11 +47,18 @@ func frame_board(
 	else:
 		set_zoom_level(ViewSettings.number(&"camera", &"zoom_default", 1.0))
 
+	# ON RECENTRE SUR LES DEUX AXES. Tant que la zone sûre valait toute la
+	# largeur, seul l'axe vertical avait besoin d'être corrigé ; depuis
+	# qu'elle est bornée à gauche et à droite par les panneaux, un plateau
+	# centré sur l'écran se retrouve décalé dans la fenêtre qui lui reste.
 	offset = Vector2.ZERO
 	_framing = Vector2.ZERO
 	if viewport.y > 0.0 and safe.size.y > 0.0:
 		var safe_centre := safe.position.y + safe.size.y * 0.5
 		offset.y = (viewport.y * 0.5 - safe_centre) / maxf(zoom.y, 0.001)
+	if viewport.x > 0.0 and safe.size.x > 0.0:
+		var safe_middle := safe.position.x + safe.size.x * 0.5
+		offset.x = (viewport.x * 0.5 - safe_middle) / maxf(zoom.x, 0.001)
 	_framing = offset
 	_clamp_position()
 

@@ -34,6 +34,7 @@ var _confirming := false
 
 func _ready() -> void:
 	theme = UiSkin.theme
+	_lay_backdrop()
 	_title.text = tr("OPTIONS_TITLE")
 	_back.text = tr("COMBAT_BACK")
 	_back.pressed.connect(func() -> void: closed.emit())
@@ -146,3 +147,9 @@ func _action(text: String, handler: Callable) -> Button:
 func _note(text: String) -> void:
 	if is_node_ready():
 		_journal.text = text
+
+
+## Le motif de fond, posé DERRIÈRE tout le reste. Un aplat noir est fade :
+## rien n'y accroche la lumière et les panneaux flottent sur du vide.
+func _lay_backdrop() -> void:
+	UiSkin.lay_backdrop(self)

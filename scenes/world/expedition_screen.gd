@@ -100,6 +100,7 @@ func refresh() -> void:
 	# moment pèse sur la décision du § 29 ; une information qu'il faut
 	# chercher ne pèse sur rien.
 	theme = UiSkin.theme
+	_lay_backdrop()
 	_title.text = "%s · %s · %s" % [
 		tr(Region.name_key(_run.region_id)),
 		tr("EXPEDITION_STEP_OF") % [_run.depth() + 1, _run.length()],
@@ -510,3 +511,8 @@ func _note(text: String) -> void:
 	_journal = text
 	if is_node_ready():
 		_journal_label.text = _journal
+
+
+## Le motif de fond, posé DERRIÈRE tout le reste.
+func _lay_backdrop() -> void:
+	UiSkin.lay_backdrop(self)

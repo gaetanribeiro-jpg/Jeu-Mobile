@@ -15,6 +15,13 @@ extends SceneTree
 ## morceaux séparés par du vide ; sans sa géométrie déclarée, on étire les
 ## trous avec le décor et le résultat est méconnaissable sans être vide.
 
+## Éclaircissement minimal du fond par le motif, en luminance.
+##
+## Mesuré : à 0,03 les diagonales se lisent sans se remarquer, à 0,000
+## elles n'existent pas. Le seuil est bas exprès — il refuse le motif
+## ABSENT, pas le motif discret, qui est ce qu'on veut.
+const MINIMUM_WEAVE_LIFT := 0.01
+
 var _problems: Array[String] = []
 
 
@@ -27,6 +34,7 @@ func _init() -> void:
 	_check_button_roles()
 	_check_bars()
 	_check_widgets()
+	_check_weave()
 	_check_glyphs()
 
 	if _problems.is_empty():
@@ -234,6 +242,74 @@ func _check_widgets() -> void:
 
 	print("widgets      : %d déclarés, largeur de barre %d"
 		% [block.size() - 1, UiTheme.metric(&"scrollbar_width")])
+
+
+## Le motif du fond (T9.8).
+##
+## DEUX FAÇONS DE LE RATER, ET J'AI TROUVÉ LES DEUX À L'ŒIL AVANT DE LES
+## MESURER. Ni l'une ni l'autre ne pousse la moindre erreur : un fond mal
+## réglé s'affiche, simplement il ne fait pas son travail.
+##
+## - **Trop discret, il n'existe pas.** Le motif de Kenney est noir — il
+##   est fait pour ombrer du clair — et son alpha plafonne à 51/255 ;
+##   teinté d'or sur un fond presque noir, il ne bougeait le fond que
+##   d'UN niveau sur 255. `UiSkin` le repeint donc en blanc, et la teinte
+##   du thème doit rester assez haute pour qu'on voie quelque chose.
+## - **Trop marqué, il passe DEVANT.** À l'inverse, une crête plus claire
+##   que le panneau le plus sombre inverse la hiérarchie : le fond
+##   devient plus lumineux que ce qu'on pose dessus, et un nœud de
+##   compétence désactivé s'y noie.
+##
+## Ce contrôle borne la teinte entre ces deux fautes, en calculant la
+## crête réelle — l'alpha du fichier MULTIPLIÉ par celui du thème.
+func _check_weave() -> void:
+	var entry := AssetTable.sprite(&"widgets", &"weave")
+	if entry.is_empty():
+		_problems.append("pas de motif de fond déclaré : l'interface restera "
+			+ "sur un aplat noir")
+		return
+	var path := String(entry.get("path", ""))
+	if not ResourceLoader.exists(path):
+		_problems.append("motif de fond : %s absent du dépôt" % path)
+		return
+	var texture: Texture2D = load(path)
+	var image := texture.get_image() if texture != null else null
+	if image == null:
+		_problems.append("motif de fond : %s illisible" % path)
+		return
+	if image.is_compressed():
+		image.decompress()
+
+	var peak := 0.0
+	for y in image.get_height():
+		for x in image.get_width():
+			peak = maxf(peak, image.get_pixel(x, y).a)
+	if peak <= 0.0:
+		_problems.append("motif de fond : entièrement transparent")
+		return
+
+	var tint := UiTheme.color(&"weave")
+	var ground := UiTheme.color(&"backdrop")
+	var opacity := peak * tint.a
+	var crest := ground.lerp(Color(tint.r, tint.g, tint.b), opacity)
+	var lift := crest.get_luminance() - ground.get_luminance()
+	if lift < MINIMUM_WEAVE_LIFT:
+		_problems.append(
+			"motif de fond : il n'éclaircit le fond que de %.3f — invisible. "
+			% lift + "L'alpha du fichier (%.2f) et celui du thème (%.2f) se "
+			% [peak, tint.a] + "MULTIPLIENT."
+		)
+	var floor_ := minf(
+		UiTheme.color(&"panel_fill").get_luminance(),
+		UiTheme.color(&"panel_deep").get_luminance()
+	)
+	if crest.get_luminance() >= floor_:
+		_problems.append(
+			"motif de fond : sa crête (%.3f) atteint le panneau le plus sombre "
+			% crest.get_luminance() + "(%.3f). Le fond passerait devant." % floor_
+		)
+	print("motif de fond: crête %.3f, plancher des panneaux %.3f"
+		% [crest.get_luminance(), floor_])
 
 
 ## Les glyphes de compétences (§ 48).

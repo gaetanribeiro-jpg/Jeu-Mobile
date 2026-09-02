@@ -44,6 +44,7 @@ var _selected_id: int = -1
 
 func _ready() -> void:
 	theme = UiSkin.theme
+	_lay_backdrop()
 	%Title.text = tr("COMPANY_TITLE")
 	_back.text = tr("COMBAT_BACK")
 	_back.pressed.connect(func() -> void: closed.emit())
@@ -367,3 +368,9 @@ func _button(text: String) -> Button:
 	button.custom_minimum_size = Vector2(210, 64)
 	button.add_theme_font_size_override("font_size", 20)
 	return button
+
+
+## Le motif de fond, posé DERRIÈRE tout le reste. Un aplat noir est fade :
+## rien n'y accroche la lumière et les panneaux flottent sur du vide.
+func _lay_backdrop() -> void:
+	UiSkin.lay_backdrop(self)

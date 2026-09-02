@@ -40,8 +40,8 @@ signal pause_pressed
 const HERO_COLOR := "Blue"
 
 const TOUCH_TARGET_PX := 96
-const TOP_BAR_PX := 64
-const BOTTOM_BAR_PX := 196
+const TOP_BAR_PX := 62
+const BOTTOM_BAR_PX := 168
 
 var _objective: Label
 var _round: Label
@@ -100,10 +100,22 @@ func _ready() -> void:
 
 
 ## Le rectangle que le plateau peut occuper sans passer sous le HUD.
+## La place qui reste VRAIMENT au plateau.
+##
+## ELLE NE COMPTAIT QUE LE HAUT ET LE BAS. Depuis que la colonne des héros
+## et le panneau de détail existent, le plateau était cadré sur toute la
+## largeur puis DESSINÉ SOUS EUX : un tiers de la carte se jouait derrière
+## des panneaux opaques. Le joueur ne voyait pas qu'il manquait quelque
+## chose, il voyait juste un plateau étroit.
 func safe_area(viewport: Vector2) -> Rect2:
+	var left := float(UiTheme.metric(&"card_width") + 30)
+	var right := float(UiTheme.metric(&"detail_width") + 30)
 	return Rect2(
-		Vector2(0, TOP_BAR_PX),
-		Vector2(viewport.x, maxf(viewport.y - TOP_BAR_PX - BOTTOM_BAR_PX, 1.0))
+		Vector2(left, TOP_BAR_PX),
+		Vector2(
+			maxf(viewport.x - left - right, 1.0),
+			maxf(viewport.y - TOP_BAR_PX - BOTTOM_BAR_PX, 1.0)
+		)
 	)
 
 
@@ -368,7 +380,7 @@ func _build_middle() -> Control:
 	centre.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	centre.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	middle.add_child(centre)
-	_banner = _label(64)
+	_banner = _outlined(64)
 	_banner.visible = false
 	centre.add_child(_banner)
 	return middle
@@ -674,7 +686,7 @@ func _ability_button(ability_id: StringName) -> Button:
 	var button := Button.new()
 	button.toggle_mode = true
 	button.custom_minimum_size = Vector2(
-		UiTheme.metric(&"ability_card_width"), TOUCH_TARGET_PX * 0.9
+		UiTheme.metric(&"ability_card_width"), TOUCH_TARGET_PX * 0.72
 	)
 	button.add_theme_font_size_override("font_size", UiTheme.font_size(&"small"))
 	# UNE POTION N'EST PAS UN SORT, ET ÇA DOIT SE VOIR AVANT DE LIRE. Elle
@@ -820,12 +832,32 @@ func _caption(key: String) -> Label:
 	return caption
 
 
+## PAS DE CONTOUR PAR DÉFAUT, et c'est un correctif, pas un réglage.
+##
+## `_label` en posait un de 6 px sur CHAQUE texte, hérité du temps où le
+## HUD flottait au-dessus du plateau et devait rester lisible sur de
+## l'herbe. Depuis que tout repose sur un panneau sombre, le contour ne
+## sert plus à rien — et depuis que `ink` est passé au crème, il est
+## CLAIR SUR CLAIR : les glyphes d'une police pixel se rejoignent et le
+## texte devient une bouillie grasse. C'est ce que Gaetan a montré en
+## zoomant sur l'arbre de compétences.
+##
+## Le contour reste disponible pour ce qui se dessine SUR le plateau —
+## la bannière de résultat — par `_outlined`.
 func _label(size: int) -> Label:
 	var label := Label.new()
 	label.add_theme_font_size_override("font_size", size)
-	label.add_theme_color_override("font_outline_color", UiTheme.color(&"ink"))
-	label.add_theme_constant_override("outline_size", 6)
+	label.add_theme_constant_override("outline_size", 0)
 	label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	return label
+
+
+## Un texte posé SUR le plateau : là, le contour sombre est la seule
+## chose qui le sépare de l'herbe.
+func _outlined(size: int) -> Label:
+	var label := _label(size)
+	label.add_theme_color_override("font_outline_color", UiTheme.color(&"backdrop"))
+	label.add_theme_constant_override("outline_size", UiTheme.metric(&"text_outline"))
 	return label
 
 

@@ -37,6 +37,7 @@ var _squad_ids: Array[int] = []
 
 func _ready() -> void:
 	theme = UiSkin.theme
+	_lay_backdrop()
 	_title.text = tr("WORLD_TITLE")
 	_back.text = tr("COMBAT_BACK")
 	_back.pressed.connect(func() -> void: closed.emit())
@@ -194,3 +195,9 @@ func _on_depart() -> void:
 	if not Region.is_unlocked(_selected) or _squad_ids.is_empty():
 		return
 	departed.emit(_selected, _squad_ids.duplicate())
+
+
+## Le motif de fond, posé DERRIÈRE tout le reste. Un aplat noir est fade :
+## rien n'y accroche la lumière et les panneaux flottent sur du vide.
+func _lay_backdrop() -> void:
+	UiSkin.lay_backdrop(self)

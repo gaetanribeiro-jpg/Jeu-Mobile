@@ -161,6 +161,12 @@ func _build_scene() -> void:
 	tint.color = ViewSettings.color(StringName("moment_%s" % moment))
 	add_child(tint)
 
+	# LE MOTIF DE FOND, SUR LE FOND DE LA SCÈNE ET PAS SUR LE HUD. Posé sur
+	# le `CanvasLayer` du HUD il passait DEVANT le plateau et le cachait
+	# entièrement : un calque d'interface se dessine par-dessus le monde,
+	# c'est sa raison d'être.
+	UiSkin.lay_backdrop(self)
+
 	_terrain = Node2D.new()
 	_terrain.set_script(load("res://scenes/combat/terrain_view.gd"))
 	add_child(_terrain)
