@@ -178,6 +178,7 @@ STEP_MERCHANT,Marchand
 STEP_REWARD,Récompense
 EXPEDITION_STEP_OF,étape %d sur %d
 EXPEDITION_SATCHEL,Besace : %d or · %d objets
+EXPEDITION_SUPPLIES,Sac : %d potions
 EXPEDITION_SQUAD,Votre équipe
 EXPEDITION_RETREAT,Rentrer
 EXPEDITION_FIGHT,Engager le combat
@@ -193,6 +194,7 @@ EXPEDITION_HOME,Rentré au royaume.
 EXPEDITION_COMPLETE,Le boss est tombé. La région est à vous.
 EXPEDITION_LOST,L'équipe est tombée. Une partie de la besace est perdue.
 EXPEDITION_LOG_GOLD,%+d or
+EXPEDITION_LOG_SUPPLY,%s rejoint le sac
 EXPEDITION_LOG_LOST,%d or perdu
 EXPEDITION_LOG_DOWNED,%s est tombé
 EXPEDITION_LOG_AMBUSHED,Ils vous coupent la route.
@@ -394,6 +396,8 @@ ABILITY_FIREBOMB,Bombe incendiaire
 HUD_OBJECTIVE_TITLE,Objectif
 HUD_NEXT_TITLE,Prochain
 HUD_DETAIL_DAMAGE,Dégâts
+HUD_DETAIL_HEAL,Soigne
+HUD_DETAIL_MOVEMENT,PM
 HUD_DETAIL_RANGE,Portée
 HUD_DETAIL_EFFECT,Effet
 HUD_DETAIL_NONE,Aucun

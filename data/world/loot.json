@@ -12,6 +12,13 @@
     "on_defeat": 0.2,
     "max_items": 1
   },
+  "supplies": {
+    "_note": "LES POTIONS DU § 44 DANS LE BUTIN (T10.2). Sans ce bloc, une potion ne s'obtenait nulle part : `consumables.json` en donnait quatre au premier lancement et c'était tout. Une réserve qui ne se renouvelle pas n'est pas une ressource, c'est un compte à rebours — et le troisième terme de « je rentre ou je continue ? » (§ 29) disparaît avec elle.\n\nTIRAGE SÉPARÉ DE CELUI DE L'ÉQUIPEMENT, ET C'EST VOULU. Mélangées au même sac, les potions auraient pris la place des armures : l'économie de l'équipement est mesurée, et une potion consommable n'est pas un remplacement acceptable pour un objet permanent. Le joueur qui voit une potion là où il espérait une épée se sent volé.\n\nPLUS FRÉQUENTES QUE L'ÉQUIPEMENT, exprès. Une potion se boit et disparaît ; il en faut un flux, pas une trouvaille. `on_victory` à 0,5 rend environ une potion tous les deux combats, contre une pièce d'équipement sur 0,7 tirage.\n\nLA DÉFAITE N'EN DONNE PAS. Le § 41 refuse la punition absolue et c'est pour ça que l'équipement tombe quand même ; mais une équipe qui vient de perdre a déjà vidé son sac, et lui rendre une potion effacerait la dépense.",
+    "on_victory": 0.5,
+    "on_defeat": 0.0,
+    "max_items": 1,
+    "per_step": 0.05
+  },
   "depth": {
     "_note": "Effet d'une rencontre de plus dans la même expédition (§ 29). L'or croît linéairement, la chance d'objet aussi, et le tirage de rareté se décale d'un cran tous les `rarity_step` niveaux de profondeur.",
     "gold_per_step": 0.15,

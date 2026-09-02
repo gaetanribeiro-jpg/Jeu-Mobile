@@ -138,3 +138,82 @@ func test_au_fond_le_commun_cesse_de_sortir() -> void:
 			deep[Equipment.rarity_of(item_id)] = true
 	assert_false(deep.has(&"common"), "un commun est tombé au fond d'une expédition")
 	assert_gt(deep.size(), 0, "il faut bien que quelque chose soit tombé")
+
+
+# --- Les potions, troisième fil (T10.2) ------------------------------------
+
+func _supply_rate(victory: bool, depth: int, runs: int = 400) -> float:
+	var drops := 0
+	for i in runs:
+		var found: Array = Loot.roll(
+			CombatRng.new(i * 15485863), _encounter(4, victory), depth
+		)["supplies"]
+		if not found.is_empty():
+			drops += 1
+	return float(drops) / float(runs)
+
+
+func test_une_potion_qui_tombe_existe_vraiment() -> void:
+	var seen := 0
+	for i in 200:
+		for item_id: StringName in Loot.roll(
+			CombatRng.new(i * 6151), _encounter(4, true)
+		)["supplies"] as Array:
+			assert_true(Consumable.exists(item_id), "« %s » n'existe pas" % item_id)
+			seen += 1
+	assert_gt(seen, 0, "sans ça, le sac ne se renouvelle jamais")
+
+
+func test_les_potions_ne_prennent_pas_la_place_de_l_equipement() -> void:
+	# TIRAGE SÉPARÉ, ET C'EST TOUT L'INTÉRÊT. L'économie de l'équipement
+	# est mesurée au point de rareté ; une consommable n'est pas un
+	# remplacement acceptable pour un objet qu'on garde, et le joueur qui
+	# voit une fiole là où il espérait une épée se sent volé.
+	var with_potions := _drop_rate(true, 0)
+	assert_almost_eq(
+		with_potions, Loot.number(&"drop", &"on_victory", 0.0), 0.08,
+		"le taux d'équipement doit rester celui qui est déclaré"
+	)
+
+
+func test_une_defaite_ne_rend_pas_de_potion() -> void:
+	# Le § 41 refuse la punition absolue, et c'est pour ça que
+	# l'équipement tombe quand même. Mais une équipe qui vient de perdre a
+	# déjà vidé son sac : lui rendre une fiole effacerait la dépense.
+	assert_eq(_supply_rate(false, 0), 0.0)
+	assert_gt(_supply_rate(true, 0), 0.0)
+
+
+func test_s_enfoncer_rend_les_potions_plus_frequentes() -> void:
+	assert_gt(_supply_rate(true, 6), _supply_rate(true, 0))
+
+
+func test_une_potion_tombe_plus_souvent_qu_une_piece_d_equipement() -> void:
+	# Une potion se boit et disparaît : il en faut un FLUX, pas une
+	# trouvaille. Sinon la réserve n'est qu'un compte à rebours.
+	assert_gt(_supply_rate(true, 4), _drop_rate(true, 4) * 0.5)
+
+
+func test_au_fond_les_potions_ne_se_tarissent_pas() -> void:
+	# L'ÉCHELLE EST RÉDUITE À CE QUI EXISTE. Il n'y a de potions que dans
+	# deux raretés sur cinq : sans ce garde-fou, au troisième palier de
+	# profondeur le plancher passait au-dessus de la meilleure et le fil
+	# s'arrêtait — plus on s'enfonce, moins on se ravitaille, exactement
+	# l'inverse du § 29.
+	var deep := 0
+	for i in 120:
+		deep += (Loot.roll(
+			CombatRng.new(i * 3571), _encounter(5, true), 12
+		)["supplies"] as Array).size()
+	assert_gt(deep, 0, "au fond d'une expédition, plus aucune potion ne tombait")
+
+
+func test_un_etal_ne_propose_pas_deux_fois_la_meme_fiole() -> void:
+	# Deux fioles identiques côte à côte, c'est un rang perdu et un choix
+	# en moins. Un butin, lui, peut répéter : c'est un stock, pas une
+	# vitrine.
+	for i in 40:
+		var listed := Loot.draw_supplies(CombatRng.new(i * 8191), 2, 3, 0, true)
+		if listed.size() < 2:
+			continue
+		assert_ne(listed[0], listed[1], "graine %d : l'étal se répète" % i)

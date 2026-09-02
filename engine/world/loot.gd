@@ -3,12 +3,14 @@ extends RefCounted
 
 ## Ce qu'une rencontre laisse tomber (§ 30 et § 32).
 ##
-## Deux fils, et ils ne servent pas à la même chose. L'OR est le fil sûr :
+## Trois fils, et ils ne servent pas à la même chose. L'OR est le fil sûr :
 ## il tombe toujours, proportionnellement à ce qu'on a abattu, et c'est lui
 ## qui alimentera le royaume. L'ÉQUIPEMENT est le fil incertain : il ne
 ## tombe pas à chaque fois, et sa rareté se tire aux poids déclarés. Un
 ## joueur qui perd repart quand même avec quelque chose — le § 41 refuse la
-## punition absolue.
+## punition absolue. LES POTIONS sont un troisième fil, tiré à part : une
+## consommable n'a pas à prendre la place d'un objet qu'on garde, et le
+## § 29 a besoin qu'elles arrivent en flux plutôt qu'en trouvaille.
 ##
 ## LA PROFONDEUR est le levier du § 29. Plus le joueur enchaîne les
 ## rencontres sans rentrer, plus `depth` monte, et plus le butin grossit :
@@ -73,12 +75,16 @@ static func number(section: StringName, key: StringName, fallback: float) -> flo
 ## table du butin devrait connaître le calendrier des expéditions, et
 ## chaque nouvelle circonstance viendrait s'y ajouter.
 ##
-## Renvoie { gold, items }.
+## Renvoie { gold, items, supplies }.
 static func roll(
 	rng: CombatRng, summary: Dictionary, depth: int = 0, bonus: Dictionary = {}
 ) -> Dictionary:
 	if rng == null or summary.is_empty():
-		return {"gold": 0, "items": [] as Array[StringName]}
+		return {
+			"gold": 0,
+			"items": [] as Array[StringName],
+			"supplies": [] as Array[StringName],
+		}
 	var downed := int(summary.get("enemies_downed", 0))
 	var victory := bool(summary.get("victory", false))
 	var deeper := 1.0 + number(&"depth", &"gold_per_step", 0.0) * float(maxi(depth, 0))
@@ -87,6 +93,7 @@ static func roll(
 	return {
 		"gold": _roll_gold(rng, downed, victory, deeper),
 		"items": _roll_items(rng, victory, depth, int(bonus.get("rarity_bonus", 0))),
+		"supplies": _roll_supplies(rng, victory, depth, int(bonus.get("rarity_bonus", 0))),
 	}
 
 
@@ -118,6 +125,92 @@ static func draw_items(rng: CombatRng, count: int, depth: int, rarity_bonus: int
 	return out
 
 
+## Tire un nombre voulu de potions, sans passer par une rencontre.
+##
+## LES POTIONS SONT UN SECOND FIL, PAS UNE PART DU PREMIER. Mêlées au sac
+## de l'équipement, elles auraient pris sa place : l'économie de
+## l'équipement est mesurée au point de rareté, et une potion qui se boit
+## n'est pas un remplacement acceptable pour un objet qu'on garde. Le
+## joueur qui voit une fiole là où il espérait une épée se sent volé.
+## `distinct` interdit de tirer deux fois la même. C'est ce dont un ÉTAL
+## a besoin : deux fioles identiques côte à côte, c'est un rang perdu et
+## un choix en moins. Un butin, lui, peut très bien rendre deux fois la
+## même potion — c'est un stock, pas une vitrine.
+static func draw_supplies(
+	rng: CombatRng, count: int, depth: int, rarity_bonus: int = 0,
+	distinct: bool = false
+) -> Array[StringName]:
+	var out: Array[StringName] = []
+	if rng == null:
+		return out
+	for i in maxi(count, 0):
+		var item_id := _roll_supply(rng, depth, rarity_bonus, out if distinct else [])
+		if not item_id.is_empty():
+			out.append(item_id)
+	return out
+
+
+static func _roll_supplies(
+	rng: CombatRng, victory: bool, depth: int, rarity_bonus: int = 0
+) -> Array[StringName]:
+	var out: Array[StringName] = []
+	var chance := number(
+		&"supplies", &"on_victory" if victory else &"on_defeat", 0.0
+	)
+	chance += number(&"supplies", &"per_step", 0.0) * float(maxi(depth, 0))
+	var limit := int(number(&"supplies", &"max_items", 1))
+
+	for i in maxi(limit, 0):
+		if not rng.chance(clampf(chance, 0.0, 1.0), &"loot_supply_drop"):
+			continue
+		var item_id := _roll_supply(rng, depth, rarity_bonus)
+		if not item_id.is_empty():
+			out.append(item_id)
+	return out
+
+
+## Une potion, tirée à la même échelle de rareté que l'équipement.
+##
+## LA MÊME ÉCHELLE, PAS UNE SECONDE. Les raretés et leurs poids vivent
+## dans `equipment.json` et servent déjà à `verify_items` ; en écrire une
+## seconde pour les potions garantirait que les deux divergent au premier
+## ajout. Une potion déclare simplement à laquelle elle appartient.
+static func _roll_supply(
+	rng: CombatRng, depth: int, rarity_bonus: int = 0, taken: Array = []
+) -> StringName:
+	# L'ÉCHELLE EST RÉDUITE À CE QUI EXISTE, et sans ça le fil se tarit.
+	# Il n'y a de potions que dans deux raretés sur cinq : au troisième
+	# palier de profondeur, le plancher passait au-dessus de la meilleure
+	# et le tirage ne trouvait plus rien. Filtrer AVANT de trancher fait
+	# que « plus profond » veut dire « la meilleure qui existe » au lieu
+	# de « plus rien ».
+	var stocked: Array[StringName] = []
+	for rarity: StringName in _rarity_ladder():
+		for item_id: StringName in Consumable.ids():
+			if Consumable.rarity_of(item_id) == rarity:
+				stocked.append(rarity)
+				break
+	var chosen := _draw_rarity(
+		rng, depth, rarity_bonus, &"loot_supply_rarity", stocked
+	)
+	if chosen.is_empty():
+		return &""
+	var candidates: Array[StringName] = []
+	for item_id: StringName in Consumable.ids():
+		if Consumable.rarity_of(item_id) == chosen and not taken.has(item_id):
+			candidates.append(item_id)
+	# LA RARETÉ CÈDE AVANT L'UNICITÉ : si tout ce qu'elle contient est déjà
+	# pris, on élargit à ce qui reste plutôt que de rendre un rang vide.
+	if candidates.is_empty():
+		for item_id: StringName in Consumable.ids():
+			if not taken.has(item_id):
+				candidates.append(item_id)
+	if candidates.is_empty():
+		return &""
+	candidates.sort()
+	return StringName(rng.pick(candidates, &"loot_supply"))
+
+
 static func _roll_items(
 	rng: CombatRng, victory: bool, depth: int, rarity_bonus: int = 0
 ) -> Array[StringName]:
@@ -141,7 +234,39 @@ static func _roll_items(
 ## fond d'une expédition, le commun cesse de sortir. `rarity_bonus` décale
 ## en plus, pour une source qui paie mieux qu'une rencontre.
 static func _roll_item(rng: CombatRng, depth: int, rarity_bonus: int = 0) -> StringName:
-	var ladder := _rarity_ladder()
+	var chosen := _draw_rarity(rng, depth, rarity_bonus, &"loot_rarity")
+	if chosen.is_empty():
+		return &""
+
+	var candidates: Array[StringName] = []
+	for item_id: StringName in Equipment.ids():
+		if Equipment.rarity_of(item_id) == chosen:
+			candidates.append(item_id)
+	if candidates.is_empty():
+		return &""
+	candidates.sort()
+	return StringName(rng.pick(candidates, &"loot_item"))
+
+
+## Tire une rareté aux poids déclarés, plancher relevé par la profondeur.
+##
+## La profondeur décale le tirage d'un cran tous les `rarity_step` : au
+## fond d'une expédition, le commun cesse de sortir. `rarity_bonus`
+## décale en plus, pour une source qui paie mieux qu'une rencontre.
+##
+## `reason` sépare les journaux du butin et des potions. La graine reste
+## une seule suite — c'est une étiquette, pas un flux —, mais un journal
+## où les deux tirages portent le même nom ne se relit pas.
+##
+## `ladder_override` réduit l'échelle à ce qu'une famille possède
+## vraiment. Sans lui, une famille qui n'occupe que deux raretés sur cinq
+## voit son plancher passer au-dessus de sa meilleure dès le troisième
+## palier de profondeur, et ne tire plus rien.
+static func _draw_rarity(
+	rng: CombatRng, depth: int, rarity_bonus: int, reason: StringName,
+	ladder_override: Array[StringName] = []
+) -> StringName:
+	var ladder := ladder_override if not ladder_override.is_empty() else _rarity_ladder()
 	if ladder.is_empty():
 		return &""
 	var step := int(number(&"depth", &"rarity_step", 0))
@@ -157,22 +282,12 @@ static func _roll_item(rng: CombatRng, depth: int, rarity_bonus: int = 0) -> Str
 	if total <= 0:
 		return &""
 
-	var draw := rng.int_between(1, total, &"loot_rarity")
-	var chosen: StringName = pool[pool.size() - 1]
+	var draw := rng.int_between(1, total, reason)
 	for rarity: StringName in pool:
 		draw -= Equipment.rarity_weight(rarity)
 		if draw <= 0:
-			chosen = rarity
-			break
-
-	var candidates: Array[StringName] = []
-	for item_id: StringName in Equipment.ids():
-		if Equipment.rarity_of(item_id) == chosen:
-			candidates.append(item_id)
-	if candidates.is_empty():
-		return &""
-	candidates.sort()
-	return StringName(rng.pick(candidates, &"loot_item"))
+			return rarity
+	return pool[pool.size() - 1]
 
 
 ## Les raretés du plus commun au plus rare. L'ordre vient des poids, pas

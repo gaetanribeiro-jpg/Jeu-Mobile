@@ -137,8 +137,59 @@ func test_ce_qu_on_trouve_reste_en_jeu() -> void:
 
 func test_l_etal_propose_de_quoi_choisir() -> void:
 	var run := _at_merchant(_company())
-	assert_eq(run.reveal_stock(CombatRng.new(5)).size(), Merchant.stock_size())
+	assert_eq(run.reveal_stock(CombatRng.new(5)).size(), Merchant.stall_size())
 	assert_gt(Merchant.stock_size(), 1)
+
+
+func test_l_etal_vend_aussi_des_potions() -> void:
+	# T10.2 : DES PLACES RÉSERVÉES, pas un tirage mêlé à l'équipement. Le
+	# marchand est le seul endroit où le joueur CHOISIT ce qu'il emporte ;
+	# un étal qui ne proposerait des potions qu'une fois sur trois ne
+	# serait pas un ravitaillement.
+	assert_gt(Merchant.stock_supplies(), 0, "sans ça, le sac ne se renouvelle pas")
+	var run := _at_merchant(_company())
+	var listed := run.reveal_stock(CombatRng.new(5))
+	var potions := 0
+	for item_id: StringName in listed:
+		if Consumable.exists(item_id):
+			potions += 1
+	assert_eq(potions, Merchant.stock_supplies())
+
+
+func test_une_potion_achetee_va_dans_le_sac_et_pas_dans_la_reserve() -> void:
+	# Une fiole qui attendrait le retour au royaume ne serait un
+	# ravitaillement pour personne : elle doit être buvable à l'étape
+	# suivante. Et la réserve ne contient que des objets qu'on ÉQUIPE.
+	var company := _company(5000)
+	var potion := Consumable.ids()[0]
+	var before := int(company.supplies.get(potion, 0))
+	assert_true(Merchant.buy(potion, company))
+	assert_eq(int(company.supplies.get(potion, 0)), before + 1)
+	assert_false(company.stash.has(potion))
+	assert_eq(company.gold, 5000 - Merchant.price_of(potion))
+
+
+func test_une_potion_se_paie_a_son_propre_bareme() -> void:
+	# Chaque famille a son barème vérifié — l'équipement au point de
+	# rareté, la potion au point de vie épargné. Les fondre reviendrait à
+	# dire qu'une armure et une fiole se comparent.
+	for potion: StringName in Consumable.ids():
+		assert_eq(
+			Merchant.price_of(potion), Consumable.price_of(potion),
+			"« %s » doit garder son prix" % potion
+		)
+
+
+func test_on_ne_revend_pas_une_potion() -> void:
+	# Rien n'a eu à l'interdire : les potions ne sont pas dans la réserve.
+	# Revendre une consommable en ferait un placement, alors qu'elle est
+	# faite pour être bue.
+	var company := _company(0)
+	var potion := Consumable.ids()[0]
+	Consumable.add(company.supplies, potion, 3)
+	assert_eq(Merchant.sell(potion, company), 0)
+	assert_eq(company.gold, 0)
+	assert_eq(int(company.supplies.get(potion, 0)), 3)
 
 
 func test_l_etal_ne_change_plus_une_fois_vu() -> void:
@@ -178,7 +229,7 @@ func test_on_n_achete_pas_a_un_etal_qu_on_n_a_pas_regarde() -> void:
 	assert_true(run.stock().is_empty())
 	assert_true(run.buy(0, company).is_empty())
 	assert_eq(company.gold, 5000)
-	assert_eq(run.reveal_stock(CombatRng.new(5)).size(), Merchant.stock_size())
+	assert_eq(run.reveal_stock(CombatRng.new(5)).size(), Merchant.stall_size())
 
 
 func test_une_etape_qui_n_est_pas_un_marchand_n_a_pas_d_etal() -> void:

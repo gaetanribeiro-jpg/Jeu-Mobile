@@ -111,6 +111,14 @@ func refresh() -> void:
 		# Les ressources sont dans la besace comme le reste : les montrer à
 		# côté de l'or est ce qui fait comprendre qu'elles sont en jeu.
 		_satchel.text += "  ·  %s" % _resources_text(_run.satchel_resources)
+	# LE SAC N'EST PAS DANS LA BESACE, mais il se décide au même endroit.
+	# Le § 29 fait de « rentrer ou continuer » une question à trois termes
+	# — les PV, la besace, et ce qu'il reste à boire — et le troisième ne
+	# se lisait qu'une fois le combat commencé, c'est-à-dire trop tard.
+	if _company != null:
+		_satchel.text += "  ·  %s" % (
+			tr("EXPEDITION_SUPPLIES") % Consumable.total(_company.supplies)
+		)
 	_retreat.text = tr("EXPEDITION_RETREAT")
 	_retreat.disabled = not _run.can_retreat()
 	_journal_label.text = _journal
@@ -378,8 +386,8 @@ func _build_merchant() -> void:
 		var price := Merchant.price_of(item_id)
 		var sold := _run.sold_slots().has(slot)
 		var label := "%s   %s   %d\n%s" % [
-			tr(Equipment.name_key(item_id)),
-			tr(Equipment.rarity_name_key(Equipment.rarity_of(item_id))),
+			tr(Merchant.name_key_of(item_id)),
+			tr(Equipment.rarity_name_key(Merchant.rarity_of(item_id))),
 			price,
 			# Un nom et un prix ne suffisent pas à décider : « Pavois, rare,
 			# 132 » ne dit pas si c'est mieux que ce qu'on porte. Ce que
@@ -388,7 +396,7 @@ func _build_merchant() -> void:
 			_grants_text(item_id),
 		]
 		if sold:
-			label = tr("EXPEDITION_SOLD") % tr(Equipment.name_key(item_id))
+			label = tr("EXPEDITION_SOLD") % tr(Merchant.name_key_of(item_id))
 		_action(label, _purchase.bind(slot), not sold and _company.gold >= price)
 
 	_action(tr("EXPEDITION_LEAVE_SHOP"), func() -> void:
@@ -397,6 +405,12 @@ func _build_merchant() -> void:
 
 
 func _grants_text(item_id: StringName) -> String:
+	# UNE POTION N'ACCORDE PAS DE STATISTIQUE, elle fait quelque chose.
+	# Son argument de vente est son effet et ce qu'il coûte en PA — la
+	# même ligne que la barre d'action affiche en combat, pour que
+	# l'acheteur reconnaisse ce qu'il achètera.
+	if Consumable.exists(item_id):
+		return _potion_text(Consumable.ability_of(item_id))
 	var pieces := PackedStringArray()
 	var grants := Equipment.grants(item_id)
 	for key: Variant in grants.keys():
@@ -406,11 +420,37 @@ func _grants_text(item_id: StringName) -> String:
 	return ", ".join(pieces)
 
 
+## Ce qu'une potion fait, en une ligne d'étal.
+##
+## LE MÊME VOCABULAIRE QUE LE PANNEAU DE COMBAT — coût en PA, dégâts,
+## portée — pour que l'acheteur reconnaisse au premier coup d'œil ce
+## qu'il retrouvera dans sa barre d'action. Une fiche d'étal qui décrirait
+## autrement obligerait à faire la traduction soi-même.
+func _potion_text(ability_id: StringName) -> String:
+	var ability := Ability.of(ability_id)
+	if ability == null:
+		return ""
+	var pieces := PackedStringArray()
+	pieces.append(tr("HUD_ABILITY_COST") % ability.action_points)
+	if ability.damage > 0:
+		pieces.append("%s %d" % [
+			tr("HUD_DETAIL_DAMAGE" if ability.is_attack() else "HUD_DETAIL_HEAL"),
+			ability.damage,
+		])
+	if ability.restores_movement_points > 0:
+		pieces.append("%s %+d" % [
+			tr("HUD_DETAIL_MOVEMENT"), ability.restores_movement_points
+		])
+	if ability.range_max > 0:
+		pieces.append(tr("HUD_DETAIL_CELLS") % [ability.range_min, ability.range_max])
+	return " · ".join(pieces)
+
+
 func _purchase(slot: int) -> void:
 	var bought := _run.buy(slot, _company)
 	if bought.is_empty():
 		return
-	_note(tr("EXPEDITION_BOUGHT") % tr(Equipment.name_key(bought)))
+	_note(tr("EXPEDITION_BOUGHT") % tr(Merchant.name_key_of(bought)))
 	changed.emit()
 	refresh()
 
@@ -421,7 +461,7 @@ func _purchase(slot: int) -> void:
 func resolve_combat(summary: Dictionary, hero_units: Array[Unit]) -> void:
 	if _run == null:
 		return
-	_report(_run.resolve_combat(summary, hero_units, _rng))
+	_report(_run.resolve_combat(summary, hero_units, _rng, _company))
 	_after_step()
 
 
@@ -482,6 +522,13 @@ func _report(outcome: Dictionary) -> void:
 	var items: Array = outcome.get("items", [])
 	for item_id: Variant in items:
 		pieces.append(tr(Equipment.name_key(StringName(item_id))))
+	# LA POTION SE DIT AUTREMENT QUE L'ÉQUIPEMENT : elle ne rejoint pas la
+	# besace mais le sac, donc elle est buvable à l'étape suivante. Le
+	# journal doit le dire, sinon le joueur la cherche au retour.
+	for item_id: Variant in outcome.get("supplies", []):
+		pieces.append(
+			tr("EXPEDITION_LOG_SUPPLY") % tr(Consumable.name_key(StringName(item_id)))
+		)
 	var harvested: Dictionary = outcome.get("resources", {})
 	if not harvested.is_empty():
 		pieces.append(_resources_text(harvested))

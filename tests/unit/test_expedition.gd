@@ -324,3 +324,49 @@ func test_un_objet_disparu_des_donnees_ne_fait_pas_tomber_la_partie() -> void:
 	var saved := run.to_dictionary()
 	saved["items"] = ["anneau_de_l_oubli"]
 	assert_true(Expedition.from_dictionary(saved).satchel_items.is_empty())
+
+
+# --- Les potions trouvées (T10.2) ------------------------------------------
+
+func test_une_potion_trouvee_rejoint_le_sac_tout_de_suite() -> void:
+	# ELLE NE PASSE PAS PAR LA BESACE, et c'est le point : une potion se
+	# boit en route. Une fiole qui attendrait le retour au royaume ne
+	# serait un ravitaillement pour personne, et le troisième terme de
+	# « je rentre ou je continue ? » (§ 29) n'existerait pas.
+	var company := _company()
+	var ids: Array[int] = []
+	for hero: Hero in company.heroes:
+		ids.append(hero.id)
+
+	var found := 0
+	for seed_value in 40:
+		var run := Expedition.depart(&"greenlands", ids, CombatRng.new(seed_value))
+		while run.is_ongoing() and not run.current_is_combat():
+			run.resolve_event({}, CombatRng.new(seed_value), company)
+		if not run.is_ongoing():
+			continue
+		var before := Consumable.total(company.supplies)
+		var outcome := run.resolve_combat(
+			_victory(), [] as Array[Unit], CombatRng.new(seed_value), company
+		)
+		var gained: Array = outcome.get("supplies", [])
+		assert_eq(
+			Consumable.total(company.supplies), before + gained.size(),
+			"le sac doit gagner exactement ce que le compte rendu annonce"
+		)
+		for item_id: Variant in gained:
+			assert_true(Consumable.exists(StringName(item_id)))
+			assert_false(
+				run.satchel_items.has(StringName(item_id)),
+				"une potion n'a rien à faire dans la besace"
+			)
+		found += gained.size()
+	assert_gt(found, 0, "sur quarante sorties, il doit en tomber")
+
+
+func test_sans_compagnie_aucune_potion_n_est_annoncee() -> void:
+	# Une expédition se joue en test sans compagnie. Annoncer une potion
+	# qui n'a rejoint aucun sac serait mentir sur ce qu'on possède.
+	var run := _run()
+	var outcome := run.resolve_combat(_victory(), [] as Array[Unit], CombatRng.new(3))
+	assert_eq((outcome.get("supplies", []) as Array).size(), 0)

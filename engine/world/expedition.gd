@@ -249,8 +249,19 @@ func retreat() -> bool:
 ## unités de l'équipe telles que le combat les laisse — c'est d'elles que
 ## viennent les PV portés à l'étape suivante.
 ##
-## Renvoie ce qu'il faut montrer au joueur : { gold, items, downed, state }.
-func resolve_combat(summary: Dictionary, hero_units: Array[Unit], rng: CombatRng) -> Dictionary:
+## `company` reçoit les POTIONS trouvées. Elles ne passent pas par la
+## besace : une potion se boit en route, et une fiole qui attendrait le
+## retour au royaume ne serait un ravitaillement pour personne. C'est le
+## même raisonnement que l'or d'un évènement, qui va déjà à la bourse
+## plutôt qu'à la besace — ce qu'on dépense en chemin n'est pas un butin
+## qu'une déroute pourrait reprendre.
+##
+## Renvoie ce qu'il faut montrer au joueur :
+## { gold, items, supplies, downed, state }.
+func resolve_combat(
+	summary: Dictionary, hero_units: Array[Unit], rng: CombatRng,
+	company: Company = null
+) -> Dictionary:
 	if not is_ongoing():
 		return {}
 	var downed := _absorb_health(hero_units)
@@ -263,6 +274,7 @@ func resolve_combat(summary: Dictionary, hero_units: Array[Unit], rng: CombatRng
 	# coûter plus.
 	var gained := Loot.roll(rng, summary, depth(), DayNight.loot_bonus(moment()))
 	_gather(gained)
+	var supplies := _stock_supplies(gained.get("supplies", []), company)
 	# La région donne ses ressources à chaque rencontre gagnée : c'est ce
 	# qui fait qu'une sortie nourrit le royaume et pas seulement les héros.
 	var harvested := Region.draw_resources(region_id, rng, depth())
@@ -271,6 +283,7 @@ func resolve_combat(summary: Dictionary, hero_units: Array[Unit], rng: CombatRng
 	return {
 		"gold": int(gained.get("gold", 0)),
 		"items": gained.get("items", [] as Array[StringName]),
+		"supplies": supplies,
 		"resources": harvested,
 		"downed": downed,
 		"state": state,
@@ -394,6 +407,11 @@ func resolve_event(effects: Dictionary, rng: CombatRng, company: Company = null)
 		)
 	_gather({"items": found})
 
+	# L'ÉTAPE DE RÉCOMPENSE DU § 28 DONNE AUSSI DES POTIONS. Elle tire son
+	# butin par `Loot.roll`, donc elles sont déjà là ; sans cette ligne,
+	# elles étaient tirées et jetées.
+	var supplied := _stock_supplies(applied.get("supplies", []), company)
+
 	# Fuir coûte une part de la besace. C'est le même levier qu'une déroute,
 	# à un tarif choisi par le joueur plutôt que subi.
 	var kept := float(applied.get("satchel_kept", 1.0))
@@ -409,6 +427,7 @@ func resolve_event(effects: Dictionary, rng: CombatRng, company: Company = null)
 	var report := {
 		"gold": gold,
 		"items": found,
+		"supplies": supplied,
 		"combat": ambushed,
 		"state": state,
 	}
@@ -455,6 +474,27 @@ func _gather_resources(harvested: Dictionary) -> void:
 			satchel_resources[resource_id] = (
 				int(satchel_resources.get(resource_id, 0)) + int(harvested[key])
 			)
+
+
+## Verse les potions trouvées dans le sac de la compagnie et rend la
+## liste de ce qui a été versé.
+##
+## SANS COMPAGNIE, RIEN N'EST VERSÉ ET RIEN N'EST ANNONCÉ. Une expédition
+## se joue en test sans compagnie ; annoncer une potion qui n'a rejoint
+## aucun sac serait mentir au joueur sur ce qu'il possède.
+func _stock_supplies(raw: Variant, company: Company) -> Array[StringName]:
+	var out: Array[StringName] = []
+	if company == null or not (raw is Array):
+		return out
+	for item_id: Variant in raw:
+		var wanted := StringName(item_id)
+		# Une potion retirée des données depuis le tirage disparaît, sans
+		# emporter l'expédition avec elle.
+		if not Consumable.exists(wanted):
+			continue
+		Consumable.add(company.supplies, wanted)
+		out.append(wanted)
+	return out
 
 
 func _gather(gained: Dictionary) -> void:

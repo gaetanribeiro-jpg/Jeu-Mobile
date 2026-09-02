@@ -261,13 +261,13 @@ dur : passer par `data/assets.json`.
 - **Phase 9 terminée.** T9.1 (le thème sort du code), T9.2 (jauges et
   panneaux du pack), T9.3 (boutons teintés), T9.4 (les widgets que Tiny
   Swords ne dessine pas, pris chez Kenney).
-- **Phase 10 en cours.** T10.1 : le soin (`KIND_HEAL` était déclaré et
-  jamais écrit), les potions du § 44, le sac commun. **759 tests
-  passent.**
+- **Phase 10 terminée.** T10.1 : le soin (`KIND_HEAL` était déclaré et
+  jamais écrit), les potions du § 44, le sac commun. T10.2 : le butin et
+  le marchand les distribuent enfin. **774 tests passent.**
 - **T9.8 :** les trois reproches de Gaetan — texte illisible, plateau
   trop petit, fond fade. **T9.9 :** la mer autour du plateau.
   **T9.10 :** l'écume du rivage et les rochers, pour qu'elle fasse
-  naturel. **761 tests passent.**
+  naturel.
 - **La boucle du § 3 tourne en entier :** royaume → carte du monde →
   expédition → combat → butin et expérience → compagnie → royaume. Une
   sortie conclue déclenche un cycle de production ; le royaume rend des
@@ -300,6 +300,28 @@ système de résolution : une entrée d'`abilities.json` de classe
   plancher plus bas encore : le pilote ignore une ressource que le joueur
   a. Lui apprendre à boire reviendrait à écrire la stratégie qu'on veut
   laisser au joueur.
+
+**LE SAC SE RENOUVELLE, ET C'EST UN TROISIÈME FIL (T10.2).** Une potion
+qu'on ne peut pas obtenir n'est pas une mécanique. Quatre choses à ne pas
+défaire :
+- **Le tirage des potions est SÉPARÉ de celui de l'équipement.** Mêlées,
+  elles lui prendraient sa place, et l'économie de l'équipement est
+  mesurée au point de rareté. Elles tombent plus souvent (une victoire
+  sur deux), et **une défaite n'en rend pas** : l'équipe a déjà vidé son
+  sac, lui en rendre effacerait la dépense.
+- **Une potion trouvée va dans le SAC, pas dans la besace**, donc elle
+  est buvable à l'étape suivante. Même raisonnement que l'or d'un
+  évènement, qui va à la bourse.
+- **Le coup de pouce de rareté du marchand ne s'applique PAS aux
+  potions.** Il n'y en a que dans deux raretés : relever le plancher ne
+  laissait qu'une fiole possible et l'étal en proposait deux identiques.
+- **L'échelle de rareté se réduit à ce qu'une famille possède.** Sinon le
+  plancher de profondeur passe au-dessus de la meilleure potion et le fil
+  se tarit — plus on s'enfonce, moins on se ravitaille.
+
+**Ce que `verify_world` attrape et qu'aucun test unitaire ne dirait :**
+une mécanique complète dont il manque le maillon d'obtention. Chaque
+moitié était juste pendant toute la Phase 10.
 
 **L'équilibrage d'un objet n'a pas d'instrument.** On ne simule pas mille
 combats pour un anneau. La règle qui remplace la mesure : chaque rareté

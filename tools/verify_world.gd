@@ -31,6 +31,7 @@ func _init() -> void:
 	print("-".repeat(76))
 	_check_events()
 	_check_merchant()
+	_check_supplies()
 	_check_expedition_rules()
 	_check_day_night()
 
@@ -335,6 +336,63 @@ func _check_merchant() -> void:
 		% [encounter_gold, cheapest])
 	if float(cheapest) < encounter_gold * 0.5:
 		_problems.append("l'étal est trop bon marché pour qu'acheter soit un choix")
+
+
+## LES POTIONS DOIVENT ÊTRE OBTENABLES (T10.2).
+##
+## C'EST EXACTEMENT LA FAUTE QUE CE CONTRÔLE EXISTE POUR ATTRAPER, et le
+## projet l'a commise pendant toute la Phase 10 : `consumables.json`
+## déclarait trois potions, le combat savait les boire, la barre d'action
+## les affichait — et rien au monde n'en distribuait une seule. Le sac de
+## départ tenait lieu de mécanique. Une réserve qui ne se renouvelle pas
+## n'est pas une ressource, c'est un compte à rebours, et le troisième
+## terme de « je rentre ou je continue ? » (§ 29) disparaît avec elle.
+##
+## Aucun test unitaire ne l'aurait dit : chaque moitié était juste.
+func _check_supplies() -> void:
+	print("\nLe ravitaillement en potions :\n")
+	if Consumable.ids().is_empty():
+		_problems.append("aucune potion déclarée")
+		return
+
+	var dropped := Loot.number(&"supplies", &"on_victory", 0.0)
+	var stalled := Merchant.stock_supplies()
+	print("butin : %.0f %% par victoire · étal : %d place(s)" % [dropped * 100.0, stalled])
+	if dropped <= 0.0 and stalled <= 0:
+		_problems.append("aucune potion ne s'obtient : ni le butin ni l'étal n'en donne")
+	if dropped <= 0.0:
+		_problems.append("le butin ne rend jamais de potion")
+	if stalled <= 0:
+		_problems.append("le marchand n'en vend pas")
+
+	# UNE POTION DOIT SE PAYER DANS L'ORDRE DE GRANDEUR D'UNE RENCONTRE.
+	# Moins cher, on en achète dix et l'usure du roguelite disparaît ;
+	# beaucoup plus cher, elle n'est jamais le meilleur usage de l'or.
+	var encounter_gold := (Loot.number(&"gold", &"per_enemy", 0.0) * 4.0
+		+ Loot.number(&"gold", &"victory_bonus", 0.0))
+	for item_id: StringName in Consumable.ids():
+		var price := Merchant.price_of(item_id)
+		print("  %-22s %4d or" % [item_id, price])
+		if price <= 0:
+			_problems.append("la potion « %s » ne coûte rien" % item_id)
+			continue
+		if float(price) < encounter_gold * 0.25:
+			_problems.append(
+				"la potion « %s » coûte %d pour une rencontre à %.0f : trop peu"
+				% [item_id, price, encounter_gold]
+			)
+		if float(price) > encounter_gold * 3.0:
+			_problems.append(
+				"la potion « %s » coûte %d pour une rencontre à %.0f : trop cher"
+				% [item_id, price, encounter_gold]
+			)
+
+	# LA DÉFAITE NE DOIT PAS RAVITAILLER. Le § 41 refuse la punition
+	# absolue, et c'est pour ça que l'équipement tombe quand même ; mais
+	# une équipe qui vient de perdre a déjà vidé son sac, et lui rendre
+	# une potion effacerait la dépense.
+	if Loot.number(&"supplies", &"on_defeat", 0.0) > 0.0:
+		_problems.append("une défaite rend des potions : la dépense s'annule")
 
 
 ## Le cycle jour / nuit (§ 36), et la seule chose qu'il ne doit pas être :

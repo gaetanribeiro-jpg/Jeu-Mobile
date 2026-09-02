@@ -3,7 +3,9 @@
   "stock": {
     "_note": "Nombre d'objets proposés, et le coup de pouce de rareté qui les distingue d'une trouvaille ordinaire. Trois : assez pour choisir, assez peu pour que choisir coûte.",
     "size": 3,
-    "rarity_bonus": 1
+    "rarity_bonus": 1,
+    "supplies": 2,
+    "_supplies_note": "DES POTIONS À CÔTÉ DE L'ÉQUIPEMENT (T10.2). Deux places réservées, pas un tirage mêlé aux trois autres : le marchand est le seul endroit où l'on choisit ce qu'on emporte, et un étal qui ne proposerait des potions qu'une fois sur trois ne serait pas un ravitaillement. Le butin, lui, décide à la place du joueur — c'est la différence entre trouver et acheter.\n\nET C'EST CE QUI DONNE À L'OR UN USAGE EN COURS DE ROUTE. Jusqu'ici l'or trouvé pendant une sortie ne servait qu'au retour, ou à une pièce d'équipement qu'on ne porterait peut-être pas. Une potion s'utilise à l'étape suivante."
   },
   "prices": {
     "_note": "`gold_per_point` multiplie le budget de rareté : commun 44, peu commun 88, rare 132, épique 198, légendaire 286. Une rencontre rapporte environ 65 pièces, donc un peu commun vaut un combat et demi.\n\n`buy_back` est ce que le marchand redonne d'un objet qu'on lui vend. Bas exprès : la réserve n'est pas un compte en banque, et revendre doit rester un aveu qu'on n'en avait pas l'usage.",

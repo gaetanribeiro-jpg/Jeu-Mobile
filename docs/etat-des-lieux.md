@@ -1687,6 +1687,7 @@ trouvée qu'en mesurant la capture au lieu de la regarder.
 | Tâche | Contenu | État |
 |---|---|---|
 | **T10.1** | Le soin, les potions, le sac commun | ✅ |
+| **T10.2** | Le butin et le marchand distribuent des potions | ✅ |
 
 Le § 44 les liste dans le butin du MVP — « or, quelques armes, armures,
 **potions** » — et le § 48 leur donne un bouton dans la barre d'action :
@@ -1776,13 +1777,73 @@ d'une ressource que le pilote n'utilise jamais. Le mesurer demanderait
 d'apprendre au pilote quand boire, c'est-à-dire d'écrire la stratégie
 qu'on veut justement laisser au joueur.
 
-### Ce qui reste (T10.2)
+### T10.2 — le sac se renouvelle ✅
 
-Le sac de départ est écrit dans `consumables.json` — 2 élixirs, 1
-philtre, 1 bombe. **Le butin et le marchand ne distribuent pas encore de
-potions** : une potion qu'on ne peut pas obtenir n'est pas une mécanique,
-et tant que ce maillon manque, la réserve ne se renouvelle pas d'une
-expédition à l'autre.
+**Une potion qu'on ne peut pas obtenir n'est pas une mécanique, c'est une
+déclaration.** Pendant toute la Phase 10, `consumables.json` déclarait
+trois potions, le combat savait les boire, la barre d'action les
+affichait — et rien au monde n'en distribuait une seule. Le sac de départ
+tenait lieu d'économie. Une réserve qui ne se renouvelle pas est un
+compte à rebours, et le troisième terme de « je rentre ou je
+continue ? » (§ 29) disparaît avec elle.
+
+Aucun test unitaire ne l'aurait dit : chaque moitié était juste.
+`verify_world` le refuse désormais — c'est le genre de faute que seul un
+contrôle de bout en bout attrape.
+
+### Un troisième fil de butin, pas une part du premier
+
+Mêlées au sac de l'équipement, les potions lui auraient pris sa place.
+L'économie de l'équipement est **mesurée au point de rareté**, et une
+consommable n'est pas un remplacement acceptable pour un objet qu'on
+garde : le joueur qui voit une fiole là où il espérait une épée se sent
+volé. Le tirage est donc séparé, et le taux d'équipement n'a pas bougé —
+un test le vérifie.
+
+Elles tombent **plus souvent** que l'équipement (une victoire sur deux
+contre 0,7 tirage) : une potion se boit et disparaît, il en faut un flux.
+Et **une défaite n'en rend pas** : le § 41 refuse la punition absolue, ce
+qui explique que l'équipement tombe quand même, mais une équipe qui vient
+de perdre a déjà vidé son sac — lui rendre une fiole effacerait la
+dépense.
+
+### Elles ne passent pas par la besace
+
+Une potion trouvée rejoint **le sac de la compagnie tout de suite**, donc
+elle est buvable à l'étape suivante. Une fiole qui attendrait le retour
+au royaume ne serait un ravitaillement pour personne. C'est le même
+raisonnement que l'or d'un évènement, qui va déjà à la bourse plutôt qu'à
+la besace : ce qu'on dépense en chemin n'est pas un butin qu'une déroute
+pourrait reprendre.
+
+### L'étal réserve deux places
+
+Pas un tirage mêlé aux trois autres : le marchand est le seul endroit où
+le joueur **choisit** ce qu'il emporte, et un étal qui ne proposerait des
+potions qu'une fois sur trois ne serait pas un ravitaillement. Le butin,
+lui, décide à sa place — c'est toute la différence entre trouver et
+acheter. Et c'est ce qui donne enfin à l'or trouvé un usage **en cours de
+route**.
+
+Deux leçons prises en les ratant :
+
+- **Le coup de pouce de rareté du marchand ne s'applique pas aux
+  potions.** Il n'y en a que dans deux raretés : relever le plancher d'un
+  cran ne laissait qu'une fiole possible, et l'étal proposait deux fois
+  la même. L'avantage du marchand sur les potions n'est pas d'en vendre
+  de meilleures, c'est d'en vendre tout court.
+- **L'échelle de rareté se réduit à ce qu'une famille possède.** Sans ça,
+  au troisième palier de profondeur le plancher passait au-dessus de la
+  meilleure potion et le fil s'arrêtait : plus on s'enfonce, moins on se
+  ravitaille — exactement l'inverse du § 29.
+
+### Le sac se lit avant le combat, pas pendant
+
+Le nombre de potions restantes s'affiche à côté de la besace sur l'écran
+d'expédition. Le § 29 fait de « rentrer ou continuer » une question à
+trois termes — les PV, la besace, et ce qu'il reste à boire — et le
+troisième ne se lisait qu'une fois le combat commencé, c'est-à-dire trop
+tard.
 
 ### Ce qu'il faut regarder en jouant
 

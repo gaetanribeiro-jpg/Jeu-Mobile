@@ -35,7 +35,7 @@
     }
   },
   "starting_stock": {
-    "_note": "CE QUE LA COMPAGNIE POSSÈDE AU PREMIER LANCEMENT. Une potion qu'on ne peut pas obtenir n'est pas une mécanique, c'est une déclaration : tant que le butin et le marchand ne les distribuent pas (T10.2), c'est d'ici qu'elles viennent.",
+    "_note": "CE QUE LA COMPAGNIE POSSÈDE AU PREMIER LANCEMENT, et rien de plus depuis T10.2 : le butin en fait tomber une victoire sur deux, et le marchand en réserve deux places à chaque étal. Ce bloc n'est plus la source des potions, seulement l'amorce — de quoi apprendre le geste avant d'avoir gagné de quoi s'en racheter.",
     "draught_of_mending": 2,
     "philtre_of_haste": 1,
     "firebomb": 1
