@@ -240,6 +240,8 @@
    0.14,
    0.45
   ],
+  "_deep_snow_note": "La neige profonde des Montagnes Gelées — le MÊME terrain que le sable mouvant, à deux PM la case, et il ne peut pas se peindre pareil. Le brun du sable posé sur de la glace donnait une bande de BOUE au milieu d'un col enneigé. Éclaircie et refroidie : une congère renvoie la lumière, elle ne l'avale pas.",
+  "deep_snow": [0.86, 0.93, 1.0, 0.4],
   "moment_day": [
    1.0,
    1.0,
@@ -388,6 +390,13 @@
   "_note": "Teinte posée SOUS le décor d'un terrain, par le nom d'une couleur de la section `colors`. Sert aux terrains que le pack ne dessine pas : la boue — le sable mouvant des Dunes — n'a AUCUN sprite et se dessinait donc exactement comme de l'herbe. Une case qui coûte deux PM et qui ressemble à une case qui en coûte un est un mensonge, pas une surprise. La teinte dit la CASE ; le décor, quand il y en a un, dit ce que c'est.",
   "mud": "quicksand"
  },
+ "terrain_tints_by_ground": {
+  "_note": "La teinte d'un terrain, déclinée par la couleur de SOL de la région — même mécanisme que `terrain_decorations_by_ground`, et même retombée : ce qui n'est pas listé garde la teinte par défaut. Une seule couleur par terrain valait tant qu'un seul acte l'employait.",
+  "frost": {
+   "mud": "deep_snow"
+  }
+ },
+
  "terrain_decorations": {
   "_note": "Sprite posé par-dessus la tuile de base : [catégorie, clé] de data/assets.json. Une troisième valeur choisit l'image d'une bande d'animation — la première image d'un feu n'est qu'une étincelle de quelques pixels, invisible sur une case de 64. Une quatrième et une cinquième donnent [colonne, rangée] pour une entrée de type atlas. Le pack ne fournit ni pont ni ruine : la palissade sert de planches, les ossements de ruine. La boue n'a AUCUN sprite : elle se dessine comme de l'herbe, ce qui est un piège — aucune carte ne l'utilise pour l'instant, et il faudra une teinte avant qu'une carte le fasse.",
   "forest": [

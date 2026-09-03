@@ -194,5 +194,22 @@ static func terrain_decoration(
 ## sable mouvant des Dunes est cette carte. Une case qui coûte deux PM et
 ## qui ressemble à une case qui en coûte un est un mensonge, pas une
 ## surprise.
-static func terrain_tint(terrain_id: StringName) -> StringName:
+## LA TEINTE SUIT LE BIOME, COMME LE DESSIN (T12.1). Le sable mouvant est
+## brun ; la même teinte posée sur de la glace donnait une bande de BOUE au
+## milieu d'un col enneigé — la neige profonde des Montagnes Gelées est
+## exactement le même terrain, et elle doit être blanc-bleu.
+##
+## Une seule couleur pour un terrain valait tant qu'un seul acte
+## l'employait. Même mécanisme que `terrain_decorations_by_ground`, et
+## même retombée : ce qui n'est pas décliné garde la teinte par défaut.
+static func terrain_tint(
+	terrain_id: StringName, ground: StringName = &""
+) -> StringName:
+	if not ground.is_empty():
+		var variants: Dictionary = section(&"terrain_tints_by_ground")
+		var declared: Variant = (
+			variants.get(String(ground), {}) as Dictionary
+		).get(String(terrain_id), null)
+		if declared != null:
+			return StringName(declared)
 	return StringName(section(&"terrain_tints").get(String(terrain_id), ""))

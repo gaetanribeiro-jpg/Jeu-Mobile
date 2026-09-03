@@ -449,6 +449,21 @@ Elle montre désormais le bestiaire, visage par visage. **La nuit est dite
 À PART** : le renfort est ajouté au moment du combat, il n'est pas dans
 la carte, et l'annoncer dans la liste ferait mentir la liste.
 
+**TROIS DÉFAUTS QUE SEULE LA CAPTURE A VUS, ENCORE (T12.1).**
+- **Une image FIXE n'est pas une bande, et `SpriteFrameFactory` la
+  REFUSAIT** en poussant une erreur. Le poisson-bombe est le premier
+  ennemi du pack dont l'attente soit une image fixe : il s'affichait en
+  ombre nue avec sa barre de vie. Une image fixe est une animation d'UNE
+  image ; refuser n'a jamais protégé de rien. Le test de T11.8 ne
+  demandait que la DÉCLARATION — il va jusqu'à la fabrique maintenant.
+- **La teinte d'un terrain suit le BIOME, comme son dessin.** Le brun du
+  sable mouvant posé sur de la glace donnait une bande de BOUE au milieu
+  d'un col enneigé. `terrain_tints_by_ground`, même mécanisme que les
+  décors.
+- **De la terre INJOIGNABLE au quart de l'écran.** Le premier trône du
+  Jarl avait un bloc coupé du reste par l'eau : rien ne pouvait y aller,
+  rien ne s'en plaignait, et ça se voyait d'un coup d'œil.
+
 **UN TERRAIN QUI RALENTIT L'ENNEMI NE COÛTE RIEN AU JOUEUR (T12.1).**
 Avec un objectif « éliminer » et une IA qui vient au contact, l'équipe a
 toujours intérêt à ne pas bouger : ce qui arrive lentement arrive un par

@@ -87,19 +87,28 @@ static func _from_entry(cache_key: String, entry: Dictionary) -> SpriteFrames:
 		return _cache[cache_key]
 	if entry.is_empty():
 		return null
-	if StringName(entry.get("kind", AssetTable.KIND_IMAGE)) != AssetTable.KIND_STRIP:
-		push_error(
-			"SpriteFrameFactory : « %s » n'est pas une bande d'animation mais un « %s »"
-			% [entry["path"], entry.get("kind", "?")]
-		)
-		return null
 	var texture: Texture2D = load(entry["path"])
 	if texture == null:
 		push_error("SpriteFrameFactory : texture introuvable — %s" % entry["path"])
 		return null
-	var resource := slice(
-		texture, int(entry["frames"]), int(entry["frame_w"]), int(entry["frame_h"]),
-		AssetTable.fps()
-	)
+
+	# UNE IMAGE FIXE EST UNE ANIMATION D'UNE SEULE IMAGE, et la refuser
+	# rendait la bête en OMBRE NUE (T12.1). Le poisson-bombe est le premier
+	# ennemi du pack dont l'attente ne soit pas une bande : la fabrique
+	# poussait une erreur, la vue n'obtenait aucune image, et il ne restait
+	# que le rond d'ombre et la barre de vie. Même symptôme que le sprite
+	# mal cherché de T11.8, autre cause — et la même leçon : ce qui ne se
+	# dessine pas ne se plaint pas.
+	var resource: SpriteFrames = null
+	if StringName(entry.get("kind", AssetTable.KIND_IMAGE)) == AssetTable.KIND_STRIP:
+		resource = slice(
+			texture, int(entry["frames"]), int(entry["frame_w"]), int(entry["frame_h"]),
+			AssetTable.fps()
+		)
+	else:
+		resource = slice(
+			texture, 1, int(texture.get_width()), int(texture.get_height()),
+			AssetTable.fps()
+		)
 	_cache[cache_key] = resource
 	return resource

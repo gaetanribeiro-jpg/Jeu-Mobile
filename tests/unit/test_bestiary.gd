@@ -151,6 +151,21 @@ func test_chaque_ennemi_sait_se_dessiner_par_son_sprite() -> void:
 			AssetTable.has_enemy_animation(unit.sprite_id, &"avatar"),
 			"%s : pas de portrait pour « %s »" % [enemy_id, unit.sprite_id]
 		)
+		# DÉCLARÉ NE VEUT PAS DIRE DESSINABLE (T12.1). Le poisson-bombe
+		# déclarait bien son attente, et la fabrique la REFUSAIT : c'est
+		# une image fixe et pas une bande, elle poussait une erreur et
+		# rendait null. La bête s'affichait en ombre nue avec sa barre de
+		# vie — et ce test-ci, qui ne demandait que la déclaration,
+		# passait. On va donc jusqu'à l'image.
+		var frames := SpriteFrameFactory.for_enemy(unit.sprite_id, &"idle")
+		assert_not_null(
+			frames, "%s : « %s » ne se fabrique pas" % [enemy_id, unit.sprite_id]
+		)
+		if frames != null:
+			assert_gt(
+				frames.get_frame_count(&"default"), 0,
+				"%s : « %s » se fabrique vide" % [enemy_id, unit.sprite_id]
+			)
 
 
 ## Un héros n'a pas de champ `sprite` dans ses données : son sprite est sa

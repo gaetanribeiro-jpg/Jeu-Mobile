@@ -89,11 +89,23 @@ func test_une_texture_nulle_ne_plante_pas() -> void:
 	assert_push_error("découpage impossible")
 
 
-func test_une_entree_qui_n_est_pas_une_bande_est_refusee() -> void:
-	# Demander une animation sur un tileset est une erreur de programmation :
-	# elle doit se voir tout de suite et nommément.
-	assert_null(SpriteFrameFactory.for_sprite(&"terrain", &"tilemap_color1"))
-	assert_push_error("n'est pas une bande")
+## UNE IMAGE FIXE EST UNE ANIMATION D'UNE SEULE IMAGE (T12.1), et c'est un
+## RENVERSEMENT de contrat assumé.
+##
+## La fabrique refusait tout ce qui n'était pas une bande, en poussant une
+## erreur. Le poisson-bombe de l'acte 3 est le premier ennemi du pack dont
+## l'attente soit une image fixe : la vue n'obtenait aucune image et la
+## bête s'affichait en OMBRE NUE, avec sa barre de vie et rien dessous.
+## Refuser une image fixe n'a jamais protégé de rien — ça a seulement fait
+## disparaître un ennemi.
+func test_une_image_fixe_donne_une_animation_d_une_seule_image() -> void:
+	var resource := SpriteFrameFactory.for_enemy(&"bomb_fish", &"idle")
+	assert_not_null(resource, "une image fixe doit se fabriquer")
+	if resource != null:
+		assert_eq(
+			resource.get_frame_count(&"default"), 1,
+			"une image fixe fait UNE image, pas zéro et pas plusieurs"
+		)
 
 
 func test_un_asset_absent_renvoie_null_sans_planter() -> void:

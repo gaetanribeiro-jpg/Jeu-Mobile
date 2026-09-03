@@ -423,7 +423,7 @@ func _draw_hazard(tile: Tile, origin: Vector2) -> void:
 func _draw_terrain_tint(tile: Tile, origin: Vector2) -> void:
 	if tile == null:
 		return
-	var key := ViewSettings.terrain_tint(tile.terrain_id)
+	var key := ViewSettings.terrain_tint(tile.terrain_id, _ground)
 	if key.is_empty():
 		return
 	draw_rect(
