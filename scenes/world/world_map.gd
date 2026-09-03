@@ -46,11 +46,6 @@ var _squad_ids: Array[int] = []
 func _ready() -> void:
 	theme = UiSkin.theme
 	_lay_backdrop()
-	# La fiche de région flottait sur le fond, seule de son espèce : les
-	# régions à gauche portent leur cadre, l'équipe en bas aussi.
-	_brief_frame.add_theme_stylebox_override("panel", UiSkin.framed_style(
-		&"frame_panel", &"panel_fill", &"panel_edge_soft"
-	))
 	UiSkin.dress_scrolls(self)
 	_title.text = tr("WORLD_TITLE")
 	_back.text = tr("COMBAT_BACK")
@@ -91,6 +86,20 @@ func refresh() -> void:
 	if _selected.is_empty():
 		var open := _campaign.open_ids()
 		_selected = open[0] if not open.is_empty() else Region.ids()[0]
+	# LE FOND PREND L'AIR DE LA RÉGION DÉSIGNÉE (T11.9). C'est le seul écran
+	# où l'on compare six régions : le fond qui vire en même temps que la
+	# fiche dit « voilà à quoi ça ressemblera » avant d'y aller.
+	UiSkin.lay_backdrop(self, Region.accent_of(_selected))
+	# APRÈS `lay_backdrop`, ET PAS DANS `_ready` : c'est elle qui pose l'air
+	# de l'écran, et le cadre le lit au moment où on le fabrique. Habillé
+	# dans `_ready`, il gardait l'or neutre quelle que soit la région — la
+	# mécanique était branchée et ne se voyait pas.
+	#
+	# La fiche de région flottait sur le fond, seule de son espèce : les
+	# régions à gauche portent leur cadre, l'équipe en bas aussi.
+	_brief_frame.add_theme_stylebox_override("panel", UiSkin.framed_style(
+		&"frame_panel", &"panel_fill", &"panel_edge_soft"
+	))
 	_gold.text = tr("COMPANY_GOLD") % _company.gold
 	_build_regions()
 	_build_brief()

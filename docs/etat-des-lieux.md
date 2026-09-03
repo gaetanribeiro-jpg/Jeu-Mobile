@@ -2309,6 +2309,7 @@ souvenir.**
 | **T11.7** | L'acte 2 — les Dunes Ardentes | la région n'avait que son nom | ✅ |
 | **T11.6** | De la couleur partout | six régions dans six boîtes identiques, aucun accent nulle part | ✅ |
 | **T11.8** | La passe de finition | 5 évènements pour deux actes, l'acte 2 payé comme l'acte 1 | ✅ |
+| **T11.9** | Le décor et l'air d'un acte | 7 cartes des Dunes sur 9 n'employaient que du rocher | ✅ |
 | **T11.5** | Apprendre à jouer | aucun tutoriel, aucune aide, aucune première partie guidée | ⬜ |
 
 **L'ordre est celui-là et il se justifie.** Le téléphone d'abord parce que
@@ -2867,6 +2868,128 @@ coût moyen d'une rencontre est de 22 %, contre les 20 % mesurés à la fin
 de la Phase 1 : l'acte 2 a tiré la moyenne, comme il devait.
 
 **830 tests passent, les dix vérificateurs sont verts.**
+
+### T11.9 — le décor et l'air d'un acte ✅
+
+**« Le changement de couleur de l'herbe c'est bien pour différencier, mais
+est-ce qu'on ne changerait pas aussi le décor ? Des obstacles, des
+hauteurs, des décors différents d'un acte à l'autre. L'interface pourrait
+peut-être aussi légèrement changer. »**
+
+Le constat, compté avant d'écrire une ligne :
+
+| | terrains employés |
+|---|---|
+| acte 1, 9 cartes | forêt, eau, pont, colline, rocher, ruine — **6** |
+| acte 2, 9 cartes | rocher (×7 cartes), feu (×1), colline (×1) — **3** |
+
+Sept cartes des Dunes sur neuf n'employaient QUE du rocher, et les neuf
+partageaient la même zone de placement. La couleur du sol les distinguait
+des Terres Vertes ; leur forme, non.
+
+#### Le même terrain, un autre dessin
+
+C'est la leçon de T11.7 poussée jusqu'au décor : **on n'invente pas de
+mécanique pour un acte, on change ce qu'elle MONTRE.** Un bosquet des
+Terres Vertes est un arbre vert ; le même bosquet dans les Dunes est un
+arbre MORT — mêmes règles (il coupe la vue, il abrite d'un point de
+dégâts), autre image. La ruine devient un crâne, la palissade devient des
+pieux d'os.
+
+`terrain_decorations_by_ground` est indexé par la **couleur de sol** de la
+région et pas par son identifiant : deux régions de sable partageraient
+leur décor sans rien redéclarer. Ce qui n'est pas listé retombe sur le
+défaut, et deux absences sont volontaires — le **rocher** (un rocher gris
+est juste dans un désert, et c'est le marqueur de l'infranchissable : le
+fondre dans le sol le rendrait illisible) et la **colline**, dessinée par
+le tileset, donc déjà teintée par la région. Une dune de sable sort
+gratuitement d'un plateau d'herbe.
+
+#### Le sable mouvant, et une note vieille de dix phases
+
+`view.json` portait ceci depuis toujours : « la boue n'a AUCUN sprite :
+elle se dessine comme de l'herbe, ce qui est un piège — aucune carte ne
+l'utilise pour l'instant, et il faudra une teinte avant qu'une carte le
+fasse ». Le sable mouvant des Dunes est cette carte. Une case qui coûte
+deux PM et qui ressemble à une case qui en coûte un est un mensonge, pas
+une surprise — le § 39 veut de l'information parfaite.
+
+#### Ce que la mesure a imposé, deux fois, et toujours la DISTANCE
+
+`dunes_03` — le goulet, la carte de la tortue — a demandé deux passes :
+
+| version | PV restants |
+|---|---|
+| bande de sable sur toute la hauteur | **52 %** — plus cher que le BOSS |
+| tortues POSÉES sur le gué sec | **34 %** |
+| tortues reculées d'une colonne, derrière la bande | **63 %** |
+
+La première n'était pas une décision mais un péage : quel que soit le
+chemin on payait quatre PM. La seconde faisait d'un goulot de deux cases
+tenu par ce qui encaisse le mieux du bestiaire quelque chose qui ne se
+contourne plus, qui se subit. **Troisième fois de l'acte que la réponse
+est la distance et pas le nombre**, après `dunes_06` et le renfort de nuit
+de T8.1.
+
+L'acte 2 pèse maintenant 5,1 rondes et 76 % de PV restants, contre 4,7 et
+81 % pour l'acte 1 : plus long et plus coûteux, de peu. L'ordre de
+`encounter_maps` a été refait sur la mesure.
+
+#### L'air d'un acte, et pourquoi il ne pouvait PAS être le fond
+
+L'interface change, mais pas par où on croit. Deux mesures ont fermé les
+portes l'une après l'autre :
+
+- **Le fond ne peut porter qu'un soupçon.** À la luminance d'un
+  presque-noir (0,028), deux teintes opposées ne se séparent que de DEUX
+  niveaux sur 255. Et on ne peut pas l'éclaircir : dès 10 % de mélange
+  direct, la crête du motif dépasse le panneau le plus sombre (0,077) et
+  le fond passerait devant ce qu'on pose dessus — ce que T9.8 refuse.
+- **L'or vif ne peut pas dériver.** Il dit « c'est à lui » (T9.7). Et pour
+  les Dunes le problème est pire qu'une règle : `sand` EST l'or de
+  l'interface. Mélangé au trait vif, l'écart tombe à 0,038 — invisible.
+
+**Le trait DOUX, lui, a de la place.** `panel_edge_soft` est un or éteint
+(107, 89, 56) qui ne porte aucune information : le vif dit le tour, le
+doux dit seulement « ceci est un panneau ». Une couleur libre est celle
+qu'on peut donner. Mélangé à 35 % vers l'accent de la région, il vire
+visiblement — mesuré à l'écran :
+
+| | liseré |
+|---|---|
+| neutre (titre, options, royaume) | (107, 89, 56) |
+| Terres Vertes | (118, 131, 75) |
+| Dunes Ardentes | (145, 122, 73) |
+| Montagnes Gelées | (124, 128, 115) |
+| Terres Maudites | (133, 107, 118) |
+
+La chrome du combat — objectif, fiche, plaque d'action, coin — est passée
+du trait vif au trait doux. **C'est une correction, pas un compromis :
+aucun de ces panneaux ne veut dire « c'est à lui », et ils portaient l'or
+vif par habitude.** L'or vif est désormais réservé à ce qu'il désigne.
+
+`verify_ui` mesure les six airs contre l'or vif ET contre le neutre : un
+air qui deviendrait l'un ou l'autre est refusé. Il a immédiatement attrapé
+un cas — `ash`, l'Empire Noir, un rouge poussiéreux à 0,035 du neutre. La
+couleur est devenue une vraie cendre froide.
+
+#### Deux défauts silencieux trouvés par la capture
+
+- **Une fonction coupée en deux.** `_air()` s'était inséré au MILIEU de
+  `_build_from_map` : tout ce qui suivait — la racine des unités, le
+  fantôme, le calque de survol — devenait du code mort après un `return`.
+  `verify_scripts` compile ça sans broncher ; le combat plantait au
+  premier doigt posé.
+- **Un cadre habillé trop tôt.** La fiche de région était habillée dans
+  `_ready`, avant que `lay_backdrop` ne pose l'air : elle gardait l'or
+  neutre quelle que soit la région. La mécanique était branchée et ne se
+  voyait pas — c'est en MESURANT le pixel du liseré, pas en le regardant,
+  que ça s'est vu.
+
+**838 tests passent, les dix vérificateurs sont verts.**
+`verify_maps` compte désormais le vocabulaire d'un acte et refuse en
+dessous de trois terrains : un acte qui n'a qu'un mot se joue neuf fois
+pareil, et ça ne se voit sur aucune carte prise seule.
 
 ---
 

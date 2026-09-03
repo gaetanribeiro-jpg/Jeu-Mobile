@@ -1,5 +1,5 @@
 {
- "_note": "CINQ BÊTES RAPIDES ET AUCUNE QUI ENCAISSE. C'est l'inverse exact de la tortue : tout meurt en un coup, mais tout arrive en même temps et repart hors de portée. La carte demande de choisir QUI tuer d'abord, ce qu'aucune rencontre de l'acte 1 ne demandait vraiment.\n\nELLES SONT POSÉES PRÈS, ET C'EST LA MESURE QUI L'A IMPOSÉ. À dix cases du placement, la carte coûtait ZÉRO POUR CENT des PV : l'essaim passait sa première ronde à courir et mourait à la seconde sans avoir frappé. Ce n'était pas un problème de nombre — en ajouter n'y changeait rien — mais de DISTANCE. Rapproché, le serpent frappe dès la première ronde, ce qui est exactement ce que la carte promet.",
+ "_note": "CINQ BÊTES RAPIDES ET AUCUNE QUI ENCAISSE. C'est l'inverse exact de la tortue : tout meurt en un coup, mais tout arrive en même temps et repart hors de portée. La carte demande de choisir QUI tuer d'abord, ce qu'aucune rencontre de l'acte 1 ne demandait vraiment.\n\nELLES SONT POSÉES PRÈS, ET C'EST LA MESURE QUI L'A IMPOSÉ. À dix cases du placement, la carte coûtait ZÉRO POUR CENT des PV : l'essaim passait sa première ronde à courir et mourait à la seconde sans avoir frappé. Ce n'était pas un problème de nombre — en ajouter n'y changeait rien — mais de DISTANCE.\n\nELLE RESTE NUE, ET C'EST VOULU (T11.9). Toutes les autres cartes de l'acte ont reçu du relief ; celle-ci n'a qu'un charnier au centre. Une couverture rendrait l'essaim évitable, et « qui tuer d'abord » n'est une question que si l'on ne peut se cacher de personne.",
  "act": 2,
  "name_key": "MAP_DUNES_06",
  "rows": [
@@ -7,7 +7,7 @@
   "............",
   "..#.....#...",
   "............",
-  "............",
+  ".....r......",
   "............",
   "..#.....#...",
   "............",

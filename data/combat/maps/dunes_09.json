@@ -1,16 +1,16 @@
 {
- "_note": "LE MINI-BOSS. Le panda frappe en LIGNE : deux héros alignés devant lui, c'est deux héros à terre. Les deux chauves-souris existent pour empêcher de le prendre tranquillement — elles obligent à garder un œil derrière pendant qu'on gère le télégraphe devant.",
+ "_note": "LE CIRQUE DU PANDA — le mini-boss. Une arène bordée de dunes basses.\n\nLA HAUTEUR EST AU BORD, PAS AU CENTRE (T11.9). Les quatre dunes des coins et les deux du milieu donnent une case de portée à qui les tient, et aucune n'est sur le chemin le plus court : les prendre coûte du temps pendant que le panda avance. C'est le même marché que le charnier de `dunes_04`, dans l'autre sens — ici le bon poste est loin, pas cher.",
  "act": 2,
  "name_key": "MAP_DUNES_09",
  "rows": [
   "............",
-  "....#...#...",
+  "....^...^...",
   "............",
+  "......^.....",
+  "...#.....#..",
+  "......^.....",
   "............",
-  "..#......#..",
-  "............",
-  "............",
-  "....#...#...",
+  "....^...^...",
   "............"
  ],
  "objective": {
@@ -18,35 +18,35 @@
  },
  "deployment_cells": [
   [
-   0,
+   1,
    2
   ],
   [
-   0,
+   1,
    3
   ],
   [
-   0,
+   1,
    4
   ],
   [
-   0,
+   1,
    5
   ],
   [
-   0,
+   1,
    6
   ],
   [
-   1,
+   2,
    3
   ],
   [
-   1,
+   2,
    4
   ],
   [
-   1,
+   2,
    5
   ]
  ],

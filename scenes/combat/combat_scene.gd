@@ -165,7 +165,9 @@ func _build_scene() -> void:
 	# le `CanvasLayer` du HUD il passait DEVANT le plateau et le cachait
 	# entièrement : un calque d'interface se dessine par-dessus le monde,
 	# c'est sa raison d'être.
-	UiSkin.lay_backdrop(self)
+	# L'AIR DE L'ACTE (T11.9) : le fond presque noir vire vers la couleur de
+	# la région, à luminance constante. Le liseré doré ne bouge pas.
+	UiSkin.lay_backdrop(self, _air())
 
 	_terrain = Node2D.new()
 	_terrain.set_script(load("res://scenes/combat/terrain_view.gd"))
@@ -785,3 +787,10 @@ func _abandon() -> void:
 	for entry: Dictionary in log:
 		if String(entry.get("event", "")) == "combat_ended":
 			combat_finished.emit(false)
+
+
+## La couleur d'ambiance de la carte en cours, ou rien hors région : le
+## banc d'essai et la bataille de défense gardent le fond neutre.
+func _air() -> StringName:
+	var region := Region.of_map(map_id)
+	return Region.accent_of(region) if not region.is_empty() else &""

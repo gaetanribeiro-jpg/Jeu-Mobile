@@ -1,16 +1,16 @@
 {
- "_note": "LE BOSS DES DUNES. Une arène fermée : pas de fuite, pas de contournement. Deux tortues barrent l'approche pendant que l'ours choisit son côté, et le lanceur au fond punit qui reste groupé. L'ours a DEUX compétences — la file et le groupe — donc il n'y a pas de formation sûre, seulement une qui perd moins.",
+ "_note": "LA TANIÈRE DE L'OURS — le boss de l'acte 2. Un antre fermé sur trois côtés, deux tortues en barrage, un feu follet derrière, et l'ours au milieu.\n\nLES PIEUX D'OS FERMENT LA GUEULE DE L'ANTRE (T11.9), et ils se cassent : les deux passages du haut et du bas sont barrés, l'entrée du milieu ne l'est pas. Prendre le chemin direct, c'est arriver sous le nez de l'ours ; ouvrir un flanc coûte une activation de Guerrier. Le boss de l'acte 1 ne posait aucune question avant le premier coup.\n\nLE SOL DE L'ANTRE EST UN CHARNIER. La colonne d'ossements est exactement là où l'on veut se tenir pour encadrer l'ours — un point de dégâts de plus par arrêt, sur la carte la plus longue de l'acte.",
  "act": 2,
  "name_key": "MAP_DUNES_08",
  "rows": [
   "####....####",
-  "###......###",
+  "###..pp..###",
   "...........#",
-  "............",
-  "............",
-  "............",
+  ".......rr...",
+  ".......rr...",
+  ".......rr...",
   "...........#",
-  "###......###",
+  "###..pp..###",
   "####....####"
  ],
  "objective": {
@@ -61,14 +61,14 @@
   {
    "type": "bone_turtle",
    "cell": [
-    7,
+    6,
     3
    ]
   },
   {
    "type": "bone_turtle",
    "cell": [
-    7,
+    6,
     5
    ]
   },

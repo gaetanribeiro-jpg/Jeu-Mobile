@@ -317,3 +317,56 @@ func test_une_icone_remplit_son_carre() -> void:
 func test_une_reference_vide_ne_rend_rien_sans_se_plaindre() -> void:
 	assert_null(UiSkin.resource_icon("", UiTheme.metric(&"resource_icon")))
 	assert_null(UiSkin.resource_icon("pas_une_reference", 28))
+
+
+# --- L'air d'un acte (T11.9) -----------------------------------------------
+
+## LE FOND NE PEUT PORTER QU'UN SOUPÇON, et c'est le contrôle qui le dit :
+## on change la TEINTE du presque-noir, jamais sa clarté. Sans ça le
+## contraste des panneaux serait à revérifier pour chacune des six régions.
+func test_l_air_ne_change_pas_la_clarte_du_fond() -> void:
+	var neutral := UiTheme.color(&"backdrop").get_luminance()
+	for region_id: StringName in Region.ids():
+		var tinted := UiTheme.air_ground(Region.accent_of(region_id)).get_luminance()
+		assert_almost_eq(
+			tinted, neutral, 0.004,
+			"%s : le fond doit garder sa clarté" % region_id
+		)
+
+
+## LE TRAIT DOUX, LUI, A DE LA PLACE — et c'est lui qu'on voit. Il doit
+## bouger du neutre, sinon la mécanique ne fait rien.
+func test_chaque_region_donne_un_trait_distinct() -> void:
+	var neutral := UiTheme.color(&"panel_edge_soft")
+	var seen := {}
+	for region_id: StringName in Region.ids():
+		var edge := UiTheme.air_edge(Region.accent_of(region_id))
+		assert_ne(
+			edge.to_html(false), neutral.to_html(false),
+			"%s : son trait ne bouge pas" % region_id
+		)
+		assert_false(seen.has(edge.to_html(false)), "%s : trait déjà pris" % region_id)
+		seen[edge.to_html(false)] = region_id
+
+
+## L'OR VIF DIT « C'EST À LUI » (T9.7), et aucun air ne doit pouvoir le
+## prendre. `sand` est le cas limite : la couleur des Dunes EST un or.
+func test_aucun_air_ne_devient_l_or_vif() -> void:
+	var vivid := UiTheme.color(&"panel_edge")
+	for region_id: StringName in Region.ids():
+		var edge := UiTheme.air_edge(Region.accent_of(region_id))
+		var gap := (
+			absf(edge.r - vivid.r) + absf(edge.g - vivid.g) + absf(edge.b - vivid.b)
+		) / 3.0
+		assert_gt(gap, 0.04, "%s : son trait se confond avec l'or vif" % region_id)
+
+
+## Sans air — titre, options, crédits, royaume, banc d'essai — rien ne
+## bouge : ces écrans n'appartiennent à aucune région.
+func test_sans_air_rien_ne_bouge() -> void:
+	assert_eq(UiTheme.air_ground(&""), UiTheme.color(&"backdrop"))
+	assert_eq(UiTheme.air_edge(&""), UiTheme.color(&"panel_edge_soft"))
+	assert_eq(UiTheme.air_weave(&""), UiTheme.color(&"weave"))
+	# Une couleur inventée ne doit pas rendre du magenta : on retombe sur
+	# le neutre, comme une région qui n'aurait pas d'accent.
+	assert_eq(UiTheme.air_edge(&"pas_une_couleur"), UiTheme.color(&"panel_edge_soft"))

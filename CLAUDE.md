@@ -237,10 +237,11 @@ dur : passer par `data/assets.json`.
 - **Phase courante : 11 — la bêta.** Les chantiers sont listés avec leur
   constat vérifié dans `docs/etat-des-lieux.md` § 5. **Faits :** T11.2 le
   son, T11.3 l'écran de titre, T11.4 le déverrouillage et la fin, T11.6
-  la couleur partout, T11.7 l'acte 2, T11.8 la passe de finition.
+  la couleur partout, T11.7 l'acte 2, T11.8 la passe de finition, T11.9 le décor et
+  l'air d'un acte.
   **Restent :** T11.1 le téléphone (il te faut le SDK) et T11.5 le
   tutoriel, volontairement gardé pour après ta première partie.
-  **830 tests passent, les dix vérificateurs sont verts.**
+  **838 tests passent, les dix vérificateurs sont verts.**
   Le pivot vers la vision Tiny Kingdoms a été acté le 2026-08-31.
 - **Phase 1 terminée.** T1.1 à T1.14 sont faites et testées.
 - **Phase 2 terminée.** T2.1 à T2.7 : le `Hero`, les niveaux,
@@ -447,6 +448,57 @@ posait à l'aveugle — l'inverse de ce que le jeu promet partout ailleurs.
 Elle montre désormais le bestiaire, visage par visage. **La nuit est dite
 À PART** : le renfort est ajouté au moment du combat, il n'est pas dans
 la carte, et l'annoncer dans la liste ferait mentir la liste.
+
+**UN ACTE QUI N'A QU'UN MOT SE JOUE NEUF FOIS PAREIL (T11.9).** Sept
+cartes des Dunes sur neuf n'employaient QUE du rocher, et les neuf
+partageaient la même zone de placement : la couleur du sol les
+distinguait des Terres Vertes, leur forme non. `verify_maps` compte
+désormais le vocabulaire d'un ACTE et refuse en dessous de trois
+terrains — ça ne se voit sur aucune carte prise seule. Quatre choses à ne
+pas défaire :
+- **Le même terrain, un autre DESSIN.** Un bosquet des Terres Vertes est
+  un arbre vert ; celui des Dunes est un arbre MORT. Mêmes règles, autre
+  image : `terrain_decorations_by_ground`, indexé par la couleur de SOL et
+  pas par la région, donc deux régions de sable partagent leur décor.
+- **Le rocher et la colline ne sont PAS déclinés, exprès.** Le rocher
+  marque l'infranchissable : le fondre dans la couleur du sol le rendrait
+  illisible, et un rocher gris est juste dans un désert. La colline est
+  dessinée par le tileset, donc déjà teintée — une dune de sable sort
+  gratuitement d'un plateau d'herbe.
+- **Un terrain qui coûte plus d'un PM doit se VOIR.** La boue n'a aucun
+  sprite dans le pack, et la note de `view.json` réclamait une teinte
+  depuis dix phases avant qu'une carte l'emploie. `terrain_tints` la
+  donne, et un test refuse tout terrain coûteux ni dessiné ni teinté.
+- **Une carte molle se corrige en DISTANCE, encore.** `dunes_03` : bande
+  de sable sur toute la hauteur = 52 % de PV (plus cher que le boss) ;
+  tortues posées SUR le gué = 34 % ; tortues reculées d'une colonne =
+  63 %. Troisième fois de l'acte.
+
+**L'AIR D'UN ACTE PASSE PAR LE TRAIT DOUX, PAS PAR LE FOND (T11.9).**
+Deux mesures ont fermé les autres portes. **Le fond** : à la luminance
+d'un presque-noir, deux teintes opposées ne se séparent que de DEUX
+niveaux sur 255, et l'éclaircir ferait passer la crête du motif devant le
+panneau le plus sombre (T9.8). **L'or vif** : il dit « c'est à lui »
+(T9.7), et pour les Dunes c'est pire qu'une règle — `sand` EST l'or de
+l'interface, l'écart tombe à 0,038. Trois choses à ne pas défaire :
+- **Le trait doux ne portait aucune information, et c'est ce qui permet
+  de lui en donner une.** Le vif dit le tour, le doux dit « ceci est un
+  panneau ». Une couleur libre est celle qu'on peut donner.
+- **La chrome du combat est passée du vif au doux, et c'est une
+  CORRECTION.** Ni l'objectif, ni la fiche, ni la plaque d'action ne
+  veulent dire « c'est à lui » : ils portaient l'or vif par habitude.
+- **`verify_ui` mesure les six airs contre l'or vif ET contre le
+  neutre.** Il a attrapé `ash` du premier coup, à 0,035 du neutre :
+  l'Empire Noir n'aurait pas eu d'air. Un air qui ne bouge pas est une
+  mécanique qui ne fait rien.
+
+**DEUX DÉFAUTS SILENCIEUX QUE SEULE LA CAPTURE A VUS (T11.9).** Une
+fonction insérée AU MILIEU d'une autre (`_air()` dans `_build_from_map`)
+rend tout ce qui suit mort après un `return` — `verify_scripts` compile
+ça sans broncher. Et un cadre habillé dans `_ready`, avant que
+`lay_backdrop` ne pose l'air, garde le neutre pour toujours : la
+mécanique est branchée et ne se voit pas. **Le second ne s'est vu qu'en
+MESURANT le pixel du liseré, pas en le regardant.**
 
 **L'ARBRE SE LIT EN DEUX NIVEAUX, PAS EN SEPT (T11.8).** Chaque rangée
 était décalée de sa profondeur ; onze nœuds donnaient un escalier qui

@@ -168,7 +168,8 @@ func _build_top() -> Control:
 
 	var goal := PanelContainer.new()
 	goal.add_theme_stylebox_override("panel", UiSkin.framed_style(
-		&"frame_panel", &"panel_fill", &"panel_edge", UiTheme.metric(&"card_margin")
+		&"frame_panel", &"panel_fill", &"panel_edge_soft",
+		UiTheme.metric(&"card_margin")
 	))
 	goal.custom_minimum_size = Vector2(UiTheme.metric(&"objective_width"), 0)
 	goal.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
@@ -238,7 +239,8 @@ func _build_detail() -> void:
 	panel.offset_top = 14.0 + float(TOP_BAR_PX)
 	panel.offset_bottom = panel.offset_top + float(UiTheme.metric(&"detail_height"))
 	panel.add_theme_stylebox_override("panel", UiSkin.framed_style(
-		&"frame_panel", &"panel_fill", &"panel_edge", UiTheme.metric(&"card_margin")
+		&"frame_panel", &"panel_fill", &"panel_edge_soft",
+		UiTheme.metric(&"card_margin")
 	))
 	panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(panel)
@@ -329,7 +331,7 @@ func _build_corner() -> void:
 	# manquant.
 	var badge := PanelContainer.new()
 	badge.add_theme_stylebox_override("panel", UiSkin.framed_style(
-		&"frame_card", &"panel_fill", &"panel_edge", 10
+		&"frame_card", &"panel_fill", &"panel_edge_soft", 10
 	))
 	badge.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	badge.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -396,7 +398,7 @@ func _build_bottom() -> Control:
 	var plank := PanelContainer.new()
 	plank.custom_minimum_size = Vector2(0, BOTTOM_BAR_PX)
 	plank.add_theme_stylebox_override("panel", UiSkin.framed_style(
-		&"frame_panel", &"panel_deep", &"panel_edge",
+		&"frame_panel", &"panel_deep", &"panel_edge_soft",
 		UiTheme.metric(&"plank_margin")
 	))
 	plank.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -418,7 +420,7 @@ func _build_bottom() -> Control:
 	_active_face.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	var frame := PanelContainer.new()
 	frame.add_theme_stylebox_override("panel", UiSkin.framed_style(
-		&"frame_card", &"panel_fill", &"panel_edge", 4
+		&"frame_card", &"panel_fill", &"panel_edge_soft", 4
 	))
 	frame.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	frame.mouse_filter = Control.MOUSE_FILTER_IGNORE

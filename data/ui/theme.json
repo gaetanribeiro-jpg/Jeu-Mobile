@@ -80,8 +80,8 @@
     ],
     "ash": [
       0.55,
-      0.36,
-      0.38
+      0.53,
+      0.58
     ],
     "stone": [
       0.42,
@@ -232,6 +232,14 @@
     "button_pad": 12,
   "resource_icon": 28,
   "tree_indent": 26
+ },
+
+ "act_air": {
+  "_note": "L'AIR D'UN ACTE (T11.9). « L'interface pourrait légèrement changer d'un acte à l'autre. » Elle le fait par le FOND, et seulement par le fond : le liseré doré, les panneaux et les rôles de bouton ne bougent pas, sinon ce n'est plus le même jeu d'un acte à l'autre mais deux jeux.\n\nLA COULEUR N'EST PAS UNE NOUVELLE DONNÉE : c'est l'`accent` que la région déclare déjà pour la carte du monde (T11.6). Une région qui existe a donc son air, gratuitement.\n\n`ground_mix` fait virer l'aplat presque noir vers cette couleur À LUMINANCE CONSTANTE — on change la teinte, pas la clarté, sinon le contraste des panneaux bouge d'un acte à l'autre et il faudrait tout revérifier six fois. `weave_mix` fait la même chose au motif, plus doucement : il est déjà à peine visible, et le teinter fort ne ferait que l'éteindre.",
+  "ground_mix": 0.55,
+  "weave_mix": 0.3,
+  "edge_mix": 0.35,
+  "_edge_note": "LE FOND NE PEUT PORTER QU'UN SOUPÇON, ET C'EST MESURÉ. À la luminance du fond (0,028), deux teintes opposées ne se séparent que de DEUX niveaux sur 255 : invisible. Et on ne peut pas l'éclaircir — dès 10 % de mélange direct, la crête du motif dépasse le panneau le plus sombre (0,077) et le fond passerait devant ce qu'on pose dessus, ce que T9.8 refuse. Un presque-noir n'a pas de place pour une couleur.\n\nLE TRAIT EN A. `panel_edge_soft` est un or éteint (107, 89, 56) : mélangé à 35 % vers l'accent d'une région, il vire visiblement — vert mousse, sable chaud, gris-bleu de gel — sans jamais s'approcher de l'or VIF (184, 153, 87), qui reste réservé à « c'est à lui » (T9.7). `verify_ui` mesure cette distance pour les six régions.\n\nPourquoi le trait doux et pas le vif : le vif porte le TOUR, le doux ne porte rien. Une couleur libre est celle qu'on peut donner."
   },
   "surfaces": {
     "_note": "Chaque rôle dit QUEL asset du pack, à quelle RÉDUCTION, et de quelle TEINTE.\n\n`scale` est un diviseur ENTIER, et il n'y a pas d'exception à ça : le pack est du pixel art sur grille de 64, filtré en Nearest. Diviser par 2 fait tomber quatre pixels sur un ; diviser par 1,5 en fait tomber deux et demi, et la bordure bave. C'est aussi ce qui décide la taille des coins : un bouton de 72 px de haut ne peut pas porter des coins de 64, il lui faut du 32 — donc `scale: 2`.\n\n`desaturate` transforme la source en niveaux de gris AVANT de la teinter. Sans ça on ne pourrait pas sortir des deux couleurs du pack : multiplier un bouton bleu par de l'or donne du vert sale. Passé en gris, il prend n'importe quelle teinte proprement, et les six rôles ci-dessous sortent tous de la même image.",

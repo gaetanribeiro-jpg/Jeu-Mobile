@@ -1,15 +1,15 @@
 {
- "_note": "TENIR QUATRE RONDES, avec deux araignées qui gèlent et un serpent qui vise le fond. L'échéance change tout : on ne peut plus se permettre d'aller chercher les tireurs, il faut encaisser en restant groupé — et rester groupé, c'est offrir la croix.",
+ "_note": "LA HALTE DES CARAVANES : tenir quatre rondes, pas tuer. L'échéance porte la pression, donc la carte n'a pas besoin d'en ajouter — c'est la règle de T8.1, qui refuse un renfort de nuit sur une carte à échéance.\n\nLE CHARNIER EST DANS LE DOS DU JOUEUR (T11.9). Trois tas d'ossements bordent la zone de placement : reculer devant l'assaut, ce qui est le réflexe quand on doit tenir, revient à s'arrêter sur une case qui coûte un point de dégâts de plus. Tenir veut dire tenir DEVANT, et la carte le dit sans une ligne de texte.",
  "act": 2,
  "name_key": "MAP_DUNES_07",
  "rows": [
   "...#........",
   "..#.........",
-  "............",
+  "..rr........",
   ".....##.....",
+  "..rr.##.....",
   ".....##.....",
-  ".....##.....",
-  "............",
+  "..rr........",
   "..#.........",
   "...#........"
  ],

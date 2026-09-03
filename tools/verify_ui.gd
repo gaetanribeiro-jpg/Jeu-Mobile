@@ -22,6 +22,12 @@ extends SceneTree
 ## ABSENT, pas le motif discret, qui est ce qu'on veut.
 const MINIMUM_WEAVE_LIFT := 0.01
 
+## Écart minimal entre le trait doux d'un air et les deux couleurs qu'il
+## ne doit pas devenir : l'or vif (qui dit « c'est à lui ») et le neutre
+## (qu'il est censé quitter). Mesuré : à 0,04 la différence se voit sur un
+## liseré de deux pixels, en dessous elle se devine.
+const MINIMUM_EDGE_DISTANCE := 0.04
+
 var _problems: Array[String] = []
 
 
@@ -429,28 +435,87 @@ func _check_weave() -> void:
 		_problems.append("motif de fond : entièrement transparent")
 		return
 
-	var tint := UiTheme.color(&"weave")
-	var ground := UiTheme.color(&"backdrop")
-	var opacity := peak * tint.a
-	var crest := ground.lerp(Color(tint.r, tint.g, tint.b), opacity)
-	var lift := crest.get_luminance() - ground.get_luminance()
-	if lift < MINIMUM_WEAVE_LIFT:
-		_problems.append(
-			"motif de fond : il n'éclaircit le fond que de %.3f — invisible. "
-			% lift + "L'alpha du fichier (%.2f) et celui du thème (%.2f) se "
-			% [peak, tint.a] + "MULTIPLIENT."
-		)
 	var floor_ := minf(
 		UiTheme.color(&"panel_fill").get_luminance(),
 		UiTheme.color(&"panel_deep").get_luminance()
 	)
-	if crest.get_luminance() >= floor_:
-		_problems.append(
-			"motif de fond : sa crête (%.3f) atteint le panneau le plus sombre "
-			% crest.get_luminance() + "(%.3f). Le fond passerait devant." % floor_
-		)
-	print("motif de fond: crête %.3f, plancher des panneaux %.3f"
-		% [crest.get_luminance(), floor_])
+
+	# CHAQUE ACTE A SON AIR, ET CHACUN DOIT PASSER (T11.9). Le fond vire
+	# vers la couleur de la région à luminance constante, donc en principe
+	# rien ne bouge — mais « en principe » vaut jusqu'à ce qu'une couleur
+	# de palette change. Six régions, six contrôles, plus le fond neutre
+	# des écrans hors expédition.
+	var airs: Array[StringName] = [&""]
+	for region_id: StringName in Region.ids():
+		airs.append(Region.accent_of(region_id))
+
+	var lines := PackedStringArray()
+	for air: StringName in airs:
+		var tint := UiTheme.air_weave(air)
+		var ground := UiTheme.air_ground(air)
+		var opacity := peak * tint.a
+		var crest := ground.lerp(Color(tint.r, tint.g, tint.b), opacity)
+		var lift := crest.get_luminance() - ground.get_luminance()
+		var label: String = "neutre" if air.is_empty() else String(air)
+		if lift < MINIMUM_WEAVE_LIFT:
+			_problems.append(
+				"motif de fond (%s) : il n'éclaircit le fond que de %.3f — "
+				% [label, lift] + "invisible. L'alpha du fichier (%.2f) et "
+				% peak + "celui du thème (%.2f) se MULTIPLIENT." % tint.a
+			)
+		if crest.get_luminance() >= floor_:
+			_problems.append(
+				"motif de fond (%s) : sa crête (%.3f) atteint le panneau le "
+				% [label, crest.get_luminance()]
+				+ "plus sombre (%.3f). Le fond passerait devant." % floor_
+			)
+		lines.append("%s %.3f" % [label, crest.get_luminance()])
+	print("motif de fond: crêtes %s, plancher des panneaux %.3f"
+		% [", ".join(lines), floor_])
+	_check_air_edges(airs)
+
+
+## LE TRAIT DOUX PORTE L'AIR DE LA RÉGION (T11.9), ET IL NE DOIT PAS
+## PRENDRE LA PLACE DE L'OR.
+##
+## T9.7 a verrouillé une chose : l'or VIF dit « c'est à lui ». Le trait
+## doux ne dit rien, et c'est ce qui permet de lui donner la couleur de la
+## région. Sauf que `sand` est un or : mélangé trop fort, le trait doux
+## devient l'or vif et le tour du personnage cesse de se lire.
+##
+## Le contrôle mesure la distance entre les deux dans chaque air. Il
+## refuse aussi l'inverse — un air qui ne bougerait pas du neutre serait
+## une mécanique qui ne fait rien.
+func _check_air_edges(airs: Array[StringName]) -> void:
+	var vivid := UiTheme.color(&"panel_edge")
+	var neutral := UiTheme.color(&"panel_edge_soft")
+	var lines := PackedStringArray()
+	for air: StringName in airs:
+		if air.is_empty():
+			continue
+		var edge := UiTheme.air_edge(air)
+		var from_vivid := _distance(edge, vivid)
+		var from_neutral := _distance(edge, neutral)
+		lines.append("%s %s" % [air, edge.to_html(false)])
+		if from_vivid < MINIMUM_EDGE_DISTANCE:
+			_problems.append(
+				"air « %s » : son trait doux (%s) est à %.3f de l'or vif — "
+				% [air, edge.to_html(false), from_vivid]
+				+ "le liseré cesserait de dire qui joue."
+			)
+		if from_neutral < MINIMUM_EDGE_DISTANCE:
+			_problems.append(
+				"air « %s » : son trait doux ne bouge que de %.3f du neutre "
+				% [air, from_neutral] + "— l'acte ne se verrait pas."
+			)
+	print("airs         : %s" % ", ".join(lines))
+
+
+## Écart entre deux couleurs, canal par canal. Pas une distance
+## perceptuelle : on compare des teintes voisines d'un même or, où la
+## différence est franche ou n'est pas.
+func _distance(a: Color, b: Color) -> float:
+	return (absf(a.r - b.r) + absf(a.g - b.g) + absf(a.b - b.b)) / 3.0
 
 
 ## Les glyphes de compétences (§ 48).

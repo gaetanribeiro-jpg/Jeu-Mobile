@@ -32,6 +32,7 @@ func _init() -> void:
 		_check(map, width, height)
 
 	_check_decorations()
+	_check_vocabulary(ids)
 	_check_defence_map()
 
 	if not _to_rewrite.is_empty():
@@ -124,6 +125,47 @@ func _check(map: CombatMap, width: int, height: int) -> void:
 				% [id, enemy.class_id, footing.terrain_id, cell])
 
 	_check_objective(map, id)
+
+
+## UN ACTE QUI N'A QU'UN MOT DE VOCABULAIRE SE JOUE NEUF FOIS PAREIL.
+##
+## L'acte 2 est né avec du ROCHER et rien d'autre : sept cartes sur neuf
+## n'employaient que lui, une avait du feu, une avait une colline. Rien ne
+## s'en plaignait — chaque carte était jouable, mesurée, équilibrée. Mais
+## « les Dunes ressemblent aux Terres Vertes » n'est pas un défaut qui se
+## voit carte par carte, il se voit sur l'ACTE.
+##
+## Le seuil est bas exprès : il refuse l'acte MONOTONE, pas l'acte sobre.
+## Trois terrains, c'est déjà une carte de rocher, une de relief et une
+## d'obstacle destructible — de quoi poser trois questions différentes.
+func _check_vocabulary(ids: Array[StringName]) -> void:
+	var minimum := 3
+	var per_act := {}
+	for id: StringName in ids:
+		var map := CombatMap.load_map(id)
+		if map == null or map.board == null:
+			continue
+		var seen: Dictionary = per_act.get(map.act, {})
+		for cell: Vector2i in map.board.grid.cells():
+			var tile := map.board.tile_at(cell)
+			if tile != null and tile.terrain_id != &"grass":
+				seen[tile.terrain_id] = true
+		per_act[map.act] = seen
+
+	print("")
+	for act: int in per_act.keys():
+		var words: Dictionary = per_act[act]
+		var names := PackedStringArray()
+		for terrain_id: StringName in words.keys():
+			names.append(String(terrain_id))
+		names.sort()
+		print("acte %d : %d terrains — %s" % [act, names.size(), ", ".join(names)])
+		if names.size() < minimum:
+			_problems.append(
+				"acte %d : %d terrain(s) pour tout l'acte (%s) — il en faut %d. "
+				% [act, names.size(), ", ".join(names), minimum]
+				+ "Un acte qui n'a qu'un mot se joue neuf fois pareil."
+			)
 
 
 func _check_objective(map: CombatMap, id: String) -> void:

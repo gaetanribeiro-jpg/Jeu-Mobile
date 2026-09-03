@@ -154,3 +154,53 @@ func test_une_carte_retrouve_sa_region() -> void:
 ## région » sans que la console se remplisse.
 func test_une_carte_sans_region_ne_se_plaint_pas() -> void:
 	assert_eq(Region.of_map(&"une_carte_qui_n_existe_pas"), &"")
+
+
+# --- Le décor change d'un acte à l'autre (T11.9) ---------------------------
+
+## LE MÊME TERRAIN, AUTRE DESSIN SELON LA RÉGION. Un bosquet des Terres
+## Vertes est un arbre vert ; le même bosquet dans les Dunes est un arbre
+## MORT. Mêmes règles — il coupe la vue, il abrite d'un point de dégâts —
+## autre image. C'est la leçon de T11.7 poussée jusqu'au décor : on
+## n'invente pas de mécanique pour un acte, on change ce qu'elle montre.
+func test_le_sable_redessine_le_bosquet() -> void:
+	var green := ViewSettings.terrain_decoration(&"forest")
+	var sand := ViewSettings.terrain_decoration(&"forest", &"sand")
+	assert_false(green.is_empty(), "le bosquet par défaut doit exister")
+	assert_false(sand.is_empty(), "le bosquet des Dunes doit exister")
+	assert_ne(sand.get("key"), green.get("key"), "et il doit être AUTRE")
+
+
+## CE QUI N'EST PAS LISTÉ RETOMBE SUR LE DÉFAUT : une région n'a pas à
+## redéclarer les six terrains pour en changer deux.
+func test_un_terrain_non_decline_garde_son_dessin() -> void:
+	assert_eq(
+		ViewSettings.terrain_decoration(&"rock", &"sand"),
+		ViewSettings.terrain_decoration(&"rock"),
+		"le rocher n'est pas décliné — il marque l'infranchissable"
+	)
+
+
+## Un sol inconnu ne doit pas vider le décor : on retombe sur le défaut.
+func test_un_sol_inconnu_retombe_sur_le_defaut() -> void:
+	assert_eq(
+		ViewSettings.terrain_decoration(&"forest", &"pas_un_sol"),
+		ViewSettings.terrain_decoration(&"forest")
+	)
+
+
+## LA BOUE N'A AUCUN SPRITE DANS LE PACK, et la note de `view.json` le
+## disait depuis toujours : « il faudra une teinte avant qu'une carte
+## l'utilise ». Le sable mouvant des Dunes est cette carte. Une case qui
+## coûte deux PM et qui ressemble à une case qui en coûte un est un
+## mensonge, pas une surprise.
+func test_tout_terrain_sans_sprite_ni_teinte_serait_invisible() -> void:
+	for terrain_id: StringName in CombatRules.terrain_ids():
+		if CombatRules.terrain_property(terrain_id, &"move_cost", 1) <= 1:
+			continue
+		var drawn := not ViewSettings.terrain_decoration(terrain_id).is_empty()
+		var tinted := not ViewSettings.terrain_tint(terrain_id).is_empty()
+		assert_true(
+			drawn or tinted,
+			"« %s » coûte plus d'un PM et ne se voit pas" % terrain_id
+		)

@@ -638,4 +638,6 @@ func _note(text: String) -> void:
 
 ## Le motif de fond, posé DERRIÈRE tout le reste.
 func _lay_backdrop() -> void:
-	UiSkin.lay_backdrop(self)
+	# L'air de la région où l'on marche (T11.9).
+	var region: StringName = _run.region_id if _run != null else &""
+	UiSkin.lay_backdrop(self, Region.accent_of(region) if not region.is_empty() else &"")

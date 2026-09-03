@@ -1,17 +1,17 @@
 {
- "_note": "LE RELIEF PAIE LA PORTÉE, et pour la première fois c'est l'ennemi qui en profite : deux lanceurs sur les collines couvrent tout le centre. Y monter coûte le tour d'un héros ; ne pas y monter laisse la croix tomber six rondes durant.",
+ "_note": "LA CRÊTE ROUGE, ET LA SEULE CARTE DE L'ACTE OÙ LA HAUTEUR SE PARTAGE.\n\nDeux grandes dunes tiennent le milieu du plateau ; les feux follets y sont posés d'entrée. Mais le joueur a les siennes, deux cases isolées DANS SA ZONE DE PLACEMENT : poser l'Archer dessus lui donne une case de portée et un point de dégâts, au prix d'un pas de retard sur tout le reste. Le placement initial devient un choix chiffré au lieu d'une formalité (§ 13.6).\n\nLa colline est dessinée par le TILESET, donc la dune de sable sort gratuitement du plateau d'herbe : elle est déjà teinte par la région.",
  "act": 2,
  "name_key": "MAP_DUNES_05",
  "rows": [
-  "............",
   "......^^....",
   "......^^....",
+  ".......^....",
+  ".^..........",
   "............",
-  "............",
-  "............",
+  ".^..........",
+  ".......^....",
   "......^^....",
-  "......^^....",
-  "............"
+  "......^^...."
  ],
  "objective": {
   "kind": "eliminate"

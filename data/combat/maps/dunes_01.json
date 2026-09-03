@@ -1,16 +1,16 @@
 {
- "_note": "LA PREMIÈRE DES DUNES, ET ELLE N'ENSEIGNE QU'UNE CHOSE : le serpent arrive tout de suite. Un plateau presque nu, quatre bêtes, aucun terrain pour se cacher — le joueur voit sept PM traverser la carte et comprend, sans qu'on le lui écrive, que sa ligne arrière n'est plus à l'abri de la distance.",
+ "_note": "LA PISTE OUVERTE, ET LA PREMIÈRE LEÇON DE L'ACTE : LA HAUTEUR EST À EUX.\n\nLa crête de dunes court le long du bord droit, donc c'est l'ennemi qui l'occupe au départ. Un tireur posté dessus porte une case plus loin et frappe un point plus fort : la carte apprend le relief en le faisant SUBIR, ce qui se retient mieux que de l'offrir.\n\nDeux arbres morts pour toute couverture, et un tas d'ossements au milieu du chemin — la case coûte un point de dégâts de plus à qui s'y arrête. L'acte 1 n'avait rien qui punisse un mauvais arrêt.",
  "act": 2,
  "name_key": "MAP_DUNES_01",
  "rows": [
   "............",
-  "..#.........",
   "............",
-  ".....#......",
+  "...f......^.",
+  "..........^.",
+  "....r.......",
+  "..........^.",
+  "...f......^.",
   "............",
-  ".....#......",
-  "............",
-  "..#.........",
   "............"
  ],
  "objective": {
@@ -48,6 +48,10 @@
   [
    1,
    5
+  ],
+  [
+   2,
+   4
   ]
  ],
  "enemies": [

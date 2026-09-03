@@ -1,16 +1,16 @@
 {
- "_note": "LA CARTE QUI POSE LA QUESTION DE LA TORTUE. Deux barrages au milieu d'un couloir, un lanceur derrière : les abattre coûte trois rondes pendant lesquelles la gerbe tombe, les contourner demande de traverser un goulet qu'elles tiennent. C'est le premier plateau du jeu où « ignorer » est la bonne réponse.",
+ "_note": "LA CARTE QUI POSE LA QUESTION DE LA TORTUE. Deux barrages, un lanceur derrière : les abattre coûte trois rondes pendant lesquelles la gerbe tombe, les contourner demande de traverser ce qu'elles gardent. C'est le premier plateau du jeu où « ignorer » est la bonne réponse.\n\nLE GUÉ EST CE QUI EN FAIT UNE QUESTION (T11.9). Une bande de sable mouvant à deux PM barre toute la hauteur, SAUF une rangée sèche au milieu — celle que les tortues surveillent. Passer devant elles coûte des coups, passer à côté coûte du mouvement : deux prix pour le même franchissement, ce qui est la définition d'un choix.\n\nDEUX MESURES ONT RÉGLÉ CETTE CARTE, ET TOUTES DEUX SUR LA DISTANCE.\n• Sans gué, la bande barrait toute la hauteur : 52 % de PV restants, plus cher que le BOSS de l'acte. Ce n'était pas une décision, c'était un péage — quel que soit le chemin on payait quatre PM.\n• Les tortues POSÉES SUR le gué : 34 %. Un goulot de deux cases tenu par ce qui encaisse le mieux du bestiaire ne se contourne plus, il se subit. Reculées d'une colonne, derrière la bande, elles gardent le gué sans le boucher : 63 %, entre `dunes_05` et le boss.\n\nTroisième fois de l'acte que la réponse est la DISTANCE et pas le nombre — après `dunes_06` et le renfort de nuit de T8.1.\n\nLa boue n'avait AUCUN sprite dans le pack, et la note de `view.json` réclamait une teinte avant qu'une carte l'emploie. C'est cette carte.",
  "act": 2,
  "name_key": "MAP_DUNES_03",
  "rows": [
   "#####..#####",
-  "#####..#####",
+  "#####bb#####",
+  ".....bb.....",
+  ".....bb.....",
   "............",
-  "............",
-  "............",
-  "............",
-  "............",
-  "#####..#####",
+  ".....bb.....",
+  ".....bb.....",
+  "#####bb#####",
   "#####..#####"
  ],
  "objective": {
@@ -54,14 +54,14 @@
   {
    "type": "bone_turtle",
    "cell": [
-    6,
+    7,
     3
    ]
   },
   {
    "type": "bone_turtle",
    "cell": [
-    6,
+    7,
     5
    ]
   },

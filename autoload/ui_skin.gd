@@ -315,9 +315,9 @@ func enemy_portrait(sprite_id: StringName) -> Texture2D:
 ## Rendu par `add_child` en PREMIER, donc derrière tout le reste — mais
 ## passer par `lay_backdrop` plutôt que par `add_child` : six écrans
 ## portent DÉJÀ leur propre `Background`, qui le recouvrait.
-func backdrop() -> Control:
+func backdrop(air: StringName = &"") -> Control:
 	var ground := ColorRect.new()
-	ground.color = UiTheme.color(&"backdrop")
+	ground.color = UiTheme.air_ground(air)
 	ground.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	ground.mouse_filter = Control.MOUSE_FILTER_IGNORE
 
@@ -338,7 +338,7 @@ func backdrop() -> Control:
 	# STRETCH_TILE ne carrelle que si la répétition est autorisée sur le
 	# nœud : une `ImageTexture` n'en décide pas elle-même.
 	weave.texture_repeat = CanvasItem.TEXTURE_REPEAT_ENABLED
-	weave.modulate = UiTheme.color(&"weave")
+	weave.modulate = UiTheme.air_weave(air)
 	weave.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	weave.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	ground.add_child(weave)
@@ -397,22 +397,47 @@ func dress_scroll(container: ScrollContainer) -> void:
 ## `CanvasLayer` du HUD il passait devant le plateau et le cachait — un
 ## calque d'interface se dessine par-dessus le monde, c'est sa raison
 ## d'être.
-func lay_backdrop(root: Node) -> void:
+## `air` est le nom d'une couleur de palette — en pratique l'`accent` de la
+## région où l'on se trouve. Appeler à nouveau avec un autre air RETEINTE
+## le fond en place : la carte du monde le fait à chaque région survolée.
+func lay_backdrop(root: Node, air: StringName = &"") -> void:
+	_air = air
 	var existing := root.get_node_or_null(^"Background")
 	if existing is ColorRect:
 		var ground := existing as ColorRect
-		ground.color = UiTheme.color(&"backdrop")
+		ground.color = UiTheme.air_ground(air)
 		if ground.get_child_count() == 0:
-			var weave := backdrop()
+			var weave := backdrop(air)
 			# On ne garde que le motif : l'aplat est déjà là.
 			for child in weave.get_children():
 				weave.remove_child(child)
 				ground.add_child(child)
 			weave.queue_free()
+		else:
+			for child in ground.get_children():
+				if child is CanvasItem:
+					(child as CanvasItem).modulate = UiTheme.air_weave(air)
 		return
-	var fresh := backdrop()
+	var fresh := backdrop(air)
 	root.add_child(fresh)
 	root.move_child(fresh, 0)
+
+
+## L'AIR DE L'ÉCRAN COURANT : le nom d'une couleur de palette, en pratique
+## l'`accent` de la région où l'on se trouve (T11.9). Vide sur les écrans
+## qui n'appartiennent à aucune région — titre, options, crédits, royaume.
+##
+## C'est un état d'ambiance et il vit donc dans la peau, pas dans un
+## paramètre traîné d'appel en appel : `framed_style` est appelée depuis
+## une trentaine d'endroits, et lui ajouter un argument aurait obligé
+## chaque écran à savoir où il se trouve pour dessiner une bordure.
+## `lay_backdrop` le pose, et tous les écrans l'appellent déjà en premier.
+var _air: StringName = &""
+
+
+## Les deux teintes de FOND vivent dans `UiTheme`, pas ici : c'est un
+## CALCUL sur des couleurs, et `verify_ui` doit pouvoir le refaire. Un
+## script lancé par `-s` ne reçoit aucun autoload.
 
 
 ## La carte d'un personnage : portrait encadré, nom, jauge de vie.
@@ -778,7 +803,10 @@ func framed_style(
 	frame: StringName = &"frame_panel", fill: StringName = &"panel_fill",
 	edge: StringName = &"panel_edge", pad: int = -1
 ) -> StyleBox:
-	var key := StringName("framed|%s|%s|%s|%d" % [frame, fill, edge, pad])
+	# LE TRAIT DOUX PORTE L'AIR DE LA RÉGION (T11.9), donc la clé de cache
+	# doit le contenir : sans ça le premier écran teinté imposerait sa
+	# couleur à tous les suivants.
+	var key := StringName("framed|%s|%s|%s|%d|%s" % [frame, fill, edge, pad, _air])
 	if _styles.has(key):
 		return _styles[key]
 
@@ -787,11 +815,16 @@ func framed_style(
 	var line: StringName = edge
 	if not UiTheme.has_color(line):
 		line = StringName(UiTheme.section(&"button_tints").get(String(edge), "panel_edge"))
+	# Seul le trait DOUX vire : le vif dit « c'est à lui » et ne se
+	# négocie pas, un rôle de bouton dit « danger » et encore moins.
+	var stroke := UiTheme.color(line)
+	if line == &"panel_edge_soft":
+		stroke = UiTheme.air_edge(_air)
 	var built: StyleBox = null
-	var texture := _frame_texture(frame, fill, line)
+	var texture := _frame_texture(frame, fill, stroke, String(key))
 	if texture == null:
 		built = _flat(UiTheme.color(fill))
-		(built as StyleBoxFlat).border_color = UiTheme.color(line)
+		(built as StyleBoxFlat).border_color = stroke
 		(built as StyleBoxFlat).set_border_width_all(2)
 	else:
 		var box := StyleBoxTexture.new()
@@ -807,8 +840,10 @@ func framed_style(
 	return built
 
 
-func _frame_texture(frame: StringName, fill: StringName, edge: StringName) -> Texture2D:
-	var cache := StringName("frametex|%s|%s|%s" % [frame, fill, edge])
+func _frame_texture(
+	frame: StringName, fill: StringName, line: Color, tag: String
+) -> Texture2D:
+	var cache := StringName("frametex|%s" % tag)
 	if _textures.has(cache):
 		return _textures[cache]
 	var entry := AssetTable.sprite(&"widgets", frame)
@@ -819,7 +854,6 @@ func _frame_texture(frame: StringName, fill: StringName, edge: StringName) -> Te
 		return null
 
 	var ground := UiTheme.color(fill)
-	var line := UiTheme.color(edge)
 	var painted := Image.create_empty(
 		source.get_width(), source.get_height(), false, Image.FORMAT_RGBA8
 	)

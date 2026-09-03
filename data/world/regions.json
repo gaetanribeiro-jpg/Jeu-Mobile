@@ -63,15 +63,15 @@
       "act": 2,
       "unlocked": false,
       "accent": "sand",
-   "ground": "sand",
+      "ground": "sand",
       "encounter_maps": [
         "dunes_06",
-        "dunes_01",
         "dunes_07",
+        "dunes_01",
         "dunes_02",
-        "dunes_03",
         "dunes_04",
-        "dunes_05"
+        "dunes_05",
+        "dunes_03"
       ],
       "miniboss_map": "dunes_09",
       "boss_map": "dunes_08",

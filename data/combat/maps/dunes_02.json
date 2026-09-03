@@ -1,15 +1,15 @@
 {
- "_note": "DEUX ARAIGNÉES, ET C'EST LE POINT. Le gel n'était infligé que par les héros depuis la Phase 1 ; ici le joueur le subit deux fois par ronde, et les rochers qui devaient l'abriter deviennent des détours qu'il n'a plus les PM de faire.",
+ "_note": "LE CHAMP DE PIERRES, ET DES PIEUX QU'ON PEUT ABATTRE.\n\nLes couloirs de rocher forcent à choisir une voie ; les pieux d'os la FERMENT, sauf qu'ils se cassent. Trente points de vie, deux coups de Guerrier : ouvrir un passage coûte une activation entière, le contourner en coûte deux de marche. C'est le premier plateau de l'acte où le décor est une cible.\n\nLe pack ne dessine ni mur ni porte ; il dessine un crâne sur un pieu, et c'est exactement ce qu'une piste de désert borde.",
  "act": 2,
  "name_key": "MAP_DUNES_02",
  "rows": [
   "...##.......",
   "....#.......",
-  "............",
+  "......p.....",
+  "..#...p..#..",
   "..#......#..",
-  "..#......#..",
-  "..#......#..",
-  "............",
+  "..#...p..#..",
+  "......p.....",
   "....#.......",
   "...##......."
  ],
@@ -17,6 +17,10 @@
   "kind": "eliminate"
  },
  "deployment_cells": [
+  [
+   0,
+   1
+  ],
   [
    0,
    2
@@ -27,10 +31,6 @@
   ],
   [
    0,
-   4
-  ],
-  [
-   0,
    5
   ],
   [
@@ -38,16 +38,16 @@
    6
   ],
   [
-   1,
-   3
+   0,
+   7
   ],
   [
    1,
-   4
+   2
   ],
   [
    1,
-   5
+   6
   ]
  ],
  "enemies": [

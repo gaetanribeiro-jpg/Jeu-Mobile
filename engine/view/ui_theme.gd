@@ -79,6 +79,16 @@ static func font_size(key: StringName) -> int:
 	return int(block[String(key)])
 
 
+## Un réglage fractionnaire d'une section quelconque. `metric` rend des
+## entiers — des pixels ; celui-ci rend des proportions.
+static func number(section_name: StringName, key: StringName) -> float:
+	var block := section(section_name)
+	if not block.has(String(key)):
+		push_error("UiTheme : réglage « %s.%s » absent du thème" % [section_name, key])
+		return 0.0
+	return float(block[String(key)])
+
+
 static func metric(key: StringName) -> int:
 	var block := section(&"metrics")
 	if not block.has(String(key)):
@@ -142,6 +152,74 @@ static func widget(name_: StringName) -> Dictionary:
 ## texte, ce qu'elle a fait pendant neuf phases.
 static func glyphs() -> Dictionary:
 	return section(&"glyphs")
+
+
+## L'APLAT DE FOND, TEINTÉ PAR L'ACTE (T11.9).
+##
+## « L'interface pourrait légèrement changer d'un acte à l'autre. » Elle le
+## fait par le FOND, et par lui seul : le liseré doré, les panneaux et les
+## rôles de bouton ne bougent pas. Autrement ce ne serait plus le même jeu
+## d'un acte à l'autre, mais deux jeux — et T9.7 a verrouillé cette
+## identité.
+##
+## À LUMINANCE CONSTANTE, et c'est le point délicat. On change la TEINTE
+## du presque-noir, jamais sa clarté : le contraste des panneaux posés
+## dessus reste celui qui a été mesuré une fois, au lieu d'être à
+## revérifier pour chacune des six régions.
+##
+## ICI ET PAS DANS `UiSkin` PARCE QUE `verify_ui` DOIT SAVOIR CALCULER ÇA.
+## Un script lancé par `-s` ne reçoit AUCUN autoload, et l'identifiant est
+## résolu à la COMPILATION : le vérificateur ne compilait même pas. Même
+## piège que `GameState` dans `tools/dev/screenshot.gd`.
+static func air_ground(air: StringName) -> Color:
+	var base := color(&"backdrop")
+	if air.is_empty() or not has_color(air):
+		return base
+	return base.lerp(
+		_at_luminance(color(air), base.get_luminance()),
+		number(&"act_air", &"ground_mix")
+	)
+
+
+## Le motif de fond, teinté du même air — plus doucement. Il est déjà à
+## peine visible ; le teinter fort ne ferait que l'éteindre.
+static func air_weave(air: StringName) -> Color:
+	var base := color(&"weave")
+	if air.is_empty() or not has_color(air):
+		return base
+	var tinted := base.lerp(color(air), number(&"act_air", &"weave_mix"))
+	tinted.a = base.a
+	return tinted
+
+
+## LE TRAIT DOUX, TEINTÉ PAR L'ACTE — et c'est LUI qu'on voit (T11.9).
+##
+## Le fond ne peut porter qu'un soupçon, et c'est mesuré : à la luminance
+## d'un presque-noir, deux teintes opposées ne se séparent que de deux
+## niveaux sur 255, et l'éclaircir ferait passer la crête du motif devant
+## le panneau le plus sombre — ce que T9.8 refuse.
+##
+## `panel_edge_soft` est un or ÉTEINT, et il ne porte aucune information :
+## le trait VIF dit « c'est à lui » (T9.7), le doux dit seulement « ceci
+## est un panneau ». Une couleur libre est celle qu'on peut donner. Mélangé
+## vers l'accent de la région, il vire visiblement sans jamais s'approcher
+## de l'or vif — `verify_ui` mesure cette distance pour les six régions.
+static func air_edge(air: StringName) -> Color:
+	var base := color(&"panel_edge_soft")
+	if air.is_empty() or not has_color(air):
+		return base
+	return base.lerp(color(air), number(&"act_air", &"edge_mix"))
+
+
+## La même couleur, ramenée à une luminance voulue. Une couleur noire n'a
+## pas de teinte à conserver : on la rend telle quelle plutôt que de
+## diviser par zéro.
+static func _at_luminance(source: Color, target: float) -> Color:
+	var here := source.get_luminance()
+	if here <= 0.0:
+		return source
+	var factor := target / here
+	return Color(source.r * factor, source.g * factor, source.b * factor, source.a)
 
 
 ## La couleur d'une jauge de vie selon ce qu'il reste, en fraction.

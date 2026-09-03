@@ -1,16 +1,16 @@
 {
- "_note": "DEUX LANCEURS QUI SÈMENT DU FEU sur un plateau qui en porte déjà. Les deux réponses de l'acte 1 se contredisent enfin : se serrer pour encaisser la croix, c'est se serrer sur un terrain qui brûle ; s'écarter, c'est se faire prendre un par un.",
+ "_note": "LE BRASIER. Quatre feux au sol, et le chemin le plus court passe entre eux : douze points par activation commencée dessus, soit un dixième du Guerrier. On ne meurt pas d'y passer, on paie de s'y arrêter.\n\nLE CHARNIER EST LE VRAI PIÈGE (T11.9). Les tas d'ossements bordent le côté ennemi, et une case d'os coûte un point de dégâts de plus à qui l'occupe. La ligne de tir la plus confortable est justement dessus : le meilleur poste est le plus cher, et c'est une décision que les statistiques seules ne donnaient pas.",
  "act": 2,
  "name_key": "MAP_DUNES_04",
  "rows": [
   "............",
-  "...!........",
-  "............",
+  "...!....r...",
+  "........rr..",
   "......!.....",
   "............",
   "......!.....",
-  "............",
-  "...!........",
+  "........rr..",
+  "...!....r...",
   "............"
  ],
  "objective": {
@@ -47,6 +47,14 @@
   ],
   [
    1,
+   5
+  ],
+  [
+   2,
+   3
+  ],
+  [
+   2,
    5
   ]
  ],

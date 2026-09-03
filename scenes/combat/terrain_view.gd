@@ -22,6 +22,10 @@ var _water: Texture2D
 var _decorations: Dictionary = {}
 var _tile_size: int = 0
 
+## La couleur de sol de la région (`Region.ground_of`). Elle choisit le
+## tileset ET le jeu de décors : un bosquet des Dunes est un arbre mort.
+var _ground: StringName = &""
+
 ## La mer qui bouge : l'écume du rivage et les rochers des deux bandes.
 ##
 ## LE PACK LES DESSINE DÉJÀ, et ils dormaient depuis le premier jour.
@@ -50,6 +54,7 @@ var _decor_seed := 0
 ## une réponse valable — on se bat alors sur l'herbe des Terres Vertes.
 func setup(combat_board: CombatBoard, ground: StringName = &"") -> void:
 	board = combat_board
+	_ground = ground
 	_tile_size = AssetTable.tile_size()
 	_tileset = UiSkin.tinted_tileset(ground)
 	_water = _texture_of(AssetTable.sprite(&"terrain", &"water_background_color"))
@@ -91,6 +96,7 @@ func _draw() -> void:
 		var origin := Vector2(cell.x * _tile_size, cell.y * _tile_size)
 		if _is_land(cell):
 			_draw_land(cell, tile, origin)
+		_draw_terrain_tint(tile, origin)
 		_draw_hazard(tile, origin)
 		_draw_decoration(tile, origin)
 
@@ -404,6 +410,27 @@ func _draw_hazard(tile: Tile, origin: Vector2) -> void:
 		ViewSettings.size_of(&"border_width_px"))
 
 
+## La teinte d'un terrain que le pack ne dessine pas.
+##
+## MÊME RAISONNEMENT QUE `_draw_hazard`, et pour un terrain de plus : le
+## sable mouvant coûte deux PM et n'a AUCUN sprite dans le pack. Sans
+## teinte il est de l'herbe — ou du sable — comme les autres, et le joueur
+## découvre son coût en le payant. Le § 39 veut de l'information parfaite ;
+## un terrain qui se cache est l'inverse.
+##
+## Pas de bordure, contrairement au danger : le sable mouvant ne blesse
+## pas, il ralentit. Un trait franc en ferait une menace.
+func _draw_terrain_tint(tile: Tile, origin: Vector2) -> void:
+	if tile == null:
+		return
+	var key := ViewSettings.terrain_tint(tile.terrain_id)
+	if key.is_empty():
+		return
+	draw_rect(
+		Rect2(origin, Vector2(_tile_size, _tile_size)), ViewSettings.color(key)
+	)
+
+
 func _draw_decoration(tile: Tile, origin: Vector2) -> void:
 	var texture: Texture2D = _decorations.get(String(tile.terrain_id), null)
 	if texture == null:
@@ -433,7 +460,7 @@ func _draw_decoration(tile: Tile, origin: Vector2) -> void:
 func _load_decorations() -> void:
 	_decorations.clear()
 	for terrain_id: StringName in CombatRules.terrain_ids():
-		var entry := ViewSettings.terrain_decoration(terrain_id)
+		var entry := ViewSettings.terrain_decoration(terrain_id, _ground)
 		if entry.is_empty():
 			continue
 		# Les BÂTIMENTS ne sont pas une catégorie simple : ils se résolvent

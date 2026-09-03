@@ -151,8 +151,25 @@ static func hill_cliff_region(tile_size: int) -> Rect2:
 
 
 ## Décoration posée sur un terrain : { category, key }, ou {} s'il n'y en a pas.
-static func terrain_decoration(terrain_id: StringName) -> Dictionary:
-	var raw: Variant = section(&"terrain_decorations").get(String(terrain_id), null)
+##
+## LE MÊME TERRAIN NE SE DESSINE PAS PAREIL PARTOUT (T11.9). Un bosquet
+## des Terres Vertes est un arbre vert ; le même bosquet dans les Dunes
+## est un arbre MORT — mêmes règles (il coupe la vue, il abrite), autre
+## dessin. C'est la leçon de T11.7 poussée jusqu'au décor : on n'invente
+## pas de mécanique pour un acte, on change ce qu'elle montre.
+##
+## `ground` est la couleur de sol de la région (`Region.ground_of`). Vide,
+## ou sans variante déclarée, on retombe sur le dessin par défaut : une
+## région n'a pas à redéclarer les six terrains pour en changer deux.
+static func terrain_decoration(
+	terrain_id: StringName, ground: StringName = &""
+) -> Dictionary:
+	var raw: Variant = null
+	if not ground.is_empty():
+		var variants: Dictionary = section(&"terrain_decorations_by_ground")
+		raw = (variants.get(String(ground), {}) as Dictionary).get(String(terrain_id), null)
+	if raw == null:
+		raw = section(&"terrain_decorations").get(String(terrain_id), null)
 	if raw == null:
 		return {}
 	var pair: Array = raw
@@ -166,3 +183,16 @@ static func terrain_decoration(terrain_id: StringName) -> Dictionary:
 	elif pair.size() >= 4:
 		out["cell"] = Vector2i(int(pair[2]), int(pair[3]))
 	return out
+
+
+## La teinte posée SOUS un terrain, par le nom d'une couleur de
+## `view.json`. Vide s'il n'y en a pas.
+##
+## LA BOUE N'A AUCUN SPRITE DANS LE PACK, et la note de `view.json` le
+## disait depuis toujours : « elle se dessine comme de l'herbe, ce qui est
+## un piège — il faudra une teinte avant qu'une carte l'utilise ». Le
+## sable mouvant des Dunes est cette carte. Une case qui coûte deux PM et
+## qui ressemble à une case qui en coûte un est un mensonge, pas une
+## surprise.
+static func terrain_tint(terrain_id: StringName) -> StringName:
+	return StringName(section(&"terrain_tints").get(String(terrain_id), ""))
