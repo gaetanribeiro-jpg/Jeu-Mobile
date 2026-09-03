@@ -2766,6 +2766,92 @@ le mode 2 et met simplement l'ALPHA de la barre à zéro quand
 `page >= max_value`. La place reste réservée, la mise en page ne bouge
 pas, et le rail ne se montre que s'il sert.
 
+#### Sept bêtes de l'acte 2 étaient INVISIBLES
+
+Pendant tout l'acte 1, chaque ennemi portait le nom de son sprite —
+`troll` se dessine avec `troll` — si bien que les vues ont pris
+l'habitude d'aller chercher l'image avec `class_id`. **Ça marchait par
+coïncidence.** L'acte 2 l'a rompue (`sand_serpent` se dessine avec
+`snake`) et les bêtes se sont affichées en OMBRE NUE, avec leur barre de
+vie au-dessus et rien dessous.
+
+Aucune erreur nulle part : `has_enemy_animation` répond « non »
+poliment, et la vue retombe sur rien. Le défaut ne se voyait qu'à
+l'œil, et c'est la dix-septième fois qu'une capture trouve ce qu'aucun
+test ne dit. `Unit` porte désormais un `sprite_id` déclaré en données,
+et c'est lui que les vues demandent.
+
+Le même chemin a rendu un cadeau : **le pack a vingt et un visages
+d'ennemis**, l'inventaire le disait depuis toujours, et un commentaire
+du HUD affirmait le contraire — « 25 avatars humains et rien d'autre ».
+La timeline montrait donc une LETTRE pour tout le bestiaire, et « G » ne
+distingue pas un gnoll d'un gnome.
+
+#### Les Dunes se jouaient sur de l'herbe
+
+Le pack livre cinq nuances de tileset. Elles sont **toutes vertes** —
+jaune-vert, vert clair, vert, kaki, sarcelle. Aucune ne fait du sable,
+et l'acte 2 ressemblait donc à l'acte 1 avant le premier tour.
+
+C'est la règle de T11.6 appliquée à une image entière au lieu d'un carré
+de 48 : **désaturer, puis reteinter**. Cinquième emploi de « une source
+ne se teinte que si elle est claire ». La cohérence est un bonus qu'on
+n'avait pas cherché — le carré de terre de la carte du monde et le sol
+du combat sortent maintenant de la MÊME opération, donc ils ne peuvent
+plus diverger.
+
+Une région déclare son `ground` à part de son `accent` : le premier
+occupe tout l'écran pendant huit rondes et demande de la justesse, le
+second teinte un liseré de 48 px et demande du contraste. Les Terres
+Vertes n'en déclarent aucun — le tileset EST vert, et le désaturer pour
+le reteinter en vert ne perdrait que des nuances.
+
+#### L'escalier de l'arbre de compétences
+
+Chaque rangée était décalée de sa PROFONDEUR, et onze nœuds donnaient un
+escalier de sept marches qui filait vers la droite. Un arbre à deux
+branches n'a que **deux** niveaux de lecture : le tronc, puis le choix.
+La profondeur est déjà écrite dans chaque ligne — « il faut d'abord
+Poigne » dit l'ordre mieux qu'un décalage.
+
+Et les deux voies **avaient déjà un nom**, enfoui dans la prose d'un
+nœud : « la voie du Tank commence ici », « la voie du Critique ». Une
+information qu'il faut lire une description pour trouver n'est pas une
+information, c'est une note. Les six voies portent maintenant leur titre
+en données, `verify_skills` refuse une branche anonyme, et le mot est le
+même des deux côtés — « Rempart », plus « Tank » d'un côté et « Rempart »
+de l'autre.
+
+#### Une rencontre annonce ce qu'elle contient
+
+L'étape de combat ne disait qu'un nom de carte. « Le sentier des
+bergers » n'apprend rien à qui ne l'a jamais jouée, et la question du
+§ 29 — rentrer ou continuer — se posait donc à l'aveugle. **C'est
+l'inverse de ce que le jeu promet partout ailleurs :** le télégraphe
+annonce les dégâts avant de frapper, un évènement annonce sa chance
+avant qu'on la coure.
+
+L'étape montre désormais le bestiaire de la carte, visage par visage,
+avec son compte. La nuit est dite à part — le renfort est ajouté au
+moment du combat, il n'est pas dans la carte, et l'annoncer dans la
+liste ferait mentir la liste.
+
+#### Le royaume était le dernier écran nu
+
+Un rectangle vert à bord franc d'un côté, du texte posé sur le fond de
+l'autre. C'est le pire endroit où oublier le cadre orné de T9.7 : c'est
+l'écran que la boucle du § 3 traverse à chaque retour d'expédition. La
+fiche de région de la carte du monde avait le même défaut.
+
+Et les **quatre icônes de ressource étaient déclarées et vérifiées
+depuis toujours** — `verify_kingdom` refuse une ressource dont l'asset
+n'existe pas — sans qu'aucun écran les dessine. Troisième fois, après
+les 70 entrées `ui` de T9.1 et les 21 visages ci-dessus. Le piège du
+cadrage : `gold_resource` est une image de 128 dont la pièce n'occupe
+que 24 px au centre, et réduite telle quelle elle rendait un POINT à
+côté de trois tas qui remplissaient leur case. **On recadre sur le
+dessin, pas sur le fichier.**
+
 #### L'équilibrage, mesuré
 
 | | rondes | PV restants |
@@ -2780,7 +2866,7 @@ gonflés. Les dix-huit cartes tiennent dans la cible de 3 à 8 rondes. Le
 coût moyen d'une rencontre est de 22 %, contre les 20 % mesurés à la fin
 de la Phase 1 : l'acte 2 a tiré la moyenne, comme il devait.
 
-**812 tests passent, les dix vérificateurs sont verts.**
+**830 tests passent, les dix vérificateurs sont verts.**
 
 ---
 

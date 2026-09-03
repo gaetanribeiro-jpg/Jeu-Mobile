@@ -211,9 +211,16 @@ func _build_level_choice(hero: Hero) -> void:
 ## peut pas le prendre. « Fureur » ne dit rien ; « Fureur — Force +1 » dit
 ## tout, et « il faut d'abord Entaille » évite de chercher.
 ##
-## L'INDENTATION EST LA STRUCTURE. Les nœuds sont décalés de leur
-## profondeur : c'est ce qui fait qu'un tronc et deux branches se lisent
-## comme un tronc et deux branches, sans avoir à dessiner de traits.
+## L'INDENTATION EST LA STRUCTURE — MAIS PAS CELLE DE LA PROFONDEUR.
+##
+## Chaque rangée était décalée de sa profondeur, et onze nœuds donnaient
+## un ESCALIER de sept marches qui filait vers la droite. Un arbre à deux
+## branches n'a que DEUX niveaux de lecture : le tronc, puis le choix. La
+## profondeur, elle, est déjà écrite dans chaque ligne — « il faut
+## d'abord Poigne » dit l'ordre mieux qu'un décalage.
+##
+## Les deux voies sont donc annoncées et groupées, et c'est la seule
+## question qu'on se pose en ouvrant l'écran : laquelle des deux.
 func _build_skill_tree(hero: Hero) -> void:
 	if not SkillTree.has_tree(hero.class_id):
 		return
@@ -223,7 +230,12 @@ func _build_skill_tree(hero: Hero) -> void:
 		tr("SKILLS_POINTS") % left if left > 0 else tr("SKILLS_NONE"), 20
 	))
 
+	var announced := {}
 	for node_id: StringName in SkillTree.node_ids(hero.class_id):
+		var branch := SkillTree.branch_of(node_id)
+		if not branch.is_empty() and not announced.has(branch):
+			announced[branch] = true
+			_sheet.add_child(_label(tr(SkillTree.branch_name_key(branch)), 20))
 		_sheet.add_child(_skill_row(hero, node_id))
 
 
@@ -231,9 +243,13 @@ func _skill_row(hero: Hero, node_id: StringName) -> Control:
 	var row := HBoxContainer.new()
 	row.add_theme_constant_override("separation", 8)
 
-	# Un décalage par niveau de profondeur : l'arbre se lit sans traits.
+	# Un seul cran, et seulement pour ce qui est sous une branche : le
+	# tronc à gauche, les deux voies en retrait.
 	var indent := Control.new()
-	indent.custom_minimum_size = Vector2(float(SkillTree.depth_of(node_id)) * 18.0, 0)
+	var step := UiTheme.metric(&"tree_indent")
+	indent.custom_minimum_size = Vector2(
+		0.0 if SkillTree.branch_of(node_id).is_empty() else float(step), 0
+	)
 	row.add_child(indent)
 
 	var blocked := hero.cannot_learn_because(node_id)

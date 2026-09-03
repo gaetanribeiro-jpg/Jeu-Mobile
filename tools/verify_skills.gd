@@ -126,6 +126,18 @@ func _check_branches(class_id: StringName, roots: Array[StringName]) -> void:
 		var weight := _weigh(branch)
 		weights.append(weight)
 		names.append("%s %.1f" % [branch, weight])
+		# CHAQUE VOIE SE NOMME. Les deux avaient déjà un nom, enfoui dans
+		# la prose d'un nœud — « la voie du Tank commence ici ». L'écran de
+		# compagnie les annonce désormais en titre, et une branche sans nom
+		# s'y afficherait avec sa CLÉ, ou vide : dans les deux cas le
+		# joueur choisit entre deux listes anonymes.
+		var key := SkillTree.branch_name_key(branch)
+		if key.is_empty():
+			_problems.append(
+				"%s : la voie qui s'ouvre à « %s » n'a pas de nom" % [class_id, branch]
+			)
+		elif tr(key) == key:
+			_problems.append("%s : « %s » n'est pas traduite" % [class_id, key])
 	print("  bifurcation à %s : %s" % [fork, ", ".join(names)])
 
 	var heaviest := 0.0

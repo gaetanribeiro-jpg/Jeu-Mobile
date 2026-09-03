@@ -166,3 +166,59 @@ static func depth_of(node_id: StringName) -> int:
 		depth += 1
 		current = requires(current)
 	return depth
+
+
+## LE NOM DE LA VOIE, porté par le nœud qui l'ouvre.
+##
+## LES DEUX VOIES AVAIENT DÉJÀ UN NOM, enfoui dans la prose : « la voie du
+## Tank commence ici », « la voie du Critique ». Une information qu'il
+## faut lire une description pour trouver n'est pas une information, c'est
+## une note. Elle remonte donc en titre, et `verify_skills` refuse
+## désormais une branche qui n'en déclare pas.
+static func branch_name_key(node_id: StringName) -> String:
+	return String(node(node_id).get("branch_name_key", ""))
+
+
+## LA BIFURCATION : le dernier nœud du tronc, celui après lequel il faut
+## choisir. Vide si l'arbre n'en a pas — `verify_skills` refuse ce cas,
+## mais l'écran doit savoir répondre avant l'outil.
+static func fork_of(class_id: StringName) -> StringName:
+	var roots := roots_of(class_id)
+	if roots.is_empty():
+		return &""
+	var current: StringName = roots[0]
+	# Même garde-fou que `depth_of` : une donnée qui boucle ferait tourner
+	# l'écran sans fin.
+	for _step in 64:
+		var children := children_of(current)
+		if children.size() > 1:
+			return current
+		if children.is_empty():
+			return &""
+		current = children[0]
+	return &""
+
+
+## De quelle BRANCHE ce nœud descend-il ? Vide s'il est sur le tronc.
+##
+## L'ÉCRAN DÉCALAIT CHAQUE RANGÉE DE SA PROFONDEUR, et ça donnait un
+## escalier de sept marches qui ne se lisait pas comme un arbre. Un tronc
+## de deux nœuds suivi de deux branches n'a que DEUX niveaux de lecture,
+## pas sept : ce qu'on veut voir, c'est où l'on choisit, pas combien de
+## nœuds séparent une compétence de la racine.
+static func branch_of(node_id: StringName) -> StringName:
+	var class_id := class_of(node_id)
+	if class_id.is_empty():
+		return &""
+	var fork := fork_of(class_id)
+	if fork.is_empty():
+		return &""
+	var current := node_id
+	for _step in 64:
+		var parent := requires(current)
+		if parent.is_empty():
+			return &""
+		if parent == fork:
+			return current
+		current = parent
+	return &""

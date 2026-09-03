@@ -194,6 +194,55 @@ func test_une_etape_de_combat_demande_un_plateau() -> void:
 	assert_eq(asked, [_run.current_map()] as Array[StringName])
 
 
+## L'ÉTAPE DE COMBAT NE DISAIT QU'UN NOM DE CARTE (T11.8). « Le sentier
+## des bergers » n'apprend rien à qui ne l'a jamais jouée, et la question
+## du § 29 — rentrer ou continuer — se posait donc à l'aveugle, alors que
+## le télégraphe annonce les dégâts d'une attaque et qu'un évènement
+## annonce sa chance.
+func test_une_etape_de_combat_annonce_ce_qui_attend() -> void:
+	var map := CombatMap.load_map(_run.current_map())
+	assert_not_null(map, "la carte de l'étape doit se charger")
+	var shown := _texts_under(_screen._step)
+	var seen := {}
+	for unit: Unit in map.board.active_units(Unit.Side.ENEMIES):
+		if seen.has(unit.class_id):
+			continue
+		seen[unit.class_id] = true
+		assert_string_contains(shown, tr("ENEMY_%s" % String(unit.class_id).to_upper()))
+	assert_gt(seen.size(), 0, "une rencontre a au moins une bête")
+
+
+## Le nombre n'est dit QUE s'il dépasse un : « × 1 » est du bruit.
+func test_le_nombre_n_est_dit_que_s_il_y_en_a_plusieurs() -> void:
+	var map := CombatMap.load_map(_run.current_map())
+	var counts := {}
+	for unit: Unit in map.board.active_units(Unit.Side.ENEMIES):
+		counts[unit.class_id] = int(counts.get(unit.class_id, 0)) + 1
+	var shown := _texts_under(_screen._step)
+	for class_id: StringName in counts.keys():
+		var name_ := tr("ENEMY_%s" % String(class_id).to_upper())
+		if int(counts[class_id]) > 1:
+			assert_string_contains(shown, "%s × %d" % [name_, int(counts[class_id])])
+		else:
+			assert_false(
+				shown.contains("%s × " % name_),
+				"%s est seul : pas de multiplicateur" % name_
+			)
+
+
+## On cherche le texte DANS L'ARBRE, jamais à une profondeur fixée : c'est
+## la leçon de T9.7, et l'habillage a déjà bougé deux fois depuis.
+func _texts_under(root: Node) -> String:
+	var seen := ""
+	if root is Label:
+		seen += (root as Label).text + " | "
+	if root is Button:
+		seen += (root as Button).text + " | "
+	for child: Node in root.get_children():
+		seen += _texts_under(child)
+	return seen
+
+
 func test_un_evenement_propose_ses_options() -> void:
 	assert_true(_advance_to(&"event"), "la chaîne n'a pas d'évènement")
 	await wait_process_frames(1)

@@ -297,8 +297,78 @@ func _build_combat() -> void:
 	var map := CombatMap.load_map(_run.current_map())
 	_heading(tr(_kind_key(_run.current_kind())))
 	_heading(tr(map.name_key) if map != null else String(_run.current_map()), 22)
+	if map != null:
+		_build_roster(map)
 	_action(tr("EXPEDITION_FIGHT"), func() -> void:
 		combat_requested.emit(_run.current_map()))
+
+
+## CE QUI ATTEND, AVANT D'Y ALLER.
+##
+## L'ÉTAPE DE COMBAT NE DISAIT QU'UN NOM DE CARTE. « Le sentier des
+## bergers » n'apprend rien à qui ne l'a jamais jouée, et la question du
+## § 29 — rentrer ou continuer — se posait donc à l'aveugle. C'est
+## l'inverse de ce que le jeu promet partout ailleurs : le télégraphe
+## annonce les dégâts d'une attaque avant de la porter, un évènement
+## annonce sa chance avant qu'on la coure. Une rencontre doit annoncer ce
+## qu'elle contient.
+##
+## LA NUIT EST DITE À PART, parce qu'elle n'est pas dans la carte : le
+## renfort est ajouté au moment du combat (§ 36, T8.1). L'annoncer comme
+## un ennemi de plus dans la liste ferait mentir la liste — il n'y est
+## pas, et on ne sait pas encore lequel ce sera.
+func _build_roster(map: CombatMap) -> void:
+	var counts := {}
+	var order: Array[StringName] = []
+	for unit: Unit in map.board.active_units(Unit.Side.ENEMIES):
+		if not counts.has(unit.class_id):
+			counts[unit.class_id] = 0
+			order.append(unit.class_id)
+		counts[unit.class_id] = int(counts[unit.class_id]) + 1
+
+	var row := HBoxContainer.new()
+	row.add_theme_constant_override("separation", UiTheme.metric(&"row_spacing"))
+	for class_id: StringName in order:
+		row.add_child(_foe_badge(class_id, int(counts[class_id])))
+	_step.add_child(row)
+
+	var extra := _run.night_roster()
+	if not extra.is_empty():
+		_heading(tr("EXPEDITION_NIGHT_EXTRA"), 18)
+
+
+## Un ennemi de la carte : son visage, son nom, et combien il y en a.
+func _foe_badge(class_id: StringName, count: int) -> Control:
+	var plate := PanelContainer.new()
+	plate.add_theme_stylebox_override("panel", UiSkin.framed_style(
+		&"frame_card", &"panel_fill", &"rust", UiTheme.metric(&"card_margin")
+	))
+	var column := VBoxContainer.new()
+	column.alignment = BoxContainer.ALIGNMENT_CENTER
+	column.add_theme_constant_override("separation", 2)
+	plate.add_child(column)
+
+	var unit := Unit.from_enemy(1, class_id, Vector2i.ZERO)
+	var face := UiSkin.enemy_portrait(unit.sprite_id) if unit != null else null
+	if face != null:
+		var image := TextureRect.new()
+		var side := UiTheme.metric(&"portrait_hero")
+		image.texture = face
+		image.custom_minimum_size = Vector2(side, side)
+		image.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		image.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		image.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+		image.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		column.add_child(image)
+
+	var label := Label.new()
+	label.add_theme_font_size_override("font_size", 17)
+	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	# Le nom seul suffit quand il n'y en a qu'un : « × 1 » est du bruit.
+	var name_ := tr("ENEMY_%s" % String(class_id).to_upper())
+	label.text = name_ if count <= 1 else "%s × %d" % [name_, count]
+	column.add_child(label)
+	return plate
 
 
 func _build_reward() -> void:

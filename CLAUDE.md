@@ -240,7 +240,7 @@ dur : passer par `data/assets.json`.
   la couleur partout, T11.7 l'acte 2, T11.8 la passe de finition.
   **Restent :** T11.1 le téléphone (il te faut le SDK) et T11.5 le
   tutoriel, volontairement gardé pour après ta première partie.
-  **812 tests passent, les dix vérificateurs sont verts.**
+  **830 tests passent, les dix vérificateurs sont verts.**
   Le pivot vers la vision Tiny Kingdoms a été acté le 2026-08-31.
 - **Phase 1 terminée.** T1.1 à T1.14 sont faites et testées.
 - **Phase 2 terminée.** T2.1 à T2.7 : le `Hero`, les niveaux,
@@ -421,6 +421,40 @@ Quatre choses à ne pas défaire :
   nombre.** `dunes_06` coûtait zéro pour cent : l'essaim courait une
   ronde entière et mourait à la seconde. Rapproché de trois cases, sans
   toucher à une seule statistique, il coûte 8 %.
+
+**LE DESSIN N'EST PAS L'IDENTITÉ (T11.8).** Pendant tout l'acte 1, chaque
+ennemi portait le nom de son sprite — `troll` dessine `troll` — et les
+vues ont pris l'habitude de demander l'image à `class_id`. Ça marchait
+par COÏNCIDENCE. L'acte 2 l'a rompue (`sand_serpent` se dessine avec
+`snake`) et sept bêtes se sont affichées en OMBRE NUE, sans une seule
+erreur : `has_enemy_animation` répond « non » poliment et la vue retombe
+sur rien. `Unit.sprite_id` porte la déclaration des données, et c'est lui
+qu'on demande. Trois choses à ne pas défaire :
+- **Le pack a VINGT ET UN visages d'ennemis** — l'inventaire le disait
+  depuis toujours et un commentaire du HUD affirmait le contraire. La
+  timeline les montre ; `verify_world` exige un avatar par bête.
+- **Une région déclare son `ground` À PART de son `accent`.** Le sol
+  occupe l'écran pendant huit rondes et demande de la justesse ; l'accent
+  teinte un liseré de 48 px et demande du contraste. Vide = le tileset du
+  pack, et c'est la bonne réponse pour les Terres Vertes.
+- **Le tileset se désature puis se reteinte.** Les cinq nuances du pack
+  sont toutes VERTES : aucune ne fait du sable. Cinquième emploi de « une
+  source ne se teinte que si elle est claire ».
+
+**UNE RENCONTRE ANNONCE CE QU'ELLE CONTIENT (T11.8).** L'étape de combat
+ne disait qu'un nom de carte, donc « rentrer ou continuer » (§ 29) se
+posait à l'aveugle — l'inverse de ce que le jeu promet partout ailleurs.
+Elle montre désormais le bestiaire, visage par visage. **La nuit est dite
+À PART** : le renfort est ajouté au moment du combat, il n'est pas dans
+la carte, et l'annoncer dans la liste ferait mentir la liste.
+
+**L'ARBRE SE LIT EN DEUX NIVEAUX, PAS EN SEPT (T11.8).** Chaque rangée
+était décalée de sa profondeur ; onze nœuds donnaient un escalier qui
+filait vers la droite. Un arbre à deux branches a le tronc, puis le
+choix — la profondeur est déjà écrite dans « il faut d'abord Poigne ».
+Les six voies portent leur nom en données (`branch_name_key`), et
+`verify_skills` refuse une branche anonyme : les deux l'avaient déjà,
+enfoui dans la prose d'un nœud, et sous un AUTRE mot que celui du titre.
 
 **LA COULEUR PORTE UNE INFORMATION, JAMAIS UNE DÉCORATION (T11.6).**
 Six régions dans six boîtes identiques obligent à LIRE. Trois choses à ne

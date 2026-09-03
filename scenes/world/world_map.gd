@@ -38,6 +38,7 @@ var _squad_ids: Array[int] = []
 @onready var _back: Button = %Back
 @onready var _regions: VBoxContainer = %Regions
 @onready var _brief: VBoxContainer = %Brief
+@onready var _brief_frame: PanelContainer = %BriefFrame
 @onready var _squad: HBoxContainer = %Squad
 @onready var _depart: Button = %Depart
 
@@ -45,6 +46,11 @@ var _squad_ids: Array[int] = []
 func _ready() -> void:
 	theme = UiSkin.theme
 	_lay_backdrop()
+	# La fiche de région flottait sur le fond, seule de son espèce : les
+	# régions à gauche portent leur cadre, l'équipe en bas aussi.
+	_brief_frame.add_theme_stylebox_override("panel", UiSkin.framed_style(
+		&"frame_panel", &"panel_fill", &"panel_edge_soft"
+	))
 	UiSkin.dress_scrolls(self)
 	_title.text = tr("WORLD_TITLE")
 	_back.text = tr("COMBAT_BACK")

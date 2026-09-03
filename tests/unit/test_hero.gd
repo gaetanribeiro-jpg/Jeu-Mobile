@@ -377,3 +377,62 @@ func test_aller_retour_de_serialisation() -> void:
 	assert_eq(copy.experience, hero.experience)
 	assert_eq(copy.learned, hero.learned)
 	assert_eq(copy.effective_stats(), hero.effective_stats(), "mêmes statistiques")
+
+
+# --- La lecture de l'arbre (T11.8) -----------------------------------------
+
+## L'ÉCRAN DÉCALAIT CHAQUE RANGÉE DE SA PROFONDEUR, et onze nœuds donnaient
+## un escalier de sept marches qui filait vers la droite. Un arbre à deux
+## branches n'a que DEUX niveaux de lecture : le tronc, puis le choix.
+func test_la_bifurcation_est_le_dernier_noeud_du_tronc() -> void:
+	assert_eq(SkillTree.fork_of(&"warrior"), &"w_grip")
+	for class_id: StringName in Unit.hero_class_ids():
+		var fork := SkillTree.fork_of(class_id)
+		assert_false(fork.is_empty(), "%s : pas de bifurcation" % class_id)
+		assert_gt(
+			SkillTree.children_of(fork).size(), 1,
+			"%s : la bifurcation doit avoir plus d'un enfant" % class_id
+		)
+
+
+func test_le_tronc_n_appartient_a_aucune_voie() -> void:
+	for class_id: StringName in Unit.hero_class_ids():
+		var fork := SkillTree.fork_of(class_id)
+		assert_eq(SkillTree.branch_of(fork), &"", "%s : la bifurcation est le tronc" % class_id)
+		var root: StringName = SkillTree.roots_of(class_id)[0]
+		assert_eq(SkillTree.branch_of(root), &"", "%s : la racine aussi" % class_id)
+
+
+## Tout ce qui pend sous une branche appartient à CETTE branche, si
+## profond soit-il : c'est ce qui fait qu'une voie de cinq nœuds se lit
+## d'un seul retrait au lieu de cinq.
+func test_chaque_noeud_d_une_voie_remonte_a_sa_voie() -> void:
+	for class_id: StringName in Unit.hero_class_ids():
+		var fork := SkillTree.fork_of(class_id)
+		for branch: StringName in SkillTree.children_of(fork):
+			var current := branch
+			while not current.is_empty():
+				assert_eq(
+					SkillTree.branch_of(current), branch,
+					"%s descend de %s" % [current, branch]
+				)
+				var children := SkillTree.children_of(current)
+				current = children[0] if not children.is_empty() else &""
+
+
+## LES DEUX VOIES AVAIENT DÉJÀ UN NOM, enfoui dans la prose d'un nœud —
+## « la voie du Tank commence ici ». Une information qu'il faut lire une
+## description pour trouver n'est pas une information.
+func test_chaque_voie_porte_un_nom_traduit() -> void:
+	for class_id: StringName in Unit.hero_class_ids():
+		for branch: StringName in SkillTree.children_of(SkillTree.fork_of(class_id)):
+			var key := SkillTree.branch_name_key(branch)
+			assert_false(key.is_empty(), "%s : voie sans nom" % branch)
+			assert_ne(tr(key), key, "%s : « %s » n'est pas traduite" % [branch, key])
+
+
+## Un nœud du tronc n'a pas de nom de voie : le titre n'apparaît qu'à la
+## bifurcation, sinon il y en aurait un par ligne.
+func test_seul_un_debut_de_voie_porte_un_nom() -> void:
+	assert_eq(SkillTree.branch_name_key(&"w_vigour"), "")
+	assert_eq(SkillTree.branch_name_key(&"w_cleave"), "")

@@ -74,12 +74,17 @@ layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/separation = 8
 
-[node name="BriefScroll" type="ScrollContainer" parent="Margin/Column/Middle"]
+[node name="BriefFrame" type="PanelContainer" parent="Margin/Column/Middle"]
+unique_name_in_owner = true
 layout_mode = 2
-custom_minimum_size = Vector2(420, 0)
-horizontal_scroll_mode = 0
+custom_minimum_size = Vector2(440, 0)
 
-[node name="Brief" type="VBoxContainer" parent="Margin/Column/Middle/BriefScroll"]
+[node name="BriefScroll" type="ScrollContainer" parent="Margin/Column/Middle/BriefFrame"]
+layout_mode = 2
+horizontal_scroll_mode = 0
+vertical_scroll_mode = 2
+
+[node name="Brief" type="VBoxContainer" parent="Margin/Column/Middle/BriefFrame/BriefScroll"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3

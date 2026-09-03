@@ -20,6 +20,7 @@
         }
       },
       "w_plate": {
+        "branch_name_key": "BRANCH_W_PLATE",
         "name_key": "NODE_W_PLATE",
         "description_key": "NODE_W_PLATE_DESC",
         "requires": "w_grip",
@@ -59,6 +60,7 @@
         }
       },
       "w_hamstring": {
+        "branch_name_key": "BRANCH_W_HAMSTRING",
         "name_key": "NODE_W_HAMSTRING",
         "description_key": "NODE_W_HAMSTRING_DESC",
         "requires": "w_grip",
@@ -107,6 +109,7 @@
         }
       },
       "a_aim": {
+        "branch_name_key": "BRANCH_A_AIM",
         "name_key": "NODE_A_AIM",
         "description_key": "NODE_A_AIM_DESC",
         "requires": "a_draw",
@@ -138,6 +141,7 @@
         }
       },
       "a_pinning": {
+        "branch_name_key": "BRANCH_A_PINNING",
         "name_key": "NODE_A_PINNING",
         "description_key": "NODE_A_PINNING_DESC",
         "requires": "a_draw",
@@ -195,6 +199,7 @@
         }
       },
       "m_lance": {
+        "branch_name_key": "BRANCH_M_LANCE",
         "name_key": "NODE_M_LANCE",
         "description_key": "NODE_M_LANCE_DESC",
         "requires": "m_will",
@@ -226,6 +231,7 @@
         }
       },
       "m_hoarfrost": {
+        "branch_name_key": "BRANCH_M_HOARFROST",
         "name_key": "NODE_M_HOARFROST",
         "description_key": "NODE_M_HOARFROST_DESC",
         "requires": "m_will",

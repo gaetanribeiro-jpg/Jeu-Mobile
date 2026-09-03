@@ -226,6 +226,7 @@ EXPEDITION_SUPPLIES,Sac : %d potions
 EXPEDITION_SQUAD,Votre équipe
 EXPEDITION_RETREAT,Rentrer
 EXPEDITION_FIGHT,Engager le combat
+EXPEDITION_NIGHT_EXTRA,La nuit en amènera un de plus.
 EXPEDITION_CONTINUE,Poursuivre
 EXPEDITION_TAKE,Prendre la récompense
 EXPEDITION_REWARD_TEXT,Le mini-boss ne gardait pas ces caisses pour rien.
@@ -362,7 +363,7 @@ NODE_W_CLEAVE_DESC,Débloque Fendre : une ligne de deux cases, pour deux ennemis
 NODE_W_GRIP,Poigne
 NODE_W_GRIP_DESC,Force +1.
 NODE_W_PLATE,Plates
-NODE_W_PLATE_DESC,Défense +1. La voie du Tank commence ici.
+NODE_W_PLATE_DESC,Défense +1. Ce qui encaisse au lieu de frapper.
 NODE_W_ENDURANCE,Endurance
 NODE_W_ENDURANCE_DESC,PV +20.
 NODE_W_ANCHOR,Ancrage
@@ -384,7 +385,7 @@ NODE_A_PINNING_DESC,Débloque le Tir entravant : la cible avancera moins.
 NODE_A_DRAW,Allonge
 NODE_A_DRAW_DESC,Agilité +1.
 NODE_A_AIM,Visée
-NODE_A_AIM_DESC,Critique +5. La voie du Critique commence ici.
+NODE_A_AIM_DESC,Critique +5. Moins de tirs, mais qui comptent.
 NODE_A_VOLLEY,Salve
 NODE_A_VOLLEY_DESC,Débloque la Salve : une zone à six cases.
 NODE_A_FOCUS,Concentration
@@ -406,7 +407,7 @@ NODE_M_HOARFROST_DESC,Débloque le Givre : cinq cases gelées pour deux activati
 NODE_M_WILL,Volonté
 NODE_M_WILL_DESC,Intelligence +1.
 NODE_M_LANCE,Trait arcanique
-NODE_M_LANCE_DESC,Débloque le Trait : trois cases en ligne. La voie de la Destruction.
+NODE_M_LANCE_DESC,Débloque le Trait : trois cases en ligne.
 NODE_M_SPARK,Étincelle
 NODE_M_SPARK_DESC,Intelligence +1.
 NODE_M_CHANNEL,Canalisation
@@ -428,6 +429,12 @@ SKILLS_LOCKED,Il faut d'abord %s
 SKILLS_TAKEN,Acquis
 SKILLS_UNLOCK,Apprendre
 SKILLS_LEARNED,%s appris.
+BRANCH_W_PLATE,La voie du Rempart
+BRANCH_W_HAMSTRING,La voie de la Furie
+BRANCH_A_AIM,La voie du Coup mortel
+BRANCH_A_PINNING,La voie de l'Ombre
+BRANCH_M_LANCE,La voie de la Destruction
+BRANCH_M_HOARFROST,La voie du Givre
 INVASION_ALARM,Votre royaume est attaqué !
 INVASION_ALARM_IN,Votre royaume est attaqué — l'assaut tombe dans %d étape(s).
 INVASION_DEFEND,Rentrer défendre
