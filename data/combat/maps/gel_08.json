@@ -1,14 +1,14 @@
 {
- "_note": "LE TRÔNE DU JARL — le boss de l'acte 3.\n\nUne île au milieu d'un lac, deux langues de terre pour y monter. La lance du Jarl porte à DEUX cases en ligne : reculer d'une case ne suffit pas, il faut sortir de l'axe — et sortir de l'axe sur une île de cinq cases de large, c'est s'approcher du bord.\n\nIl pousse aussi. Les deux compétences se répondent : rester en ligne prend la lance, s'écarter prend l'épaule, et derrière l'épaule il y a l'eau. Le boss de l'acte 2 punissait la formation ; celui-ci punit la position.",
+ "_note": "LE TRÔNE DU JARL — le boss de l'acte 3.\n\nUn plateau bordé d'eau sur ses quatre côtés. La lance du Jarl porte à DEUX cases en ligne : reculer d'une case ne suffit pas, il faut sortir de l'axe — et sortir de l'axe sur une bande de trois rangées, c'est s'approcher du bord.\n\nIl pousse aussi. Les deux compétences se répondent : rester en ligne prend la lance, s'écarter prend l'épaule, et derrière l'épaule il y a l'eau. Le boss de l'acte 2 punissait la formation ; celui-ci punit la position.\n\nLA CHAUSSÉE A ÉTÉ ÉLARGIE À TROIS RANGÉES, et ce n'est pas une concession. À une seule case, l'équipe entrait EN FILE et le combat durait neuf rondes — une de plus que la cible du § 13. Baisser les PV du Jarl ne changeait que le prix, jamais la durée : ce n'était pas lui qui était long, c'était le couloir. Quatrième fois du projet qu'une carte se corrige en géométrie et pas en statistiques.\n\nCE QUE L'OUTIL NE PEUT PAS MESURER ICI, et il faut le savoir avant de lire ses chiffres. Le pilote de `simulate_combats` n'a AUCUNE notion de « ne pas se tenir au bord de l'eau » : il marche vers l'ennemi le plus proche et vide ses PA. Toute la menace de ce boss est POSITIONNELLE — la lance qui aligne, l'épaule qui projette — et le pilote la subit sans jamais l'éviter ni la craindre. Ses 73 % de PV restants sont donc un plancher pour un joueur distrait et un plafond pour un joueur qui regarde le télégraphe : c'est le seul boss du jeu dont la mesure ne dit presque rien. Même limite que « `simulate_combats` ne boit pas » (T10.1).\n\nUn premier essai perçait le plateau de trous pour rendre la noyade possible au milieu : douze rondes et 41 % des PV, parce que l'équipe ne pouvait plus se déplacer du tout. Le vérificateur a attrapé au passage un harponneur devenu injoignable.",
  "act": 3,
  "name_key": "MAP_GEL_08",
  "rows": [
   "~~~~~~~~~~~~",
   "~~~~~~~~~~~~",
   "...~~~~~~~..",
-  "...~.....~..",
   ".........~..",
-  "...~.....~..",
+  "......~..~..",
+  ".........~..",
   "...~~~~~~~..",
   "~~~~~~~~~~~~",
   "~~~~~~~~~~~~"
@@ -54,35 +54,42 @@
   {
    "type": "the_jarl",
    "cell": [
-    6,
+    7,
     4
    ]
   },
   {
    "type": "ice_raider",
    "cell": [
-    5,
+    6,
     3
    ]
   },
   {
    "type": "ice_raider",
    "cell": [
-    5,
+    6,
     5
+   ]
+  },
+  {
+   "type": "ice_raider",
+   "cell": [
+    8,
+    4
    ]
   },
   {
    "type": "harpooner",
    "cell": [
-    6,
+    5,
     2
    ]
   },
   {
    "type": "harpooner",
    "cell": [
-    6,
+    5,
     6
    ]
   }

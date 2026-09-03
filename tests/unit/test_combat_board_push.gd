@@ -165,3 +165,80 @@ func test_on_pousse_par_dessus_un_pont_et_dans_l_eau_qu_il_laisse() -> void:
 	board.push(goblin, Vector2i(1, 0))
 	assert_eq(goblin.cell, Vector2i(3, 1))
 	assert_true(goblin.is_downed(), "la case suivante est de l'eau")
+
+
+# --- Une attaque qui pousse (T12.1) ----------------------------------------
+
+## `KIND_PUSH` EXISTAIT DEPUIS LA PHASE 1 ET AUCUNE COMPÉTENCE NE
+## L'EMPLOYAIT : `push_away_from`, la noyade et leurs tests étaient écrits
+## et morts. Troisième mécanique déclarée et jamais branchée, après
+## `KIND_HEAL` (T10.1) et les 70 entrées `ui` (T9.1).
+##
+## Le coup d'épaule est une ATTAQUE qui repousse, et non un `KIND_PUSH`
+## autonome : `CombatIntent` ne connaît que `Kind.ATTACK`, donc une
+## poussée pure ne serait pas annoncée — et un ennemi qui projette dans un
+## lac sans prévenir viole le § 39.
+func _hero(board: CombatBoard, at: Vector2i, id: int = 9) -> Unit:
+	var unit := Unit.from_stats(
+		id, &"warrior", Unit.Side.HEROES, at,
+		{"hit_points": 100, "defence": 0}
+	)
+	board.place_unit(unit, at)
+	return unit
+
+
+func test_le_coup_d_epaule_blesse_ET_repousse() -> void:
+	var board := _board(["........", "........", "........"])
+	var raider := _goblin(board, Vector2i(2, 1))
+	var hero := _hero(board, Vector2i(3, 1))
+	var shove := Ability.of(&"shield_shove")
+	assert_not_null(shove, "la compétence doit exister")
+	assert_gt(shove.push, 0, "elle doit déclarer une poussée")
+
+	var report := board.resolve_ability(raider, shove, hero.cell)
+	assert_eq(hero.cell, Vector2i(4, 1), "le héros recule d'une case")
+	var hit: Dictionary = report["hits"][0]
+	assert_gt(int(hit["damage"]), 0, "et il prend des dégâts")
+	assert_eq(hit["cell"], Vector2i(3, 1), "la case rapportée est celle du COUP")
+	assert_eq(hit["shoved_to"], Vector2i(4, 1), "et l'arrivée est dite à part")
+
+
+## L'ORDRE COMPTE : les dégâts d'abord, la poussée ensuite, et seulement
+## sur qui tient encore debout. Pousser un mort dans l'eau le noierait
+## deux fois et le rapport dirait n'importe quoi.
+func test_on_ne_pousse_pas_quelqu_un_qu_on_vient_d_abattre() -> void:
+	var board := _board(["...~....", "...~....", "...~...."])
+	var raider := _goblin(board, Vector2i(1, 1))
+	var hero := Unit.from_stats(
+		7, &"warrior", Unit.Side.HEROES, Vector2i(2, 1), {"hit_points": 1}
+	)
+	board.place_unit(hero, Vector2i(2, 1))
+
+	var report := board.resolve_ability(raider, Ability.of(&"shield_shove"), hero.cell)
+	var hit: Dictionary = report["hits"][0]
+	assert_true(bool(hit["downed"]), "il tombe sous le coup")
+	assert_false(bool(hit["drowned"]), "et il ne se noie pas en plus")
+
+
+## LE POINT ENTIER DE LA MÉCANIQUE : au bord d'un lac, quatorze dégâts
+## tuent. C'est pour ça que le télégraphe doit annoncer la case d'arrivée.
+func test_pousse_dans_l_eau_le_heros_se_noie() -> void:
+	var board := _board(["........", "...~....", "........"])
+	var raider := _goblin(board, Vector2i(1, 1))
+	var hero := _hero(board, Vector2i(2, 1))
+	assert_eq(hero.hit_points, 100)
+
+	var report := board.resolve_ability(raider, Ability.of(&"shield_shove"), hero.cell)
+	var hit: Dictionary = report["hits"][0]
+	assert_true(bool(hit["drowned"]), "l'eau tue quels que soient les PV")
+	assert_true(report["downed_ids"].has(hero.id), "et il compte comme mis à terre")
+
+
+## Une compétence ordinaire ne pousse personne : le champ est optionnel et
+## vaut zéro partout ailleurs.
+func test_une_attaque_sans_poussee_ne_deplace_rien() -> void:
+	var board := _board(["........", "........", "........"])
+	var goblin := _goblin(board, Vector2i(2, 1))
+	var hero := _hero(board, Vector2i(3, 1))
+	board.resolve_ability(goblin, Ability.of(&"goblin_spear"), hero.cell)
+	assert_eq(hero.cell, Vector2i(3, 1), "il n'a pas bougé")

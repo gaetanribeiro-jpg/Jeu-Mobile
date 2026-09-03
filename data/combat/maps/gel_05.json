@@ -1,15 +1,15 @@
 {
- "_note": "LA PASSE DU VENT : la neige profonde coûte deux PM, et les guêpes VOLENT.\n\nDEUX MESURES ONT APPRIS OÙ POSER LA CONGÈRE, et la leçon vaut pour tout l'acte. Avec un objectif « éliminer » et une IA qui vient au contact, un terrain qui ralentit l'ENNEMI ne coûte jamais rien : l'équipe attend, et ce qui arrive lentement arrive un par un. Au milieu du plateau, la carte rendait 94 % des PV ; bordant la zone de placement, 100 %.\n\nELLE EST DONC DU CÔTÉ DES ARCHERS. Un tireur s'arrête à sa portée et n'avance plus : pour aller le chercher, il faut traverser, et traverser sous le tir coûte deux PM la case. Les guêpes, elles, passent au-dessus — c'est la seule chose sur ce plateau qui ne paie pas la neige.\n\nLa boue emprunte sa teinte à `terrain_tints`, comme le sable mouvant des Dunes : le pack ne dessine pas de congère.",
+ "_note": "LA PASSE DU VENT : la neige profonde coûte deux PM, et deux tarns gelés portent ce qui tire plus loin que nous.\n\nTROIS MESURES POUR COMPRENDRE, ET LA RÉPONSE N'ÉTAIT PAS LA NEIGE. Au milieu du plateau, la carte rendait 94 % des PV ; en bordure de placement, 100 % ; du côté des archers, 100 % encore. Un terrain qui ralentit ne coûte RIEN tant que l'équipe a intérêt à ne pas bouger — et avec un objectif « éliminer » et une IA qui vient au contact, elle a toujours intérêt à ne pas bouger.\n\nCE QUI MANQUAIT, C'ÉTAIT QUELQU'UN QUI PORTE PLUS LOIN QU'ELLE. Les actes 1 et 2 avaient chacun le leur — le chaman, le feu follet — et l'acte 3 n'en avait aucun : ses trois tireurs portaient à cinq cases, exactement comme l'Archer. Un échange équitable se gagne à quatre contre un sans avancer d'une case. Le poisson-bombe porte à SIX depuis son tarn : rester coûte, et c'est seulement là que la congère devient une décision.\n\nLes guêpes sont posées PRÈS, à deux cases. Un ennemi de contact lâché à quatre ou cinq cases traverse sous le feu de l'Archer et meurt sans avoir frappé : c'est la zone morte, et l'en sortir vaut mieux que lui donner des PM.\n\nLa boue emprunte sa teinte à `terrain_tints`, comme le sable mouvant des Dunes : le pack ne dessine pas de congère.",
  "act": 3,
  "name_key": "MAP_GEL_05",
  "rows": [
   "......bbb...",
   "......bbb...",
+  "......bbb.~~",
+  "......bbb.~~",
   "......bbb...",
-  "......bbb...",
-  "......bbb...",
-  "......bbb...",
-  "......bbb...",
+  "......bbb.~~",
+  "......bbb.~~",
   "......bbb...",
   "......bbb..."
  ],
@@ -52,45 +52,45 @@
  ],
  "enemies": [
   {
-   "type": "frost_wasp",
+   "type": "ice_mine",
    "cell": [
-    5,
+    10,
     2
    ]
   },
   {
-   "type": "frost_wasp",
+   "type": "ice_mine",
    "cell": [
-    5,
+    10,
     6
    ]
   },
   {
-   "type": "frost_wasp",
+   "type": "raid_archer",
    "cell": [
-    6,
+    9,
     4
    ]
   },
   {
-   "type": "raid_archer",
+   "type": "frost_wasp",
    "cell": [
-    10,
+    3,
     2
    ]
   },
   {
-   "type": "raid_archer",
+   "type": "frost_wasp",
    "cell": [
-    10,
+    3,
     6
    ]
   },
   {
    "type": "ice_raider",
    "cell": [
-    10,
-    4
+    9,
+    0
    ]
   }
  ]

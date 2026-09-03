@@ -438,3 +438,60 @@ func test_un_instantane_et_sa_restauration_sont_fideles() -> void:
 	assert_eq(goblin.hit_points, goblin.max_hit_points)
 	assert_eq(engine.round_index(), 1)
 	assert_eq(engine.current_unit().id, warrior.id)
+
+
+# --- Le télégraphe d'une poussée (T12.1) -----------------------------------
+
+## SANS ÇA, LA NOYADE VIOLE LE § 39. Un coup d'épaule qui projette dans un
+## lac gelé tue quels que soient les PV : annoncer « quatorze dégâts » et
+## rendre un héros à terre est exactement le piège que le télégraphe
+## existe pour interdire. Le joueur doit voir la case d'arrivée avant de
+## décider, et voir qu'elle est en eau.
+func test_le_telegraphe_annonce_la_case_d_arrivee() -> void:
+	var board := _plain()
+	_hero(board, &"warrior", Vector2i(3, 3), 1)
+	_enemy(board, &"ice_raider", Vector2i(2, 3), 90)
+	var engine := _engine(board)
+	engine.start()
+
+	var entries := engine.telegraph()
+	assert_eq(entries.size(), 1, "le pillard doit annoncer quelque chose")
+	var shoves: Array = entries[0]["shoves"]
+	assert_eq(shoves.size(), 1, "et une case d'arrivée")
+	assert_eq(
+		shoves[0], Vector2i(4, 3),
+		"le héros serait projeté EN S'ÉLOIGNANT du pillard"
+	)
+
+
+## Une attaque ordinaire n'annonce aucune case d'arrivée : le champ existe
+## pour tout le monde, il ne se remplit que pour ce qui pousse.
+func test_une_attaque_ordinaire_n_annonce_aucune_arrivee() -> void:
+	var board := _plain()
+	_hero(board, &"warrior", Vector2i(3, 3), 1)
+	_enemy(board, &"spear_goblin", Vector2i(4, 3), 90)
+	var engine := _engine(board)
+	engine.start()
+	assert_true((engine.telegraph()[0]["shoves"] as Array).is_empty())
+
+
+## UNE POUSSÉE BLOQUÉE NE DÉPLACE PERSONNE, donc elle n'annonce rien —
+## et c'est la contre-mesure du joueur : se serrer protège de l'épaule.
+## C'est exactement ce que la fente du champion punit, et les deux
+## compétences se répondent (`raid_champion` porte les deux).
+func test_une_poussee_bloquee_par_un_allie_n_annonce_rien() -> void:
+	var board := _plain()
+	_hero(board, &"warrior", Vector2i(3, 3), 1)
+	_hero(board, &"warrior", Vector2i(4, 3), 2)
+	_enemy(board, &"ice_raider", Vector2i(2, 3), 90)
+	var engine := _engine(board)
+	engine.start()
+
+	var landings: Array[Vector2i] = []
+	for entry: Dictionary in engine.telegraph():
+		for landing: Variant in entry["shoves"]:
+			landings.append(landing)
+	assert_false(
+		landings.has(Vector2i(4, 3)), "la case est occupée : rien ne bouge"
+	)
+	assert_true(landings.is_empty(), "et il n'y a nulle part ailleurs où aller")

@@ -2310,6 +2310,7 @@ souvenir.**
 | **T11.6** | De la couleur partout | six régions dans six boîtes identiques, aucun accent nulle part | ✅ |
 | **T11.8** | La passe de finition | 5 évènements pour deux actes, l'acte 2 payé comme l'acte 1 | ✅ |
 | **T11.9** | Le décor et l'air d'un acte | 7 cartes des Dunes sur 9 n'employaient que du rocher | ✅ |
+| **T12.1** | L'acte 3 — les Montagnes Gelées | la région n'avait que son nom | ✅ |
 | **T11.5** | Apprendre à jouer | aucun tutoriel, aucune aide, aucune première partie guidée | ⬜ |
 
 **L'ordre est celui-là et il se justifie.** Le téléphone d'abord parce que
@@ -2990,6 +2991,129 @@ couleur est devenue une vraie cendre froide.
 `verify_maps` compte désormais le vocabulaire d'un acte et refuse en
 dessous de trois terrains : un acte qui n'a qu'un mot se joue neuf fois
 pareil, et ça ne se voit sur aucune carte prise seule.
+
+### T12.1 — l'acte 3, les Montagnes Gelées ✅
+
+**Thèse de l'acte : le terrain TUE.** Les actes 1 et 2 employaient le
+décor comme abri et comme coût — une forêt protège, du sable ralentit.
+Ici les lacs gelés sont mortels, et deux familles d'ennemis en font une
+arme.
+
+#### Deux mécaniques déclarées et mortes, réveillées
+
+**La poussée.** `KIND_PUSH`, `push_away_from`, la noyade et leur
+prévisualisation étaient écrits depuis la Phase 1, **avec leurs tests**,
+et aucune donnée ne les employait. Troisième fois, après `KIND_HEAL`
+(T10.1) et les 70 entrées `ui` (T9.1).
+
+Le coup d'épaule est une **attaque qui repousse**, pas un `KIND_PUSH`
+autonome, et la raison est le télégraphe : `CombatIntent` ne connaît que
+`Kind.ATTACK`, donc une poussée pure ne s'annoncerait pas — et un ennemi
+qui projette dans un lac sans prévenir viole le § 39. `telegraph()` rend
+désormais un champ `shoves` : **la case d'arrivée**, en bleu-blanc et sans
+chiffre. « Tu prendras 14 » et « tu finiras là » sont deux informations ;
+les peindre pareil ferait lire un total de dégâts sur une case qui n'en
+porte aucun.
+
+**Les ennemis humains.** Le pack dessine vingt-cinq sprites — cinq
+classes × cinq couleurs — et le jeu n'employait que le Bleu des héros.
+`sprite_color` dit dans quelle table chercher ; `verify_world` refuse un
+ennemi qui porterait le bleu. Vingt et un sprites s'ouvrent pour les
+actes 3 à 6, et les actes 1 et 2 n'opposaient que des bêtes — une
+campagne de six actes qui n'affronte jamais un homme se raconte mal.
+
+#### La grande leçon d'équilibrage, et elle vaut pour tout le jeu
+
+> **Avec un objectif « éliminer » et une IA qui vient au contact, un
+> terrain qui ralentit l'ENNEMI ne coûte jamais rien au joueur.**
+> L'équipe attend, et ce qui arrive lentement arrive un par un.
+
+`gel_05` l'a prouvé trois fois : congère au milieu du plateau → 94 % des
+PV conservés ; en bordure de placement → 100 % ; du côté des archers →
+100 % encore.
+
+**Deux pistes ont été essayées, et une seule marchait.**
+
+*Donner des PM aux ennemis de contact* (+1 sur les seize bêtes de mêlée) :
+
+| | avant | après |
+|---|---|---|
+| acte 1 | 4,7 rondes · 81 % | 5,0 · **77 %** |
+| acte 2 | 5,1 rondes · 76 % | 5,0 · **80 %** |
+| acte 3 | 5,3 rondes · 77 % | 6,2 · **68 %** |
+
+Le levier **se retourne sur l'acte 2** : ses cartes ont été réglées à la
+DISTANCE, et la vitesse est l'autre moitié de la même quantité. Écarté.
+
+*Le vrai manque était la PORTÉE.* Les vingt-sept cartes ont déjà toutes
+au moins un tireur — la couverture est à 100 %, ce n'était pas ça. Mais
+l'acte 1 a le chaman à six cases et l'acte 2 le feu follet à six ; **l'acte
+3 n'avait que des tireurs à cinq, exactement la portée de l'Archer.** Un
+échange équitable se gagne à quatre contre un sans avancer d'une case. Le
+poisson-bombe est passé à six, et tout l'acte a suivi :
+
+| | avant | après |
+|---|---|---|
+| `gel_02` | 84 % | 79 % |
+| `gel_03` | 87 % | 80 % |
+| `gel_05` | 100 % | 93 % |
+| `gel_06` | 66 % | 56 % |
+| `gel_09` | 79 % | 72 % |
+
+`verify_world` exige désormais que **chaque acte fielde quelqu'un qui
+porte au moins aussi loin que le joueur**, les deux portées lues dans les
+données. Le jour où l'Archer gagne une case, l'outil réclamera un cran à
+tout le monde.
+
+#### Le boss, et une limite de l'instrument
+
+`gel_08` durait **neuf rondes**, une de plus que la cible. Baisser les PV
+du Jarl ne changeait que le prix, jamais la durée : ce n'était pas lui qui
+était long, c'était la **chaussée d'une seule case** — l'équipe entrait en
+file. Élargie à trois rangées : six rondes. Quatrième fois du projet
+qu'une carte se corrige en géométrie et pas en statistiques.
+
+Il mesure 73 % de PV restants, moins cher que `gel_06`. **La mesure ment
+ici**, et il faut le savoir : toute la menace du Jarl est positionnelle —
+une lance qui aligne, une épaule qui projette — et le pilote de la
+simulation n'a aucune notion de « ne pas se tenir au bord de l'eau ». Il
+la subit sans jamais l'éviter. Même limite que « le pilote ne boit pas »
+(T10.1). **À rejuger à l'œil.**
+
+#### Trois contrôles nouveaux, tous nés d'un vrai défaut
+
+- **`verify_maps` refuse un ennemi aquatique ou volant qu'aucune case de
+  terre ne touche.** Il serait injoignable pour une équipe sans portée,
+  et l'objectif « éliminer » ne se remplirait jamais. Le § 23 laisse la
+  composition au joueur ; une carte ne doit pas la lui imposer. Attrapé
+  du premier coup : un poisson-bombe au centre du lac.
+- **`verify_world` refuse un tirailleur qui ne porte qu'à une case.**
+  L'IA lui retranche cinquante points de score par héros adjacent — c'est
+  ce qui fait reculer le gnoll — et avec un dard qui porte à UNE case ce
+  malus interdit exactement les cases depuis lesquelles il pourrait
+  frapper. Trois guêpes ont fui pendant une mesure entière sans qu'aucun
+  outil ne bronche.
+- **`verify_maps` demande à `can_stand_on`, pas à `is_walkable`.**
+  L'ancien contrôle refusait tout ennemi posé sur de l'eau ; un requin
+  NAGE, et l'acte 3 en met dans des lacs.
+
+#### La transition d'acte, rendue générique
+
+Le test de T11.8 ne connaissait que « Terres Vertes → Dunes ». La
+machinerie de `Campaign` est pourtant générique, et c'est le genre de
+généricité qu'on croit acquise jusqu'à ce qu'un acte de plus la démente.
+Les quatre tests parcourent maintenant **toutes** les frontières et se
+peupleront tout seuls quand l'acte 4 recevra ses cartes.
+
+Ils ont attrapé deux défauts dans mes propres données le jour même : une
+`chain` sans `pattern` ni `tail` — `depart()` rendait `null` et les Dunes
+n'ouvraient sur rien de jouable — et un `map_window` écrit en ENTIER là où
+le code attend un objet, soit un « Trying to assign value of type 'float'
+to a variable of type 'Dictionary' » que rien d'autre n'aurait vu.
+
+**849 tests passent, les dix vérificateurs sont verts.** Acte 1 : 4,7
+rondes et 81 % de PV. Acte 2 : 5,1 et 76 %. Acte 3 : 5,1 et 76 % au
+global, 74 % sur les sept rencontres ordinaires.
 
 ---
 

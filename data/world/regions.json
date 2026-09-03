@@ -121,19 +121,37 @@
       "accent": "frost",
       "ground": "frost",
       "encounter_maps": [
-        "gel_01",
-        "gel_03",
         "gel_05",
-        "gel_07",
-        "gel_04",
+        "gel_03",
         "gel_02",
+        "gel_01",
+        "gel_04",
+        "gel_07",
         "gel_06"
       ],
       "miniboss_map": "gel_09",
       "boss_map": "gel_08",
-      "map_window": 4,
+      "map_window": {
+        "_note": "L'ORDRE EST MESURÉ, PAS SUPPOSÉ, comme aux deux actes précédents. Coût moyen de jour, colonne PV de `tools/simulate_combats.gd` sur cinquante graines : 05 → 7 %, 03 → 20 %, 02 → 21 %, 01 → 26 %, 04 → 30 %, 07 → 32 %, 06 → 44 %. Mini-boss (09) 28 %, boss (08) 27 %.\n\nLE BOSS MESURE MOINS CHER QUE `gel_06`, ET LA MESURE MENT ICI. Toute la menace du Jarl est POSITIONNELLE — une lance qui aligne, une épaule qui projette dans l'eau — et le pilote de la simulation n'a aucune notion de « ne pas se tenir au bord ». Il la subit sans jamais l'éviter ni la craindre. Même limite que « le pilote ne boit pas » (T10.1) : à rejuger à l'œil.\n\n`size` cartes tirables à la fois, la fenêtre avance de `slide` par rencontre passée.",
+        "size": 4,
+        "slide": 0.5
+      },
       "chain": {
-        "body": { "min": 7, "max": 10 }
+        "pattern": [
+          "combat",
+          "event",
+          "combat",
+          "merchant"
+        ],
+        "tail": [
+          "miniboss",
+          "reward",
+          "boss"
+        ],
+        "body": {
+          "min": 5,
+          "max": 8
+        }
       },
       "night_roster": ["ice_raider", "frost_shark", "raid_champion"],
       "resources_per_encounter": {

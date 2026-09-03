@@ -194,6 +194,26 @@ EVENT_OASIS,L'oasis
 EVENT_OASIS_TEXT,Quelques palmiers et de l'eau claire. Dans ce pays, cela ne reste jamais sans surveillance longtemps.
 EVENT_OASIS_LINGER,S'attarder à l'ombre
 EVENT_OASIS_DRINK,Boire et repartir
+EVENT_CREVASSE,La crevasse
+EVENT_CREVASSE_TEXT,Une fente bleue coupe le glacier. Elle est étroite — mais la glace du bord sonne creux.
+EVENT_CREVASSE_JUMP,Sauter avec le barda
+EVENT_CREVASSE_ROUND,Contourner par le haut
+EVENT_WARM_HUT,La cabane du col
+EVENT_WARM_HUT_TEXT,Une cabane de chasseur, vide depuis longtemps. Il reste du bois sec et un âtre.
+EVENT_WARM_HUT_REST,Faire du feu et dormir
+EVENT_WARM_HUT_STRIP,Démonter la cabane et l'emporter
+EVENT_FROZEN_CARAVAN,La caravane prise
+EVENT_FROZEN_CARAVAN_TEXT,Un convoi entier pris dans la glace, hommes et bêtes. Les caisses sont encore sanglées.
+EVENT_FROZEN_CARAVAN_DIG,Dégager les caisses à la hache
+EVENT_FROZEN_CARAVAN_LEAVE,Prendre ce qui dépasse et filer
+EVENT_ROUGEFER_SCOUT,L'éclaireur Rougefer
+EVENT_ROUGEFER_SCOUT_TEXT,Un homme seul vous a vus depuis la crête. Il n'a pas encore couru.
+EVENT_ROUGEFER_SCOUT_HUNT,Le prendre en chasse
+EVENT_ROUGEFER_SCOUT_LET,Le laisser partir et souffler
+EVENT_BLIZZARD,Le blizzard
+EVENT_BLIZZARD_TEXT,Le ciel tombe d'un coup et le vent efface la piste. On ne voit plus le porteur de devant.
+EVENT_BLIZZARD_PUSH,Avancer à la corde
+EVENT_BLIZZARD_SHELTER,S'abriter derrière un rocher
 EVENT_SANDSTORM,La tempête de sable
 EVENT_SANDSTORM_TEXT,Un mur ocre monte à l'horizon et avance plus vite que vous ne marchez.
 EVENT_SANDSTORM_CROSS,Traverser en force

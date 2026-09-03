@@ -65,8 +65,18 @@
    0.85
   ],
   "_shove_note": "Où un héros ATTERRIRA s'il se fait repousser (T12.1). Le télégraphe annonce les dégâts ; sans cette case il n'annonce pas la noyade, qui tue quels que soient les PV. Bleu-blanc et sans chiffre : ce n'est pas une menace chiffrée, c'est une destination.",
-  "shove": [0.62, 0.86, 1.0, 0.22],
-  "shove_border": [0.78, 0.94, 1.0, 0.75],
+  "shove": [
+   0.62,
+   0.86,
+   1.0,
+   0.22
+  ],
+  "shove_border": [
+   0.78,
+   0.94,
+   1.0,
+   0.75
+  ],
   "ward": [
    1.0,
    0.9,
@@ -224,7 +234,12 @@
    0.8
   ],
   "_quicksand_note": "Le sable mouvant (terrain `mud`, 2 PM). Assombri et ROUGI par rapport au sable du sol, pas éclairci : une case molle s'enfonce, elle ne brille pas. Alpha bas — on doit voir que le sol continue dessous, sinon ça devient un trou.",
-  "quicksand": [0.42, 0.28, 0.14, 0.45],
+  "quicksand": [
+   0.42,
+   0.28,
+   0.14,
+   0.45
+  ],
   "moment_day": [
    1.0,
    1.0,
@@ -373,7 +388,6 @@
   "_note": "Teinte posée SOUS le décor d'un terrain, par le nom d'une couleur de la section `colors`. Sert aux terrains que le pack ne dessine pas : la boue — le sable mouvant des Dunes — n'a AUCUN sprite et se dessinait donc exactement comme de l'herbe. Une case qui coûte deux PM et qui ressemble à une case qui en coûte un est un mensonge, pas une surprise. La teinte dit la CASE ; le décor, quand il y en a un, dit ce que c'est.",
   "mud": "quicksand"
  },
-
  "terrain_decorations": {
   "_note": "Sprite posé par-dessus la tuile de base : [catégorie, clé] de data/assets.json. Une troisième valeur choisit l'image d'une bande d'animation — la première image d'un feu n'est qu'une étincelle de quelques pixels, invisible sur une case de 64. Une quatrième et une cinquième donnent [colonne, rangée] pour une entrée de type atlas. Le pack ne fournit ni pont ni ruine : la palissade sert de planches, les ossements de ruine. La boue n'a AUCUN sprite : elle se dessine comme de l'herbe, ce qui est un piège — aucune carte ne l'utilise pour l'instant, et il faudra une teinte avant qu'une carte le fasse.",
   "forest": [
@@ -428,14 +442,31 @@
   ],
   "_houses_note": "Le pack dessine `house1`, `house2` et `house3`, pas un bâtiment « houses » : c'est le royaume qui regroupe les trois sous un seul bâtiment à trois âges. La carte de défense n'a qu'un décor par terrain, donc elle montre l'âge du milieu."
  },
-
  "terrain_decorations_by_ground": {
   "_note": "LE MÊME TERRAIN, AUTRE DESSIN SELON LA RÉGION (T11.9). Un bosquet des Terres Vertes est un arbre vert ; le même bosquet dans les Dunes est un arbre MORT. Mêmes règles — il coupe la vue, il abrite d'un point de dégâts — autre image. C'est la leçon de T11.7 poussée jusqu'au décor : on n'invente pas de mécanique pour un acte, on change ce qu'elle MONTRE.\n\nLa clé est la couleur de SOL de la région (`ground` dans regions.json), jamais son identifiant : deux régions de sable partageraient leur décor sans rien redéclarer.\n\nCE QUI N'EST PAS LISTÉ RETOMBE SUR LE DÉFAUT, et deux absences sont volontaires. Le ROCHER : un rocher gris est juste dans un désert, et c'est surtout le marqueur de l'INFRANCHISSABLE — le fondre dans la couleur du sol le rendrait illisible. La COLLINE : elle est dessinée par le tileset, qui est déjà teinté par la région, donc une dune de sable sort gratuitement d'un plateau d'herbe.",
-
   "sand": {
-   "forest": ["extra", "dead_tree_dead_tree"],
-   "ruin": ["extra", "skull_decorations_bones_03"],
-   "palisade": ["extra", "skull_decorations_skull_spike_01"]
+   "forest": [
+    "extra",
+    "dead_tree_dead_tree"
+   ],
+   "ruin": [
+    "extra",
+    "skull_decorations_bones_03"
+   ],
+   "palisade": [
+    "extra",
+    "skull_decorations_skull_spike_01"
+   ]
+  },
+  "frost": {
+   "forest": [
+    "extra",
+    "dead_tree_dead_tree"
+   ],
+   "ruin": [
+    "extra",
+    "skull_decorations_bones_01"
+   ]
   }
  }
 }

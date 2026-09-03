@@ -1,256 +1,385 @@
 {
-  "_readme": "Les évènements du § 40 : marchand, autel, village, embuscade, ruines. Le coffre vient du § 27.\n\nLA LIGNE QUI GOUVERNE TOUT LE FICHIER : « les événements doivent créer des décisions ». Un évènement qui donne trente pièces d'or n'est pas un évènement, c'est une récompense déguisée en texte. CHAQUE ÉVÈNEMENT D'ICI OFFRE AU MOINS DEUX OPTIONS QUI S'EXCLUENT, et l'outil `verify_world` refuse celui qui n'en aurait qu'une, ou dont une option serait meilleure que l'autre sur toute la ligne.\n\nLES QUATRE MONNAIES DE L'ÉCHANGE, et il en faut plusieurs pour qu'un choix soit un choix : les PV (que rien ne rend, § 29), l'or (dont le royaume aura besoin, § 32), la besace (qui n'est pas encore à l'abri) et le risque (une chance déclarée). Un évènement qui n'échange que de l'or contre de l'or ne demande rien.\n\nLE VOCABULAIRE DES EFFETS est fermé, et court exprès :\n  gold          or versé ou dépensé, sur la bourse de la compagnie\n  health        fraction des PV maximums, signée, pour toute l'équipe\n  items         nombre d'objets tirés à la profondeur courante\n  rarity_bonus  crans de rareté en plus sur ces objets-là\n  satchel_kept  fraction de la besace conservée — fuir coûte\n  combat        une rencontre s'intercale ici\n\nUne option avec `chance` a deux issues : `success` et `failure`. Sans `chance`, seul `success` s'applique. Une option dont le coût dépasse la bourse est proposée grisée, jamais cachée : savoir ce qu'on ne peut pas s'offrir fait partie de la décision.\n\nLES ÉVÈNEMENTS SE FILTRENT PAR ACTE (T11.8). Un hameau qui vous ouvre ses portes au milieu des Dunes Ardentes n'a pas de sens, et une oasis dans les Terres Vertes non plus. Le champ `acts` dit où l'évènement peut sortir ; ABSENT, il sort partout — c'est le cas de l'autel, des ruines, du coffre et de l'embuscade, qui ne supposent rien du climat.\n\nÇA ÉTOFFE AUTANT QUE ÇA SITUE : l'acte 1 tire dans cinq évènements, l'acte 2 dans neuf. Avec une à deux étapes d'évènement par sortie, cinq suffisaient à se répéter en deux sorties.",
-  "events": {
-    "altar": {
-      "name_key": "EVENT_ALTAR",
-      "text_key": "EVENT_ALTAR_TEXT",
-      "weight": 20,
-      "options": [
-        {
-          "label_key": "EVENT_ALTAR_BLOOD",
-          "success": {
-            "health": -0.25,
-            "items": 1,
-            "rarity_bonus": 2
-          }
-        },
-        {
-          "label_key": "EVENT_ALTAR_GOLD",
-          "success": {
-            "gold": -60,
-            "items": 1,
-            "rarity_bonus": 1
-          }
-        },
-        {
-          "label_key": "EVENT_ALTAR_LEAVE",
-          "success": {
-            "health": 0.05
-          }
-        }
-      ]
+ "_readme": "Les évènements du § 40 : marchand, autel, village, embuscade, ruines. Le coffre vient du § 27.\n\nLA LIGNE QUI GOUVERNE TOUT LE FICHIER : « les événements doivent créer des décisions ». Un évènement qui donne trente pièces d'or n'est pas un évènement, c'est une récompense déguisée en texte. CHAQUE ÉVÈNEMENT D'ICI OFFRE AU MOINS DEUX OPTIONS QUI S'EXCLUENT, et l'outil `verify_world` refuse celui qui n'en aurait qu'une, ou dont une option serait meilleure que l'autre sur toute la ligne.\n\nLES QUATRE MONNAIES DE L'ÉCHANGE, et il en faut plusieurs pour qu'un choix soit un choix : les PV (que rien ne rend, § 29), l'or (dont le royaume aura besoin, § 32), la besace (qui n'est pas encore à l'abri) et le risque (une chance déclarée). Un évènement qui n'échange que de l'or contre de l'or ne demande rien.\n\nLE VOCABULAIRE DES EFFETS est fermé, et court exprès :\n  gold          or versé ou dépensé, sur la bourse de la compagnie\n  health        fraction des PV maximums, signée, pour toute l'équipe\n  items         nombre d'objets tirés à la profondeur courante\n  rarity_bonus  crans de rareté en plus sur ces objets-là\n  satchel_kept  fraction de la besace conservée — fuir coûte\n  combat        une rencontre s'intercale ici\n\nUne option avec `chance` a deux issues : `success` et `failure`. Sans `chance`, seul `success` s'applique. Une option dont le coût dépasse la bourse est proposée grisée, jamais cachée : savoir ce qu'on ne peut pas s'offrir fait partie de la décision.\n\nLES ÉVÈNEMENTS SE FILTRENT PAR ACTE (T11.8). Un hameau qui vous ouvre ses portes au milieu des Dunes Ardentes n'a pas de sens, et une oasis dans les Terres Vertes non plus. Le champ `acts` dit où l'évènement peut sortir ; ABSENT, il sort partout — c'est le cas de l'autel, des ruines, du coffre et de l'embuscade, qui ne supposent rien du climat.\n\nÇA ÉTOFFE AUTANT QUE ÇA SITUE : l'acte 1 tire dans cinq évènements, l'acte 2 dans neuf. Avec une à deux étapes d'évènement par sortie, cinq suffisaient à se répéter en deux sorties.",
+ "events": {
+  "altar": {
+   "name_key": "EVENT_ALTAR",
+   "text_key": "EVENT_ALTAR_TEXT",
+   "weight": 20,
+   "options": [
+    {
+     "label_key": "EVENT_ALTAR_BLOOD",
+     "success": {
+      "health": -0.25,
+      "items": 1,
+      "rarity_bonus": 2
+     }
     },
-    "village": {
-      "name_key": "EVENT_VILLAGE",
-      "text_key": "EVENT_VILLAGE_TEXT",
-      "weight": 25,
-      "options": [
-        {
-          "label_key": "EVENT_VILLAGE_REST",
-          "success": {
-            "health": 0.35
-          }
-        },
-        {
-          "label_key": "EVENT_VILLAGE_SMITH",
-          "success": {
-            "gold": -80,
-            "items": 1,
-            "rarity_bonus": 1
-          }
-        }
-      ],
-      "acts": [
-        1
-      ]
+    {
+     "label_key": "EVENT_ALTAR_GOLD",
+     "success": {
+      "gold": -60,
+      "items": 1,
+      "rarity_bonus": 1
+     }
     },
-    "ruins": {
-      "name_key": "EVENT_RUINS",
-      "text_key": "EVENT_RUINS_TEXT",
-      "weight": 20,
-      "options": [
-        {
-          "label_key": "EVENT_RUINS_SEARCH",
-          "chance": 0.6,
-          "success": {
-            "items": 1,
-            "rarity_bonus": 1
-          },
-          "failure": {
-            "health": -0.15
-          }
-        },
-        {
-          "label_key": "EVENT_RUINS_STONES",
-          "success": {
-            "gold": 45
-          }
-        }
-      ]
-    },
-    "ambush": {
-      "name_key": "EVENT_AMBUSH",
-      "text_key": "EVENT_AMBUSH_TEXT",
-      "weight": 15,
-      "options": [
-        {
-          "label_key": "EVENT_AMBUSH_CHARGE",
-          "success": {
-            "health": -0.1,
-            "combat": true
-          }
-        },
-        {
-          "label_key": "EVENT_AMBUSH_FLEE",
-          "success": {
-            "satchel_kept": 0.7
-          }
-        }
-      ]
-    },
-    "chest": {
-      "name_key": "EVENT_CHEST",
-      "text_key": "EVENT_CHEST_TEXT",
-      "weight": 20,
-      "options": [
-        {
-          "label_key": "EVENT_CHEST_FORCE",
-          "success": {
-            "health": -0.1,
-            "items": 1,
-            "rarity_bonus": 1
-          }
-        },
-        {
-          "label_key": "EVENT_CHEST_PICK",
-          "chance": 0.5,
-          "success": {
-            "items": 1,
-            "rarity_bonus": 2
-          },
-          "failure": {
-            "health": -0.15
-          }
-        }
-      ]
-    },
-    "oasis": {
-      "name_key": "EVENT_OASIS",
-      "text_key": "EVENT_OASIS_TEXT",
-      "weight": 22,
-      "acts": [
-        2
-      ],
-      "_note": "L'ÉCHANGE EST PV CONTRE UN COMBAT. S'attarder à l'ombre rend beaucoup plus que boire vite, mais une eau libre dans un désert est surveillée — et c'est le seul évènement de l'acte 2 qui rend assez de PV pour changer un « je rentre » en « je continue ».",
-      "options": [
-        {
-          "label_key": "EVENT_OASIS_LINGER",
-          "success": {
-            "health": 0.3,
-            "combat": true
-          }
-        },
-        {
-          "label_key": "EVENT_OASIS_DRINK",
-          "success": {
-            "health": 0.12
-          }
-        }
-      ]
-    },
-    "sandstorm": {
-      "name_key": "EVENT_SANDSTORM",
-      "text_key": "EVENT_SANDSTORM_TEXT",
-      "weight": 20,
-      "acts": [
-        2
-      ],
-      "_note": "DEUX MONNAIES, PAS DEUX MONTANTS : des PV contre de l'or. C'est la tension centrale du § 32 posée en une étape — l'or dépensé ici est un bâtiment qu'on ne monte pas.",
-      "options": [
-        {
-          "label_key": "EVENT_SANDSTORM_CROSS",
-          "success": {
-            "health": -0.18
-          }
-        },
-        {
-          "label_key": "EVENT_SANDSTORM_GUIDE",
-          "success": {
-            "gold": -60
-          }
-        }
-      ]
-    },
-    "caravan": {
-      "name_key": "EVENT_CARAVAN",
-      "text_key": "EVENT_CARAVAN_TEXT",
-      "weight": 20,
-      "acts": [
-        2
-      ],
-      "_note": "Creuser coûte des PV et rend un objet ; prendre l'eau en rend. Le pari du dessous — la moitié du temps la caravane est vide — évite d'en faire un distributeur.",
-      "options": [
-        {
-          "label_key": "EVENT_CARAVAN_DIG",
-          "chance": 0.55,
-          "success": {
-            "health": -0.1,
-            "items": 1,
-            "rarity_bonus": 1
-          },
-          "failure": {
-            "health": -0.14
-          }
-        },
-        {
-          "label_key": "EVENT_CARAVAN_WATER",
-          "success": {
-            "health": 0.08
-          }
-        }
-      ]
-    },
-    "bone_field": {
-      "name_key": "EVENT_BONE_FIELD",
-      "text_key": "EVENT_BONE_FIELD_TEXT",
-      "weight": 18,
-      "acts": [
-        2
-      ],
-      "_note": "Une expédition avant la vôtre n'est pas rentrée. Fouiller rapporte et réveille ce qui l'a tuée ; prendre les vivres ne rapporte que des PV. Le combat est le prix, pas le hasard.",
-      "options": [
-        {
-          "label_key": "EVENT_BONE_FIELD_LOOT",
-          "success": {
-            "items": 1,
-            "rarity_bonus": 1,
-            "combat": true
-          }
-        },
-        {
-          "label_key": "EVENT_BONE_FIELD_RATIONS",
-          "success": {
-            "health": 0.15
-          }
-        }
-      ]
-    },
-    "obelisk": {
-      "name_key": "EVENT_OBELISK",
-      "text_key": "EVENT_OBELISK_TEXT",
-      "weight": 18,
-      "acts": [
-        2
-      ],
-      "_note": "L'AUTEL DES DUNES, ET IL NE POSE PAS LA MÊME QUESTION. L'autel de l'acte 1 échange du sang contre de l'or ; celui-ci échange de l'or contre un BON objet, ou des PV contre un objet ordinaire. Le joueur riche et le joueur blessé n'y répondent pas pareil.",
-      "options": [
-        {
-          "label_key": "EVENT_OBELISK_TRIBUTE",
-          "success": {
-            "gold": -70,
-            "items": 1,
-            "rarity_bonus": 2
-          }
-        },
-        {
-          "label_key": "EVENT_OBELISK_BREAK",
-          "success": {
-            "health": -0.15,
-            "items": 1,
-            "rarity_bonus": 1
-          }
-        }
-      ]
+    {
+     "label_key": "EVENT_ALTAR_LEAVE",
+     "success": {
+      "health": 0.05
+     }
     }
+   ]
+  },
+  "village": {
+   "name_key": "EVENT_VILLAGE",
+   "text_key": "EVENT_VILLAGE_TEXT",
+   "weight": 25,
+   "options": [
+    {
+     "label_key": "EVENT_VILLAGE_REST",
+     "success": {
+      "health": 0.35
+     }
+    },
+    {
+     "label_key": "EVENT_VILLAGE_SMITH",
+     "success": {
+      "gold": -80,
+      "items": 1,
+      "rarity_bonus": 1
+     }
+    }
+   ],
+   "acts": [
+    1
+   ]
+  },
+  "ruins": {
+   "name_key": "EVENT_RUINS",
+   "text_key": "EVENT_RUINS_TEXT",
+   "weight": 20,
+   "options": [
+    {
+     "label_key": "EVENT_RUINS_SEARCH",
+     "chance": 0.6,
+     "success": {
+      "items": 1,
+      "rarity_bonus": 1
+     },
+     "failure": {
+      "health": -0.15
+     }
+    },
+    {
+     "label_key": "EVENT_RUINS_STONES",
+     "success": {
+      "gold": 45
+     }
+    }
+   ]
+  },
+  "ambush": {
+   "name_key": "EVENT_AMBUSH",
+   "text_key": "EVENT_AMBUSH_TEXT",
+   "weight": 15,
+   "options": [
+    {
+     "label_key": "EVENT_AMBUSH_CHARGE",
+     "success": {
+      "health": -0.1,
+      "combat": true
+     }
+    },
+    {
+     "label_key": "EVENT_AMBUSH_FLEE",
+     "success": {
+      "satchel_kept": 0.7
+     }
+    }
+   ]
+  },
+  "chest": {
+   "name_key": "EVENT_CHEST",
+   "text_key": "EVENT_CHEST_TEXT",
+   "weight": 20,
+   "options": [
+    {
+     "label_key": "EVENT_CHEST_FORCE",
+     "success": {
+      "health": -0.1,
+      "items": 1,
+      "rarity_bonus": 1
+     }
+    },
+    {
+     "label_key": "EVENT_CHEST_PICK",
+     "chance": 0.5,
+     "success": {
+      "items": 1,
+      "rarity_bonus": 2
+     },
+     "failure": {
+      "health": -0.15
+     }
+    }
+   ]
+  },
+  "oasis": {
+   "name_key": "EVENT_OASIS",
+   "text_key": "EVENT_OASIS_TEXT",
+   "weight": 22,
+   "acts": [
+    2
+   ],
+   "_note": "L'ÉCHANGE EST PV CONTRE UN COMBAT. S'attarder à l'ombre rend beaucoup plus que boire vite, mais une eau libre dans un désert est surveillée — et c'est le seul évènement de l'acte 2 qui rend assez de PV pour changer un « je rentre » en « je continue ».",
+   "options": [
+    {
+     "label_key": "EVENT_OASIS_LINGER",
+     "success": {
+      "health": 0.3,
+      "combat": true
+     }
+    },
+    {
+     "label_key": "EVENT_OASIS_DRINK",
+     "success": {
+      "health": 0.12
+     }
+    }
+   ]
+  },
+  "sandstorm": {
+   "name_key": "EVENT_SANDSTORM",
+   "text_key": "EVENT_SANDSTORM_TEXT",
+   "weight": 20,
+   "acts": [
+    2
+   ],
+   "_note": "DEUX MONNAIES, PAS DEUX MONTANTS : des PV contre de l'or. C'est la tension centrale du § 32 posée en une étape — l'or dépensé ici est un bâtiment qu'on ne monte pas.",
+   "options": [
+    {
+     "label_key": "EVENT_SANDSTORM_CROSS",
+     "success": {
+      "health": -0.18
+     }
+    },
+    {
+     "label_key": "EVENT_SANDSTORM_GUIDE",
+     "success": {
+      "gold": -60
+     }
+    }
+   ]
+  },
+  "caravan": {
+   "name_key": "EVENT_CARAVAN",
+   "text_key": "EVENT_CARAVAN_TEXT",
+   "weight": 20,
+   "acts": [
+    2
+   ],
+   "_note": "Creuser coûte des PV et rend un objet ; prendre l'eau en rend. Le pari du dessous — la moitié du temps la caravane est vide — évite d'en faire un distributeur.",
+   "options": [
+    {
+     "label_key": "EVENT_CARAVAN_DIG",
+     "chance": 0.55,
+     "success": {
+      "health": -0.1,
+      "items": 1,
+      "rarity_bonus": 1
+     },
+     "failure": {
+      "health": -0.14
+     }
+    },
+    {
+     "label_key": "EVENT_CARAVAN_WATER",
+     "success": {
+      "health": 0.08
+     }
+    }
+   ]
+  },
+  "bone_field": {
+   "name_key": "EVENT_BONE_FIELD",
+   "text_key": "EVENT_BONE_FIELD_TEXT",
+   "weight": 18,
+   "acts": [
+    2
+   ],
+   "_note": "Une expédition avant la vôtre n'est pas rentrée. Fouiller rapporte et réveille ce qui l'a tuée ; prendre les vivres ne rapporte que des PV. Le combat est le prix, pas le hasard.",
+   "options": [
+    {
+     "label_key": "EVENT_BONE_FIELD_LOOT",
+     "success": {
+      "items": 1,
+      "rarity_bonus": 1,
+      "combat": true
+     }
+    },
+    {
+     "label_key": "EVENT_BONE_FIELD_RATIONS",
+     "success": {
+      "health": 0.15
+     }
+    }
+   ]
+  },
+  "obelisk": {
+   "name_key": "EVENT_OBELISK",
+   "text_key": "EVENT_OBELISK_TEXT",
+   "weight": 18,
+   "acts": [
+    2
+   ],
+   "_note": "L'AUTEL DES DUNES, ET IL NE POSE PAS LA MÊME QUESTION. L'autel de l'acte 1 échange du sang contre de l'or ; celui-ci échange de l'or contre un BON objet, ou des PV contre un objet ordinaire. Le joueur riche et le joueur blessé n'y répondent pas pareil.",
+   "options": [
+    {
+     "label_key": "EVENT_OBELISK_TRIBUTE",
+     "success": {
+      "gold": -70,
+      "items": 1,
+      "rarity_bonus": 2
+     }
+    },
+    {
+     "label_key": "EVENT_OBELISK_BREAK",
+     "success": {
+      "health": -0.15,
+      "items": 1,
+      "rarity_bonus": 1
+     }
+    }
+   ]
+  },
+  "crevasse": {
+   "name_key": "EVENT_CREVASSE",
+   "text_key": "EVENT_CREVASSE_TEXT",
+   "weight": 20,
+   "acts": [
+    3
+   ],
+   "_note": "LE TEMPS CONTRE LE RISQUE, et c'est la forme la plus pure du § 29. Contourner ne coûte rien d'autre qu'une avancée sans butin ; sauter paie et peut casser. La chance est haute exprès : un pari à 70 % qu'on refuse est un pari mal réglé.",
+   "options": [
+    {
+     "label_key": "EVENT_CREVASSE_JUMP",
+     "chance": 0.7,
+     "success": {
+      "gold": 55,
+      "items": 1
+     },
+     "failure": {
+      "health": -0.16
+     }
+    },
+    {
+     "label_key": "EVENT_CREVASSE_ROUND",
+     "success": {
+      "gold": 12
+     }
+    }
+   ]
+  },
+  "warm_hut": {
+   "name_key": "EVENT_WARM_HUT",
+   "text_key": "EVENT_WARM_HUT_TEXT",
+   "weight": 22,
+   "acts": [
+    3
+   ],
+   "_note": "SE REPOSER OU DÉMONTER. Le seul évènement de l'acte qui rende assez de PV pour changer un « je rentre » en « je continue » — et le bois d'une cabane démontée vaut plus au royaume qu'une nuit au chaud. Aucune option ne domine : l'une paie en PV, l'autre en or, et le § 29 tranche selon ce qu'il reste.",
+   "options": [
+    {
+     "label_key": "EVENT_WARM_HUT_REST",
+     "success": {
+      "health": 0.22
+     }
+    },
+    {
+     "label_key": "EVENT_WARM_HUT_STRIP",
+     "success": {
+      "gold": 70
+     }
+    }
+   ]
+  },
+  "frozen_caravan": {
+   "name_key": "EVENT_FROZEN_CARAVAN",
+   "text_key": "EVENT_FROZEN_CARAVAN_TEXT",
+   "weight": 18,
+   "acts": [
+    3
+   ],
+   "_note": "DÉGAGER LA GLACE COÛTE DES FORCES ET REND DE L'ÉQUIPEMENT. Le seul évènement de l'acte qui rende un objet à coup sûr, et il se paie en PV : l'échange que le marchand ne propose jamais.",
+   "options": [
+    {
+     "label_key": "EVENT_FROZEN_CARAVAN_DIG",
+     "success": {
+      "health": -0.1,
+      "items": 1,
+      "rarity_bonus": 1
+     }
+    },
+    {
+     "label_key": "EVENT_FROZEN_CARAVAN_LEAVE",
+     "success": {
+      "gold": 25
+     }
+    }
+   ]
+  },
+  "rougefer_scout": {
+   "name_key": "EVENT_ROUGEFER_SCOUT",
+   "text_key": "EVENT_ROUGEFER_SCOUT_TEXT",
+   "weight": 20,
+   "acts": [
+    3
+   ],
+   "_note": "UN ÉCLAIREUR SEUL. Le prendre en chasse est un combat de plus, donc des PV et du butin ; le laisser filer coûte ce qu'il va raconter — traduit en or perdu, faute d'un système de renom dans le MVP. L'option agressive est celle qui PAIE, ce qui est l'inverse de l'embuscade : deux évènements de combat qui se lisent différemment.",
+   "options": [
+    {
+     "label_key": "EVENT_ROUGEFER_SCOUT_HUNT",
+     "success": {
+      "combat": true,
+      "gold": 60,
+      "rarity_bonus": 1
+     }
+    },
+    {
+     "label_key": "EVENT_ROUGEFER_SCOUT_LET",
+     "success": {
+      "health": 0.08
+     }
+    }
+   ]
+  },
+  "blizzard": {
+   "name_key": "EVENT_BLIZZARD",
+   "text_key": "EVENT_BLIZZARD_TEXT",
+   "weight": 16,
+   "acts": [
+    3
+   ],
+   "_note": "LE PENDANT GLACÉ DE LA TEMPÊTE DE SABLE, et il ne doit pas se lire pareil : ici c'est la BESACE qu'on risque, pas les PV. S'abriter la garde entière et ne rapporte rien ; avancer dans le blizzard paie et peut coûter ce qu'on porte — exactement la question du § 29, posée au milieu d'une étape au lieu d'entre deux.",
+   "options": [
+    {
+     "label_key": "EVENT_BLIZZARD_PUSH",
+     "chance": 0.65,
+     "success": {
+      "gold": 80
+     },
+     "failure": {
+      "satchel_kept": 0.6,
+      "health": -0.08
+     }
+    },
+    {
+     "label_key": "EVENT_BLIZZARD_SHELTER",
+     "success": {
+      "health": 0.05
+     }
+    }
+   ]
   }
+ }
 }

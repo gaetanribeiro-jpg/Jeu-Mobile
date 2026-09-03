@@ -588,110 +588,124 @@
   "cooldown": 1,
   "note": "LA SECONDE COMPÉTENCE D'UN ENNEMI, une première dans le jeu. Avec `heavy_paw`, l'ours punit la file ET le groupe : il n'y a plus de formation sûre, seulement une formation qui perd moins."
  },
-
-  "frost_bite": {
-    "scaling": "strength",
-    "_note": "La morsure du requin des glaces. Il sort du lac, mord, et y retourne : la portée de UN dit qu'il faut être au bord pour le prendre.",
-    "kind": "attack",
-    "action_points": 3,
-    "range_min": 1,
-    "range_max": 1,
-    "damage": 24,
-    "area": { "shape": "single" },
-    "cooldown": 0,
-    "animation": "attack"
+ "frost_bite": {
+  "scaling": "strength",
+  "_note": "La morsure du requin des glaces. Il sort du lac, mord, et y retourne : la portée de UN dit qu'il faut être au bord pour le prendre.",
+  "kind": "attack",
+  "action_points": 3,
+  "range_min": 1,
+  "range_max": 1,
+  "damage": 24,
+  "area": {
+   "shape": "single"
   },
-
-  "harpoon_cast": {
-    "scaling": "agility",
-    "_note": "Le harpon, lancé depuis l'eau. Le pack dessine l'animation ET le projectile — c'est le seul ennemi aquatique qui tire.",
-    "kind": "attack",
-    "action_points": 3,
-    "range_min": 2,
-    "range_max": 5,
-    "damage": 16,
-    "area": { "shape": "single" },
-    "cooldown": 0,
-    "animation": "throw"
+  "cooldown": 0,
+  "animation": "attack"
+ },
+ "harpoon_cast": {
+  "scaling": "agility",
+  "_note": "Le harpon, lancé depuis l'eau. Le pack dessine l'animation ET le projectile — c'est le seul ennemi aquatique qui tire.",
+  "kind": "attack",
+  "action_points": 3,
+  "range_min": 2,
+  "range_max": 5,
+  "damage": 16,
+  "area": {
+   "shape": "single"
   },
-
-  "cold_charge": {
-    "scaling": "intelligence",
-    "_note": "La charge du poisson-bombe, en croix. Même forme que la gerbe du chaman, depuis une eau où l'on ne peut pas aller la faire taire.",
-    "kind": "attack",
-    "action_points": 5,
-    "range_min": 2,
-    "range_max": 5,
-    "damage": 13,
-    "area": { "shape": "cross", "radius": 1 },
-    "cooldown": 1,
-    "animation": "shoot"
+  "cooldown": 0,
+  "animation": "throw"
+ },
+ "cold_charge": {
+  "scaling": "intelligence",
+  "_note": "La charge du poisson-bombe, en croix. Même forme que la gerbe du chaman, depuis une eau où l'on ne peut pas aller la faire taire.\n\nSIX CASES, ET C'EST LA SEULE PORTÉE DE L'ACTE QUI DÉPASSE CELLE DU JOUEUR. Un tireur à la portée de l'Archer est un échange équitable, et un échange équitable se gagne à quatre contre un : l'équipe n'a qu'à rester en place. Un tireur qui la SURPASSE l'oblige à avancer, ce qui est exactement ce que le terrain de l'acte 3 rend cher. Les actes 1 et 2 avaient chacun le leur — le chaman et le feu follet — et l'acte 3 n'en avait aucun.",
+  "kind": "attack",
+  "action_points": 5,
+  "range_min": 2,
+  "range_max": 6,
+  "damage": 13,
+  "area": {
+   "shape": "cross",
+   "radius": 1
   },
-
-  "chill_sting": {
-    "scaling": "agility",
-    "_note": "Le dard de la guêpe des cimes. Peu de dégâts, mais le Gel : elle vole, donc elle atteint la ligne arrière, et elle en repart avant qu'on la rattrape.",
-    "kind": "attack",
-    "action_points": 3,
-    "range_min": 1,
-    "range_max": 1,
-    "damage": 10,
-    "status": { "id": "chilled", "duration": 1 },
-    "area": { "shape": "single" },
-    "cooldown": 0,
-    "animation": "attack"
+  "cooldown": 1,
+  "animation": "shoot"
+ },
+ "chill_sting": {
+  "scaling": "agility",
+  "_note": "Le dard de la guêpe des cimes. Peu de dégâts, mais le Gel : elle vole, donc elle atteint la ligne arrière, et elle en repart avant qu'on la rattrape.",
+  "kind": "attack",
+  "action_points": 3,
+  "range_min": 1,
+  "range_max": 1,
+  "damage": 10,
+  "status": {
+   "id": "chilled",
+   "duration": 1
   },
-
-  "shield_shove": {
-    "scaling": "strength",
-    "_note": "LE COUP D'ÉPAULE, ET LA PREMIÈRE COMPÉTENCE DU JEU QUI POUSSE. `push_away_from`, la noyade et leur prévisualisation étaient écrits depuis la Phase 1 sans qu'aucune donnée les emploie.\n\nQUATORZE DÉGÂTS, ET C'EST VOULU : ce n'est pas le coup qui fait mal, c'est la case d'arrivée. Sur une carte sans eau il est faible ; au bord d'un lac gelé il tue. Le télégraphe annonce la case d'arrivée (§ 39), sinon la noyade serait un piège au lieu d'une décision.",
-    "kind": "attack",
-    "action_points": 3,
-    "range_min": 1,
-    "range_max": 1,
-    "damage": 14,
-    "push": 1,
-    "area": { "shape": "single" },
-    "cooldown": 1,
-    "animation": "attack1"
+  "area": {
+   "shape": "single"
   },
-
-  "raid_shot": {
-    "scaling": "agility",
-    "_note": "Le tir des Rougefer : la portée d'un Archer joueur, entre les mains de quelqu'un qui recule.",
-    "kind": "attack",
-    "action_points": 3,
-    "range_min": 2,
-    "range_max": 5,
-    "damage": 15,
-    "area": { "shape": "single" },
-    "cooldown": 0,
-    "animation": "shoot"
+  "cooldown": 0,
+  "animation": "attack"
+ },
+ "shield_shove": {
+  "scaling": "strength",
+  "_note": "LE COUP D'ÉPAULE, ET LA PREMIÈRE COMPÉTENCE DU JEU QUI POUSSE. `push_away_from`, la noyade et leur prévisualisation étaient écrits depuis la Phase 1 sans qu'aucune donnée les emploie.\n\nQUATORZE DÉGÂTS, ET C'EST VOULU : ce n'est pas le coup qui fait mal, c'est la case d'arrivée. Sur une carte sans eau il est faible ; au bord d'un lac gelé il tue. Le télégraphe annonce la case d'arrivée (§ 39), sinon la noyade serait un piège au lieu d'une décision.",
+  "kind": "attack",
+  "action_points": 3,
+  "range_min": 1,
+  "range_max": 1,
+  "damage": 14,
+  "push": 1,
+  "area": {
+   "shape": "single"
   },
-
-  "cleaving_blow": {
-    "scaling": "strength",
-    "_note": "La fente du champion, en ligne de deux. Punit exactement la formation serrée que le coup d'épaule pousse à prendre.",
-    "kind": "attack",
-    "action_points": 5,
-    "range_min": 1,
-    "range_max": 1,
-    "damage": 26,
-    "area": { "shape": "line", "length": 2 },
-    "cooldown": 1,
-    "animation": "attack2"
+  "cooldown": 1,
+  "animation": "attack1"
+ },
+ "raid_shot": {
+  "scaling": "agility",
+  "_note": "Le tir des Rougefer : la portée d'un Archer joueur, entre les mains de quelqu'un qui recule.",
+  "kind": "attack",
+  "action_points": 3,
+  "range_min": 2,
+  "range_max": 5,
+  "damage": 15,
+  "area": {
+   "shape": "single"
   },
-
-  "jarl_thrust": {
-    "scaling": "strength",
-    "_note": "La lance du Jarl : deux cases en ligne, comme la charge du troll, mais portée par le seul sprite du pack qui ait des poses de défense dans cinq directions.",
-    "kind": "attack",
-    "action_points": 5,
-    "range_min": 1,
-    "range_max": 2,
-    "damage": 34,
-    "area": { "shape": "line", "length": 2 },
-    "cooldown": 1,
-    "animation": "attack_right"
-  }
+  "cooldown": 0,
+  "animation": "shoot"
+ },
+ "cleaving_blow": {
+  "scaling": "strength",
+  "_note": "La fente du champion, en ligne de deux. Punit exactement la formation serrée que le coup d'épaule pousse à prendre.",
+  "kind": "attack",
+  "action_points": 5,
+  "range_min": 1,
+  "range_max": 1,
+  "damage": 26,
+  "area": {
+   "shape": "line",
+   "length": 2
+  },
+  "cooldown": 1,
+  "animation": "attack2"
+ },
+ "jarl_thrust": {
+  "scaling": "strength",
+  "_note": "La lance du Jarl : deux cases en ligne, comme la charge du troll, mais portée par le seul sprite du pack qui ait des poses de défense dans cinq directions.",
+  "kind": "attack",
+  "action_points": 5,
+  "range_min": 1,
+  "range_max": 2,
+  "damage": 34,
+  "area": {
+   "shape": "line",
+   "length": 2
+  },
+  "cooldown": 1,
+  "animation": "attack_right"
+ }
 }

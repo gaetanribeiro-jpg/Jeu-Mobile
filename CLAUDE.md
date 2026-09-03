@@ -238,10 +238,10 @@ dur : passer par `data/assets.json`.
   constat vérifié dans `docs/etat-des-lieux.md` § 5. **Faits :** T11.2 le
   son, T11.3 l'écran de titre, T11.4 le déverrouillage et la fin, T11.6
   la couleur partout, T11.7 l'acte 2, T11.8 la passe de finition, T11.9 le décor et
-  l'air d'un acte.
+  l'air d'un acte, T12.1 l'acte 3.
   **Restent :** T11.1 le téléphone (il te faut le SDK) et T11.5 le
   tutoriel, volontairement gardé pour après ta première partie.
-  **838 tests passent, les dix vérificateurs sont verts.**
+  **849 tests passent, les dix vérificateurs sont verts.**
   Le pivot vers la vision Tiny Kingdoms a été acté le 2026-08-31.
 - **Phase 1 terminée.** T1.1 à T1.14 sont faites et testées.
 - **Phase 2 terminée.** T2.1 à T2.7 : le `Hero`, les niveaux,
@@ -448,6 +448,65 @@ posait à l'aveugle — l'inverse de ce que le jeu promet partout ailleurs.
 Elle montre désormais le bestiaire, visage par visage. **La nuit est dite
 À PART** : le renfort est ajouté au moment du combat, il n'est pas dans
 la carte, et l'annoncer dans la liste ferait mentir la liste.
+
+**UN TERRAIN QUI RALENTIT L'ENNEMI NE COÛTE RIEN AU JOUEUR (T12.1).**
+Avec un objectif « éliminer » et une IA qui vient au contact, l'équipe a
+toujours intérêt à ne pas bouger : ce qui arrive lentement arrive un par
+un. `gel_05` l'a prouvé trois fois — congère au milieu 94 % de PV, en
+bordure de placement 100 %, côté archers 100 %. Trois choses à ne pas
+défaire :
+- **CE QUI RÈGLE LE PROBLÈME EST LA PORTÉE, PAS LE NOMBRE DE TIREURS.**
+  Les vingt-sept cartes en ont déjà toutes au moins un. Mais l'acte 1 a le
+  chaman à SIX cases et l'acte 2 le feu follet à six, quand l'acte 3
+  n'avait que des tireurs à cinq — la portée de l'Archer. Un échange
+  équitable se gagne à quatre contre un sans avancer. `verify_world` exige
+  désormais par acte quelqu'un qui porte au moins aussi loin que le
+  joueur, les deux portées lues dans les données.
+- **DONNER DES PM AUX BÊTES DE MÊLÉE SE RETOURNE.** Mesuré : +1 PM sur
+  seize bêtes donne acte 1 → 77 %, acte 3 → 68 %, mais acte 2 → 80 %, soit
+  PLUS FACILE. Les cartes de l'acte 2 ont été réglées à la DISTANCE, et la
+  vitesse est l'autre moitié de la même quantité. Écarté.
+- **UN ENNEMI DE CONTACT A UNE ZONE MORTE.** Posé à plus de sa portée et à
+  moins de celle de l'Archer, il traverse sous le feu et meurt sans avoir
+  frappé. L'en sortir — le rapprocher ou l'éloigner — vaut mieux que lui
+  donner des PM.
+
+**LE COUP D'ÉPAULE EST UNE ATTAQUE, PAS UN `KIND_PUSH` (T12.1).**
+`push_away_from`, la noyade et leur prévisualisation étaient écrits depuis
+la Phase 1 avec leurs tests, et aucune donnée ne les employait —
+troisième mécanique morte après `KIND_HEAL` et les 70 entrées `ui`. Trois
+choses à ne pas défaire :
+- **UNE POUSSÉE PURE NE S'ANNONCE PAS.** `CombatIntent` ne connaît que
+  `Kind.ATTACK` : un ennemi qui projetterait dans un lac sans prévenir
+  violerait le § 39. Un coup qui BLESSE et repousse est une attaque
+  ordinaire pour tout le reste du moteur.
+- **`telegraph()` REND LA CASE D'ARRIVÉE** (`shoves`), en bleu-blanc et
+  SANS chiffre. « Tu prendras 14 » et « tu finiras là » sont deux
+  informations ; les peindre pareil ferait lire un total de dégâts sur une
+  case qui n'en porte aucun.
+- **Les dégâts d'abord, la poussée ensuite, et seulement sur qui tient
+  debout.** Pousser un mort dans l'eau le noierait deux fois.
+
+**LES ENNEMIS HUMAINS OUVRENT VINGT ET UN SPRITES (T12.1).** Le pack
+dessine cinq classes en cinq couleurs et le jeu n'employait que le Bleu
+des héros. `sprite_color` dit dans quelle table chercher — unités ou
+bêtes — et `verify_world` refuse un ennemi qui porterait le bleu. Deviner
+d'après le nom marcherait jusqu'au jour où une bête s'appellerait comme
+une classe.
+
+**UN TIRAILLEUR À PORTÉE UN NE FRAPPE JAMAIS (T12.1).** `_score_cell`
+retranche cinquante points par héros à moins d'une case : avec une
+compétence qui porte à UNE case, ce malus interdit exactement les cases
+depuis lesquelles il pourrait attaquer. Trois guêpes ont fui pendant une
+mesure entière, la carte rendait 100 % des PV et aucun outil ne s'en
+plaignait. `verify_world` le refuse.
+
+**UN ENNEMI AQUATIQUE INJOIGNABLE REND LA CARTE INGAGNABLE (T12.1).** Un
+harponneur au milieu d'un lac ne peut être abattu que par un tireur, et le
+§ 23 laisse la composition au joueur : `verify_maps` exige qu'une case de
+TERRE touche chaque ennemi aquatique ou volant. Il a attrapé un
+poisson-bombe au centre du lac. Le même outil demande maintenant à
+`can_stand_on` et plus à `is_walkable` — un requin nage.
 
 **UN ACTE QUI N'A QU'UN MOT SE JOUE NEUF FOIS PAREIL (T11.9).** Sept
 cartes des Dunes sur neuf n'employaient QUE du rocher, et les neuf

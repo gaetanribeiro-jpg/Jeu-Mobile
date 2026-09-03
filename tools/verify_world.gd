@@ -508,6 +508,8 @@ func _check_bestiary() -> void:
 	# CHAQUE BÊTE DOIT ÊTRE DESSINÉE ET SAVOIR FRAPPER. Une entrée sans
 	# sprite rend un rectangle, une entrée sans compétence rend un ennemi
 	# qui passe son tour — deux défauts qui se JOUENT sans rien casser.
+	_check_reach_per_act()
+
 	for enemy_id: StringName in Unit.enemy_ids():
 		var entry := Unit.enemy_stats(enemy_id)
 		var sprite := StringName(entry.get("sprite", ""))
@@ -576,6 +578,71 @@ func _check_bestiary() -> void:
 			# un ennemi qui n'en pose pas de neuve n'ajoute que des points
 			# de vie à tuer.
 			_problems.append("l'ennemi « %s » ne dit pas quelle question il pose" % enemy_id)
+
+
+## CHAQUE ACTE DOIT AVOIR QUELQU'UN QUI PORTE PLUS LOIN QUE LE JOUEUR.
+##
+## LE PROBLÈME QU'IL RÉSOUT EST CELUI D'ATTENDRE. Avec un objectif
+## « éliminer » et une IA qui vient au contact, la meilleure stratégie du
+## joueur est de ne pas bouger : ce qui arrive lentement arrive un par un
+## et meurt sous le feu de quatre personnages. C'est ce qui rendait un
+## terrain ralentissant entièrement gratuit — mesuré trois fois sur
+## `gel_05`, qui rendait 100 % des PV quelle que soit la place de la
+## congère.
+##
+## AJOUTER DES TIREURS N'Y SUFFIT PAS : les vingt-sept cartes en ont déjà
+## toutes au moins un. Ce qui compte est la PORTÉE. Un tireur à la portée
+## de l'Archer propose un échange équitable, et un échange équitable se
+## gagne à quatre contre un sans avancer d'une case. Un tireur qui la
+## dépasse rend l'attente coûteuse, donc rend le déplacement — et le
+## terrain qui le gêne — enfin payants.
+##
+## Les deux côtés se lisent dans les DONNÉES : la portée du joueur vient
+## de ses classes, celle de l'acte de son bestiaire. Le jour où l'Archer
+## gagne une case, l'outil réclamera un cran de plus à tout le monde.
+func _check_reach_per_act() -> void:
+	var player_reach := 0
+	for class_id: StringName in Unit.hero_class_ids():
+		for ability_id: Variant in Unit.hero_class(class_id).get("abilities", []):
+			var ability := Ability.of(StringName(ability_id))
+			if ability != null and ability.is_attack():
+				player_reach = maxi(player_reach, ability.range_max)
+
+	var per_act := {}
+	for path: String in Unit.ENEMY_PATHS:
+		if not FileAccess.file_exists(path):
+			continue
+		var file := FileAccess.open(path, FileAccess.READ)
+		var parsed: Variant = JSON.parse_string(file.get_as_text())
+		file.close()
+		if typeof(parsed) != TYPE_DICTIONARY:
+			continue
+		var best := 0
+		var champion := ""
+		for key: Variant in (parsed as Dictionary).keys():
+			if String(key).begins_with("_"):
+				continue
+			var entry: Dictionary = (parsed as Dictionary)[key]
+			for ability_id: Variant in entry.get("abilities", []):
+				var ability := Ability.of(StringName(ability_id))
+				if ability == null or not ability.is_attack():
+					continue
+				if ability.range_max > best:
+					best = ability.range_max
+					champion = String(key)
+		per_act[path.get_file()] = [best, champion]
+
+	print("\nportée du joueur : %d cases" % player_reach)
+	for name_: String in per_act.keys():
+		var pair: Array = per_act[name_]
+		print("  %-14s %d cases — %s" % [name_, int(pair[0]), pair[1]])
+		if int(pair[0]) < player_reach:
+			_problems.append(
+				"%s : personne ne porte au-delà de %d cases, la portée du joueur. "
+				% [name_, player_reach]
+				+ "L'équipe n'a aucune raison d'avancer, et tout terrain qui la "
+				+ "gênerait serait gratuit."
+			)
 
 
 ## Le cycle jour / nuit (§ 36), et la seule chose qu'il ne doit pas être :
