@@ -18,6 +18,10 @@ extends SceneTree
 ## En dessous de ça, une sortie de six étapes revoit le même évènement.
 const MINIMUM_EVENT_POOL := 4
 
+## La couleur des héros. Un ennemi qui la porterait serait indistinguable
+## d'un allié sur le plateau.
+const HERO_COLOR := "Blue"
+
 var _problems: Array[String] = []
 
 
@@ -507,7 +511,30 @@ func _check_bestiary() -> void:
 	for enemy_id: StringName in Unit.enemy_ids():
 		var entry := Unit.enemy_stats(enemy_id)
 		var sprite := StringName(entry.get("sprite", ""))
-		if sprite.is_empty() or AssetTable.enemy_animation(sprite, &"idle").is_empty():
+		var color := String(entry.get("sprite_color", ""))
+		if sprite.is_empty():
+			_problems.append("l'ennemi « %s » ne dit pas avec quoi il se dessine" % enemy_id)
+		elif not color.is_empty():
+			# UN ENNEMI HUMAIN se cherche parmi les UNITÉS, pas parmi les
+			# bêtes, et il lui faut une couleur de faction que le pack
+			# dessine. Un bleu serait pire qu'une erreur : il porterait la
+			# couleur des héros.
+			if not AssetTable.has_color(color):
+				_problems.append(
+					"l'ennemi « %s » veut la couleur « %s », que le pack ne dessine pas"
+					% [enemy_id, color]
+				)
+			elif color == HERO_COLOR:
+				_problems.append(
+					"l'ennemi « %s » porte la couleur des héros" % enemy_id
+				)
+			elif not AssetTable.has_unit_animation(sprite, &"idle"):
+				_problems.append(
+					"l'ennemi « %s » n'a pas de sprite d'attente" % enemy_id
+				)
+			elif AssetTable.portrait(sprite, color).is_empty():
+				_problems.append("l'ennemi « %s » n'a pas de portrait" % enemy_id)
+		elif AssetTable.enemy_animation(sprite, &"idle").is_empty():
 			_problems.append("l'ennemi « %s » n'a pas de sprite d'attente" % enemy_id)
 		# LE VISAGE EST DEVENU OBLIGATOIRE en même temps que la timeline a
 		# cessé d'afficher des initiales. Le pack en a vingt et un, un par
@@ -524,6 +551,26 @@ func _check_bestiary() -> void:
 					"l'ennemi « %s » veut la compétence inconnue « %s »"
 					% [enemy_id, ability_id]
 				)
+		# UN TIRAILLEUR À PORTÉE UN NE FRAPPE JAMAIS, et rien ne le dit.
+		# `_score_cell` retranche cinquante points par héros à moins d'une
+		# case : c'est ce qui fait reculer le gnoll. Avec une compétence
+		# qui porte à UNE case, ce malus interdit exactement les cases
+		# depuis lesquelles il pourrait attaquer, et la bête fuit jusqu'à
+		# la fin du combat. Trois guêpes des cimes l'ont fait pendant une
+		# mesure entière : la carte rendait 100 % des PV et aucun outil ne
+		# s'en plaignait.
+		if StringName(entry.get("role", "")) == &"skirmisher":
+			var reach := 1
+			for ability_id: Variant in abilities:
+				var ability := Ability.of(StringName(ability_id))
+				if ability != null:
+					reach = maxi(reach, ability.range_max)
+			if reach <= 1:
+				_problems.append(
+					"l'ennemi « %s » est un tirailleur qui ne porte qu'à une case — "
+					% enemy_id + "il reculera sans jamais frapper."
+				)
+
 		if String(entry.get("question", "")).is_empty():
 			# LA QUESTION EST LE CRITÈRE D'ADMISSION, pas un commentaire :
 			# un ennemi qui n'en pose pas de neuve n'ajoute que des points

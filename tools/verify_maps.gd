@@ -33,6 +33,7 @@ func _init() -> void:
 
 	_check_decorations()
 	_check_vocabulary(ids)
+	_check_reachable(ids)
 	_check_defence_map()
 
 	if not _to_rewrite.is_empty():
@@ -119,12 +120,56 @@ func _check(map: CombatMap, width: int, height: int) -> void:
 		if occupied.has(cell):
 			_problems.append("%s : deux ennemis sur la case %s" % [id, cell])
 		occupied[cell] = true
+		# ON DEMANDE AU PLATEAU, PAS À LA TUILE. `is_walkable()` répond
+		# pour un fantassin ; un requin NAGE et une guêpe VOLE, et les
+		# poser dans un lac est exactement ce que l'acte 3 fait. La
+		# question n'est pas « la case est-elle de la terre » mais « cette
+		# unité-là peut-elle s'y tenir ».
 		var footing := map.board.tile_at(cell)
-		if not footing.is_walkable():
+		if not map.board.can_stand_on(enemy, cell):
 			_problems.append("%s : ennemi « %s » posé sur du « %s » en %s"
 				% [id, enemy.class_id, footing.terrain_id, cell])
 
 	_check_objective(map, id)
+
+
+## UN ENNEMI QU'AUCUN HÉROS NE PEUT TOUCHER REND LA CARTE INGAGNABLE.
+##
+## L'acte 3 met des bêtes AQUATIQUES dans des lacs où aucun héros ne pose
+## le pied. Un requin au corps à corps en sort pour mordre, donc il finit
+## toujours à portée ; un harponneur en `ranged` n'a AUCUNE raison de
+## bouger, et posé au milieu d'un lac il est intouchable pour une équipe
+## sans portée. L'objectif « éliminer » ne se remplit alors jamais.
+##
+## LE CONTRÔLE EST DÉLIBÉRÉMENT GROSSIER : on demande qu'une case de terre
+## touche l'ennemi, ce qui garantit qu'un Guerrier peut le frapper depuis
+## le rivage. C'est plus strict que nécessaire — un tireur suffirait — et
+## c'est voulu : le § 23 laisse la composition au joueur, et une carte ne
+## doit pas la lui imposer.
+##
+## Les VOLANTS sont soumis à la même règle pour la même raison.
+func _check_reachable(ids: Array[StringName]) -> void:
+	for id: StringName in ids:
+		var map := CombatMap.load_map(id)
+		if map == null or map.board == null:
+			continue
+		for enemy: Unit in map.board.active_units(Unit.Side.ENEMIES):
+			if not (enemy.aquatic or enemy.flying):
+				continue
+			var touchable := false
+			for step: Vector2i in [
+				Vector2i.LEFT, Vector2i.RIGHT, Vector2i.UP, Vector2i.DOWN
+			]:
+				var tile := map.board.tile_at(enemy.cell + step)
+				if tile != null and tile.is_walkable():
+					touchable = true
+					break
+			if not touchable:
+				_problems.append(
+					"%s : « %s » en %s ne touche aucune case de terre — "
+					% [id, enemy.class_id, enemy.cell]
+					+ "une équipe sans portée ne peut pas finir la carte."
+				)
 
 
 ## UN ACTE QUI N'A QU'UN MOT DE VOCABULAIRE SE JOUE NEUF FOIS PAREIL.

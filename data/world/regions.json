@@ -118,7 +118,33 @@
       "description_key": "REGION_FROZEN_MOUNTAINS_DESC",
       "act": 3,
       "unlocked": false,
-      "accent": "frost"
+      "accent": "frost",
+      "ground": "frost",
+      "encounter_maps": [
+        "gel_01",
+        "gel_03",
+        "gel_05",
+        "gel_07",
+        "gel_04",
+        "gel_02",
+        "gel_06"
+      ],
+      "miniboss_map": "gel_09",
+      "boss_map": "gel_08",
+      "map_window": 4,
+      "chain": {
+        "body": { "min": 7, "max": 10 }
+      },
+      "night_roster": ["ice_raider", "frost_shark", "raid_champion"],
+      "resources_per_encounter": {
+        "wood": 4,
+        "stone": 9,
+        "food": 5
+      },
+      "reward": {
+        "gold_multiplier": 1.7,
+        "rarity_bonus": 1
+      }
     },
     "broken_lands": {
       "name_key": "REGION_BROKEN_LANDS",

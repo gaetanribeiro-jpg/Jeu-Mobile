@@ -1,0 +1,97 @@
+{
+ "_note": "LA PASSE DU VENT : la neige profonde coûte deux PM, et les guêpes VOLENT.\n\nDEUX MESURES ONT APPRIS OÙ POSER LA CONGÈRE, et la leçon vaut pour tout l'acte. Avec un objectif « éliminer » et une IA qui vient au contact, un terrain qui ralentit l'ENNEMI ne coûte jamais rien : l'équipe attend, et ce qui arrive lentement arrive un par un. Au milieu du plateau, la carte rendait 94 % des PV ; bordant la zone de placement, 100 %.\n\nELLE EST DONC DU CÔTÉ DES ARCHERS. Un tireur s'arrête à sa portée et n'avance plus : pour aller le chercher, il faut traverser, et traverser sous le tir coûte deux PM la case. Les guêpes, elles, passent au-dessus — c'est la seule chose sur ce plateau qui ne paie pas la neige.\n\nLa boue emprunte sa teinte à `terrain_tints`, comme le sable mouvant des Dunes : le pack ne dessine pas de congère.",
+ "act": 3,
+ "name_key": "MAP_GEL_05",
+ "rows": [
+  "......bbb...",
+  "......bbb...",
+  "......bbb...",
+  "......bbb...",
+  "......bbb...",
+  "......bbb...",
+  "......bbb...",
+  "......bbb...",
+  "......bbb..."
+ ],
+ "objective": {
+  "kind": "eliminate"
+ },
+ "deployment_cells": [
+  [
+   0,
+   2
+  ],
+  [
+   0,
+   3
+  ],
+  [
+   0,
+   4
+  ],
+  [
+   0,
+   5
+  ],
+  [
+   0,
+   6
+  ],
+  [
+   1,
+   3
+  ],
+  [
+   1,
+   4
+  ],
+  [
+   1,
+   5
+  ]
+ ],
+ "enemies": [
+  {
+   "type": "frost_wasp",
+   "cell": [
+    5,
+    2
+   ]
+  },
+  {
+   "type": "frost_wasp",
+   "cell": [
+    5,
+    6
+   ]
+  },
+  {
+   "type": "frost_wasp",
+   "cell": [
+    6,
+    4
+   ]
+  },
+  {
+   "type": "raid_archer",
+   "cell": [
+    10,
+    2
+   ]
+  },
+  {
+   "type": "raid_archer",
+   "cell": [
+    10,
+    6
+   ]
+  },
+  {
+   "type": "ice_raider",
+   "cell": [
+    10,
+    4
+   ]
+  }
+ ]
+}

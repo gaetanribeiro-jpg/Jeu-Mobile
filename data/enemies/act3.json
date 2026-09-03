@@ -1,0 +1,141 @@
+{
+ "_readme": "LE BESTIAIRE DES MONTAGNES GELÉES (acte 3, T12.1).\n\nLA QUESTION DE L'ACTE : LE TERRAIN TUE. Les actes 1 et 2 employaient le décor comme abri et comme coût — une forêt protège, du sable ralentit. Ici les lacs gelés sont MORTELS, et deux familles d'ennemis en font une arme : les Rougefer poussent dedans, et ce qui vit dans l'eau y est chez soi.\n\nAUCUNE MÉCANIQUE N'A ÉTÉ INVENTÉE, comme pour l'acte 2. La poussée (`push_away_from`), la noyade, sa prévisualisation et leurs tests étaient écrits depuis la Phase 1, et AUCUNE compétence ne les employait — troisième mécanique déclarée et morte, après `KIND_HEAL` (T10.1) et les 70 entrées `ui` (T9.1). L'eau, le gel, les unités aquatiques et volantes existaient tous.\n\nLES ROUGEFER SONT LES PREMIERS ENNEMIS HUMAINS DU JEU. Le pack dessine cinq classes en cinq couleurs, soit vingt-cinq sprites, et le jeu n'en employait QUE le Bleu des héros. Une campagne de six actes qui n'oppose jamais un homme se raconte mal ; et un clan de pillards dans la montagne, ça, le pack sait le dessiner.",
+ "frost_shark": {
+  "sprite": "paddle_shark",
+  "role": "melee",
+  "aquatic": true,
+  "hit_points": 95,
+  "action_points": 6,
+  "movement_points": 5,
+  "initiative": 6,
+  "strength": 7,
+  "agility": 4,
+  "intelligence": 1,
+  "defence": 3,
+  "abilities": [
+   "frost_bite"
+  ],
+  "question": "LE PREMIER ENNEMI QU'ON NE PEUT PAS ALLER CHERCHER. Il nage dans le lac, où aucun héros ne met le pied ; on le tient à distance ou on l'attend au rivage, mais on ne choisit pas de l'attaquer. L'acte 1 apprenait à aller chercher un tireur ; celui-ci apprend qu'on ne peut pas toujours."
+ },
+ "harpooner": {
+  "sprite": "harpoon_shark",
+  "role": "ranged",
+  "aquatic": true,
+  "hit_points": 75,
+  "action_points": 6,
+  "movement_points": 4,
+  "initiative": 7,
+  "strength": 5,
+  "agility": 5,
+  "intelligence": 1,
+  "defence": 2,
+  "abilities": [
+   "harpoon_cast"
+  ],
+  "question": "Le tireur du lac : il frappe à cinq cases depuis une eau où le Guerrier ne peut pas entrer. Contre lui, une équipe sans portée n'a AUCUN coup — c'est le premier plateau où la composition du § 23 se paie comptant."
+ },
+ "ice_mine": {
+  "sprite": "bomb_fish",
+  "role": "ranged",
+  "aquatic": true,
+  "hit_points": 45,
+  "action_points": 6,
+  "movement_points": 3,
+  "initiative": 5,
+  "strength": 4,
+  "agility": 3,
+  "intelligence": 1,
+  "defence": 1,
+  "abilities": [
+   "cold_charge"
+  ],
+  "question": "Il lance en CROIX depuis l'eau. Fragile et hors d'atteinte : le seul moyen de l'arrêter est de ne pas se tenir groupé au bord, ce qui est exactement l'endroit où l'on veut être pour frapper les autres."
+ },
+ "frost_wasp": {
+  "sprite": "bumblebee",
+  "role": "melee",
+  "flying": true,
+  "hit_points": 50,
+  "action_points": 6,
+  "movement_points": 6,
+  "initiative": 9,
+  "strength": 5,
+  "agility": 7,
+  "intelligence": 1,
+  "defence": 1,
+  "abilities": [
+   "chill_sting"
+  ],
+  "question": "ELLE VOLE, donc le lac, le rocher et la falaise ne sont rien pour elle : elle traverse en droite ligne ce que l'équipe doit contourner. Tout le plan de déplacement d'un tour se fait sans elle, et elle arrive quand même.\n\nELLE EST « melee » ET PAS « skirmisher », et c'est une correction : un tirailleur retranche cinquante points de score par héros à moins d'une case, donc avec un dard qui porte à UNE case il ne s'approche jamais assez pour frapper. Trois guêpes fuyaient à l'infini et la carte rendait 100 % des PV, sans une erreur nulle part."
+ },
+ "ice_raider": {
+  "sprite": "warrior",
+  "sprite_color": "Red",
+  "role": "melee",
+  "hit_points": 110,
+  "action_points": 6,
+  "movement_points": 4,
+  "initiative": 5,
+  "strength": 6,
+  "agility": 4,
+  "intelligence": 1,
+  "defence": 4,
+  "abilities": [
+   "shield_shove"
+  ],
+  "question": "IL POUSSE, ET C'EST LE TERRAIN QUI TUE. Quatorze dégâts ne font peur à personne ; une case de recul vers un lac gelé, si. Le télégraphe annonce la case d'arrivée — la question n'est plus « comment j'encaisse » mais « où je me tiens quand il arrivera »."
+ },
+ "raid_archer": {
+  "sprite": "archer",
+  "sprite_color": "Red",
+  "role": "skirmisher",
+  "hit_points": 70,
+  "action_points": 6,
+  "movement_points": 5,
+  "initiative": 8,
+  "strength": 4,
+  "agility": 6,
+  "intelligence": 1,
+  "defence": 2,
+  "abilities": [
+   "raid_shot"
+  ],
+  "question": "Le premier ennemi qui TIRE ET RECULE avec la portée d'un Archer joueur. Le gnoll de l'acte 1 reculait mais portait court ; celui-ci tient la crête et fait payer chaque case de traversée du lac."
+ },
+ "raid_champion": {
+  "sprite": "warrior",
+  "sprite_color": "Red",
+  "role": "brute",
+  "hit_points": 210,
+  "action_points": 8,
+  "movement_points": 4,
+  "initiative": 4,
+  "strength": 8,
+  "agility": 3,
+  "intelligence": 1,
+  "defence": 5,
+  "abilities": [
+   "shield_shove",
+   "cleaving_blow"
+  ],
+  "question": "Le mini-boss. Il pousse ET il fend en ligne : se serrer pour éviter la poussée met deux héros dans la même coupe, s'étaler les expose un par un. Deux compétences qui punissent la réponse à l'autre."
+ },
+ "the_jarl": {
+  "sprite": "lancer",
+  "sprite_color": "Red",
+  "role": "brute",
+  "hit_points": 300,
+  "action_points": 8,
+  "movement_points": 4,
+  "initiative": 5,
+  "strength": 9,
+  "agility": 5,
+  "intelligence": 1,
+  "defence": 6,
+  "abilities": [
+   "jarl_thrust",
+   "shield_shove"
+  ],
+  "question": "Le boss, et le seul sprite du pack qui sache se DÉFENDRE dans cinq directions — le télégraphe, dessiné. Sa lance porte à deux cases en ligne : le reculer d'une case ne suffit pas, il faut le sortir de l'axe. Et il pousse, sur une carte qui n'est qu'un lac avec des îles."
+ }
+}

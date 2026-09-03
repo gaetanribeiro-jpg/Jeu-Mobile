@@ -1,0 +1,97 @@
+{
+ "_note": "LES TROIS ÎLES — la carte où la poussée tue partout.\n\nTrois plaques de terre dans un lac, reliées par rien. Chaque case de bord est une case de noyade, et deux pillards ne font que ça : pousser. Le télégraphe annonce la case d'arrivée, donc ce n'est jamais une surprise — c'est une contrainte de placement à chaque activation.\n\nLA CARTE LA PLUS CHÈRE DE L'ACTE hors boss, et elle ne doit pas ses chiffres à des statistiques : les mêmes bêtes sur `gel_03` coûtent la moitié. C'est le terrain qui fait le prix.",
+ "act": 3,
+ "name_key": "MAP_GEL_06",
+ "rows": [
+  "~~~~~~~~~~~~",
+  "~..~~~~~~..~",
+  "~..~~~~~~..~",
+  "~~~~~....~~~",
+  "~~~~.....~~~",
+  "~~~~~....~~~",
+  "~..~~~~~~..~",
+  "~..~~~~~~..~",
+  "~~~~~~~~~~~~"
+ ],
+ "objective": {
+  "kind": "eliminate"
+ },
+ "deployment_cells": [
+  [
+   1,
+   1
+  ],
+  [
+   2,
+   1
+  ],
+  [
+   1,
+   2
+  ],
+  [
+   2,
+   2
+  ],
+  [
+   1,
+   6
+  ],
+  [
+   2,
+   6
+  ],
+  [
+   1,
+   7
+  ],
+  [
+   2,
+   7
+  ]
+ ],
+ "enemies": [
+  {
+   "type": "ice_raider",
+   "cell": [
+    5,
+    3
+   ]
+  },
+  {
+   "type": "ice_raider",
+   "cell": [
+    5,
+    5
+   ]
+  },
+  {
+   "type": "raid_archer",
+   "cell": [
+    7,
+    4
+   ]
+  },
+  {
+   "type": "frost_shark",
+   "cell": [
+    3,
+    4
+   ]
+  },
+  {
+   "type": "harpooner",
+   "cell": [
+    9,
+    1
+   ]
+  },
+  {
+   "type": "frost_wasp",
+   "cell": [
+    9,
+    7
+   ]
+  }
+ ]
+}

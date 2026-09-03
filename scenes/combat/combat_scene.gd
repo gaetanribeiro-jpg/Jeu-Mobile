@@ -704,11 +704,18 @@ func _refresh_overlay() -> void:
 		_overlay.selected_cell = Vector2i(-1, -1)
 
 	var threat := {}
+	var shoves: Array[Vector2i] = []
 	for entry: Dictionary in engine.telegraph():
 		var cells: Array = entry["cells"]
 		for i in cells.size():
 			var cell: Vector2i = cells[i]
 			threat[cell] = int(threat.get(cell, 0)) + int(entry["damage"][i])
+		# Où le héros ATTERRIRA (T12.1) : sans cette case, une noyade
+		# annoncée « 14 dégâts » met un héros à terre sans prévenir.
+		for landing: Variant in entry.get("shoves", []):
+			if not shoves.has(landing):
+				shoves.append(landing)
+	_overlay.shove_cells = shoves
 	# Dégâts que porterait l'attaque en cours de prévisualisation. Le joueur
 	# doit lire le chiffre AVANT de valider, comme il lit ceux du télégraphe.
 	# Dégâts que porterait le tir en cours de visée, sur CHAQUE case touchée.

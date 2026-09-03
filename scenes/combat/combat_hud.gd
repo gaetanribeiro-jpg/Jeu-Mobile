@@ -557,8 +557,16 @@ func _timeline_badge(unit: Unit, is_current: bool) -> Control:
 	# ici disait le contraire. La timeline montrait une lettre pour tout le
 	# bestiaire : « G » ne distingue pas un gnoll d'un gnome, et c'est
 	# précisément ce que la timeline doit permettre de lire d'un coup d'œil.
-	var face := UiSkin.portrait(unit.class_id, HERO_COLOR) if unit.is_hero() \
-		else UiSkin.enemy_portrait(unit.sprite_id)
+	# UN ENNEMI HUMAIN A UN VRAI PORTRAIT (25 dans le pack, 5 classes × 5
+	# couleurs) ; une bête a son avatar. Même partage que la vue de combat,
+	# et par le même champ.
+	var face: Texture2D = null
+	if unit.is_hero():
+		face = UiSkin.portrait(unit.class_id, HERO_COLOR)
+	elif not unit.sprite_color.is_empty():
+		face = UiSkin.portrait(unit.sprite_id, unit.sprite_color)
+	else:
+		face = UiSkin.enemy_portrait(unit.sprite_id)
 	if face != null:
 		var rect := TextureRect.new()
 		rect.texture = face

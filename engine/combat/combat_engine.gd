@@ -445,7 +445,37 @@ func telegraph() -> Array[Dictionary]:
 			"ability": String(ability.id),
 			"cells": cells,
 			"damage": damage,
+			"shoves": _shoves_of(enemy, ability, cells),
 		})
+	return out
+
+
+## Où atterrirait chaque héros repoussé par cette attaque.
+##
+## SANS ÇA, LA NOYADE VIOLE LE § 39. Un coup d'épaule qui projette dans un
+## lac gelé tue quels que soient les PV : annoncer « 14 dégâts » et rendre
+## un héros à terre est exactement le piège que le télégraphe existe pour
+## interdire. Le joueur doit voir la case d'arrivée avant de décider, et
+## voir qu'elle est en eau.
+##
+## Rendu en cases absolues et relu à chaque affichage, comme les dégâts :
+## déplacer l'attaquant change la direction de la poussée, donc la case
+## d'arrivée suit toute seule.
+func _shoves_of(
+	enemy: Unit, ability: Ability, cells: Array[Vector2i]
+) -> Array[Vector2i]:
+	var out: Array[Vector2i] = []
+	if ability.push <= 0:
+		return out
+	for cell: Vector2i in cells:
+		var victim := board.unit_at(cell)
+		if victim == null or victim.side == enemy.side or not victim.is_active():
+			continue
+		var landing: Vector2i = board.predict_push(
+			victim, board.grid.direction(enemy.cell, victim.cell), ability.push
+		)["destination"]
+		if landing != victim.cell and not out.has(landing):
+			out.append(landing)
 	return out
 
 

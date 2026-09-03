@@ -1,0 +1,97 @@
+{
+ "_note": "LE NID DES GUÊPES — le mini-boss.\n\nLe champion pousse ET fend en ligne de deux : se serrer pour éviter la poussée met deux héros dans la même coupe, s'étaler les expose un par un. Deux compétences qui punissent chacune la réponse à l'autre.\n\nLes guêpes volent au-dessus des crevasses pendant que l'équipe les contourne : elles arrivent quoi qu'on décide, donc le seul choix qui reste porte sur le champion.",
+ "act": 3,
+ "name_key": "MAP_GEL_09",
+ "rows": [
+  "..#......#..",
+  "............",
+  ".....^^.....",
+  "..#..^^..#..",
+  "............",
+  "..#..^^..#..",
+  ".....^^.....",
+  "............",
+  "..#......#.."
+ ],
+ "objective": {
+  "kind": "eliminate"
+ },
+ "deployment_cells": [
+  [
+   0,
+   2
+  ],
+  [
+   0,
+   3
+  ],
+  [
+   0,
+   4
+  ],
+  [
+   0,
+   5
+  ],
+  [
+   0,
+   6
+  ],
+  [
+   1,
+   3
+  ],
+  [
+   1,
+   4
+  ],
+  [
+   1,
+   5
+  ]
+ ],
+ "enemies": [
+  {
+   "type": "raid_champion",
+   "cell": [
+    6,
+    4
+   ]
+  },
+  {
+   "type": "frost_wasp",
+   "cell": [
+    9,
+    2
+   ]
+  },
+  {
+   "type": "frost_wasp",
+   "cell": [
+    9,
+    6
+   ]
+  },
+  {
+   "type": "raid_archer",
+   "cell": [
+    10,
+    4
+   ]
+  },
+  {
+   "type": "ice_raider",
+   "cell": [
+    6,
+    2
+   ]
+  },
+  {
+   "type": "ice_raider",
+   "cell": [
+    6,
+    6
+   ]
+  }
+ ]
+}

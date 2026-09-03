@@ -456,18 +456,33 @@ func resolve_ability(attacker: Unit, ability: Ability, target: Vector2i) -> Dict
 	var downed_ids: Array[int] = []
 	for victim: Unit in affected_units(attacker, ability, target):
 		var amount := predicted_damage(attacker, ability, victim)
+		var struck_at := victim.cell
 		var downed := victim.take_damage(amount)
 		if not ability.status_id.is_empty():
 			victim.apply_status(ability.status_id, ability.status_duration)
 		if downed:
 			remove_from_board(victim)
 			downed_ids.append(victim.id)
+		# LE COUP D'ÉPAULE : les dégâts D'ABORD, la poussée ensuite, et
+		# seulement sur qui tient encore debout. L'ordre compte — pousser
+		# un mort dans l'eau le noierait deux fois, et le rapport dirait
+		# n'importe quoi.
+		var shoved := Vector2i(-1, -1)
+		var drowned := false
+		if ability.push > 0 and not downed:
+			var report := push_away_from(victim, attacker.cell, ability.push)
+			shoved = victim.cell
+			drowned = bool(report.get("drowns", false))
+			if drowned and not downed_ids.has(victim.id):
+				downed_ids.append(victim.id)
 		hits.append({
 			"target_id": victim.id,
-			"cell": victim.cell,
+			"cell": struck_at,
 			"damage": amount,
-			"downed": downed,
+			"downed": downed or drowned,
 			"status": String(ability.status_id),
+			"shoved_to": shoved,
+			"drowned": drowned,
 		})
 	# Le décor encaisse ce qui ne touche personne.
 	var broken: Array[Vector2i] = []

@@ -65,6 +65,23 @@ var duration: int = 0
 var status_id: StringName = &""
 var status_duration: int = 0
 
+## Cases dont la cible est REPOUSSÉE, en plus des dégâts. Zéro pour tout
+## le reste.
+##
+## `KIND_PUSH` EXISTAIT DEPUIS LA PHASE 1 ET AUCUNE COMPÉTENCE NE
+## L'EMPLOYAIT — `push_away_from`, la noyade, la prévisualisation et leurs
+## tests étaient écrits et morts. Troisième fois que le projet retrouve
+## une mécanique déclarée et jamais branchée, après `KIND_HEAL` (T10.1) et
+## les 70 entrées `ui` (T9.1).
+##
+## POURQUOI UN CHAMP SUR UNE ATTAQUE PLUTÔT QUE `KIND_PUSH`. Une poussée
+## pure n'est pas annoncée par le télégraphe : `CombatIntent` ne connaît
+## que `Kind.ATTACK`, et un ennemi qui pousserait sans prévenir violerait
+## le § 39. Un coup d'épaule qui BLESSE et repousse est une attaque
+## ordinaire pour tout le reste du moteur — il s'annonce, se chiffre et se
+## dévie comme les autres.
+var push: int = 0
+
 ## Terrain laissé sur la case touchée, s'il y en a un.
 var leaves_terrain: StringName = &""
 
@@ -153,6 +170,7 @@ static func from_dictionary(ability_id: StringName, data: Dictionary) -> Ability
 	ability.counts_as_movement = bool(data.get("counts_as_movement", false))
 	ability.friendly_fire = bool(data.get("friendly_fire", false))
 	ability.duration = int(data.get("duration", 0))
+	ability.push = int(data.get("push", 0))
 	ability.leaves_terrain = StringName(data.get("leaves_terrain", ""))
 	ability.animation = StringName(data.get("animation", ""))
 	ability.effect = StringName(data.get("effect", ""))

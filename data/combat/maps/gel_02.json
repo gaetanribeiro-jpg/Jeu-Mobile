@@ -1,0 +1,97 @@
+{
+ "_note": "LE LAC NOIR : l'eau au MILIEU, et ce qui tire dedans.\n\nLe harponneur et le poisson-bombe portent à cinq cases depuis une eau où le Guerrier ne peut pas entrer. Ils sont posés au BORD, jamais au centre : une équipe sans portée doit pouvoir les atteindre depuis le rivage, sinon la carte n'est pas dure, elle est ingagnable — et c'est le § 23 qui décide de la composition, pas la carte.\n\nLe tour de lac fait huit cases : y aller coûte deux rondes, rester coûte des dégâts. C'est la question.",
+ "act": 3,
+ "name_key": "MAP_GEL_02",
+ "rows": [
+  "............",
+  "....~~~~....",
+  "...~~~~~~...",
+  "...~~~~~~...",
+  "...~~~~~~...",
+  "...~~~~~~...",
+  "...~~~~~~...",
+  "....~~~~....",
+  "............"
+ ],
+ "objective": {
+  "kind": "eliminate"
+ },
+ "deployment_cells": [
+  [
+   0,
+   3
+  ],
+  [
+   0,
+   4
+  ],
+  [
+   0,
+   5
+  ],
+  [
+   1,
+   2
+  ],
+  [
+   1,
+   3
+  ],
+  [
+   1,
+   4
+  ],
+  [
+   1,
+   5
+  ],
+  [
+   1,
+   6
+  ]
+ ],
+ "enemies": [
+  {
+   "type": "harpooner",
+   "cell": [
+    3,
+    2
+   ]
+  },
+  {
+   "type": "harpooner",
+   "cell": [
+    3,
+    6
+   ]
+  },
+  {
+   "type": "ice_mine",
+   "cell": [
+    4,
+    1
+   ]
+  },
+  {
+   "type": "ice_raider",
+   "cell": [
+    4,
+    0
+   ]
+  },
+  {
+   "type": "ice_raider",
+   "cell": [
+    4,
+    8
+   ]
+  },
+  {
+   "type": "raid_archer",
+   "cell": [
+    9,
+    4
+   ]
+  }
+ ]
+}

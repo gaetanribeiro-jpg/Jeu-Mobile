@@ -28,6 +28,7 @@ const HERO_CLASSES_PATH := "res://data/units/hero_classes.json"
 const ENEMY_PATHS: Array[String] = [
 	"res://data/enemies/act1.json",
 	"res://data/enemies/act2.json",
+	"res://data/enemies/act3.json",
 ]
 
 ## Les deux camps et les deux états d'une unité. Stockés en `int` plutôt
@@ -59,6 +60,21 @@ var class_id: StringName = &""
 ## `sprite` des données qui atterrit ici, et c'est elle que les vues doivent
 ## demander.
 var sprite_id: StringName = &""
+
+## Couleur de faction, pour un sprite qui vient de la table des UNITÉS et
+## pas de celle des bêtes.
+##
+## LE PACK DESSINE VINGT ET UN SPRITES HUMAINS — cinq classes × cinq
+## couleurs — ET LE JEU N'EN EMPLOYAIT QUE QUATRE : le Bleu des héros.
+## Les vingt et un autres sont des ennemis tout animés, dans un style
+## rigoureusement identique, à coût nul. C'est aussi le seul moyen d'avoir
+## des ennemis HUMAINS : les actes 1 et 2 n'ont que des bêtes, et une
+## campagne de six actes qui n'oppose jamais un homme se raconte mal.
+##
+## Vide = une bête, cherchée dans la table des ennemis. C'est ce champ,
+## et pas une devinette sur le nom, qui dit dans quelle table regarder.
+var sprite_color: String = ""
+
 var side: int = Side.HEROES
 var cell: Vector2i = Vector2i.ZERO
 
@@ -224,6 +240,7 @@ static func from_stats(
 	unit.id = unit_id
 	unit.class_id = class_to_use
 	unit.sprite_id = StringName(stats.get("sprite", class_to_use))
+	unit.sprite_color = String(stats.get("sprite_color", ""))
 	unit.side = unit_side
 	unit.cell = at
 	unit.max_hit_points = int(stats.get("hit_points", 0))
@@ -453,6 +470,7 @@ func to_dictionary() -> Dictionary:
 		"id": id,
 		"class": String(class_id),
 		"sprite": String(sprite_id),
+		"sprite_color": sprite_color,
 		"side": int(side),
 		"x": cell.x,
 		"y": cell.y,
@@ -487,6 +505,7 @@ static func from_dictionary(data: Dictionary) -> Unit:
 	# Une sauvegarde d'avant ce champ n'a que sa classe, et c'était exactement
 	# le sprite pour tout l'acte 1 : la retombée est juste.
 	unit.sprite_id = StringName(data.get("sprite", data.get("class", "")))
+	unit.sprite_color = String(data.get("sprite_color", ""))
 	unit.side = int(data.get("side", Side.HEROES))
 	unit.cell = Vector2i(int(data.get("x", 0)), int(data.get("y", 0)))
 	unit.max_hit_points = int(data.get("max_hit_points", 0))

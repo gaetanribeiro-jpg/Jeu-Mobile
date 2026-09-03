@@ -26,6 +26,23 @@ MAP_DUNES_06,L'essaim
 MAP_DUNES_07,La halte des caravanes
 MAP_DUNES_08,La tanière de l'ours
 MAP_DUNES_09,Le cirque du panda
+MAP_GEL_01,La rive gelée
+MAP_GEL_02,Le lac noir
+MAP_GEL_03,Les pierres levées
+MAP_GEL_04,Le pont de glace
+MAP_GEL_05,La passe du vent
+MAP_GEL_06,Les trois îles
+MAP_GEL_07,Le camp des Rougefer
+MAP_GEL_08,Le trône du Jarl
+MAP_GEL_09,Le nid des guêpes
+ENEMY_FROST_SHARK,Requin des glaces
+ENEMY_HARPOONER,Harponneur
+ENEMY_ICE_MINE,Poisson-bombe
+ENEMY_FROST_WASP,Guêpe des cimes
+ENEMY_ICE_RAIDER,Pillard Rougefer
+ENEMY_RAID_ARCHER,Archer Rougefer
+ENEMY_RAID_CHAMPION,Champion Rougefer
+ENEMY_THE_JARL,Le Jarl de fer
 ENEMY_LIZARD,Lézard des sables
 ENEMY_SAND_SERPENT,Serpent des dunes
 ENEMY_DUNE_SPIDER,Araignée des dunes

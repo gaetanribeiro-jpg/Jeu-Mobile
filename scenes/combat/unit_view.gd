@@ -254,10 +254,17 @@ func _frames_for(animation: StringName) -> SpriteFrames:
 	# ON DEMANDE LE DESSIN, PAS L'IDENTITÉ. `sand_serpent` se dessine avec
 	# `snake` : demander l'image à `class_id` rendait sept bêtes de l'acte 2
 	# en ombre nue, sans une seule erreur dans la console.
+	#
+	# ET C'EST `sprite_color` QUI DIT DANS QUELLE TABLE REGARDER : un
+	# ennemi HUMAIN porte une couleur de faction et se cherche parmi les
+	# unités, une bête n'en a pas et se cherche parmi les ennemis. Deviner
+	# d'après le nom marcherait jusqu'au jour où une bête s'appellerait
+	# comme une classe.
 	var frames: SpriteFrames = null
-	if unit.is_hero():
+	var tint := color if unit.is_hero() else unit.sprite_color
+	if unit.is_hero() or not unit.sprite_color.is_empty():
 		if AssetTable.has_unit_animation(unit.sprite_id, animation):
-			frames = SpriteFrameFactory.for_unit(unit.sprite_id, animation, color)
+			frames = SpriteFrameFactory.for_unit(unit.sprite_id, animation, tint)
 	elif AssetTable.has_enemy_animation(unit.sprite_id, animation):
 		frames = SpriteFrameFactory.for_enemy(unit.sprite_id, animation)
 	_frames_cache[key] = frames

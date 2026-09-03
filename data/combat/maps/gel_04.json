@@ -1,0 +1,90 @@
+{
+ "_note": "LE PONT DE GLACE : le seul passage, et il se casse.\n\nUn lac coupe la carte en deux, une passerelle le franchit. Trente points de vie : deux coups de Guerrier. La casser arrête les Rougefer — et laisse les harponneurs tirer sans qu'on puisse jamais les atteindre.\n\nUN GOULOT FAVORISE TOUJOURS CELUI QUI ATTEND, et la première version le prouvait : cent pour cent des PV conservés, l'équipe campait à la sortie du pont et tuait un par un. Ce sont les deux harponneurs POSTÉS DANS LE LAC de part et d'autre qui font le prix — attendre au pont, c'est se tenir à portée des deux.\n\nC'est la carte du § 29 en miniature : un coup qui résout le tour et coûte la sortie.",
+ "act": 3,
+ "name_key": "MAP_GEL_04",
+ "rows": [
+  ".....~~.....",
+  ".....~~.....",
+  ".....~~.....",
+  ".....~~.....",
+  ".....==.....",
+  ".....~~.....",
+  ".....~~.....",
+  ".....~~.....",
+  ".....~~....."
+ ],
+ "objective": {
+  "kind": "eliminate"
+ },
+ "deployment_cells": [
+  [
+   0,
+   3
+  ],
+  [
+   0,
+   4
+  ],
+  [
+   0,
+   5
+  ],
+  [
+   1,
+   2
+  ],
+  [
+   1,
+   3
+  ],
+  [
+   1,
+   4
+  ],
+  [
+   1,
+   5
+  ],
+  [
+   1,
+   6
+  ]
+ ],
+ "enemies": [
+  {
+   "type": "ice_raider",
+   "cell": [
+    7,
+    3
+   ]
+  },
+  {
+   "type": "ice_raider",
+   "cell": [
+    7,
+    5
+   ]
+  },
+  {
+   "type": "raid_champion",
+   "cell": [
+    8,
+    4
+   ]
+  },
+  {
+   "type": "harpooner",
+   "cell": [
+    5,
+    1
+   ]
+  },
+  {
+   "type": "harpooner",
+   "cell": [
+    5,
+    7
+   ]
+  }
+ ]
+}

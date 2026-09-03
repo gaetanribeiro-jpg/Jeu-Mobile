@@ -126,6 +126,23 @@ func test_chaque_ennemi_sait_se_dessiner_par_son_sprite() -> void:
 		assert_not_null(unit, "%s doit se fabriquer" % enemy_id)
 		if unit == null:
 			continue
+		# UN ENNEMI HUMAIN SE CHERCHE PARMI LES UNITÉS (T12.1), pas parmi
+		# les bêtes, et c'est `sprite_color` qui le dit. Le pack dessine
+		# vingt-cinq sprites humains dont le jeu n'employait que le Bleu
+		# des héros ; les Rougefer de l'acte 3 sont les premiers ennemis
+		# à en porter.
+		if not unit.sprite_color.is_empty():
+			assert_true(
+				AssetTable.has_unit_animation(unit.sprite_id, &"idle"),
+				"%s : pas d'animation d'attente pour « %s »"
+					% [enemy_id, unit.sprite_id]
+			)
+			assert_false(
+				AssetTable.portrait(unit.sprite_id, unit.sprite_color).is_empty(),
+				"%s : pas de portrait pour « %s » en %s"
+					% [enemy_id, unit.sprite_id, unit.sprite_color]
+			)
+			continue
 		assert_true(
 			AssetTable.has_enemy_animation(unit.sprite_id, &"idle"),
 			"%s : pas d'animation d'attente pour « %s »" % [enemy_id, unit.sprite_id]

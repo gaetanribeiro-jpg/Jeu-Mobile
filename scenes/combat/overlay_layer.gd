@@ -21,6 +21,10 @@ var move_cells: Array[Vector2i] = []
 var attack_cells: Array[Vector2i] = []
 var objective_cells: Array[Vector2i] = []
 var deployment_cells: Array[Vector2i] = []
+
+## Cases où un héros ATTERRIRA s'il se fait repousser (T12.1). Sans elles
+## le télégraphe n'annonce pas la noyade, qui tue quels que soient les PV.
+var shove_cells: Array[Vector2i] = []
 ## Cases que la compétence visée toucherait effectivement. Vide tant que le
 ## joueur n'a pas désigné de cible.
 var area_cells: Array[Vector2i] = []
@@ -58,7 +62,7 @@ func clear_selection() -> void:
 
 
 func _process(delta: float) -> void:
-	if threat.is_empty():
+	if threat.is_empty() and shove_cells.is_empty():
 		return
 	_pulse += delta
 	queue_redraw()
@@ -88,7 +92,7 @@ func _draw() -> void:
 ## La menace pulse doucement : c'est ce qui attire l'œil dessus en
 ## premier, avant même la lecture du chiffre.
 func _draw_threat() -> void:
-	if threat.is_empty():
+	if threat.is_empty() and shove_cells.is_empty():
 		return
 	var period := maxf(ViewSettings.duration(&"telegraph_pulse"), 0.01)
 	var wave := 0.5 + 0.5 * sin(_pulse * TAU / period)
@@ -100,6 +104,18 @@ func _draw_threat() -> void:
 		if not grid.contains(cell):
 			continue
 		_fill([cell] as Array[Vector2i], fill, border)
+
+	# LA DESTINATION, PAS LA MENACE : pas de chiffre et une autre couleur.
+	# « Tu prendras 14 » et « tu finiras là » sont deux informations, et
+	# les peindre pareil ferait lire un total de dégâts sur une case qui
+	# n'en porte aucun.
+	if not shove_cells.is_empty():
+		var landing := ViewSettings.color(&"shove")
+		landing.a *= 0.7 + 0.3 * wave
+		var landing_border := ViewSettings.color(&"shove_border")
+		for cell: Vector2i in shove_cells:
+			if grid.contains(cell):
+				_fill([cell] as Array[Vector2i], landing, landing_border)
 
 	# Le chiffre est L'information du jeu (§ 4.2). Posé à même le terrain il
 	# se perd derrière un sprite ; il lui faut donc sa pastille, dessinée

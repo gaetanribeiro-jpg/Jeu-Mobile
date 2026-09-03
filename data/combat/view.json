@@ -64,6 +64,9 @@
    0.35,
    0.85
   ],
+  "_shove_note": "Où un héros ATTERRIRA s'il se fait repousser (T12.1). Le télégraphe annonce les dégâts ; sans cette case il n'annonce pas la noyade, qui tue quels que soient les PV. Bleu-blanc et sans chiffre : ce n'est pas une menace chiffrée, c'est une destination.",
+  "shove": [0.62, 0.86, 1.0, 0.22],
+  "shove_border": [0.78, 0.94, 1.0, 0.75],
   "ward": [
    1.0,
    0.9,
