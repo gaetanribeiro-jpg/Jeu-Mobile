@@ -140,18 +140,44 @@ static func can_afford(event_id: StringName, index: int, purse: int) -> bool:
 	return purse >= option_gold_cost(event_id, index)
 
 
+## Les actes où l'évènement peut sortir. Vide = partout.
+##
+## UN HAMEAU QUI VOUS OUVRE SES PORTES AU MILIEU D'UN DÉSERT N'A PAS DE
+## SENS, et une oasis dans les Terres Vertes non plus. Mais l'autel, les
+## ruines, le coffre et l'embuscade ne supposent rien du climat : ils
+## n'ont pas d'acte, et sortent partout.
+static func acts_of(event_id: StringName) -> Array:
+	return entry(event_id).get("acts", [])
+
+
+static func fits_act(event_id: StringName, act: int) -> bool:
+	var acts := acts_of(event_id)
+	if acts.is_empty() or act <= 0:
+		return true
+	for declared: Variant in acts:
+		if int(declared) == act:
+			return true
+	return false
+
+
 ## Tire un évènement aux poids déclarés. `avoid` évite de servir deux fois
 ## le même dans la même sortie — le seul rabâchage que le joueur remarque.
-static func draw(rng: CombatRng, avoid: Array = []) -> StringName:
+##
+## `act` restreint au climat de la région. Zéro tire dans tout, ce qui est
+## ce qu'un test ou le simulateur veut.
+static func draw(rng: CombatRng, avoid: Array = [], act: int = 0) -> StringName:
 	var pool: Array[StringName] = []
 	for event_id: StringName in ids():
-		if weight_of(event_id) > 0 and not avoid.has(String(event_id)):
+		if (weight_of(event_id) > 0 and not avoid.has(String(event_id))
+				and fits_act(event_id, act)):
 			pool.append(event_id)
 	if pool.is_empty():
 		# Tout a déjà été vu : on rouvre la table plutôt que de rendre une
-		# étape vide, qui serait un trou dans la chaîne.
+		# étape vide, qui serait un trou dans la chaîne. L'acte reste
+		# respecté — mieux vaut revoir une oasis qu'inventer un hameau au
+		# milieu du sable.
 		for event_id: StringName in ids():
-			if weight_of(event_id) > 0:
+			if weight_of(event_id) > 0 and fits_act(event_id, act):
 				pool.append(event_id)
 	if pool.is_empty():
 		push_error("ExpeditionEvent : aucun évènement tirable")

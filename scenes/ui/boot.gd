@@ -445,7 +445,8 @@ func _depart(region_id: StringName, hero_ids: Array) -> void:
 	# expéditions successives ne se ressemblent pas, et la même partie
 	# rejouée les retrouve toutes les deux.
 	var run := Expedition.depart(
-		region_id, ids, GameState.combat_rng(GameState.company.gold + ids.size())
+		region_id, ids, GameState.combat_rng(GameState.company.gold + ids.size()),
+		GameState.campaign
 	)
 	if run == null:
 		return

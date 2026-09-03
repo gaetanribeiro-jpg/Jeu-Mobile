@@ -114,3 +114,43 @@ func test_une_longueur_de_corps_reste_dans_ses_bornes() -> void:
 	for seed_value in 50:
 		var drawn := Region.body_length(&"greenlands", CombatRng.new(seed_value))
 		assert_between(drawn, int(body["min"]), int(body["max"]))
+
+
+## LE SOL DE COMBAT PORTE LA COULEUR DE SA RÉGION (T11.8).
+##
+## Le pack ne livre que cinq nuances de tileset et elles sont toutes
+## VERTES : les Dunes Ardentes se jouaient sur l'herbe des Terres Vertes,
+## et l'acte 2 ressemblait à l'acte 1 avant même le premier tour.
+func test_une_region_declare_la_couleur_de_son_sol() -> void:
+	assert_eq(
+		Region.ground_of(&"burning_dunes"), &"sand",
+		"les Dunes Ardentes se jouent sur du sable"
+	)
+
+
+## Vide n'est pas un oubli : le tileset du pack EST vert, et le
+## désaturer pour le reteinter en vert ne perdrait que des nuances.
+func test_les_terres_vertes_gardent_le_sol_du_pack() -> void:
+	assert_eq(Region.ground_of(&"greenlands"), &"", "l'herbe du pack, telle quelle")
+
+
+func test_une_carte_retrouve_sa_region() -> void:
+	for region_id: StringName in Region.unlocked_ids():
+		for map_id: StringName in Region.encounter_maps(region_id):
+			assert_eq(
+				Region.of_map(map_id), region_id,
+				"%s appartient à %s" % [map_id, region_id]
+			)
+		var boss := Region.boss_map(region_id)
+		if not boss.is_empty():
+			assert_eq(Region.of_map(boss), region_id, "le boss aussi")
+		var miniboss := Region.miniboss_map(region_id)
+		if not miniboss.is_empty():
+			assert_eq(Region.of_map(miniboss), region_id, "le mini-boss aussi")
+
+
+## Le banc d'essai ouvre une carte SANS région et la bataille de défense
+## du royaume se fabrique sans fichier : les deux doivent obtenir « pas de
+## région » sans que la console se remplisse.
+func test_une_carte_sans_region_ne_se_plaint_pas() -> void:
+	assert_eq(Region.of_map(&"une_carte_qui_n_existe_pas"), &"")

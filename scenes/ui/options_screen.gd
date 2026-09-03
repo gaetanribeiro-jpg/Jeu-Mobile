@@ -35,6 +35,7 @@ var _confirming := false
 func _ready() -> void:
 	theme = UiSkin.theme
 	_lay_backdrop()
+	UiSkin.dress_scrolls(self)
 	_title.text = tr("OPTIONS_TITLE")
 	_back.text = tr("COMBAT_BACK")
 	_back.pressed.connect(func() -> void: closed.emit())

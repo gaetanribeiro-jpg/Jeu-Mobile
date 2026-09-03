@@ -34,6 +34,9 @@ var _rng: CombatRng
 @onready var _stores: HBoxContainer = %Stores
 @onready var _back: Button = %Back
 @onready var _view: Control = %View
+@onready var _header_frame: PanelContainer = %HeaderFrame
+@onready var _view_frame: PanelContainer = %ViewFrame
+@onready var _panel_frame: PanelContainer = %PanelFrame
 @onready var _panel: VBoxContainer = %Panel
 @onready var _journal: Label = %Journal
 
@@ -41,6 +44,8 @@ var _rng: CombatRng
 func _ready() -> void:
 	theme = UiSkin.theme
 	_lay_backdrop()
+	_dress_frames()
+	UiSkin.dress_scrolls(self)
 	_back.text = tr("COMBAT_BACK")
 	_back.pressed.connect(func() -> void: closed.emit())
 	_view.picked.connect(_on_picked)
@@ -70,13 +75,15 @@ func _build_stores() -> void:
 	for child in _stores.get_children():
 		child.queue_free()
 	for resource_id: StringName in ResourceTable.ids():
-		_stores.add_child(_store_label(
+		_stores.add_child(_store_entry(
+			ResourceTable.asset_of(resource_id),
 			tr(ResourceTable.name_key(resource_id)),
 			str(_kingdom.amount(resource_id, _company))
 		))
 	# Les bras libres sont une ressource comme les autres, et la plus
 	# facile à oublier : un habitant au repos mange sans rien rendre.
-	_stores.add_child(_store_label(
+	_stores.add_child(_store_entry(
+		"",
 		tr("KINGDOM_PEOPLE"),
 		"%d / %d  (%d %s)" % [
 			_kingdom.population, _kingdom.population_cap(),
@@ -85,11 +92,38 @@ func _build_stores() -> void:
 	))
 
 
-func _store_label(name_: String, value: String) -> Label:
+## Une réserve : son icône, puis son compte.
+##
+## LE TAS DE BOIS DIT « BOIS » MIEUX QUE LE MOT, et sur un téléphone la
+## barre se lit d'un coup d'œil au lieu de se lire mot à mot. Le nom reste
+## quand même : quatre icônes de 64 réduites à la hauteur d'une ligne se
+## ressemblent trop pour porter seules l'information (règle de T11.6 — la
+## couleur, ou ici l'image, AJOUTE une lecture, elle n'en remplace pas
+## une).
+##
+## Sans référence — les habitants n'en ont pas —, on rend le texte seul.
+func _store_entry(reference: String, name_: String, value: String) -> Control:
+	var row := HBoxContainer.new()
+	row.add_theme_constant_override("separation", 6)
+	row.alignment = BoxContainer.ALIGNMENT_CENTER
+
+	var side := UiTheme.metric(&"resource_icon")
+	var icon := UiSkin.resource_icon(reference, side)
+	if icon != null:
+		var image := TextureRect.new()
+		image.texture = icon
+		image.custom_minimum_size = Vector2(side, side)
+		image.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		image.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+		image.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		row.add_child(image)
+
 	var label := Label.new()
 	label.add_theme_font_size_override("font_size", 20)
 	label.text = "%s %s" % [name_, value]
-	return label
+	label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	row.add_child(label)
+	return row
 
 
 # --- Le panneau ------------------------------------------------------------
@@ -350,3 +384,26 @@ func _grants(gained: Dictionary) -> String:
 ## rien n'y accroche la lumière et les panneaux flottent sur du vide.
 func _lay_backdrop() -> void:
 	UiSkin.lay_backdrop(self)
+
+
+## LE ROYAUME ÉTAIT LE DERNIER ÉCRAN NU (T11.8). Un rectangle vert à bord
+## franc d'un côté, du texte posé sur le fond de l'autre : les deux
+## moitiés flottaient, quand tous les autres écrans portent le cadre orné
+## de T9.7 depuis longtemps. C'est le pire endroit où l'oublier — c'est
+## l'écran que la boucle du § 3 traverse à chaque retour d'expédition.
+##
+## Le terrain garde son fond à lui : le cadre ne pose qu'un TRAIT
+## par-dessus, et le vert reste le vert. Le panneau reçoit le fond sombre
+## habituel, comme la fiche d'un héros.
+func _dress_frames() -> void:
+	# La barre des réserves est une INFORMATION PERMANENTE, pas un titre :
+	# elle mérite son cadre, comme l'objectif porte le sien en combat.
+	_header_frame.add_theme_stylebox_override("panel", UiSkin.framed_style(
+		&"frame_card", &"panel_fill", &"panel_edge_soft"
+	))
+	_view_frame.add_theme_stylebox_override("panel", UiSkin.framed_style(
+		&"frame_panel", &"panel_deep", &"panel_edge"
+	))
+	_panel_frame.add_theme_stylebox_override("panel", UiSkin.framed_style(
+		&"frame_panel", &"panel_fill", &"panel_edge_soft"
+	))

@@ -173,6 +173,26 @@ REGION_CURSED_LANDS,Les Terres Maudites
 REGION_CURSED_LANDS_DESC,Rien n'y meurt tout à fait. On n'y va pas encore.
 REGION_BLACK_EMPIRE,L'Empire Noir
 REGION_BLACK_EMPIRE_DESC,La source de tout ceci. On n'y va pas encore.
+EVENT_OASIS,L'oasis
+EVENT_OASIS_TEXT,Quelques palmiers et de l'eau claire. Dans ce pays, cela ne reste jamais sans surveillance longtemps.
+EVENT_OASIS_LINGER,S'attarder à l'ombre
+EVENT_OASIS_DRINK,Boire et repartir
+EVENT_SANDSTORM,La tempête de sable
+EVENT_SANDSTORM_TEXT,Un mur ocre monte à l'horizon et avance plus vite que vous ne marchez.
+EVENT_SANDSTORM_CROSS,Traverser en force
+EVENT_SANDSTORM_GUIDE,Payer un guide pour la contourner
+EVENT_CARAVAN,La caravane ensablée
+EVENT_CARAVAN_TEXT,Des bâches déchirées dépassent d'une dune. Ce qu'elle transportait est peut-être encore dessous.
+EVENT_CARAVAN_DIG,Creuser
+EVENT_CARAVAN_WATER,Prendre les outres et filer
+EVENT_BONE_FIELD,Le champ d'os
+EVENT_BONE_FIELD_TEXT,Une expédition avant la vôtre n'est pas rentrée. Leur équipement est encore là. Ce qui les a tués aussi, peut-être.
+EVENT_BONE_FIELD_LOOT,Fouiller les dépouilles
+EVENT_BONE_FIELD_RATIONS,Prendre leurs vivres et passer
+EVENT_OBELISK,L'obélisque
+EVENT_OBELISK_TEXT,Une aiguille de basalte couverte de noms. Chacun d'eux a payé pour y figurer.
+EVENT_OBELISK_TRIBUTE,Payer le tribut
+EVENT_OBELISK_BREAK,Briser la pierre
 EVENT_ALTAR,L'autel de pierre
 EVENT_ALTAR_TEXT,Une dalle usée au milieu des herbes. Quelque chose y a été promis avant vous.
 EVENT_ALTAR_BLOOD,Offrir votre sang

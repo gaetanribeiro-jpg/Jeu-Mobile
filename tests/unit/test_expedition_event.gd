@@ -50,8 +50,13 @@ func _underway(company: Company, seed_value: int = 3) -> Expedition:
 
 # --- La table tient la promesse du § 40 ------------------------------------
 
-func test_les_cinq_evenements_du_paragraphe_40_sont_declares() -> void:
-	assert_eq(ExpeditionEvent.ids().size(), 5)
+func test_les_evenements_du_paragraphe_40_sont_declares() -> void:
+	# LE COMPTE N'EST PLUS FIXÉ À CINQ : T11.8 en a ajouté cinq de désert,
+	# et un test qui compte échoue à chaque ajout de contenu sans que rien
+	# ne soit faux. Ce qui compte est que les cinq d'origine tiennent.
+	assert_gt(ExpeditionEvent.ids().size(), 4)
+	for event_id: StringName in [&"altar", &"village", &"ruins", &"ambush", &"chest"]:
+		assert_true(ExpeditionEvent.ids().has(event_id), "« %s » a disparu" % event_id)
 
 
 func test_chaque_evenement_offre_au_moins_deux_options() -> void:
@@ -91,9 +96,12 @@ func test_le_tirage_se_rejoue_a_l_identique() -> void:
 
 
 func test_le_tirage_evite_ce_qu_on_a_deja_vu() -> void:
+	# ON RESTREINT À L'ACTE 1 pour que la table soit assez petite pour
+	# qu'un seul évènement reste : depuis T11.8 elle en compte dix, et le
+	# test doit toujours mesurer l'évitement et non la taille de la table.
 	var seen: Array = ["altar", "village", "ruins", "ambush"]
 	for seed_value in 20:
-		assert_eq(ExpeditionEvent.draw(CombatRng.new(seed_value), seen), &"chest")
+		assert_eq(ExpeditionEvent.draw(CombatRng.new(seed_value), seen, 1), &"chest")
 
 
 func test_le_tirage_rouvre_la_table_quand_tout_a_ete_vu() -> void:
@@ -243,3 +251,56 @@ func test_l_etape_de_recompense_tire_son_butin_toute_seule() -> void:
 		run.index += 1
 	run.resolve_event({}, CombatRng.new(4), company)
 	assert_gt(run.satchel_gold, 0, "la récompense ne donne rien")
+
+
+# --- Le filtrage par acte (T11.8) ------------------------------------------
+
+func test_un_hameau_ne_sort_pas_dans_le_desert() -> void:
+	# UN ÉVÈNEMENT SITUE AUTANT QU'IL ÉTOFFE. Un hameau qui vous ouvre ses
+	# portes au milieu des Dunes Ardentes n'a pas de sens, et une oasis
+	# dans les Terres Vertes non plus.
+	assert_true(ExpeditionEvent.fits_act(&"village", 1))
+	assert_false(ExpeditionEvent.fits_act(&"village", 2))
+	assert_true(ExpeditionEvent.fits_act(&"oasis", 2))
+	assert_false(ExpeditionEvent.fits_act(&"oasis", 1))
+
+
+func test_ce_qui_ne_suppose_rien_du_climat_sort_partout() -> void:
+	# L'autel, les ruines, le coffre et l'embuscade n'ont pas d'acte
+	# déclaré : ils appartiennent à tous.
+	for event_id: StringName in [&"altar", &"ruins", &"chest", &"ambush"]:
+		for act in [1, 2, 3]:
+			assert_true(
+				ExpeditionEvent.fits_act(event_id, act),
+				"« %s » devrait sortir à l'acte %d" % [event_id, act]
+			)
+
+
+func test_un_tirage_respecte_l_acte() -> void:
+	var seen := {}
+	for i in 60:
+		seen[ExpeditionEvent.draw(CombatRng.new(i * 7919), [], 2)] = true
+	assert_false(seen.has(&"village"), "un hameau est sorti dans les dunes")
+	assert_gt(seen.size(), 3, "l'acte 2 doit tirer dans plusieurs évènements")
+
+
+func test_l_acte_zero_tire_dans_tout() -> void:
+	# Zéro veut dire « pas de climat » : c'est ce qu'un test ou le
+	# simulateur demande, et ça ne doit rien exclure.
+	var seen := {}
+	for i in 80:
+		seen[ExpeditionEvent.draw(CombatRng.new(i * 104729), [], 0)] = true
+	assert_true(seen.has(&"village") or seen.has(&"oasis"))
+
+
+func test_chaque_acte_a_de_quoi_ne_pas_se_repeter() -> void:
+	# Une sortie compte une à deux étapes d'évènement. `draw` rouvre sa
+	# table quand elle est vide, donc un acte trop pauvre se JOUE — il
+	# rabâche simplement, et rien ne s'en plaint.
+	for act in [1, 2]:
+		var pool := 0
+		for event_id: StringName in ExpeditionEvent.ids():
+			if (ExpeditionEvent.weight_of(event_id) > 0
+					and ExpeditionEvent.fits_act(event_id, act)):
+				pool += 1
+		assert_gt(pool, 3, "l'acte %d ne tire que dans %d évènements" % [act, pool])

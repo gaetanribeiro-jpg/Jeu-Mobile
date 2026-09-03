@@ -234,11 +234,13 @@ dur : passer par `data/assets.json`.
 
 *(à tenir à jour à chaque fin de session)*
 
-- **Phase courante : 11 — la bêta.** Cinq chantiers, listés avec leur
+- **Phase courante : 11 — la bêta.** Les chantiers sont listés avec leur
   constat vérifié dans `docs/etat-des-lieux.md` § 5. **Faits :** T11.2 le
   son, T11.3 l'écran de titre, T11.4 le déverrouillage et la fin, T11.6
-  la couleur partout, T11.7 l'acte 2. **Restent :** T11.1 le téléphone
-  (il te faut le SDK) et T11.5 le tutoriel. **802 tests passent.**
+  la couleur partout, T11.7 l'acte 2, T11.8 la passe de finition.
+  **Restent :** T11.1 le téléphone (il te faut le SDK) et T11.5 le
+  tutoriel, volontairement gardé pour après ta première partie.
+  **812 tests passent, les dix vérificateurs sont verts.**
   Le pivot vers la vision Tiny Kingdoms a été acté le 2026-08-31.
 - **Phase 1 terminée.** T1.1 à T1.14 sont faites et testées.
 - **Phase 2 terminée.** T2.1 à T2.7 : le `Hero`, les niveaux,
@@ -396,6 +398,29 @@ ne pas défaire :
 - **Aucune mécanique n'a été inventée pour l'acte 2.** `chilled` et le feu
   au sol existaient depuis la Phase 1 ; ce qui est neuf, c'est qui les
   emploie et contre qui.
+
+**DEUX MOITIÉS JUSTES NE FONT PAS UNE MÉCANIQUE (T11.8).**
+`Expedition.depart()` demandait `Region.is_unlocked()` — le FICHIER —
+quand la carte du monde demandait la `Campaign` — la PARTIE. Le joueur
+qui battait le boss de l'acte 1 voyait les Dunes s'ouvrir, cliquait
+« Partir », et **rien ne se passait**. Aucune erreur : chaque moitié
+répondait juste à sa question. `depart()` reçoit désormais la campagne.
+Quatre choses à ne pas défaire :
+- **Une chaîne inter-écrans se teste EN LA PARCOURANT.**
+  `test_act_transition.gd` conclut l'acte 1, relit la campagne et part
+  pour l'acte 2. Aucun test unitaire ne pouvait attraper ça — c'est
+  `verify_world` de la Phase 10, mais du côté des tests.
+- **Les évènements se filtrent par ACTE.** `village` n'a pas de sens dans
+  un désert. `verify_world` refuse un vivier sous quatre entrées : en
+  dessous, une route de sept étapes se répète quoi qu'on tire.
+- **Un acte tardif doit payer plus**, et c'est vérifié :
+  `_reward_bonus()` MULTIPLIE l'heure par la région, donc une nuit dans
+  les Dunes cumule. `verify_world` saute les régions sans carte — une
+  coquille vide ne paie rien et ce n'est pas une faute.
+- **Une carte molle se corrige en DISTANCE avant de se corriger en
+  nombre.** `dunes_06` coûtait zéro pour cent : l'essaim courait une
+  ronde entière et mourait à la seconde. Rapproché de trois cases, sans
+  toucher à une seule statistique, il coûte 8 %.
 
 **LA COULEUR PORTE UNE INFORMATION, JAMAIS UNE DÉCORATION (T11.6).**
 Six régions dans six boîtes identiques obligent à LIRE. Trois choses à ne
@@ -676,7 +701,10 @@ des sons reste à faire, le câblage non.
 **Deux pièges d'interface qui font TOMBER le moteur en headless.** Un
 `ScrollContainer` dont la barre verticale apparaît selon la hauteur du
 contenu oscille avec tout texte replié, et empile un redessin par tour :
-mettre `vertical_scroll_mode = 2` (toujours visible). Et `queue_redraw()`
+mettre `vertical_scroll_mode = 2` (toujours visible) — et pour qu'un rail
+vide ne traîne pas dans un panneau, `UiSkin.dress_scroll()` met son ALPHA
+à zéro quand `page >= max_value` : la place reste réservée, donc la mise
+en page ne peut pas se remettre à osciller. Et `queue_redraw()`
 dans un `_process` empile une file que rien ne vide en headless : ne pas
 s'animer quand `DisplayServer.get_name() == \"headless\"`. Les deux se
 signalent par un signal 11 dont la trace ne désigne personne.

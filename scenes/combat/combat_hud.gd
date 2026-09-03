@@ -551,7 +551,12 @@ func _timeline_badge(unit: Unit, is_current: bool) -> Control:
 		&"frame_slot", &"panel_fill", edge, 2
 	))
 
-	var face := UiSkin.portrait(unit.class_id, HERO_COLOR) if unit.is_hero() else null
+	# LE PACK A VINGT ET UN VISAGES D'ENNEMIS, et le commentaire qui suivait
+	# ici disait le contraire. La timeline montrait une lettre pour tout le
+	# bestiaire : « G » ne distingue pas un gnoll d'un gnome, et c'est
+	# précisément ce que la timeline doit permettre de lire d'un coup d'œil.
+	var face := UiSkin.portrait(unit.class_id, HERO_COLOR) if unit.is_hero() \
+		else UiSkin.enemy_portrait(unit.sprite_id)
 	if face != null:
 		var rect := TextureRect.new()
 		rect.texture = face
@@ -563,10 +568,9 @@ func _timeline_badge(unit: Unit, is_current: bool) -> Control:
 		badge.add_child(rect)
 		return badge
 
-	# LE PACK N'A PAS DE PORTRAIT D'ENNEMI — 25 avatars humains et rien
-	# d'autre. L'initiale de l'espèce tient donc le rôle, sur le cadre
-	# rouge : mieux vaut un cadre cohérent avec une lettre qu'un visage
-	# emprunté à quelqu'un d'autre.
+	# La retombée quand un visage manque : l'initiale de l'espèce, sur le
+	# cadre rouge. Mieux vaut un cadre cohérent avec une lettre qu'un
+	# visage emprunté à quelqu'un d'autre.
 	var label := _label(20)
 	label.text = _timeline_text(unit)
 	label.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)

@@ -45,6 +45,7 @@ var _squad_ids: Array[int] = []
 func _ready() -> void:
 	theme = UiSkin.theme
 	_lay_backdrop()
+	UiSkin.dress_scrolls(self)
 	_title.text = tr("WORLD_TITLE")
 	_back.text = tr("COMBAT_BACK")
 	_back.pressed.connect(func() -> void: closed.emit())

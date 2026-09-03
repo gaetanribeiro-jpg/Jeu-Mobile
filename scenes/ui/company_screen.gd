@@ -45,6 +45,7 @@ var _selected_id: int = -1
 func _ready() -> void:
 	theme = UiSkin.theme
 	_lay_backdrop()
+	UiSkin.dress_scrolls(self)
 	%Title.text = tr("COMPANY_TITLE")
 	_back.text = tr("COMBAT_BACK")
 	_back.pressed.connect(func() -> void: closed.emit())

@@ -170,7 +170,11 @@ func _build_scene() -> void:
 	_terrain = Node2D.new()
 	_terrain.set_script(load("res://scenes/combat/terrain_view.gd"))
 	add_child(_terrain)
-	_terrain.setup(engine.board)
+	# LE SOL PORTE LA COULEUR DE SA RÉGION (T11.8). Une carte sans région —
+	# le banc d'essai, la défense du royaume — rend vide, donc l'herbe du
+	# pack, ce qui est juste : on y défend les Terres Vertes.
+	var region := Region.of_map(map_id)
+	_terrain.setup(engine.board, Region.ground_of(region) if not region.is_empty() else &"")
 
 	_units_root = Node2D.new()
 	_units_root.y_sort_enabled = true
@@ -465,7 +469,7 @@ func _refresh_ghost() -> void:
 		return
 	var frames: SpriteFrames = null
 	if _selected.is_hero():
-		frames = SpriteFrameFactory.for_unit(_selected.class_id, &"idle", HERO_COLOR)
+		frames = SpriteFrameFactory.for_unit(_selected.sprite_id, &"idle", HERO_COLOR)
 	if frames == null or frames.get_frame_count(&"default") == 0:
 		_ghost.visible = false
 		return

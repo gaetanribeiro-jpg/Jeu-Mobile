@@ -49,6 +49,16 @@ static var _enemies: Dictionary = {}
 
 var id: int = -1
 var class_id: StringName = &""
+
+## LE DESSIN N'EST PAS L'IDENTITÉ. Pendant tout l'acte 1, chaque ennemi
+## portait le nom de son sprite (`troll` dessine `troll`), et les vues ont
+## pris l'habitude de demander l'image à `class_id`. L'acte 2 a rompu la
+## coïncidence — `sand_serpent` se dessine avec `snake` — et sept bêtes se
+## sont affichées en ombre nue, SANS UNE SEULE ERREUR : `has_enemy_animation`
+## répond « non » poliment, et la vue retombe sur rien. C'est la déclaration
+## `sprite` des données qui atterrit ici, et c'est elle que les vues doivent
+## demander.
+var sprite_id: StringName = &""
 var side: int = Side.HEROES
 var cell: Vector2i = Vector2i.ZERO
 
@@ -213,6 +223,7 @@ static func from_stats(
 	var unit := Unit.new()
 	unit.id = unit_id
 	unit.class_id = class_to_use
+	unit.sprite_id = StringName(stats.get("sprite", class_to_use))
 	unit.side = unit_side
 	unit.cell = at
 	unit.max_hit_points = int(stats.get("hit_points", 0))
@@ -441,6 +452,7 @@ func to_dictionary() -> Dictionary:
 	return {
 		"id": id,
 		"class": String(class_id),
+		"sprite": String(sprite_id),
 		"side": int(side),
 		"x": cell.x,
 		"y": cell.y,
@@ -472,6 +484,9 @@ static func from_dictionary(data: Dictionary) -> Unit:
 	var unit := Unit.new()
 	unit.id = int(data.get("id", -1))
 	unit.class_id = StringName(data.get("class", ""))
+	# Une sauvegarde d'avant ce champ n'a que sa classe, et c'était exactement
+	# le sprite pour tout l'acte 1 : la retombée est juste.
+	unit.sprite_id = StringName(data.get("sprite", data.get("class", "")))
 	unit.side = int(data.get("side", Side.HEROES))
 	unit.cell = Vector2i(int(data.get("x", 0)), int(data.get("y", 0)))
 	unit.max_hit_points = int(data.get("max_hit_points", 0))

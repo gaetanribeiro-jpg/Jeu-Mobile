@@ -51,7 +51,11 @@
         "torch_goblin"
       ],
       "_night_roster_note": "CE QUI SORT DU BOIS QUAND LA NUIT TOMBE (§ 36). Un renfort par rencontre de nuit, tiré là-dedans, posé au centre de la formation ennemie.\n\nPAS UN GNOME DE PLUS : le § 36 dit « plus nombreux ET spéciaux », et ajouter la bête la plus faible du bestiaire rallongerait la rencontre sans la durcir. Le voleur vise l'arrière — il oblige à se soucier de l'Archer et du Mage au moment précis où l'on voulait foncer — et le gobelin torche est une masse de 75 PV qui arrive au contact.\n\nET SURTOUT PAS UN GNOLL, qui était le premier choix. Le gnoll est un TIRAILLEUR : il recule quand on l'approche. À la mesure, `vallee_02` passait de 5,0 à 9,8 rondes les nuits où il sortait — le combat ne devenait pas plus dur, il devenait une POURSUITE, et le § 28 veut des rencontres de trois à huit rondes. Un renfort doit ajouter de la pression, pas de la durée : on ne prend donc que des bêtes qui viennent au contact.\n\nLe plafond de `rules.json` tient : une carte qui a déjà sept ennemis n'en reçoit aucun, et une carte à horloge non plus.",
-      "accent": "moss"
+      "accent": "moss",
+      "reward": {
+        "gold_multiplier": 1.0,
+        "rarity_bonus": 0
+      }
     },
     "burning_dunes": {
       "name_key": "REGION_BURNING_DUNES",
@@ -59,6 +63,7 @@
       "act": 2,
       "unlocked": false,
       "accent": "sand",
+   "ground": "sand",
       "encounter_maps": [
         "dunes_06",
         "dunes_01",
@@ -102,7 +107,11 @@
         "lizard",
         "skull_wisp"
       ],
-      "_night_note": "NI SERPENT NI CHAUVE-SOURIS DANS LE VIVIER DE NUIT. La leçon de T8.1 tient : un renfort doit ajouter de la PRESSION, pas de la durée, et une bête qui décroche allonge le combat au lieu de le durcir. Le gnoll avait fait passer `vallee_02` de 5,0 à 9,8 rondes ; le serpent et la chauve-souris feraient pire, l'un traversant la carte et l'autre s'enfuyant."
+      "_night_note": "NI SERPENT NI CHAUVE-SOURIS DANS LE VIVIER DE NUIT. La leçon de T8.1 tient : un renfort doit ajouter de la PRESSION, pas de la durée, et une bête qui décroche allonge le combat au lieu de le durcir. Le gnoll avait fait passer `vallee_02` de 5,0 à 9,8 rondes ; le serpent et la chauve-souris feraient pire, l'un traversant la carte et l'autre s'enfuyant.",
+      "reward": {
+        "gold_multiplier": 1.35,
+        "rarity_bonus": 1
+      }
     },
     "frozen_mountains": {
       "name_key": "REGION_FROZEN_MOUNTAINS",
@@ -132,6 +141,7 @@
       "unlocked": false,
       "accent": "ash"
     },
-    "_accent_note": "LA COULEUR D'UNE RÉGION (T11.6). Elle teinte son carré de terre sur la carte du monde et le liseré de sa fiche. Six régions qui se ressemblent ne font pas une carte, elles font une liste : le joueur doit pouvoir reconnaître les Dunes Ardentes sans lire leur nom.\n\nLA CLÉ EST CELLE D'UNE COULEUR DE `theme.json`, jamais un code hexadécimal : le jour où la palette change, aucune région ne bouge."
+    "_accent_note": "LA COULEUR D'UNE RÉGION (T11.6). Elle teinte son carré de terre sur la carte du monde et le liseré de sa fiche. Six régions qui se ressemblent ne font pas une carte, elles font une liste : le joueur doit pouvoir reconnaître les Dunes Ardentes sans lire leur nom.\n\nLA CLÉ EST CELLE D'UNE COULEUR DE `theme.json`, jamais un code hexadécimal : le jour où la palette change, aucune région ne bouge.",
+    "_reward_note": "CE QU'UNE RÉGION PAIE, ET POURQUOI ELLE DOIT PAYER PLUS (T11.8).\n\nÀ PROFONDEUR ÉGALE, L'ACTE 2 RENDAIT EXACTEMENT LE MÊME BUTIN QUE L'ACTE 1. Rien ne le disait — `Loot` ne connaît que la profondeur et l'heure — et rien ne cassait : une région plus dure qui paie pareil se joue parfaitement, elle n'a simplement aucune raison d'être choisie. Le § 29 fait de « je rentre ou je continue » une question ; aller dans les Dunes doit être la même question, à l'échelle de la campagne.\n\nLES DUNES COÛTENT 49 % DES PV À LEUR BOSS CONTRE 35 % AUX TERRES VERTES, mesuré. Elles paient donc 35 % d'or de plus et relèvent la rareté d'un cran — le même levier que la nuit du § 36, qui ajoute un ennemi et paie 20 % de plus.\n\nCE BONUS SE CUMULE AVEC CELUI DE L'HEURE, et c'est voulu : une sortie de nuit au fond des Dunes est le sommet de la courbe de risque, donc le sommet de la courbe de récompense."
   }
 }

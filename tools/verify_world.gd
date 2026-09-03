@@ -15,6 +15,9 @@ extends SceneTree
 ## quelque chose. Un de ces trois chiffres mis à zéro rendrait la réponse
 ## automatique, et rien d'autre ne le dirait.
 
+## En dessous de ça, une sortie de six étapes revoit le même évènement.
+const MINIMUM_EVENT_POOL := 4
+
 var _problems: Array[String] = []
 
 
@@ -30,6 +33,8 @@ func _init() -> void:
 
 	print("-".repeat(76))
 	_check_events()
+	_check_event_pools()
+	_check_rewards()
 	_check_merchant()
 	_check_supplies()
 	_check_bestiary()
@@ -213,6 +218,71 @@ func _check_events() -> void:
 	print("\nVérification de %d évènements…\n" % events.size())
 	for event_id: StringName in events:
 		_check_event(event_id)
+
+
+## UNE RÉGION PLUS DURE DOIT PAYER PLUS (T11.8).
+##
+## Rien ne le disait et rien ne cassait : à profondeur égale, l'acte 2
+## rendait exactement le même butin que l'acte 1. Une région plus dure qui
+## paie pareil se JOUE parfaitement — elle n'a simplement aucune raison
+## d'être choisie, et le § 29 s'effondre à l'échelle de la campagne comme
+## il s'effondrerait pour une nuit qui ne paierait rien.
+func _check_rewards() -> void:
+	print("\nCe que chaque région paie :\n")
+	var previous := 0.0
+	var previous_act := 0
+	for region_id: StringName in Region.ids():
+		var bonus := Region.reward_bonus(region_id)
+		var gold := float(bonus.get("gold_multiplier", 1.0))
+		var rarity := int(bonus.get("rarity_bonus", 0))
+		var act := Region.act_of(region_id)
+		# UNE COQUILLE VIDE N'EST PAS JUGÉE. Quatre régions n'ont encore
+		# que leur nom ; leur demander une récompense reviendrait à exiger
+		# qu'on remplisse tout le monde avant d'en équilibrer une part —
+		# c'est la même règle que « jouable, pas déclaré » qui décide la
+		# fin de campagne.
+		if Region.encounter_maps(region_id).is_empty():
+			print("  acte %d  %-18s (pas encore de contenu)" % [act, region_id])
+			continue
+		print("  acte %d  %-18s or ×%.2f  rareté %+d" % [act, region_id, gold, rarity])
+		if gold <= 0.0:
+			_problems.append("« %s » ne paie rien" % region_id)
+		# UN ACTE PLUS TARDIF NE DOIT JAMAIS PAYER MOINS. Il peut payer
+		# autant — une région d'acte égal n'a pas à surenchérir — mais
+		# décroître ferait de la progression une punition.
+		if act > previous_act and gold + float(rarity) < previous:
+			_problems.append(
+				"« %s » (acte %d) paie moins que l'acte %d" % [region_id, act, previous_act]
+			)
+		if act > previous_act:
+			previous = gold + float(rarity)
+			previous_act = act
+
+
+## CHAQUE ACTE DOIT AVOIR DE QUOI NE PAS SE RÉPÉTER (T11.8).
+##
+## Une sortie compte une à deux étapes d'évènement. Avec cinq évènements
+## au total, le joueur avait tout vu en deux sorties — et le filtrage par
+## acte, s'il était mal réglé, pourrait rendre un acte encore plus pauvre
+## sans que rien ne se plaigne : `draw` rouvre sa table quand elle est
+## vide, donc un acte à deux évènements se JOUE, il rabâche simplement.
+func _check_event_pools() -> void:
+	var acts := {}
+	for region_id: StringName in Region.ids():
+		acts[Region.act_of(region_id)] = true
+	print("")
+	for act: Variant in acts.keys():
+		var pool := 0
+		for event_id: StringName in ExpeditionEvent.ids():
+			if (ExpeditionEvent.weight_of(event_id) > 0
+					and ExpeditionEvent.fits_act(event_id, int(act))):
+				pool += 1
+		print("acte %d : %d évènements tirables" % [act, pool])
+		if pool < MINIMUM_EVENT_POOL:
+			_problems.append(
+				"l'acte %d ne tire que dans %d évènements : il se répétera"
+				% [act, pool]
+			)
 
 
 func _check_event(event_id: StringName) -> void:
@@ -439,6 +509,12 @@ func _check_bestiary() -> void:
 		var sprite := StringName(entry.get("sprite", ""))
 		if sprite.is_empty() or AssetTable.enemy_animation(sprite, &"idle").is_empty():
 			_problems.append("l'ennemi « %s » n'a pas de sprite d'attente" % enemy_id)
+		# LE VISAGE EST DEVENU OBLIGATOIRE en même temps que la timeline a
+		# cessé d'afficher des initiales. Le pack en a vingt et un, un par
+		# bête : une entrée sans avatar retomberait sur sa lettre, seule au
+		# milieu de visages.
+		elif not AssetTable.has_enemy_animation(sprite, &"avatar"):
+			_problems.append("l'ennemi « %s » n'a pas de portrait" % enemy_id)
 		var abilities: Array = entry.get("abilities", [])
 		if abilities.is_empty():
 			_problems.append("l'ennemi « %s » n'a aucune compétence" % enemy_id)

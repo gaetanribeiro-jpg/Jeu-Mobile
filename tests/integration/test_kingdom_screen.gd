@@ -61,6 +61,16 @@ func _button(prefix: String) -> Button:
 	return null
 
 
+## Tout le texte affiché sous un nœud, quelle que soit sa profondeur.
+func _texts_under(root: Node) -> String:
+	var seen := ""
+	if root is Label:
+		seen += (root as Label).text + " | "
+	for child: Node in root.get_children():
+		seen += _texts_under(child)
+	return seen
+
+
 ## Désigne un bâtiment ou un chantier. PAS de `await` ici : une fonction
 ## d'aide qui attend, appelée avec `await`, imbrique deux coroutines et
 ## GUT part en boucle jusqu'au signal 11. On attend sur place, à l'appel.
@@ -73,10 +83,11 @@ func _select(kind: StringName, id: StringName) -> void:
 func test_les_quatre_ressources_et_les_bras_sont_en_haut() -> void:
 	# Un habitant au repos mange sans rien rendre : c'est la ressource la
 	# plus facile à oublier, donc elle est à côté des autres.
-	var seen := ""
-	for child: Node in _screen._stores.get_children():
-		if child is Label:
-			seen += (child as Label).text + " | "
+	# ON CHERCHE LE TEXTE DANS L'ARBRE, pas à une profondeur fixée. Ce
+	# test lisait `get_child()` en attendant un `Label` ; le jour où chaque
+	# réserve a reçu son icône, elle est devenue une ligne à deux enfants
+	# et le test est tombé — alors que l'écran, lui, affichait tout.
+	var seen := _texts_under(_screen._stores)
 	for resource_id: StringName in ResourceTable.ids():
 		assert_string_contains(seen, tr(ResourceTable.name_key(resource_id)))
 	assert_string_contains(seen, tr("KINGDOM_IDLE"))

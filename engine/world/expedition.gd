@@ -81,10 +81,25 @@ var carried: Dictionary = {}
 
 
 ## Prépare une sortie. La chaîne est tirée ici, une fois pour toutes.
-static func depart(region: StringName, heroes: Array[int], rng: CombatRng) -> Expedition:
+## `campaign` dit ce qui est OUVERT dans CETTE partie. Sans lui, la garde
+## ci-dessous lit `regions.json`, qui ne dit que l'état d'une partie
+## neuve — et une région ouverte par l'avancement (T11.4) serait refusée.
+##
+## LE BUG QUE ÇA RÉPARE ÉTAIT MUET ET PLACÉ AU PIRE ENDROIT : la carte du
+## monde demandait à la campagne, donc elle proposait bien les Dunes ;
+## `depart` demandait aux données, donc il rendait `null`. Le joueur qui
+## venait de battre le boss de l'acte 1 appuyait sur « Partir » et il ne
+## se passait RIEN.
+static func depart(
+	region: StringName, heroes: Array[int], rng: CombatRng,
+	campaign: Campaign = null
+) -> Expedition:
 	if not Region.exists(region):
 		return null
-	if not Region.is_unlocked(region):
+	var open := (
+		campaign.is_open(region) if campaign != null else Region.is_unlocked(region)
+	)
+	if not open:
 		push_error("Expedition : la région « %s » est verrouillée" % region)
 		return null
 
@@ -272,7 +287,7 @@ func resolve_combat(
 	# ennemi de plus — une punition sèche — et le § 29 perdrait la moitié
 	# qui fait la décision : continuer doit rapporter plus, pas seulement
 	# coûter plus.
-	var gained := Loot.roll(rng, summary, depth(), DayNight.loot_bonus(moment()))
+	var gained := Loot.roll(rng, summary, depth(), _reward_bonus())
 	_gather(gained)
 	var supplies := _stock_supplies(gained.get("supplies", []), company)
 	# La région donne ses ressources à chaque rencontre gagnée : c'est ce
@@ -307,7 +322,10 @@ func reveal_event(rng: CombatRng) -> StringName:
 		var past_event := String(past.get("event", ""))
 		if not past_event.is_empty():
 			seen.append(past_event)
-	var drawn := ExpeditionEvent.draw(rng, seen)
+	# L'ACTE DE LA RÉGION FILTRE LE TIRAGE (T11.8) : une oasis appartient
+	# aux dunes, un hameau aux Terres Vertes. L'expédition sait où elle est
+	# ; l'évènement, lui, n'a pas à connaître les régions.
+	var drawn := ExpeditionEvent.draw(rng, seen, Region.act_of(region_id))
 	step["event"] = String(drawn)
 	return drawn
 
@@ -482,6 +500,32 @@ func _gather_resources(harvested: Dictionary) -> void:
 ## SANS COMPAGNIE, RIEN N'EST VERSÉ ET RIEN N'EST ANNONCÉ. Une expédition
 ## se joue en test sans compagnie ; annoncer une potion qui n'a rejoint
 ## aucun sac serait mentir au joueur sur ce qu'il possède.
+## Ce que la circonstance ajoute au butin : l'heure ET la région.
+##
+## LES DEUX SE CUMULENT, ET C'EST LE POINT. La nuit du § 36 ajoute un
+## ennemi et paie 20 % de plus ; une région tardive est plus dure et paie
+## davantage. Une sortie de nuit au fond des Dunes est donc le sommet des
+## deux courbes à la fois — c'est ce qui donne au joueur une raison de
+## pousser au-delà du confortable.
+##
+## `Loot` reste ignorant des deux : il reçoit un bonus, pas une horloge ni
+## une carte du monde. Sinon la table du butin devrait connaître le
+## calendrier des expéditions ET la géographie, et chaque circonstance
+## nouvelle viendrait s'y ajouter.
+func _reward_bonus() -> Dictionary:
+	var hour := DayNight.loot_bonus(moment())
+	var place := Region.reward_bonus(region_id)
+	return {
+		"gold_multiplier": (
+			float(hour.get("gold_multiplier", 1.0))
+			* float(place.get("gold_multiplier", 1.0))
+		),
+		"rarity_bonus": (
+			int(hour.get("rarity_bonus", 0)) + int(place.get("rarity_bonus", 0))
+		),
+	}
+
+
 func _stock_supplies(raw: Variant, company: Company) -> Array[StringName]:
 	var out: Array[StringName] = []
 	if company == null or not (raw is Array):

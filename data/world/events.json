@@ -1,5 +1,5 @@
 {
-  "_readme": "Les évènements du § 40 : marchand, autel, village, embuscade, ruines. Le coffre vient du § 27.\n\nLA LIGNE QUI GOUVERNE TOUT LE FICHIER : « les événements doivent créer des décisions ». Un évènement qui donne trente pièces d'or n'est pas un évènement, c'est une récompense déguisée en texte. CHAQUE ÉVÈNEMENT D'ICI OFFRE AU MOINS DEUX OPTIONS QUI S'EXCLUENT, et l'outil `verify_world` refuse celui qui n'en aurait qu'une, ou dont une option serait meilleure que l'autre sur toute la ligne.\n\nLES QUATRE MONNAIES DE L'ÉCHANGE, et il en faut plusieurs pour qu'un choix soit un choix : les PV (que rien ne rend, § 29), l'or (dont le royaume aura besoin, § 32), la besace (qui n'est pas encore à l'abri) et le risque (une chance déclarée). Un évènement qui n'échange que de l'or contre de l'or ne demande rien.\n\nLE VOCABULAIRE DES EFFETS est fermé, et court exprès :\n  gold          or versé ou dépensé, sur la bourse de la compagnie\n  health        fraction des PV maximums, signée, pour toute l'équipe\n  items         nombre d'objets tirés à la profondeur courante\n  rarity_bonus  crans de rareté en plus sur ces objets-là\n  satchel_kept  fraction de la besace conservée — fuir coûte\n  combat        une rencontre s'intercale ici\n\nUne option avec `chance` a deux issues : `success` et `failure`. Sans `chance`, seul `success` s'applique. Une option dont le coût dépasse la bourse est proposée grisée, jamais cachée : savoir ce qu'on ne peut pas s'offrir fait partie de la décision.",
+  "_readme": "Les évènements du § 40 : marchand, autel, village, embuscade, ruines. Le coffre vient du § 27.\n\nLA LIGNE QUI GOUVERNE TOUT LE FICHIER : « les événements doivent créer des décisions ». Un évènement qui donne trente pièces d'or n'est pas un évènement, c'est une récompense déguisée en texte. CHAQUE ÉVÈNEMENT D'ICI OFFRE AU MOINS DEUX OPTIONS QUI S'EXCLUENT, et l'outil `verify_world` refuse celui qui n'en aurait qu'une, ou dont une option serait meilleure que l'autre sur toute la ligne.\n\nLES QUATRE MONNAIES DE L'ÉCHANGE, et il en faut plusieurs pour qu'un choix soit un choix : les PV (que rien ne rend, § 29), l'or (dont le royaume aura besoin, § 32), la besace (qui n'est pas encore à l'abri) et le risque (une chance déclarée). Un évènement qui n'échange que de l'or contre de l'or ne demande rien.\n\nLE VOCABULAIRE DES EFFETS est fermé, et court exprès :\n  gold          or versé ou dépensé, sur la bourse de la compagnie\n  health        fraction des PV maximums, signée, pour toute l'équipe\n  items         nombre d'objets tirés à la profondeur courante\n  rarity_bonus  crans de rareté en plus sur ces objets-là\n  satchel_kept  fraction de la besace conservée — fuir coûte\n  combat        une rencontre s'intercale ici\n\nUne option avec `chance` a deux issues : `success` et `failure`. Sans `chance`, seul `success` s'applique. Une option dont le coût dépasse la bourse est proposée grisée, jamais cachée : savoir ce qu'on ne peut pas s'offrir fait partie de la décision.\n\nLES ÉVÈNEMENTS SE FILTRENT PAR ACTE (T11.8). Un hameau qui vous ouvre ses portes au milieu des Dunes Ardentes n'a pas de sens, et une oasis dans les Terres Vertes non plus. Le champ `acts` dit où l'évènement peut sortir ; ABSENT, il sort partout — c'est le cas de l'autel, des ruines, du coffre et de l'embuscade, qui ne supposent rien du climat.\n\nÇA ÉTOFFE AUTANT QUE ÇA SITUE : l'acte 1 tire dans cinq évènements, l'acte 2 dans neuf. Avec une à deux étapes d'évènement par sortie, cinq suffisaient à se répéter en deux sorties.",
   "events": {
     "altar": {
       "name_key": "EVENT_ALTAR",
@@ -8,15 +8,25 @@
       "options": [
         {
           "label_key": "EVENT_ALTAR_BLOOD",
-          "success": { "health": -0.25, "items": 1, "rarity_bonus": 2 }
+          "success": {
+            "health": -0.25,
+            "items": 1,
+            "rarity_bonus": 2
+          }
         },
         {
           "label_key": "EVENT_ALTAR_GOLD",
-          "success": { "gold": -60, "items": 1, "rarity_bonus": 1 }
+          "success": {
+            "gold": -60,
+            "items": 1,
+            "rarity_bonus": 1
+          }
         },
         {
           "label_key": "EVENT_ALTAR_LEAVE",
-          "success": { "health": 0.05 }
+          "success": {
+            "health": 0.05
+          }
         }
       ]
     },
@@ -27,12 +37,21 @@
       "options": [
         {
           "label_key": "EVENT_VILLAGE_REST",
-          "success": { "health": 0.35 }
+          "success": {
+            "health": 0.35
+          }
         },
         {
           "label_key": "EVENT_VILLAGE_SMITH",
-          "success": { "gold": -80, "items": 1, "rarity_bonus": 1 }
+          "success": {
+            "gold": -80,
+            "items": 1,
+            "rarity_bonus": 1
+          }
         }
+      ],
+      "acts": [
+        1
       ]
     },
     "ruins": {
@@ -43,12 +62,19 @@
         {
           "label_key": "EVENT_RUINS_SEARCH",
           "chance": 0.6,
-          "success": { "items": 1, "rarity_bonus": 1 },
-          "failure": { "health": -0.15 }
+          "success": {
+            "items": 1,
+            "rarity_bonus": 1
+          },
+          "failure": {
+            "health": -0.15
+          }
         },
         {
           "label_key": "EVENT_RUINS_STONES",
-          "success": { "gold": 45 }
+          "success": {
+            "gold": 45
+          }
         }
       ]
     },
@@ -59,11 +85,16 @@
       "options": [
         {
           "label_key": "EVENT_AMBUSH_CHARGE",
-          "success": { "health": -0.1, "combat": true }
+          "success": {
+            "health": -0.1,
+            "combat": true
+          }
         },
         {
           "label_key": "EVENT_AMBUSH_FLEE",
-          "success": { "satchel_kept": 0.7 }
+          "success": {
+            "satchel_kept": 0.7
+          }
         }
       ]
     },
@@ -74,13 +105,150 @@
       "options": [
         {
           "label_key": "EVENT_CHEST_FORCE",
-          "success": { "health": -0.1, "items": 1, "rarity_bonus": 1 }
+          "success": {
+            "health": -0.1,
+            "items": 1,
+            "rarity_bonus": 1
+          }
         },
         {
           "label_key": "EVENT_CHEST_PICK",
           "chance": 0.5,
-          "success": { "items": 1, "rarity_bonus": 2 },
-          "failure": { "health": -0.15 }
+          "success": {
+            "items": 1,
+            "rarity_bonus": 2
+          },
+          "failure": {
+            "health": -0.15
+          }
+        }
+      ]
+    },
+    "oasis": {
+      "name_key": "EVENT_OASIS",
+      "text_key": "EVENT_OASIS_TEXT",
+      "weight": 22,
+      "acts": [
+        2
+      ],
+      "_note": "L'ÉCHANGE EST PV CONTRE UN COMBAT. S'attarder à l'ombre rend beaucoup plus que boire vite, mais une eau libre dans un désert est surveillée — et c'est le seul évènement de l'acte 2 qui rend assez de PV pour changer un « je rentre » en « je continue ».",
+      "options": [
+        {
+          "label_key": "EVENT_OASIS_LINGER",
+          "success": {
+            "health": 0.3,
+            "combat": true
+          }
+        },
+        {
+          "label_key": "EVENT_OASIS_DRINK",
+          "success": {
+            "health": 0.12
+          }
+        }
+      ]
+    },
+    "sandstorm": {
+      "name_key": "EVENT_SANDSTORM",
+      "text_key": "EVENT_SANDSTORM_TEXT",
+      "weight": 20,
+      "acts": [
+        2
+      ],
+      "_note": "DEUX MONNAIES, PAS DEUX MONTANTS : des PV contre de l'or. C'est la tension centrale du § 32 posée en une étape — l'or dépensé ici est un bâtiment qu'on ne monte pas.",
+      "options": [
+        {
+          "label_key": "EVENT_SANDSTORM_CROSS",
+          "success": {
+            "health": -0.18
+          }
+        },
+        {
+          "label_key": "EVENT_SANDSTORM_GUIDE",
+          "success": {
+            "gold": -60
+          }
+        }
+      ]
+    },
+    "caravan": {
+      "name_key": "EVENT_CARAVAN",
+      "text_key": "EVENT_CARAVAN_TEXT",
+      "weight": 20,
+      "acts": [
+        2
+      ],
+      "_note": "Creuser coûte des PV et rend un objet ; prendre l'eau en rend. Le pari du dessous — la moitié du temps la caravane est vide — évite d'en faire un distributeur.",
+      "options": [
+        {
+          "label_key": "EVENT_CARAVAN_DIG",
+          "chance": 0.55,
+          "success": {
+            "health": -0.1,
+            "items": 1,
+            "rarity_bonus": 1
+          },
+          "failure": {
+            "health": -0.14
+          }
+        },
+        {
+          "label_key": "EVENT_CARAVAN_WATER",
+          "success": {
+            "health": 0.08
+          }
+        }
+      ]
+    },
+    "bone_field": {
+      "name_key": "EVENT_BONE_FIELD",
+      "text_key": "EVENT_BONE_FIELD_TEXT",
+      "weight": 18,
+      "acts": [
+        2
+      ],
+      "_note": "Une expédition avant la vôtre n'est pas rentrée. Fouiller rapporte et réveille ce qui l'a tuée ; prendre les vivres ne rapporte que des PV. Le combat est le prix, pas le hasard.",
+      "options": [
+        {
+          "label_key": "EVENT_BONE_FIELD_LOOT",
+          "success": {
+            "items": 1,
+            "rarity_bonus": 1,
+            "combat": true
+          }
+        },
+        {
+          "label_key": "EVENT_BONE_FIELD_RATIONS",
+          "success": {
+            "health": 0.15
+          }
+        }
+      ]
+    },
+    "obelisk": {
+      "name_key": "EVENT_OBELISK",
+      "text_key": "EVENT_OBELISK_TEXT",
+      "weight": 18,
+      "acts": [
+        2
+      ],
+      "_note": "L'AUTEL DES DUNES, ET IL NE POSE PAS LA MÊME QUESTION. L'autel de l'acte 1 échange du sang contre de l'or ; celui-ci échange de l'or contre un BON objet, ou des PV contre un objet ordinaire. Le joueur riche et le joueur blessé n'y répondent pas pareil.",
+      "options": [
+        {
+          "label_key": "EVENT_OBELISK_TRIBUTE",
+          "success": {
+            "gold": -70,
+            "items": 1,
+            "rarity_bonus": 2
+          }
+        },
+        {
+          "label_key": "EVENT_OBELISK_BREAK",
+          "success": {
+            "health": -0.15,
+            "items": 1,
+            "rarity_bonus": 1
+          }
         }
       ]
     }

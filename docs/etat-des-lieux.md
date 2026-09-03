@@ -2307,6 +2307,8 @@ souvenir.**
 | **T11.3** | Un vrai écran de titre | `BOOT_TEMPORARY` : « Écran de test provisoire — le vrai menu viendra plus tard » | ✅ |
 | **T11.4** | Le déverrouillage et la fin | 5 régions sur 6 sont des coquilles vides, rien n'écrit jamais `unlocked` | ✅ |
 | **T11.7** | L'acte 2 — les Dunes Ardentes | la région n'avait que son nom | ✅ |
+| **T11.6** | De la couleur partout | six régions dans six boîtes identiques, aucun accent nulle part | ✅ |
+| **T11.8** | La passe de finition | 5 évènements pour deux actes, l'acte 2 payé comme l'acte 1 | ✅ |
 | **T11.5** | Apprendre à jouer | aucun tutoriel, aucune aide, aucune première partie guidée | ⬜ |
 
 **L'ordre est celui-là et il se justifie.** Le téléphone d'abord parce que
@@ -2693,6 +2695,92 @@ de bataille. Tout se règle dans `data/audio.json`, sans toucher au code.
 Et huit sons manquent toujours, listés comme tels dans la table : chute
 dans l'eau, boucle de feu, fanfare de victoire, montée de niveau.
 
+
+---
+
+### T11.8 — la passe de finition ✅
+
+**Ce qui a été relu, et ce que la relecture a trouvé.** La demande était
+« vérifie l'équilibrage, le contenu, améliore ce qui est léger ». Cinq
+choses sont sorties, dont un bug qui aurait arrêté net une partie
+gagnante.
+
+#### Le bug : « Partir pour Les Dunes Ardentes » ne partait pas
+
+`Expedition.depart()` demandait `Region.is_unlocked()`, c'est-à-dire le
+FICHIER, quand la carte du monde demandait la `Campaign`, c'est-à-dire la
+PARTIE. Les deux disaient la vérité, mais pas la même : la carte ouvrait
+les Dunes après le boss de l'acte 1, et le départ les refusait pour
+toujours. Le joueur voyait sa région déverrouillée, cliquait, et rien ne
+se passait — aucune erreur, aucun message.
+
+`depart()` reçoit désormais la campagne (`campaign: Campaign = null`) et
+lui pose la question. **Aucun test unitaire ne pouvait l'attraper** :
+chaque moitié était juste. Il a fallu écrire
+`tests/integration/test_act_transition.gd`, qui joue la chaîne entière —
+conclure l'acte 1, relire la campagne, partir pour l'acte 2. C'est la
+même leçon que `verify_world` en Phase 10, mais du côté des tests : une
+mécanique complète dont un maillon manque ne se voit qu'en la parcourant.
+
+#### Les évènements : cinq pour deux actes, c'est trois de trop par acte
+
+Sur une route de sept étapes, cinq évènements se répètent. Ils passent à
+dix, et **ils se filtrent par acte** : `village` n'a pas de sens dans un
+désert, et cinq évènements de sable (`oasis`, `sandstorm`, `caravan`,
+`bone_field`, `obelisk`) n'en ont pas dans une vallée verte. Les viviers
+font 5 pour l'acte 1 et 9 pour l'acte 2.
+
+`ExpeditionEvent.draw()` prend un `act` et `verify_world` refuse un vivier
+sous quatre entrées — en dessous, la route se répète quoi qu'on tire.
+Chacun des cinq nouveaux passe la règle qui existait déjà : **aucune
+option ne domine sur tous les axes**, sinon ce n'est pas un choix.
+
+#### La récompense d'acte : un désert doit payer plus qu'une vallée
+
+Rien ne le garantissait. Les Dunes paient `×1.35` d'or et `+1` de rareté,
+déclarés dans `regions.json` ; `Expedition._reward_bonus()` MULTIPLIE
+l'heure par la région, donc une nuit dans les Dunes cumule. Et
+`verify_world._check_rewards()` refuse qu'un acte tardif paie moins qu'un
+acte précoce — il saute les coquilles vides, qui n'ont pas encore de
+carte.
+
+#### `dunes_06` coûtait ZÉRO POUR CENT
+
+Cinq bêtes rapides, et l'équipe finissait intacte. Le réflexe est
+d'ajouter des ennemis ; la mesure disait autre chose. À dix cases du
+placement, l'essaim passait sa première ronde à COURIR et mourait à la
+seconde sans avoir frappé. **Ce n'était pas un problème de nombre mais de
+DISTANCE.** Rapprochées de trois cases, les mêmes bêtes coûtent 8 % — et
+la carte tient enfin sa promesse : choisir qui tuer d'abord.
+
+Une chauve-souris s'est retrouvée sur un rocher au passage ;
+`verify_maps` l'a dit tout de suite.
+
+#### La barre de défilement qui ne défile rien
+
+`vertical_scroll_mode = 2` (toujours visible) est obligatoire — une barre
+qui apparaît selon la hauteur du contenu fait osciller la mise en page et
+TOMBE le moteur en headless. Mais un rail vide dans un panneau, c'est un
+élément d'interface qui ne veut rien dire. `UiSkin.dress_scroll()` garde
+le mode 2 et met simplement l'ALPHA de la barre à zéro quand
+`page >= max_value`. La place reste réservée, la mise en page ne bouge
+pas, et le rail ne se montre que s'il sert.
+
+#### L'équilibrage, mesuré
+
+| | rondes | PV restants |
+|---|---|---|
+| acte 1 (9 cartes) | 4,7 | 81 % |
+| acte 2 (9 cartes) | 5,1 | 76 % |
+| **ensemble** | **4,9** | **78 %** |
+
+L'acte 2 est plus long ET plus coûteux que l'acte 1, dans les deux cas de
+peu — c'est ce qu'on veut d'un acte 2 qui n'est pas un acte 1 aux chiffres
+gonflés. Les dix-huit cartes tiennent dans la cible de 3 à 8 rondes. Le
+coût moyen d'une rencontre est de 22 %, contre les 20 % mesurés à la fin
+de la Phase 1 : l'acte 2 a tiré la moyenne, comme il devait.
+
+**812 tests passent, les dix vérificateurs sont verts.**
 
 ---
 

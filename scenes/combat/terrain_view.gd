@@ -44,10 +44,14 @@ var _sea_clock := 0.0
 var _decor_seed := 0
 
 
-func setup(combat_board: CombatBoard) -> void:
+## `ground` est le NOM d'une couleur de la palette, ou vide pour le
+## tileset tel que le pack l'a dessiné. C'est la région qui le déclare :
+## le banc d'essai et la bataille de défense n'en passent aucun, et c'est
+## une réponse valable — on se bat alors sur l'herbe des Terres Vertes.
+func setup(combat_board: CombatBoard, ground: StringName = &"") -> void:
 	board = combat_board
 	_tile_size = AssetTable.tile_size()
-	_tileset = _texture_of(AssetTable.sprite(&"terrain", &"tilemap_color1"))
+	_tileset = UiSkin.tinted_tileset(ground)
 	_water = _texture_of(AssetTable.sprite(&"terrain", &"water_background_color"))
 	# La mousse animée du pack (Water Foam) est un ANNEAU de rivage, pas une
 	# tuile d'eau : posée case par case elle donne des blocs de glace. Elle

@@ -39,17 +39,27 @@ theme_override_constants/separation = 8
 
 [node name="Top" type="HBoxContainer" parent="Margin/Column"]
 layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="HeaderFrame" type="PanelContainer" parent="Margin/Column/Top"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Header" type="HBoxContainer" parent="Margin/Column/Top/HeaderFrame"]
+layout_mode = 2
 theme_override_constants/separation = 20
 
-[node name="Title" type="Label" parent="Margin/Column/Top"]
+[node name="Title" type="Label" parent="Margin/Column/Top/HeaderFrame/Header"]
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_font_sizes/font_size = 26
 
-[node name="Stores" type="HBoxContainer" parent="Margin/Column/Top"]
+[node name="Stores" type="HBoxContainer" parent="Margin/Column/Top/HeaderFrame/Header"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
+size_flags_vertical = 4
 theme_override_constants/separation = 22
 
 [node name="Back" type="Button" parent="Margin/Column/Top"]
@@ -62,7 +72,13 @@ layout_mode = 2
 size_flags_vertical = 3
 theme_override_constants/separation = 14
 
-[node name="View" type="Control" parent="Margin/Column/Middle"]
+[node name="ViewFrame" type="PanelContainer" parent="Margin/Column/Middle"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="View" type="Control" parent="Margin/Column/Middle/ViewFrame"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
@@ -70,13 +86,17 @@ size_flags_vertical = 3
 clip_contents = true
 script = ExtResource("2_view")
 
-[node name="PanelScroll" type="ScrollContainer" parent="Margin/Column/Middle"]
+[node name="PanelFrame" type="PanelContainer" parent="Margin/Column/Middle"]
+unique_name_in_owner = true
 layout_mode = 2
-custom_minimum_size = Vector2(380, 0)
+custom_minimum_size = Vector2(400, 0)
+
+[node name="PanelScroll" type="ScrollContainer" parent="Margin/Column/Middle/PanelFrame"]
+layout_mode = 2
 horizontal_scroll_mode = 0
 vertical_scroll_mode = 2
 
-[node name="Panel" type="VBoxContainer" parent="Margin/Column/Middle/PanelScroll"]
+[node name="Panel" type="VBoxContainer" parent="Margin/Column/Middle/PanelFrame/PanelScroll"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3

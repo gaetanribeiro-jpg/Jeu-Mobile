@@ -27,6 +27,7 @@ const ENTRY_WIDTH_PX := 760
 func _ready() -> void:
 	theme = UiSkin.theme
 	UiSkin.lay_backdrop(self)
+	UiSkin.dress_scrolls(self)
 	_title.text = tr("CREDITS_TITLE")
 	_back.text = tr("COMBAT_BACK")
 	UiSkin.dress_button(_back, &"default")

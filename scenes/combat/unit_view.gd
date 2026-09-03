@@ -251,11 +251,14 @@ func _frames_for(animation: StringName) -> SpriteFrames:
 	var key := String(animation)
 	if _frames_cache.has(key):
 		return _frames_cache[key]
+	# ON DEMANDE LE DESSIN, PAS L'IDENTITÉ. `sand_serpent` se dessine avec
+	# `snake` : demander l'image à `class_id` rendait sept bêtes de l'acte 2
+	# en ombre nue, sans une seule erreur dans la console.
 	var frames: SpriteFrames = null
 	if unit.is_hero():
-		if AssetTable.has_unit_animation(unit.class_id, animation):
-			frames = SpriteFrameFactory.for_unit(unit.class_id, animation, color)
-	elif AssetTable.has_enemy_animation(unit.class_id, animation):
-		frames = SpriteFrameFactory.for_enemy(unit.class_id, animation)
+		if AssetTable.has_unit_animation(unit.sprite_id, animation):
+			frames = SpriteFrameFactory.for_unit(unit.sprite_id, animation, color)
+	elif AssetTable.has_enemy_animation(unit.sprite_id, animation):
+		frames = SpriteFrameFactory.for_enemy(unit.sprite_id, animation)
 	_frames_cache[key] = frames
 	return frames

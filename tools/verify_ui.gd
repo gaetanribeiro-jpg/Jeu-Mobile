@@ -310,6 +310,24 @@ func _check_accents() -> void:
 		taken[accent] = region_id
 	print("régions     : %s" % ", ".join(listed))
 
+	# LE SOL EST UNE AUTRE COULEUR QUE L'ACCENT (T11.8), et il a le droit
+	# d'être vide : les Terres Vertes se jouent sur l'herbe que le pack a
+	# dessinée. Ce qu'on refuse, c'est une couleur INVENTÉE — elle
+	# retomberait sur du noir et le plateau deviendrait illisible, sans
+	# qu'aucune erreur ne le dise.
+	var grounds := PackedStringArray()
+	for region_id: StringName in Region.ids():
+		var ground := Region.ground_of(region_id)
+		if ground.is_empty():
+			continue
+		grounds.append("%s→%s" % [region_id, ground])
+		if not UiTheme.has_color(ground):
+			_problems.append(
+				"le sol de « %s » veut la couleur « %s », absente de la palette"
+				% [region_id, ground]
+			)
+	print("sols        : %s" % (", ".join(grounds) if not grounds.is_empty() else "aucun"))
+
 
 ## L'écran de titre (T11.3) et son décor.
 ##

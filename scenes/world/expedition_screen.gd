@@ -101,6 +101,7 @@ func refresh() -> void:
 	# chercher ne pèse sur rien.
 	theme = UiSkin.theme
 	_lay_backdrop()
+	UiSkin.dress_scrolls(self)
 	_title.text = "%s · %s · %s" % [
 		tr(Region.name_key(_run.region_id)),
 		tr("EXPEDITION_STEP_OF") % [_run.depth() + 1, _run.length()],

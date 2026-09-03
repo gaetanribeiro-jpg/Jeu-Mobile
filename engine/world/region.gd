@@ -104,6 +104,25 @@ static func act_of(region_id: StringName) -> int:
 	return int(entry(region_id).get("act", 1))
 
 
+## Ce que la région ajoute au butin : { gold_multiplier, rarity_bonus }.
+##
+## À PROFONDEUR ÉGALE, TOUTES LES RÉGIONS RENDAIENT LE MÊME BUTIN. Rien
+## ne le disait et rien ne cassait : une région plus dure qui paie pareil
+## se joue parfaitement, elle n'a simplement aucune raison d'être choisie.
+## Le § 29 fait de « je rentre ou je continue » une question ; y aller
+## doit être la même question, à l'échelle de la campagne.
+##
+## MÊME FORME QUE LE BONUS DE L'HEURE (§ 36), et ils se CUMULENT : une
+## sortie de nuit au fond d'une région tardive est le sommet de la courbe
+## de risque, donc le sommet de celle de récompense.
+static func reward_bonus(region_id: StringName) -> Dictionary:
+	var block: Dictionary = entry(region_id).get("reward", {})
+	return {
+		"gold_multiplier": float(block.get("gold_multiplier", 1.0)),
+		"rarity_bonus": int(block.get("rarity_bonus", 0)),
+	}
+
+
 ## La couleur de la région, nommée dans la palette du thème.
 ##
 ## SIX RÉGIONS QUI SE RESSEMBLENT NE FONT PAS UNE CARTE, elles font une
@@ -116,6 +135,32 @@ static func act_of(region_id: StringName) -> int:
 ## change, aucune région ne bouge.
 static func accent_of(region_id: StringName) -> StringName:
 	return StringName(entry(region_id).get("accent", "stone"))
+
+
+## La couleur du SOL de ses combats, distincte de l'accent (T11.8).
+##
+## L'accent teinte un liseré et un carré de 48 px sur la carte du monde :
+## il lui faut du contraste. Le sol occupe tout l'écran pendant huit
+## rondes : il lui faut de la justesse. Les Terres Vertes rendent donc
+## vide — le tileset est déjà vert, et le désaturer pour le reteinter en
+## vert ne perdrait que des nuances.
+static func ground_of(region_id: StringName) -> StringName:
+	return StringName(entry(region_id).get("ground", ""))
+
+
+## À quelle région appartient cette carte ?
+##
+## Le banc d'essai ouvre une carte SANS région, et la bataille de défense
+## du royaume se fabrique sans fichier : les deux doivent répondre « pas
+## de région » sans se plaindre. C'est pour ça que la réponse est vide et
+## pas une erreur.
+static func of_map(map_id: StringName) -> StringName:
+	for region_id: StringName in ids():
+		if encounter_maps(region_id).has(map_id):
+			return region_id
+		if miniboss_map(region_id) == map_id or boss_map(region_id) == map_id:
+			return region_id
+	return &""
 
 
 static func is_unlocked(region_id: StringName) -> bool:

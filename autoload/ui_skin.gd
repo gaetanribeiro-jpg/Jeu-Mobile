@@ -257,6 +257,35 @@ func portrait(class_id: StringName, color: String) -> Texture2D:
 	return texture
 
 
+## Le visage d'un ennemi, par le nom de son SPRITE.
+##
+## LE PACK EN A VINGT ET UN, et le commentaire du HUD affirmait le
+## contraire — « 25 avatars humains et rien d'autre ». L'inventaire de
+## `CLAUDE.md` disait 46 portraits depuis toujours ; personne n'était allé
+## voir. La timeline montrait donc une LETTRE là où il y avait un visage,
+## et « G » ne distingue pas un gnoll d'un gnome.
+##
+## Chaque avatar est une image de 256 carrée, sans couleur de faction :
+## rien à recomposer, rien à teinter. On demande le sprite et pas
+## l'identifiant, pour la même raison que la vue de combat : `sand_serpent`
+## a le visage d'un `snake`.
+func enemy_portrait(sprite_id: StringName) -> Texture2D:
+	var cache := StringName("enemy_portrait|%s" % sprite_id)
+	if _textures.has(cache):
+		return _textures[cache]
+	if not AssetTable.has_enemy_animation(sprite_id, &"avatar"):
+		return null
+	var entry := AssetTable.enemy_animation(sprite_id, &"avatar")
+	var path := String(entry.get("path", ""))
+	if path.is_empty() or not ResourceLoader.exists(path):
+		return null
+	var texture: Texture2D = load(path)
+	if texture == null:
+		return null
+	_textures[cache] = texture
+	return texture
+
+
 ## Le fond de l'écran : un aplat sombre, et un motif carrelé par-dessus.
 ##
 ## UN APLAT NOIR EST FADE, et c'est le mot qu'a employé Gaetan. Rien n'y
@@ -314,6 +343,42 @@ func backdrop() -> Control:
 	weave.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	ground.add_child(weave)
 	return ground
+
+
+## Efface la barre de défilement quand il n'y a rien à faire défiler.
+##
+## POURQUOI PAS SIMPLEMENT LA MASQUER PAR SON MODE. Un `ScrollContainer`
+## dont la barre APPARAÎT selon la hauteur du contenu oscille : la barre
+## prend de la largeur, le texte se replie autrement, la hauteur change,
+## la barre disparaît, et le moteur empile un redessin par tour jusqu'au
+## signal 11. Le projet s'est payé trois heures là-dessus.
+##
+## D'OÙ CE DÉTOUR : le mode reste « toujours visible », donc la LARGEUR ne
+## bouge jamais et rien ne peut osciller ; on ne touche qu'à l'opacité.
+## Un rail plein hauteur sur un panneau vide n'est pas faux — c'est ce que
+## Godot dessine quand tout tient — mais il se lit comme un défaut, et sur
+## l'écran d'expédition il traversait un panneau vide de haut en bas.
+## Applique le traitement à TOUS les `ScrollContainer` d'un écran, pour la
+## même raison que le clic des boutons vit dans `dress_button` : le faire
+## un par un garantit qu'on en oublie un, et on en oublie toujours un.
+func dress_scrolls(root: Node) -> void:
+	if root is ScrollContainer:
+		dress_scroll(root as ScrollContainer)
+	for child: Node in root.get_children():
+		dress_scrolls(child)
+
+
+func dress_scroll(container: ScrollContainer) -> void:
+	var bar := container.get_v_scroll_bar()
+	if bar == null:
+		return
+	var refresh := func() -> void:
+		# `page` est ce qu'on voit, `max_value` ce qu'il y a. Égaux, tout
+		# tient à l'écran et la barre n'a rien à dire.
+		bar.modulate.a = 0.0 if bar.page >= bar.max_value else 1.0
+	refresh.call()
+	if not bar.changed.is_connected(refresh):
+		bar.changed.connect(refresh)
 
 
 ## Pose le fond sous un écran, en tenant compte de ce qu'il a déjà.
@@ -485,6 +550,122 @@ func terrain_swatch(tint: Color, side: int) -> Texture2D:
 	if side != tile:
 		cut.resize(side, side, Image.INTERPOLATE_NEAREST)
 	var texture := ImageTexture.create_from_image(cut)
+	_textures[cache] = texture
+	return texture
+
+
+## LE TERRAIN DE COMBAT PORTE LA COULEUR DE SA RÉGION (T11.8).
+##
+## Le pack livre cinq nuances de tileset, et elles sont TOUTES VERTES —
+## jaune-vert, vert clair, vert, kaki, sarcelle. Aucune ne fait du sable.
+## Les Dunes Ardentes se jouaient donc sur l'herbe des Terres Vertes, et
+## l'acte 2 ressemblait à l'acte 1 avant même le premier tour.
+##
+## C'est la règle de T11.6, appliquée à une image entière au lieu d'un
+## carré de 48 : on DÉSATURE puis on reteinte. Cinquième emploi de « une
+## source ne se teinte que si elle est claire ». La cohérence est un
+## bonus qu'on n'avait pas cherché : le carré de terre montré sur la carte
+## du monde et le sol du combat sortent maintenant de la même opération,
+## donc ils ne peuvent pas diverger.
+##
+## `ground` vide rend le tileset TEL QUEL. Les Terres Vertes sont vertes
+## parce que le pack les a dessinées vertes ; les désaturer pour les
+## reteinter en vert ne ferait que perdre des nuances.
+func tinted_tileset(ground: StringName) -> Texture2D:
+	var entry := AssetTable.sprite(&"terrain", &"tilemap_color1")
+	if entry.is_empty():
+		return null
+	var path := String(entry.get("path", ""))
+	if ground.is_empty():
+		return load(path) as Texture2D if ResourceLoader.exists(path) else null
+
+	var cache := StringName("tileset|%s" % ground)
+	if _textures.has(cache):
+		return _textures[cache]
+	var source := _load_image(path)
+	if source == null:
+		return null
+	var tint := UiTheme.color(ground)
+	_desaturate(source, true)
+	for y in source.get_height():
+		for x in source.get_width():
+			var pixel := source.get_pixel(x, y)
+			if pixel.a <= 0.0:
+				continue
+			source.set_pixel(x, y, Color(
+				pixel.r * tint.r, pixel.g * tint.g, pixel.b * tint.b, pixel.a
+			))
+	var texture := ImageTexture.create_from_image(source)
+	_textures[cache] = texture
+	return texture
+
+
+## L'icône d'une ressource, par la référence « catégorie/clé » que ses
+## données déclarent.
+##
+## LES QUATRE RÉFÉRENCES ÉTAIENT ÉCRITES ET VÉRIFIÉES DEPUIS TOUJOURS —
+## `verify_kingdom` refuse une ressource dont l'asset n'existe pas —, et
+## AUCUN écran ne les dessinait. Troisième fois que le projet trouve une
+## donnée cataloguée que personne n'affiche, après les 70 entrées `ui` de
+## T9.1 et les 21 visages d'ennemis de T11.8.
+##
+## Les tas du monde sont des images fixes de 64 : rien à recomposer. Le
+## réglage à ne pas rater est l'ÉCHELLE — un tas de bois dessiné pour une
+## case de plateau, réduit à la hauteur d'une ligne de texte, doit rester
+## en Nearest et sur un diviseur qui ne fasse pas baver le contour.
+func resource_icon(reference: String, side: int) -> Texture2D:
+	if reference.is_empty():
+		return null
+	var parts := reference.split("/", false)
+	if parts.size() != 2:
+		return null
+	var cache := StringName("res_icon|%s|%d" % [reference, side])
+	if _textures.has(cache):
+		return _textures[cache]
+	var entry := AssetTable.sprite(StringName(parts[0]), StringName(parts[1]))
+	if entry.is_empty():
+		return null
+	var image := _load_image(String(entry.get("path", "")))
+	if image == null:
+		return null
+	# Une feuille d'animation rendrait toutes ses images côte à côte : on
+	# n'en garde que la première, qui est la pose au repos.
+	if StringName(entry.get("kind", "")) == AssetTable.KIND_STRIP:
+		var frame_w := int(entry.get("frame_w", image.get_width()))
+		var frame_h := int(entry.get("frame_h", image.get_height()))
+		var cut := Image.create_empty(frame_w, frame_h, false, image.get_format())
+		cut.blit_rect(image, Rect2i(0, 0, frame_w, frame_h), Vector2i.ZERO)
+		image = cut
+	if image.is_compressed():
+		image.decompress()
+	image.convert(Image.FORMAT_RGBA8)
+
+	# ON RECADRE SUR LE DESSIN, PAS SUR LE FICHIER. `gold_resource` est une
+	# image de 128 dont la pièce n'occupe que 24 px au centre : réduite
+	# telle quelle à la hauteur d'une ligne, elle rendait un POINT de cinq
+	# pixels à côté de trois tas qui remplissaient leur case. Le pack ne
+	# cadre pas ses tas de la même façon, et rien ne l'y oblige.
+	var used := image.get_used_rect()
+	if used.size.x <= 0 or used.size.y <= 0:
+		return null
+	var drawing := Image.create_empty(used.size.x, used.size.y, false, image.get_format())
+	drawing.blit_rect(image, used, Vector2i.ZERO)
+
+	# Puis on l'inscrit dans un carré SANS le déformer : un tas de bois est
+	# large et bas, une pièce est ronde, et les étirer pour remplir la même
+	# boîte se verrait tout de suite.
+	var span := maxi(used.size.x, used.size.y)
+	var fitted := Vector2i(
+		maxi(1, used.size.x * side / span), maxi(1, used.size.y * side / span)
+	)
+	drawing.resize(fitted.x, fitted.y, Image.INTERPOLATE_NEAREST)
+	var square := Image.create_empty(side, side, false, Image.FORMAT_RGBA8)
+	square.fill(Color(0.0, 0.0, 0.0, 0.0))
+	square.blit_rect(
+		drawing, Rect2i(Vector2i.ZERO, fitted),
+		Vector2i((side - fitted.x) / 2, (side - fitted.y) / 2)
+	)
+	var texture := ImageTexture.create_from_image(square)
 	_textures[cache] = texture
 	return texture
 

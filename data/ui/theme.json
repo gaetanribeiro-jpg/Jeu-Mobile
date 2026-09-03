@@ -229,7 +229,8 @@
     "ability_card_width": 212,
     "detail_width": 200,
     "detail_height": 330,
-    "button_pad": 12
+    "button_pad": 12,
+  "resource_icon": 28
   },
   "surfaces": {
     "_note": "Chaque rôle dit QUEL asset du pack, à quelle RÉDUCTION, et de quelle TEINTE.\n\n`scale` est un diviseur ENTIER, et il n'y a pas d'exception à ça : le pack est du pixel art sur grille de 64, filtré en Nearest. Diviser par 2 fait tomber quatre pixels sur un ; diviser par 1,5 en fait tomber deux et demi, et la bordure bave. C'est aussi ce qui décide la taille des coins : un bouton de 72 px de haut ne peut pas porter des coins de 64, il lui faut du 32 — donc `scale: 2`.\n\n`desaturate` transforme la source en niveaux de gris AVANT de la teinter. Sans ça on ne pourrait pas sortir des deux couleurs du pack : multiplier un bouton bleu par de l'or donne du vert sale. Passé en gris, il prend n'importe quelle teinte proprement, et les six rôles ci-dessous sortent tous de la même image.",

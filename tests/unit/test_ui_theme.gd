@@ -278,3 +278,42 @@ func test_le_motif_du_fond_reste_sous_les_panneaux() -> void:
 			crest.get_luminance(), UiTheme.color(role).get_luminance(),
 			"la crête du motif doit rester sous « %s »" % role
 		)
+
+
+## LES QUATRE ICÔNES DE RESSOURCE ÉTAIENT DÉCLARÉES ET JAMAIS DESSINÉES
+## (T11.8). `verify_kingdom` vérifiait depuis toujours que le fichier
+## existe ; aucun écran ne l'affichait.
+func test_chaque_ressource_rend_une_icone_carree() -> void:
+	var side := UiTheme.metric(&"resource_icon")
+	assert_gt(side, 0, "le thème doit dire à quelle taille tenir une icône")
+	for resource_id: StringName in ResourceTable.ids():
+		var icon := UiSkin.resource_icon(ResourceTable.asset_of(resource_id), side)
+		assert_not_null(icon, "%s n'a pas d'icône" % resource_id)
+		if icon == null:
+			continue
+		assert_eq(icon.get_size(), Vector2(side, side), "%s : hors gabarit" % resource_id)
+
+
+## LE RECADRAGE EST LE POINT DÉLICAT. `gold_resource` est une image de 128
+## dont la pièce n'occupe que 24 px au centre : réduite telle quelle, elle
+## rendait un POINT à côté de trois tas qui remplissaient leur case. On
+## recadre donc sur le DESSIN, et le dessin doit toucher un bord du carré
+## — sinon c'est qu'on a de nouveau réduit du vide.
+func test_une_icone_remplit_son_carre() -> void:
+	var side := UiTheme.metric(&"resource_icon")
+	for resource_id: StringName in ResourceTable.ids():
+		var icon := UiSkin.resource_icon(ResourceTable.asset_of(resource_id), side)
+		if icon == null:
+			continue
+		var used := icon.get_image().get_used_rect()
+		assert_eq(
+			maxi(used.size.x, used.size.y), side,
+			"%s : le dessin doit toucher un bord du carré" % resource_id
+		)
+
+
+## Une référence vide — les habitants n'en ont pas — n'est pas une faute :
+## la barre rend alors le texte seul.
+func test_une_reference_vide_ne_rend_rien_sans_se_plaindre() -> void:
+	assert_null(UiSkin.resource_icon("", UiTheme.metric(&"resource_icon")))
+	assert_null(UiSkin.resource_icon("pas_une_reference", 28))
