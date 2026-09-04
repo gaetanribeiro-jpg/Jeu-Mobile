@@ -141,6 +141,13 @@ static func has_enemy_animation(enemy_id: StringName, animation: StringName) -> 
 
 
 ## Animation d'un ennemi. Les ennemis n'ont pas de couleur de faction.
+##
+## UNE BÊTE PEUT VENIR D'UNE AUTRE ORIGINE QUE LE PACK, et c'est le champ
+## `root` de son entrée qui le dit. Tiny Swords interdit la redistribution,
+## donc ses dossiers sont dans le `.gitignore` ; un dessin qui n'en vient
+## pas n'a aucune raison de partager ce sort et se versionne. Sans ce
+## champ, la seule façon d'ajouter une bête aurait été de la poser dans un
+## dossier ignoré — donc de la perdre au prochain clone.
 static func enemy_animation(enemy_id: StringName, animation: StringName) -> Dictionary:
 	var enemies: Dictionary = table().get("enemies", {})
 	var enemy: Dictionary = enemies.get(String(enemy_id), {})
@@ -152,7 +159,8 @@ static func enemy_animation(enemy_id: StringName, animation: StringName) -> Dict
 	if entry.is_empty():
 		push_error("AssetTable : l'ennemi « %s » n'a pas d'animation « %s »" % [enemy_id, animation])
 		return {}
-	return _resolved(root_of(&"enemies") + String(entry.get("file", "")), entry)
+	var root: String = root_of(StringName(enemy.get("root", "enemies")))
+	return _resolved(root + String(entry.get("file", "")), entry)
 
 
 ## Bâtiment, dans une couleur de faction. Renvoie { path, w, h }.

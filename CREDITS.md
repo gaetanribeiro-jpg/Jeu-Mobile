@@ -24,6 +24,7 @@ GUT est versionné dans le dépôt (`addons/gut/LICENSE.md` conservé intact).
 | Tiny Swords — Enemy Pack | Pixel Frog | idem (pack payant, 9,75 $) | 2026-08-29 |
 | UI Pack — Adventure (`assets/kenney/widgets/`) | Kenney (kenney.nl) | **CC0 1.0** — domaine public | 2026-09-01 |
 | 18 icônes de compétences (`assets/gameicons/abilities/`) | game-icons.net — Lorc (14), Delapouite (3), Caro Asercion (1) | **CC BY 3.0** — attribution OBLIGATOIRE | 2026-09-01 |
+| Le vampire (`assets/pixellab/Vampire/`) | produit pour ce jeu avec PixelLab (pixellab.ai) | **produite pour le projet**, aucune restriction de tiers | 2026-09-04 |
 
 **C'est la seule ligne du projet où l'attribution est une OBLIGATION et pas
 une politesse.** CC0 n'en demande aucune ; CC BY 3.0 en exige une. Les
@@ -38,6 +39,34 @@ Icônes retenues : `sword-wound`, `broadsword`, `shouting`, `axe-swing`,
 
 Le fond noir de chaque SVG a été retiré à l'import — c'est la seule
 modification, et CC BY l'autorise expressément.
+
+### Le vampire, quatrième régime
+
+`assets/pixellab/` **est dans le dépôt**, comme Kenney et game-icons, et
+pour la même raison : rien n'en interdit la redistribution. C'est le
+premier dessin produit POUR ce jeu plutôt que trouvé.
+
+Il existe parce que Tiny Swords ne dessine **aucun mort-vivant humanoïde**
+— le Crâne est un squelette flottant, et rien d'autre n'en approche. La
+règle de mélange ne bouge pas d'un pouce : **on ne mélange que là où le
+premier pack ne dessine rien.** C'est le même critère qui a autorisé la
+barre de défilement de Kenney et les glyphes de game-icons.
+
+Ce qui a permis qu'il ait l'air d'appartenir au pack tient en une mesure :
+**les vingt et une bêtes de Tiny Swords ne partagent qu'UNE couleur**,
+`#161c2e` — le contour à alpha 255, l'ombre au sol à 69. Rien d'autre. Un
+troll vert, un crâne beige et un minotaure gris font une famille par le
+TRAIT, pas par la palette. Le vampire a donc la sienne, tenue dans le
+registre mesuré du pack (saturation médiane 0,34, jamais plus de 0,62), et
+quatre de ses neuf teintes sont prises telles quelles sur des bêtes
+existantes — le noir bleuté et son rehaut chez le panda, le rouge chez le
+gobelin lancier, l'or partout.
+
+**Aucun fichier Tiny Swords n'a servi de source.** Ni image de style, ni
+retouche, ni décalque : le pack a été MESURÉ (palette, saturation, ombre,
+proportions, écart entre images d'une animation), et ce sont ces chiffres
+qui ont été donnés au générateur. Sa licence interdit la redistribution,
+donc un dérivé aurait été inversionnable — c'est-à-dire inutilisable ici.
 
 **Les assets Kenney SONT dans le dépôt, contrairement à Tiny Swords**, et la
 différence est la licence : CC0 autorise la redistribution, Pixel Frog
