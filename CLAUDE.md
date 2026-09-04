@@ -602,6 +602,41 @@ un test refusent que l'entrée disparaisse ou qu'un des trois auteurs
 cesse d'être nommé. Le liseré porte le RÉGIME de licence, comme un bouton
 porte son rôle.
 
+**LE PACK NE PARTAGE QU'UNE COULEUR (le vampire).** Les vingt et une
+bêtes n'ont en commun que `#161c2e` — le contour à alpha 255, l'ombre au
+sol à 69. Rien d'autre : chacune a ses 10 à 18 teintes propres. Un troll
+vert, un crâne beige et un minotaure gris font une famille par le TRAIT,
+pas par la palette, et c'est ce qui autorise une bête neuve. Cinq choses à
+ne pas défaire :
+- **Une entrée d'ennemi peut déclarer son `root`.** Tiny Swords vit dans
+  le `.gitignore` parce que sa licence l'exige ; `assets/pixellab/` EST
+  dans le dépôt, comme Kenney et game-icons. Sans ce champ, la seule façon
+  d'ajouter une bête était de la poser dans un dossier ignoré — donc de la
+  perdre au prochain clone. Quatrième régime d'assets.
+- **Le registre du pack se mesure : saturation médiane 0,34**, jamais plus
+  de 0,62, et 1,9 % seulement des couleurs au-dessus de 0,75. Les deux
+  tentatives refusées étaient à 0,83 et 0,92 — c'est ça, en chiffres,
+  « ça ne ressemble pas à Tiny Swords ».
+- **Les proportions sont CHIBI**, tête énorme sur corps court. Un premier
+  jet en proportions héroïques ne tient pas une seconde à côté du gnoll.
+- **Un idle du pack déplace 54 à 71 % de ses pixels.** Des poses de deux
+  pixels se font lisser jusqu'à 1 %, c'est-à-dire jusqu'à l'immobilité —
+  le défaut exact qu'on reprochait aux tentatives extérieures. Il faut des
+  poses franches.
+- **PAS D'OMBRE CUITE DANS UNE FEUILLE.** `unit_view` en dessine déjà une
+  sous chaque unité. Le pack cuit la sienne parce qu'il ne connaît pas
+  notre vue ; nous, non.
+
+**LE DESSIN N'EST PAS LA MÉCANIQUE.** Le vampire est commité, vérifié,
+testé jusqu'à la fabrique — et il n'entre dans aucun bestiaire. La
+question qu'il pose reste à écrire : sur vingt-huit bêtes, aucune ne
+remonte jamais. La tortue enseigne « il vaut mieux l'ignorer » ; un
+vampire qui se soigne de ce qu'il mord en est l'exact inverse, la seule
+qu'on ne peut pas garder pour la fin. Ça se branche sur un champ `drain`
+d'une attaque, comme `push` en T12.1 — et le piège est connu d'avance :
+soigner un ennemi rend le combat plus LONG, pas plus dur (T11.7), donc le
+gain doit être plafonné par ses PV maximum.
+
 **L'expédition se joue, sur PC.** Écran de titre → carte du monde →
 composition de l'équipe → départ → route du § 28 (combats, évènements,
 marchand, mini-boss, boss) → rentrer ou continuer.
