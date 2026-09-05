@@ -183,7 +183,10 @@ Les cinq manques qui touchent la vision sont analysés dans
 Ce que le pack **ne fournit pas** :
 - **pas de mage** → le Moine tient le rôle
 - **pas de sprite de pierre, de ferme, de scierie, de forge, de marché, de
-  taverne, d'écurie, de cavalerie, de mur ni de porte**
+  taverne, de mur ni de porte** — mais IL DESSINE DE LA CAVALERIE
+  (`extra/Pig Rider`, un gobelin monté, avec attaque), ce que ce carnet a
+  affirmé faux pendant tout le projet : la catégorie `extra` n'était pas
+  comptée
 - **aucune animation de mort** sauf pour le Troll → effet universel
   (flash, fondu, poussière)
 - une seule unité directionnelle, le **Lancer** (5 directions
@@ -601,6 +604,33 @@ exige l'attribution des dix-huit icônes de game-icons.net. `verify_ui` et
 un test refusent que l'entrée disparaisse ou qu'un des trois auteurs
 cesse d'être nommé. Le liseré porte le RÉGIME de licence, comme un bouton
 porte son rôle.
+
+**LA CROISSANCE DU JOUEUR EST ASYMÉTRIQUE, ET C'EST CE QUI DÉCIDE DU
+RÉÉTALONNAGE.** Mesuré avec le niveau et l'équipement que chaque région
+déclare attendre : ses points de vie montent de **×1,23 / ×1,54 / ×1,68**
+par acte, ses dégâts de **×1,10 / ×1,13 / ×1,17** seulement. C'est le § 47
+qui le veut — les statistiques sont des MODIFICATEURS dans une fourchette
+de 1 à 8, pas des multiplicateurs. Un héros devient donc bien plus
+résistant qu'il ne devient meurtrier.
+
+**IL FAUT MONTER LES DEUX AXES, et se tromper une fois le prouve.** Premier
+essai : dégâts ennemis ×1,20 / ×1,40 / ×1,25. Résultat 87 % → 85 % de PV,
+**courbe toujours plate** — parce que ces multiplicateurs suivaient à peu
+près la croissance des PV du joueur, donc maintenaient la menace
+CONSTANTE, et parce qu'à 4,8 rondes de moyenne les ennemis **meurent avant
+d'avoir frappé**. Les dégâts ne servent que si l'ennemi vit assez pour les
+porter. Donc : les DÉGÂTS dépassent la croissance des PV du joueur, les PV
+suivent la croissance de ses dégâts. Monter les PV SEULS resterait faux
+(ça allonge sans durcir) ; les monter AVEC les dégâts préserve le taux
+d'échange.
+
+Coût par acte après réétalonnage : **15 % → 20 % → 32 % → 32 %**, et 0,42
+personnage à terre par combat contre 0,03. **Le risque est à l'échelle de
+la SORTIE, pas de la rencontre**, et c'est le § 29 : à 32 % par combat et
+**0 % de PV rendus entre deux étapes**, une chaîne de cinq à huit
+rencontres est intenable au-delà de la troisième. « Rentrer ou continuer »
+a enfin des dents. Rendre une rencontre isolée perdable demanderait ~60 %
+par combat, et alors une chaîne de deux tuerait l'équipe.
 
 **L'INSTRUMENT D'ÉQUILIBRAGE MESURAIT LA MAUVAISE ÉQUIPE, PENDANT QUATRE
 ACTES.** `simulate_combats` jouait avec `Unit.from_hero_class` : des héros

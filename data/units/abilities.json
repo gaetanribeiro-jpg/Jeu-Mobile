@@ -470,7 +470,7 @@
   "area": {
    "shape": "single"
   },
-  "damage": 20,
+  "damage": 36,
   "scaling": "strength",
   "cooldown": 0,
   "note": "Plus fort que la lance du gobelin, mais SANS allonge : c'est l'échange qui définit la bête ordinaire des dunes."
@@ -485,7 +485,7 @@
   "area": {
    "shape": "single"
   },
-  "damage": 22,
+  "damage": 38,
   "scaling": "agility",
   "cooldown": 0,
   "note": "Frappe à l'AGILITÉ et pas à la force : le serpent est rapide, pas puissant, et sa statistique le dit. Combinée à sept PM, elle atteint la ligne arrière avant qu'elle ait joué."
@@ -500,7 +500,7 @@
   "area": {
    "shape": "single"
   },
-  "damage": 8,
+  "damage": 14,
   "scaling": "agility",
   "cooldown": 1,
   "status": {
@@ -519,7 +519,7 @@
   "area": {
    "shape": "single"
   },
-  "damage": 14,
+  "damage": 25,
   "scaling": "agility",
   "cooldown": 0,
   "note": "Une allonge de deux : elle mord depuis une case où le Guerrier ne la rejoint pas d'un pas. Le décrochage vient de ses six PM, pas de la compétence."
@@ -534,7 +534,7 @@
   "area": {
    "shape": "single"
   },
-  "damage": 16,
+  "damage": 29,
   "scaling": "strength",
   "cooldown": 0,
   "note": "Peu de dégâts pour beaucoup de points de vie : la tortue est un OBSTACLE, et un obstacle qui frapperait fort serait une brute. Le laisser inoffensif est ce qui rend « la contourner » jouable."
@@ -550,7 +550,7 @@
    "shape": "cross",
    "radius": 1
   },
-  "damage": 12,
+  "damage": 22,
   "scaling": "intelligence",
   "cooldown": 1,
   "leaves_terrain": "fire",
@@ -567,7 +567,7 @@
    "shape": "line",
    "length": 2
   },
-  "damage": 32,
+  "damage": 58,
   "scaling": "strength",
   "cooldown": 0,
   "note": "La charge du minotaure, en plus dur. Partagée avec l'ours : c'est la MÊME menace, et la reconnaître d'un boss à l'autre est ce qui fait qu'on apprend un bestiaire au lieu de le subir."
@@ -583,7 +583,7 @@
    "shape": "cross",
    "radius": 1
   },
-  "damage": 26,
+  "damage": 47,
   "scaling": "strength",
   "cooldown": 1,
   "note": "LA SECONDE COMPÉTENCE D'UN ENNEMI, une première dans le jeu. Avec `heavy_paw`, l'ours punit la file ET le groupe : il n'y a plus de formation sûre, seulement une formation qui perd moins."
@@ -595,7 +595,7 @@
   "action_points": 3,
   "range_min": 1,
   "range_max": 1,
-  "damage": 24,
+  "damage": 53,
   "area": {
    "shape": "single"
   },
@@ -609,7 +609,7 @@
   "action_points": 3,
   "range_min": 2,
   "range_max": 5,
-  "damage": 16,
+  "damage": 34,
   "area": {
    "shape": "single"
   },
@@ -623,7 +623,7 @@
   "action_points": 5,
   "range_min": 2,
   "range_max": 6,
-  "damage": 13,
+  "damage": 28,
   "area": {
    "shape": "cross",
    "radius": 1
@@ -638,7 +638,7 @@
   "action_points": 3,
   "range_min": 1,
   "range_max": 1,
-  "damage": 10,
+  "damage": 22,
   "status": {
    "id": "chilled",
    "duration": 1
@@ -656,7 +656,7 @@
   "action_points": 3,
   "range_min": 1,
   "range_max": 1,
-  "damage": 14,
+  "damage": 31,
   "push": 1,
   "area": {
    "shape": "single"
@@ -671,7 +671,7 @@
   "action_points": 3,
   "range_min": 2,
   "range_max": 5,
-  "damage": 15,
+  "damage": 33,
   "area": {
    "shape": "single"
   },
@@ -685,7 +685,7 @@
   "action_points": 5,
   "range_min": 1,
   "range_max": 1,
-  "damage": 26,
+  "damage": 56,
   "area": {
    "shape": "line",
    "length": 2
@@ -700,7 +700,7 @@
   "action_points": 5,
   "range_min": 1,
   "range_max": 2,
-  "damage": 34,
+  "damage": 74,
   "area": {
    "shape": "line",
    "length": 2
@@ -732,7 +732,7 @@
   "range_min": 4,
   "range_max": 9,
   "needs_line_of_sight": true,
-  "damage": 30,
+  "damage": 74,
   "area": {
    "shape": "single"
   },
@@ -747,7 +747,7 @@
   "range_min": 2,
   "range_max": 7,
   "needs_line_of_sight": true,
-  "damage": 18,
+  "damage": 42,
   "area": {
    "shape": "single"
   },
@@ -761,7 +761,7 @@
   "range_min": 4,
   "range_max": 10,
   "needs_line_of_sight": true,
-  "damage": 32,
+  "damage": 78,
   "area": {
    "shape": "cross",
    "radius": 1
@@ -777,7 +777,7 @@
   "range_min": 1,
   "range_max": 2,
   "needs_line_of_sight": true,
-  "damage": 26,
+  "damage": 63,
   "area": {
    "shape": "single"
   },
@@ -791,7 +791,7 @@
   "range_min": 1,
   "range_max": 1,
   "needs_line_of_sight": true,
-  "damage": 20,
+  "damage": 48,
   "area": {
    "shape": "single"
   },
@@ -805,7 +805,7 @@
   "range_min": 1,
   "range_max": 2,
   "needs_line_of_sight": true,
-  "damage": 34,
+  "damage": 81,
   "area": {
    "shape": "line",
    "length": 2
@@ -813,5 +813,6 @@
   "requires_not_moved": true,
   "cooldown": 1,
   "animation": "attack"
- }
+ },
+ "_scaling_note": "L'ÉCHELLE DES ENNEMIS SUIT CELLE DU JOUEUR, SUR DEUX AXES, et il a fallu se tromper une fois pour comprendre pourquoi les deux.\n\nMESURÉ, la croissance du joueur est ASYMÉTRIQUE : ses points de vie montent de ×1,23 / ×1,54 / ×1,68 par acte, ses dégâts de ×1,10 / ×1,13 / ×1,17 seulement. C'est la règle du § 47 qui le veut — les statistiques sont des MODIFICATEURS, pas des multiplicateurs, et elles tiennent dans une fourchette de 1 à 8. Un héros devient donc bien plus résistant qu'il ne devient meurtrier.\n\nPREMIER ESSAI : monter les dégâts ennemis de ×1,20 / ×1,40 / ×1,25. Résultat mesuré : 87 % → 85 % de PV, courbe toujours PLATE. Parce que ces multiplicateurs suivaient à peu près la croissance des PV du joueur, donc maintenaient la menace CONSTANTE — et parce qu'à 4,8 rondes de moyenne, les ennemis meurent avant d'avoir frappé : leurs dégâts ne servent que s'ils vivent assez pour les porter.\n\nDONC LES DEUX AXES. Les dégâts DÉPASSENT la croissance des PV du joueur, sinon rien ne monte ; les points de vie suivent la croissance de ses dégâts, sinon les dégâts ne sortent jamais. Monter les PV seuls resterait faux — ça allonge sans durcir, leçon de l'acte 2 — mais les monter AVEC les dégâts est ce qui préserve le taux d'échange.\n\nDERNIÈRE RETOUCHE, MESURÉE : l'acte 2 ne montait qu'à 18 % quand l'acte 1 en coûte 15, et l'acte 4 (30 %) passait SOUS l'acte 3 (32 %). Un acte plus tardif ne doit jamais coûter moins — même règle que pour le butin, que `verify_world` fait déjà respecter."
 }

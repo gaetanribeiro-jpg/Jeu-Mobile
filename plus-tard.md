@@ -40,8 +40,13 @@ n'est à réécrire le jour où on les ressort.
   premier ajout de classe post-MVP (§ 11). (2026-08-31)
 - **Le Moine comme classe distincte** — son sprite sert au Mage. Le jour où
   un vrai sprite de mage existe, le Moine redevient disponible. (2026-08-31)
-- **L'Écurie et la cavalerie** — aucun sprite monté dans le pack, ni
-  bâtiment ni unité. (2026-08-31)
+- ~~**L'Écurie et la cavalerie** — aucun sprite monté dans le pack~~ —
+  **FAUX, corrigé le 2026-09-05.** Le pack dessine un gobelin lancier
+  MONTÉ SUR UN SANGLIER (attente, course, attaque) et un sanglier seul,
+  dans la catégorie `extra` que l'inventaire des bêtes ne comptait pas.
+  La cavalerie ENNEMIE existe depuis le 2026-09-05 (acte 4). Reste
+  l'Écurie côté royaume, et une monture pour un héros : aucun sprite de
+  héros monté, seul le gobelin l'est. (2026-08-31, corrigé 2026-09-05)
 - **Les murs et les portes du royaume** — aucune tuile. La défense
   s'appuie sur les tours et le relief. (2026-08-31)
 
@@ -58,4 +63,39 @@ n'est à réécrire le jour où on les ressort.
 
 ## Idées en attente
 
-*(vide — à remplir au fil des sessions)*
+### Demandé par Gaetan, pas encore fait (2026-09-05)
+
+- **L'ascension des héros par la couleur** — Bleu → Violet → Or, trois
+  rangs. Un héros élevé change de couleur, donc on lit son rang d'un coup
+  d'œil. `Hero.color` existe déjà avec sa valeur par défaut `"Blue"` et
+  n'est câblé nulle part : sixième mécanique déclarée et jamais branchée.
+  **Décidé, pas commencé.** C'est ce qui donne enfin aux bâtiments une
+  réponse à « qu'est-ce que ça permet à mes héros ? ».
+- **La refonte de la ville** — le royaume existe (5 bâtiments × 5 niveaux,
+  4 chantiers, invasions, défense) mais il est mince : les bâtiments ne
+  font que monter des chiffres (`+1 force`), le recrutement n'offre aucun
+  choix (un bâtiment = une classe = un héros générique), 30 objets pour 25
+  cases de tableau, et 3 des 8 bâtiments du pack dorment (tour, 2 maisons).
+- **Les actes 5 et 6** — Terres Maudites (le vampire y est destiné, déjà
+  dessiné et versionné, dans aucun bestiaire) et Empire Noir (faction
+  humaine Noire, la seconde des deux couleurs réservées aux ennemis).
+- **Des objectifs variés dans l'ACTE 3** — 30 cartes sur 36 n'avaient que
+  « éliminer », l'acte 4 est corrigé, l'acte 3 ne l'est pas : ses neuf
+  cartes sont toutes « éliminer ».
+- **Des ennemis PERCHÉS en hauteur** — `hill` donne déjà +1 de portée et
+  +1 de dégâts, et aucune bête n'est posée dessus exprès. Idée de Gaetan,
+  à moitié faite : l'acte 4 a des collines, personne ne les tient.
+- **Changer de composition, avoir d'autres personnages** — suppose plus de
+  trois classes, ou un vivier de héros au-delà de l'équipe de quatre.
+  Aujourd'hui le roster EST l'équipe.
+
+### Constats ouverts, à trancher à l'œil par Gaetan
+
+- **Le rouge du sol de l'acte 4** est franc — plus saturé que le sable ou
+  le gel. Il distingue l'acte d'un coup d'œil ; huit rondes dessus, c'est
+  à juger. (2026-09-05)
+- **Le télégraphe violet du soin ennemi** — se lit-il comme une
+  information distincte du rouge de la menace, ou s'y noie-t-il ? Toute la
+  question de l'acte 4 en dépend. (2026-09-05)
+- **La palissade se lit mal sur le sol rouille** — le pack ne dessine
+  qu'un piquet de clôture, fin et pâle. (2026-09-05)

@@ -1,123 +1,132 @@
 {
-  "_readme": "LE BESTIAIRE DES DUNES ARDENTES (acte 2, T11.7).\n\nCHAQUE ENTRÉE DOIT POSER UNE QUESTION QUE L'ACTE 1 NE POSAIT PAS. Un acte 2 qui ne serait qu'un acte 1 aux chiffres gonflés n'apprend rien : le joueur rejoue le même combat plus lentement. Le champ `question` n'est pas décoratif — c'est le critère d'admission, et un ennemi qui n'en a pas de neuve n'a rien à faire ici.\n\nCE QUE L'ACTE 1 DEMANDAIT DÉJÀ : tenir une ligne (gobelin), aller chercher un tireur (gnoll, gnome à fronde), sortir d'une zone (chaman), encaisser une charge (troll, minotaure).\n\nCE QUE L'ACTE 2 AJOUTE : quelqu'un qui atteint la LIGNE ARRIÈRE dès la première ronde (le serpent), quelqu'un qui RALENTIT au lieu de blesser (l'araignée), quelqu'un qu'il faut CONTOURNER plutôt qu'abattre (la tortue), et quelqu'un qui frappe puis DÉCROCHE (la chauve-souris).\n\nTOUT EST DESSINÉ. Les six ordinaires, le mini-boss et le boss sortent du pack ennemi, qui compte vingt et une bêtes dont douze n'avaient jamais servi. Aucun sprite n'a été inventé, et aucune mécanique non plus : `chilled` et le feu au sol existent depuis la Phase 1.",
-
-  "lizard": {
-    "sprite": "lizard",
-    "role": "melee",
-    "hit_points": 85,
-    "action_points": 6,
-    "movement_points": 4,
-    "initiative": 5,
-    "strength": 5,
-    "agility": 3,
-    "intelligence": 1,
-    "defence": 3,
-    "abilities": ["lizard_bite"],
-    "question": "Le gobelin des dunes : il frappe plus fort que celui des Terres Vertes mais n'a AUCUNE allonge. Le tenir à deux cases le rend inoffensif — sauf qu'ici il n'y a ni forêt ni rivière pour tenir quoi que ce soit."
-  },
-
-  "sand_serpent": {
-    "sprite": "snake",
-    "role": "assassin",
-    "hit_points": 45,
-    "action_points": 6,
-    "movement_points": 7,
-    "initiative": 9,
-    "strength": 6,
-    "agility": 8,
-    "intelligence": 1,
-    "defence": 1,
-    "abilities": ["serpent_strike"],
-    "question": "SEPT PM ET L'INITIATIVE : il traverse la moitié du plateau avant que qui que ce soit ait joué, et il vise le fond. C'est le premier ennemi du jeu qui rend la ligne arrière indéfendable par la seule distance — l'Archer et le Mage doivent être protégés, pas seulement éloignés."
-  },
-
-  "dune_spider": {
-    "sprite": "spider",
-    "role": "skirmisher",
-    "hit_points": 55,
-    "action_points": 6,
-    "movement_points": 3,
-    "initiative": 6,
-    "strength": 2,
-    "agility": 6,
-    "intelligence": 2,
-    "defence": 2,
-    "abilities": ["web_spit"],
-    "question": "Elle ne blesse presque pas : elle RALENTIT. Un héros gelé arrive une ronde en retard, et une ronde de retard dans le désert, c'est la ligne arrière atteinte. C'est la première bête du jeu qu'on a intérêt à tuer pour ce qu'elle empêche, pas pour ce qu'elle fait."
-  },
-
-  "carrion_bat": {
-    "sprite": "giant_bat",
-    "role": "skirmisher",
-    "hit_points": 45,
-    "action_points": 6,
-    "movement_points": 6,
-    "initiative": 8,
-    "strength": 4,
-    "agility": 7,
-    "intelligence": 1,
-    "defence": 1,
-    "abilities": ["bat_swoop"],
-    "question": "Elle frappe et DÉCROCHE : six PM lui suffisent à venir, mordre et repartir hors de portée. La poursuivre casse la formation, l'ignorer coûte quatorze points par ronde. C'est le choix que le gnoll posait à distance, ramené au contact."
-  },
-
-  "bone_turtle": {
-    "sprite": "turtle",
-    "role": "blocker",
-    "hit_points": 130,
-    "action_points": 5,
-    "movement_points": 2,
-    "initiative": 3,
-    "strength": 4,
-    "agility": 1,
-    "intelligence": 1,
-    "defence": 8,
-    "abilities": ["shell_slam"],
-    "question": "HUIT DE DÉFENSE : elle encaisse le double de tout le reste et ne fait presque rien. La tuer coûte trois rondes qu'on n'a pas ; la contourner laisse une bête dans le dos. C'est le premier ennemi du jeu qu'il vaut mieux IGNORER, et c'est ce qui rend son rôle de barrage lisible."
-  },
-
-  "skull_wisp": {
-    "sprite": "skull",
-    "role": "caster",
-    "hit_points": 60,
-    "action_points": 6,
-    "movement_points": 3,
-    "initiative": 4,
-    "strength": 1,
-    "agility": 3,
-    "intelligence": 7,
-    "defence": 2,
-    "abilities": ["cinder_bolt"],
-    "question": "Le chaman des dunes, en pire : sa gerbe laisse du FEU sur la case touchée. Se serrer pour encaisser une zone devient se serrer sur un terrain qui brûle — les deux réponses de l'acte 1 se contredisent enfin."
-  },
-
-  "dune_panda": {
-    "sprite": "panda",
-    "role": "brute",
-    "hit_points": 240,
-    "action_points": 7,
-    "movement_points": 3,
-    "initiative": 3,
-    "strength": 8,
-    "agility": 2,
-    "intelligence": 1,
-    "defence": 5,
-    "abilities": ["heavy_paw"],
-    "question": "Le mini-boss. Il frappe en LIGNE comme le minotaure, mais il a une pose de garde dessinée : son télégraphe se lit sur le sprite avant de se lire sur le chiffre. Deux héros alignés devant lui, c'est deux héros à terre."
-  },
-
-  "dune_bear": {
-    "sprite": "bear",
-    "role": "brute",
-    "hit_points": 340,
-    "action_points": 8,
-    "movement_points": 4,
-    "initiative": 4,
-    "strength": 9,
-    "agility": 3,
-    "intelligence": 1,
-    "defence": 6,
-    "abilities": ["rending_swipe", "heavy_paw"],
-    "question": "Le boss. DEUX compétences, ce qu'aucun ennemi du jeu n'avait : une frappe en croix qui punit le groupe et une charge en ligne qui punit la file. Il n'y a plus de formation sûre — seulement une formation qui perd moins."
-  }
+ "_readme": "LE BESTIAIRE DES DUNES ARDENTES (acte 2, T11.7).\n\nCHAQUE ENTRÉE DOIT POSER UNE QUESTION QUE L'ACTE 1 NE POSAIT PAS. Un acte 2 qui ne serait qu'un acte 1 aux chiffres gonflés n'apprend rien : le joueur rejoue le même combat plus lentement. Le champ `question` n'est pas décoratif — c'est le critère d'admission, et un ennemi qui n'en a pas de neuve n'a rien à faire ici.\n\nCE QUE L'ACTE 1 DEMANDAIT DÉJÀ : tenir une ligne (gobelin), aller chercher un tireur (gnoll, gnome à fronde), sortir d'une zone (chaman), encaisser une charge (troll, minotaure).\n\nCE QUE L'ACTE 2 AJOUTE : quelqu'un qui atteint la LIGNE ARRIÈRE dès la première ronde (le serpent), quelqu'un qui RALENTIT au lieu de blesser (l'araignée), quelqu'un qu'il faut CONTOURNER plutôt qu'abattre (la tortue), et quelqu'un qui frappe puis DÉCROCHE (la chauve-souris).\n\nTOUT EST DESSINÉ. Les six ordinaires, le mini-boss et le boss sortent du pack ennemi, qui compte vingt et une bêtes dont douze n'avaient jamais servi. Aucun sprite n'a été inventé, et aucune mécanique non plus : `chilled` et le feu au sol existent depuis la Phase 1.",
+ "lizard": {
+  "sprite": "lizard",
+  "role": "melee",
+  "hit_points": 98,
+  "action_points": 6,
+  "movement_points": 4,
+  "initiative": 5,
+  "strength": 5,
+  "agility": 3,
+  "intelligence": 1,
+  "defence": 3,
+  "abilities": [
+   "lizard_bite"
+  ],
+  "question": "Le gobelin des dunes : il frappe plus fort que celui des Terres Vertes mais n'a AUCUNE allonge. Le tenir à deux cases le rend inoffensif — sauf qu'ici il n'y a ni forêt ni rivière pour tenir quoi que ce soit."
+ },
+ "sand_serpent": {
+  "sprite": "snake",
+  "role": "assassin",
+  "hit_points": 52,
+  "action_points": 6,
+  "movement_points": 7,
+  "initiative": 9,
+  "strength": 6,
+  "agility": 8,
+  "intelligence": 1,
+  "defence": 1,
+  "abilities": [
+   "serpent_strike"
+  ],
+  "question": "SEPT PM ET L'INITIATIVE : il traverse la moitié du plateau avant que qui que ce soit ait joué, et il vise le fond. C'est le premier ennemi du jeu qui rend la ligne arrière indéfendable par la seule distance — l'Archer et le Mage doivent être protégés, pas seulement éloignés."
+ },
+ "dune_spider": {
+  "sprite": "spider",
+  "role": "skirmisher",
+  "hit_points": 63,
+  "action_points": 6,
+  "movement_points": 3,
+  "initiative": 6,
+  "strength": 2,
+  "agility": 6,
+  "intelligence": 2,
+  "defence": 2,
+  "abilities": [
+   "web_spit"
+  ],
+  "question": "Elle ne blesse presque pas : elle RALENTIT. Un héros gelé arrive une ronde en retard, et une ronde de retard dans le désert, c'est la ligne arrière atteinte. C'est la première bête du jeu qu'on a intérêt à tuer pour ce qu'elle empêche, pas pour ce qu'elle fait."
+ },
+ "carrion_bat": {
+  "sprite": "giant_bat",
+  "role": "skirmisher",
+  "hit_points": 52,
+  "action_points": 6,
+  "movement_points": 6,
+  "initiative": 8,
+  "strength": 4,
+  "agility": 7,
+  "intelligence": 1,
+  "defence": 1,
+  "abilities": [
+   "bat_swoop"
+  ],
+  "question": "Elle frappe et DÉCROCHE : six PM lui suffisent à venir, mordre et repartir hors de portée. La poursuivre casse la formation, l'ignorer coûte quatorze points par ronde. C'est le choix que le gnoll posait à distance, ramené au contact."
+ },
+ "bone_turtle": {
+  "sprite": "turtle",
+  "role": "blocker",
+  "hit_points": 150,
+  "action_points": 5,
+  "movement_points": 2,
+  "initiative": 3,
+  "strength": 4,
+  "agility": 1,
+  "intelligence": 1,
+  "defence": 8,
+  "abilities": [
+   "shell_slam"
+  ],
+  "question": "HUIT DE DÉFENSE : elle encaisse le double de tout le reste et ne fait presque rien. La tuer coûte trois rondes qu'on n'a pas ; la contourner laisse une bête dans le dos. C'est le premier ennemi du jeu qu'il vaut mieux IGNORER, et c'est ce qui rend son rôle de barrage lisible."
+ },
+ "skull_wisp": {
+  "sprite": "skull",
+  "role": "caster",
+  "hit_points": 69,
+  "action_points": 6,
+  "movement_points": 3,
+  "initiative": 4,
+  "strength": 1,
+  "agility": 3,
+  "intelligence": 7,
+  "defence": 2,
+  "abilities": [
+   "cinder_bolt"
+  ],
+  "question": "Le chaman des dunes, en pire : sa gerbe laisse du FEU sur la case touchée. Se serrer pour encaisser une zone devient se serrer sur un terrain qui brûle — les deux réponses de l'acte 1 se contredisent enfin."
+ },
+ "dune_panda": {
+  "sprite": "panda",
+  "role": "brute",
+  "hit_points": 276,
+  "action_points": 7,
+  "movement_points": 3,
+  "initiative": 3,
+  "strength": 8,
+  "agility": 2,
+  "intelligence": 1,
+  "defence": 5,
+  "abilities": [
+   "heavy_paw"
+  ],
+  "question": "Le mini-boss. Il frappe en LIGNE comme le minotaure, mais il a une pose de garde dessinée : son télégraphe se lit sur le sprite avant de se lire sur le chiffre. Deux héros alignés devant lui, c'est deux héros à terre."
+ },
+ "dune_bear": {
+  "sprite": "bear",
+  "role": "brute",
+  "hit_points": 391,
+  "action_points": 8,
+  "movement_points": 4,
+  "initiative": 4,
+  "strength": 9,
+  "agility": 3,
+  "intelligence": 1,
+  "defence": 6,
+  "abilities": [
+   "rending_swipe",
+   "heavy_paw"
+  ],
+  "question": "Le boss. DEUX compétences, ce qu'aucun ennemi du jeu n'avait : une frappe en croix qui punit le groupe et une charge en ligne qui punit la file. Il n'y a plus de formation sûre — seulement une formation qui perd moins."
+ }
 }

@@ -3,7 +3,7 @@
  "siege_cannon": {
   "sprite": "siege_cannon",
   "role": "blocker",
-  "hit_points": 80,
+  "hit_points": 116,
   "action_points": 6,
   "movement_points": 0,
   "initiative": 3,
@@ -19,7 +19,7 @@
  "watch_tower": {
   "sprite": "watch_tower",
   "role": "blocker",
-  "hit_points": 200,
+  "hit_points": 290,
   "action_points": 6,
   "movement_points": 0,
   "initiative": 2,
@@ -35,7 +35,7 @@
  "repair_shed": {
   "sprite": "repair_shed",
   "role": "support",
-  "hit_points": 120,
+  "hit_points": 174,
   "action_points": 8,
   "movement_points": 0,
   "initiative": 4,
@@ -51,7 +51,7 @@
  "boar_lancer": {
   "sprite": "pig_rider",
   "role": "melee",
-  "hit_points": 115,
+  "hit_points": 167,
   "action_points": 6,
   "movement_points": 7,
   "initiative": 7,
@@ -67,7 +67,7 @@
  "war_pig": {
   "sprite": "war_pig",
   "role": "melee",
-  "hit_points": 75,
+  "hit_points": 109,
   "action_points": 6,
   "movement_points": 6,
   "initiative": 6,
@@ -83,7 +83,7 @@
  "great_bombard": {
   "sprite": "siege_cannon",
   "role": "blocker",
-  "hit_points": 240,
+  "hit_points": 348,
   "action_points": 8,
   "movement_points": 0,
   "initiative": 2,
@@ -99,7 +99,7 @@
  "the_boar_chief": {
   "sprite": "pig_rider",
   "role": "brute",
-  "hit_points": 280,
+  "hit_points": 406,
   "action_points": 10,
   "movement_points": 6,
   "initiative": 9,
