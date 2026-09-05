@@ -1,5 +1,5 @@
 {
- "_note": "LE BOIS BRÛLÉ : presque aucune couverture, et de la cavalerie. C'est l'inverse de la traversée — ici le terrain ne protège personne, et ce qui coûte n'est plus la distance mais la LENTEUR. Un seul canon, au fond, pour que rester ne soit pas gratuit non plus.",
+ "_note": "LE BOIS BRÛLÉ : presque aucune couverture, et de la cavalerie. C'est l'inverse de la traversée — ici le terrain ne protège personne, et ce qui coûte n'est plus la distance mais la LENTEUR. Un seul canon, au fond, pour que rester ne soit pas gratuit non plus.\n\nLE CANON EST À NEUF CASES, PAS ONZE. Posé au bord, il n'atteignait jamais la zone de placement : un emplacement hors de portée n'est pas un ennemi, c'est du décor. `verify_maps` l'a attrapé.",
  "act": 4,
  "name_key": "MAP_FER_03",
  "rows": [
@@ -89,7 +89,7 @@
   {
    "type": "siege_cannon",
    "cell": [
-    11,
+    9,
     4
    ]
   }

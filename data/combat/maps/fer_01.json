@@ -1,5 +1,5 @@
 {
- "_note": "LA TRAVERSÉE, et c'est la carte qui enseigne l'acte. Deux canons à neuf cases, une tour à sept, et rien qui vienne à vous : rester coûte trente par ronde sans rien rendre.\n\nLES BOSQUETS SONT LA RÉPONSE, et c'est la première fois du jeu. `forest` coupe la ligne de vue ET retire un point de dégâts, déclaré depuis la Phase 1 et jamais employé comme COUVERTURE — il ne servait qu'à gêner l'ennemi. Ils sont posés en quinconce : on avance de l'un à l'autre, jamais en ligne droite.",
+ "_note": "LA TRAVERSÉE, et c'est la carte qui enseigne l'acte. Deux canons à neuf cases, une tour à sept, et rien qui vienne à vous : rester coûte trente par ronde sans rien rendre.\n\nLES BOSQUETS SONT LA RÉPONSE, et c'est la première fois du jeu. `forest` coupe la ligne de vue ET retire un point de dégâts, déclaré depuis la Phase 1 et jamais employé comme COUVERTURE — il ne servait qu'à gêner l'ennemi. Ils sont posés en quinconce : on avance de l'un à l'autre, jamais en ligne droite.\n\nLES EMPLACEMENTS SONT À PORTÉE DE LA ZONE DE PLACEMENT, et ça a failli ne pas être le cas. Treize sur dix-huit avaient été posés au bord du plateau par réflexe — un canon à onze cases d'une équipe qu'il atteint à neuf ne tire jamais. Pour une bête MOBILE la distance est un délai ; pour un emplacement, c'est une annulation, et `fer_04` rendait 100 % des PV pour cette seule raison. `verify_maps` le refuse désormais.",
  "act": 4,
  "name_key": "MAP_FER_01",
  "rows": [
@@ -54,21 +54,21 @@
   {
    "type": "siege_cannon",
    "cell": [
-    10,
+    9,
     2
    ]
   },
   {
    "type": "siege_cannon",
    "cell": [
-    10,
+    9,
     6
    ]
   },
   {
    "type": "watch_tower",
    "cell": [
-    9,
+    8,
     4
    ]
   },

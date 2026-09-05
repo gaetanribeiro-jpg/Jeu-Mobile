@@ -32,6 +32,7 @@ func _init() -> void:
 		_check(map, width, height)
 
 	_check_decorations()
+	_check_emplacements(ids)
 	_check_vocabulary(ids)
 	_check_reachable(ids)
 	_check_defence_map()
@@ -183,6 +184,50 @@ func _check_reachable(ids: Array[StringName]) -> void:
 ## Le seuil est bas exprès : il refuse l'acte MONOTONE, pas l'acte sobre.
 ## Trois terrains, c'est déjà une carte de rocher, une de relief et une
 ## d'obstacle destructible — de quoi poser trois questions différentes.
+## UN EMPLACEMENT HORS DE PORTÉE N'EST PAS UN ENNEMI, C'EST DU DÉCOR.
+##
+## Une bête qui ne peut pas bouger — zéro PM — ne se rapprochera jamais.
+## Si sa portée n'atteint aucune case de placement, elle ne tirera pas tant
+## que le joueur ne sera pas venu à elle, et un joueur qui n'a aucune raison
+## d'avancer n'ira nulle part. `fer_04` rendait 100 % des PV pour cette
+## seule raison : trois canons posés au bord du plateau, à onze cases d'une
+## équipe qu'ils atteignent à neuf.
+##
+## C'EST L'INVERSE DE LA LEÇON SUR LES OBSTACLES. Pour une bête mobile, la
+## distance n'est qu'un délai — elle finit par arriver. Pour un
+## emplacement, la distance est une ANNULATION.
+func _check_emplacements(ids: Array[StringName]) -> void:
+	for id: StringName in ids:
+		var map := CombatMap.load_map(id)
+		if map == null or map.board == null or map.deployment_cells.is_empty():
+			continue
+		for unit: Unit in map.board.active_units(Unit.Side.ENEMIES):
+			if unit.max_movement_points > 0:
+				continue
+			# UN SOUTIEN N'A PAS À TIRER : son métier est d'être derrière.
+			# La règle ne vise que ce qui est censé faire mal.
+			var reach := 0
+			var armed := false
+			for ability_id: StringName in unit.abilities:
+				var ability := Ability.of(ability_id)
+				if ability != null and ability.is_attack():
+					armed = true
+					reach = maxi(reach, ability.range_max)
+			if not armed:
+				continue
+			var nearest := -1
+			for cell: Vector2i in map.deployment_cells:
+				var gap := map.board.grid.distance(unit.cell, cell)
+				if nearest < 0 or gap < nearest:
+					nearest = gap
+			if nearest > reach:
+				_problems.append(
+					"%s : « %s » ne bouge pas et porte à %d, mais la zone de "
+					% [id, unit.class_id, reach]
+					+ "placement est à %d cases. Il ne tirera jamais." % nearest
+				)
+
+
 func _check_vocabulary(ids: Array[StringName]) -> void:
 	var minimum := 3
 	var per_act := {}
