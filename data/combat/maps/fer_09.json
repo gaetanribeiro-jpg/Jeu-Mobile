@@ -1,0 +1,90 @@
+{
+ "_note": "LE MINI-BOSS, ET IL SE BAT EN LE FAISANT MARCHER. Son marteau exige de n'avoir pas bougé ; un ennemi annonce APRÈS s'être déplacé, donc trente-huit en ligne de deux ne s'annoncent que depuis un prévôt planté.\n\nLA COUR EST OUVERTE EXPRÈS. Sur une carte encombrée il n'aurait jamais de raison de bouger et le marteau tomberait tout le temps ; ici, reculer d'une case l'oblige à choisir entre avancer et frapper.\n\nUN REMPART DE MOINS. Deux remparts à cent cinquante devant un aumônier faisaient neuf rondes : trois cents points de vie qu'on recoud, c'est de la durée, pas de la difficulté. La question du prévôt est son marteau conditionnel ; tout ce qui allonge la fouille l'enterre.",
+ "act": 4,
+ "name_key": "MAP_FER_09",
+ "rows": [
+  "............",
+  "..#......#..",
+  "............",
+  "....rrrr....",
+  "....r..r....",
+  "....rrrr....",
+  "............",
+  "..#......#..",
+  "............"
+ ],
+ "objective": {
+  "kind": "eliminate"
+ },
+ "deployment_cells": [
+  [
+   0,
+   2
+  ],
+  [
+   0,
+   3
+  ],
+  [
+   0,
+   4
+  ],
+  [
+   0,
+   5
+  ],
+  [
+   0,
+   6
+  ],
+  [
+   1,
+   3
+  ],
+  [
+   1,
+   4
+  ],
+  [
+   1,
+   5
+  ]
+ ],
+ "enemies": [
+  {
+   "type": "iron_provost",
+   "cell": [
+    6,
+    4
+   ]
+  },
+  {
+   "type": "iron_bulwark",
+   "cell": [
+    5,
+    4
+   ]
+  },
+  {
+   "type": "iron_chaplain",
+   "cell": [
+    9,
+    4
+   ]
+  },
+  {
+   "type": "iron_marksman",
+   "cell": [
+    10,
+    2
+   ]
+  },
+  {
+   "type": "iron_marksman",
+   "cell": [
+    10,
+    6
+   ]
+  }
+ ]
+}

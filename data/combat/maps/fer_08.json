@@ -1,0 +1,97 @@
+{
+ "_note": "LE BOSS, ET SON RALLIEMENT RECOUD CINQ DES SIENS EN CROIX DE DEUX. La réponse n'est pas de frapper plus fort : c'est de ne plus laisser cinq blessés côte à côte, donc de finir POUR DE BON avant d'entamer ailleurs.\n\nIL JOUE AVANT TOUT LE MONDE — douze d'initiative contre huit à l'Archer. Sa première annonce tombe avant le premier geste du joueur, là où le Troll jouait toujours en dernier.\n\nLE REDAN EST EN PALISSADE : le joueur peut l'ouvrir, mais chaque planche coûte des PA que le Ralliement rendra en points de vie.\n\nUN TIREUR DE MOINS. Neuf rondes mesurées pour un plafond de huit, et réduire les PV du Capitaine n'y avait rien changé : ce n'est pas sa barre de vie qui allonge, c'est le nombre de corps à traverser avec DEUX soigneurs derrière — l'aumônier et son Ralliement à lui. On enlève un corps, pas des points de vie.",
+ "act": 4,
+ "name_key": "MAP_FER_08",
+ "rows": [
+  "............",
+  "......pppp..",
+  "......p.....",
+  "......p.....",
+  "............",
+  "......p.....",
+  "......p.....",
+  "......pppp..",
+  "............"
+ ],
+ "objective": {
+  "kind": "eliminate"
+ },
+ "deployment_cells": [
+  [
+   0,
+   2
+  ],
+  [
+   0,
+   3
+  ],
+  [
+   0,
+   4
+  ],
+  [
+   0,
+   5
+  ],
+  [
+   0,
+   6
+  ],
+  [
+   1,
+   3
+  ],
+  [
+   1,
+   4
+  ],
+  [
+   1,
+   5
+  ]
+ ],
+ "enemies": [
+  {
+   "type": "the_gilded_captain",
+   "cell": [
+    9,
+    4
+   ]
+  },
+  {
+   "type": "iron_bulwark",
+   "cell": [
+    7,
+    4
+   ]
+  },
+  {
+   "type": "iron_pikeman",
+   "cell": [
+    8,
+    3
+   ]
+  },
+  {
+   "type": "iron_pikeman",
+   "cell": [
+    8,
+    5
+   ]
+  },
+  {
+   "type": "iron_chaplain",
+   "cell": [
+    10,
+    4
+   ]
+  },
+  {
+   "type": "iron_marksman",
+   "cell": [
+    10,
+    1
+   ]
+  }
+ ]
+}

@@ -25,6 +25,9 @@ const ROLE_BLOCKER := &"blocker"
 const ROLE_BRUTE := &"brute"
 ## Vise une classe précise et l'atteint coûte que coûte.
 const ROLE_ASSASSIN := &"assassin"
+## Se tient derrière les siens et les recoud. Il fuit le contact comme un
+## tirailleur, mais ce qui le place n'est pas sa cible : c'est son blessé.
+const ROLE_SUPPORT := &"support"
 
 var _rng: CombatRng
 
@@ -84,16 +87,70 @@ func intent_here(board: CombatBoard, unit: Unit, taunting: Array[int] = []) -> C
 ## annonce le coup le plus fort qu'il puisse porter : c'est ce qui rend le
 ## télégraphe utile — un chiffre bas ne vaudrait pas la peine d'être lu.
 func _abilities_of(unit: Unit) -> Array[Ability]:
+	return _sorted_by_cost(unit, func(ability: Ability) -> bool: return ability.is_attack())
+
+
+## Les soins de l'unité, du plus cher au moins cher. Même ordre que les
+## attaques et pour la même raison : on annonce le geste le plus fort.
+func _mends_of(unit: Unit) -> Array[Ability]:
+	return _sorted_by_cost(
+		unit, func(ability: Ability) -> bool: return ability.kind == Ability.KIND_HEAL
+	)
+
+
+func _sorted_by_cost(unit: Unit, keep: Callable) -> Array[Ability]:
 	var out: Array[Ability] = []
 	for ability_id: StringName in unit.abilities:
 		var ability := Ability.of(ability_id)
-		if ability != null and ability.is_attack():
+		if ability != null and keep.call(ability):
 			out.append(ability)
 	out.sort_custom(func(a: Ability, b: Ability) -> bool:
 		if a.action_points != b.action_points:
 			return a.action_points > b.action_points
 		return a.id < b.id)
 	return out
+
+
+## Le soin qu'on peut porter depuis cette case, et à qui. Rend
+## { ability, ally } ou {} — jamais un soin sur quelqu'un d'intact, sinon
+## le soigneur passerait son tour à recoudre des gens qui vont bien.
+##
+## LA RÈGLE EST SOBRE, comme celle de la brèche : on recoud le plus
+## blessé, point. Attendre le bon moment serait plus malin que le jeu n'a
+## besoin, et surtout ça brouillerait la question posée au joueur — tant
+## qu'il a entamé quelqu'un, ce soigneur le recoudra. C'est le `cooldown`,
+## déclaré en données, qui borne la chose ; pas une ruse de l'IA.
+## L'allié à qui il manque le plus. Les égalités se départagent par
+## identifiant, comme partout ailleurs : l'IA doit rester déterministe.
+func _most_wounded(board: CombatBoard, unit: Unit) -> Unit:
+	var wounded: Unit = null
+	var missing := 0
+	for ally: Unit in board.active_units(unit.side):
+		var lack := ally.max_hit_points - ally.hit_points
+		if lack <= 0:
+			continue
+		if lack > missing or (lack == missing and _lower_id(ally, wounded)):
+			missing = lack
+			wounded = ally
+	return wounded
+
+
+func _best_mend_from(
+	board: CombatBoard, unit: Unit, from: Vector2i, budget: int
+) -> Dictionary:
+	var wounded := _most_wounded(board, unit)
+	if wounded == null:
+		return {}
+
+	for ability: Ability in _mends_of(unit):
+		if ability.action_points > budget or not _is_available(unit, ability):
+			continue
+		if not ability.is_distance_in_range(board.grid.distance(from, wounded.cell)):
+			continue
+		if ability.needs_line_of_sight and not board.has_line_of_sight(from, wounded.cell):
+			continue
+		return {"ability": ability, "ally": wounded}
+	return {}
 
 
 ## La meilleure compétence utilisable sur cette cible depuis cette case,
@@ -108,7 +165,7 @@ func _best_ability_from(
 	for ability: Ability in _abilities_of(unit):
 		if ability.action_points > budget:
 			continue
-		if not unit.is_ready(ability.id):
+		if not _is_available(unit, ability):
 			continue
 		if not ability.is_distance_in_range(distance):
 			continue
@@ -118,7 +175,18 @@ func _best_ability_from(
 	return null
 
 
+## LE SOIN PASSE AVANT LE COUP, et c'est ce qui fait le rôle. Un soigneur
+## qui frapperait tant qu'il a une cible à portée ne soignerait jamais :
+## il en a toujours une. La hiérarchie est donc explicite, et elle vaut
+## pour tout le monde — une bête qui porte un soin ET une attaque recoud
+## d'abord.
 func _intent_from_here(board: CombatBoard, unit: Unit, target: Unit) -> CombatIntent:
+	var mend := _best_mend_from(board, unit, unit.cell, unit.max_action_points)
+	if not mend.is_empty():
+		var care: Ability = mend["ability"]
+		var ally: Unit = mend["ally"]
+		return CombatIntent.support_cell(unit.id, care.id, unit.cell, ally.cell)
+
 	var ability := _best_ability_from(
 		board, unit, target, unit.cell, unit.max_action_points
 	)
@@ -152,7 +220,7 @@ func _breach_intent(board: CombatBoard, unit: Unit, target: Unit) -> CombatInten
 	for ability: Ability in _abilities_of(unit):
 		if ability.action_points > unit.max_action_points or not ability.is_attack():
 			continue
-		if not unit.is_ready(ability.id):
+		if not _is_available(unit, ability):
 			continue
 		for cell: Vector2i in board.targetable_cells(unit, ability):
 			if board.breakable_cells(unit, ability, cell).is_empty():
@@ -244,6 +312,19 @@ func _choose_cell(board: CombatBoard, unit: Unit, target: Unit) -> Vector2i:
 
 
 func _score_cell(board: CombatBoard, unit: Unit, target: Unit, cell: Vector2i) -> float:
+	# CE QUI PLACE UN SOIGNEUR N'EST PAS SA CIBLE, C'EST SON BLESSÉ, et il
+	# lui faut donc son propre barème — pas un bonus ajouté à celui des
+	# autres.
+	#
+	# LE BONUS AJOUTÉ NE SUFFISAIT PAS, ET C'EST MESURÉ : un aumônier n'a
+	# aucune ATTAQUE, donc `_useful_range` vaut 1 et la retombée
+	# « se rapprocher de la portée utile » le tirait au CONTACT, dix points
+	# par case. Il est parti de (8,4) à (4,4), droit sur le Guerrier. Un
+	# bonus constant de deux mille ne pèse rien contre une pente : les deux
+	# cases pouvaient soigner, donc il ne les départageait pas.
+	if unit.role == ROLE_SUPPORT:
+		return _score_support_cell(board, unit, cell)
+
 	var distance := board.grid.distance(cell, target.cell)
 	var ability := _best_ability_from(board, unit, target, cell, unit.max_action_points)
 	var score := 0.0
@@ -275,6 +356,32 @@ func _score_cell(board: CombatBoard, unit: Unit, target: Unit, cell: Vector2i) -
 	return score
 
 
+## Le barème d'un soigneur : pouvoir recoudre d'abord, se tenir loin
+## ensuite, et à défaut rejoindre son blessé.
+func _score_support_cell(board: CombatBoard, unit: Unit, cell: Vector2i) -> float:
+	var score := 0.0
+	if not _best_mend_from(board, unit, cell, unit.max_action_points).is_empty():
+		score += 1000.0
+	else:
+		# Hors de portée de tout le monde : on se rapproche du plus blessé,
+		# pas du héros le plus proche. C'est la seule pente qu'un soigneur
+		# doit suivre.
+		var patient := _most_wounded(board, unit)
+		if patient != null:
+			score -= float(board.grid.distance(cell, patient.cell)) * 10.0
+	# Reculer, comme un tirailleur : sa portée ne sert à rien s'il meurt.
+	var nearest := -1
+	for hero: Unit in board.active_units(Unit.Side.HEROES):
+		var gap := board.grid.distance(cell, hero.cell)
+		if nearest < 0 or gap < nearest:
+			nearest = gap
+		if gap <= 1:
+			score -= 50.0
+	if nearest >= 0:
+		score += float(nearest) * 0.5
+	return score
+
+
 ## Portée maximale que cet ennemi sait exploiter, toutes compétences
 ## confondues. C'est vers là qu'il se rapproche quand il ne peut pas
 ## frapper.
@@ -287,6 +394,27 @@ func _useful_range(unit: Unit) -> int:
 
 func _is_ranged(unit: Unit) -> bool:
 	return _useful_range(unit) > 1
+
+
+## Ce que cet ennemi a le droit d'annoncer, maintenant.
+##
+## `requires_not_moved` ÉTAIT IGNORÉ PAR L'IA, et c'était un mensonge :
+## `Ability.can_be_used` le refuse au joueur, mais l'ennemi choisissait sa
+## compétence sans jamais le lire — il se serait déplacé PUIS aurait porté
+## un coup réservé à qui reste planté. Personne ne s'en apercevait parce
+## qu'aucune bête ne portait le champ, exactement comme `KIND_HEAL`,
+## `KIND_PUSH` et les 70 entrées `ui` avant elles.
+##
+## L'ordre de l'activation lui donne son sens : l'ennemi ANNONCE après
+## s'être déplacé. Un coup qui exige de n'avoir pas bougé ne s'annonce
+## donc que depuis une bête qui s'est plantée — et le joueur le lit sur le
+## télégraphe avant qu'il ne tombe.
+func _is_available(unit: Unit, ability: Ability) -> bool:
+	if not unit.is_ready(ability.id):
+		return false
+	if ability.requires_not_moved and unit.has_moved:
+		return false
+	return true
 
 
 func _lower_id(candidate: Unit, current: Unit) -> bool:

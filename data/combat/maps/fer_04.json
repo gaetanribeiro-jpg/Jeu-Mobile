@@ -1,0 +1,97 @@
+{
+ "_note": "LA BOUE ÉTAIT ENTRE LES DEUX CAMPS, donc gratuite : 90 % de PV en huit rondes, l'équipe tirait pendant que les sapeurs pataugeaient. Elle est maintenant SOUS le placement et devant lui — avancer coûte, rester coûte aussi puisque le tireur porte à sept.\n\nET DEUX TIREURS, PAS UN. Déplacer la boue du côté du joueur n'a rien changé : 90 % des PV encore. La boue ne coûte qu'à qui MARCHE, et un joueur qui attend ne marche pas — c'est la leçon de T12.1 dans sa forme la plus nue. Ce qui coûte à un joueur immobile est la PORTÉE, et elle seule. Le rempart cède sa place au second tireur.\n\nTROIS SAPEURS, ET LEUR PIOCHE EN AJOUTE. La carte pose une bande de boue ; eux en laissent là où l'équipe vient de passer. C'est la seule carte du jeu où le terrain EMPIRE en cours de combat — et elle n'a de sens que si l'équipe a une raison d'avancer, ce que les deux tireurs lui donnent.",
+ "act": 4,
+ "name_key": "MAP_FER_04",
+ "rows": [
+  "bbb.........",
+  "bbbb........",
+  "bbbb........",
+  "bbbbb.......",
+  "bbbb........",
+  "bbbbb.......",
+  "bbbb........",
+  "bbbb........",
+  "bbb........."
+ ],
+ "objective": {
+  "kind": "eliminate"
+ },
+ "deployment_cells": [
+  [
+   0,
+   2
+  ],
+  [
+   0,
+   3
+  ],
+  [
+   0,
+   4
+  ],
+  [
+   0,
+   5
+  ],
+  [
+   0,
+   6
+  ],
+  [
+   1,
+   3
+  ],
+  [
+   1,
+   4
+  ],
+  [
+   1,
+   5
+  ]
+ ],
+ "enemies": [
+  {
+   "type": "iron_sapper",
+   "cell": [
+    5,
+    3
+   ]
+  },
+  {
+   "type": "iron_sapper",
+   "cell": [
+    5,
+    5
+   ]
+  },
+  {
+   "type": "iron_sapper",
+   "cell": [
+    6,
+    4
+   ]
+  },
+  {
+   "type": "iron_marksman",
+   "cell": [
+    8,
+    2
+   ]
+  },
+  {
+   "type": "iron_marksman",
+   "cell": [
+    8,
+    6
+   ]
+  },
+  {
+   "type": "iron_chaplain",
+   "cell": [
+    7,
+    4
+   ]
+  }
+ ]
+}

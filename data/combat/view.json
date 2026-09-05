@@ -241,7 +241,12 @@
    0.45
   ],
   "_deep_snow_note": "La neige profonde des Montagnes Gelées — le MÊME terrain que le sable mouvant, à deux PM la case, et il ne peut pas se peindre pareil. Le brun du sable posé sur de la glace donnait une bande de BOUE au milieu d'un col enneigé. Éclaircie et refroidie : une congère renvoie la lumière, elle ne l'avale pas.",
-  "deep_snow": [0.86, 0.93, 1.0, 0.4],
+  "deep_snow": [
+   0.86,
+   0.93,
+   1.0,
+   0.4
+  ],
   "moment_day": [
    1.0,
    1.0,
@@ -320,7 +325,33 @@
    4.0,
    1.0
   ],
-  "_note": "Toutes les couleurs du COMBAT. Celles de l'interface hors combat vivent dans data/ui/theme.json : deux fichiers parce que ce sont deux métiers — le ressenti d'un coup n'est pas la lisibilité d'un menu."
+  "_note": "Toutes les couleurs du COMBAT. Celles de l'interface hors combat vivent dans data/ui/theme.json : deux fichiers parce que ce sont deux métiers — le ressenti d'un coup n'est pas la lisibilité d'un menu.",
+  "mend": [
+   0.887,
+   0.55,
+   1.0,
+   0.3
+  ],
+  "mend_border": [
+   0.925,
+   0.7,
+   1.0,
+   0.85
+  ],
+  "mend_badge_border": [
+   0.912,
+   0.65,
+   1.0,
+   1.0
+  ],
+  "_note_mend": "LE SOIN ANNONCÉ A SA PROPRE TEINTE, ET ELLE EST MESURÉE. 285° est la seule libre de la couche : 75° la séparent de la plus proche couleur saturée. Le rouge dit « tu vas prendre », le bleu-blanc « tu vas finir là », le vert l'objectif, l'or « c'est à lui » — un soin ennemi est une CINQUIÈME information et ne peut emprunter aucune des quatre. Le vert aurait été le réflexe : c'est exactement celui de l'objectif.",
+  "churned_mud": [
+   0.09,
+   0.1,
+   0.14,
+   0.85
+  ],
+  "_churned_mud_note": "LA BOUE DES TERRES BRISÉES, ET SON ALPHA EST MESURÉ. `quicksand` est un BRUN et le sol de l'acte est un brun-rouge : sur la capture, la boue ne se séparait du sol que de 11 points de luminance sur 255 — invisible, pour un terrain qui coûte deux PM. Sixième variante de « une source ne se teinte que si elle est claire » : un brun ne teinte pas un brun.\n\nLE CALIBRE VIENT DE CE QUI MARCHE DÉJÀ : la congère du Gel se sépare de son sol de 24,4 points. Celle-ci est réglée à 24,0 — froide et sombre, donc elle se sépare par la teinte ET par la clarté. Réglé à l'œil elle serait restée trop discrète : le premier essai « visiblement mieux » ne donnait que 7 points."
  },
  "sizes": {
   "highlight_inset_px": 3.0,
@@ -394,9 +425,11 @@
   "_note": "La teinte d'un terrain, déclinée par la couleur de SOL de la région — même mécanisme que `terrain_decorations_by_ground`, et même retombée : ce qui n'est pas listé garde la teinte par défaut. Une seule couleur par terrain valait tant qu'un seul acte l'employait.",
   "frost": {
    "mud": "deep_snow"
+  },
+  "rust": {
+   "mud": "churned_mud"
   }
  },
-
  "terrain_decorations": {
   "_note": "Sprite posé par-dessus la tuile de base : [catégorie, clé] de data/assets.json. Une troisième valeur choisit l'image d'une bande d'animation — la première image d'un feu n'est qu'une étincelle de quelques pixels, invisible sur une case de 64. Une quatrième et une cinquième donnent [colonne, rangée] pour une entrée de type atlas. Le pack ne fournit ni pont ni ruine : la palissade sert de planches, les ossements de ruine. La boue n'a AUCUN sprite : elle se dessine comme de l'herbe, ce qui est un piège — aucune carte ne l'utilise pour l'instant, et il faudra une teinte avant qu'une carte le fasse.",
   "forest": [
@@ -476,6 +509,17 @@
     "extra",
     "skull_decorations_bones_01"
    ]
-  }
+  },
+  "rust": {
+   "forest": [
+    "extra",
+    "dead_tree_dead_tree"
+   ],
+   "ruin": [
+    "extra",
+    "skull_decorations_skull_spike_02"
+   ]
+  },
+  "_note_rust": "LES TERRES BRISÉES PRENNENT LA QUATRIÈME IMAGE D'OSSEMENTS. La famille en compte CINQ — `bones_01/02/03`, `skull_spike_01/02` — et les actes en ont déjà pris quatre : `bones_02` par défaut (Terres Vertes), `bones_03` aux Dunes, `bones_01` au Gel, `skull_spike_01` aux Dunes pour la palissade. Il en reste UNE pour les actes 5 et 6, qui devront donc partager ou se distinguer autrement. C'est le premier vivier de décors du pack qu'on épuise."
  }
 }

@@ -380,6 +380,105 @@
      }
     }
    ]
+  },
+  "abandoned_redoubt": {
+   "name_key": "EVENT_ABANDONED_REDOUBT",
+   "text_key": "EVENT_ABANDONED_REDOUBT_TEXT",
+   "weight": 22,
+   "acts": [
+    4
+   ],
+   "_note": "LE BOIS D'UN FORT VAUT AU ROYAUME CE QU'IL NE VAUT PAS ICI. La ligne de forts est le décor de l'acte ; la démonter est la seule façon d'en tirer quelque chose. L'autre option paie en PV, et le § 29 tranche selon ce qu'il reste — même équilibre que la cabane du col, transposé.",
+   "options": [
+    {
+     "label_key": "EVENT_ABANDONED_REDOUBT_STRIP",
+     "success": {
+      "gold": 85
+     }
+    },
+    {
+     "label_key": "EVENT_ABANDONED_REDOUBT_CAMP",
+     "success": {
+      "health": 0.2
+     }
+    }
+   ]
+  },
+  "company_deserter": {
+   "name_key": "EVENT_COMPANY_DESERTER",
+   "text_key": "EVENT_COMPANY_DESERTER_TEXT",
+   "weight": 20,
+   "acts": [
+    4
+   ],
+   "_note": "UN DÉSERTEUR VEND CE QU'IL SAIT. Payer rend deux crans de rareté à l'étape suivante : l'information vaut ce qu'elle évite. Le dépouiller rend son équipement tout de suite — mais il se défend, et ça coûte.\n\nLES DEUX OPTIONS NE SE PAIENT PAS DANS LA MÊME MONNAIE, et c'est ce qui en fait un choix : l'une coûte de l'or, l'autre des forces. `verify_world` a refusé la première écriture, où dépouiller dominait payer sur toute la ligne — gratuit ET rentable.",
+   "options": [
+    {
+     "label_key": "EVENT_COMPANY_DESERTER_PAY",
+     "success": {
+      "gold": -60,
+      "rarity_bonus": 2
+     }
+    },
+    {
+     "label_key": "EVENT_COMPANY_DESERTER_STRIP",
+     "success": {
+      "health": -0.06,
+      "items": 1
+     }
+    }
+   ]
+  },
+  "field_hospital": {
+   "name_key": "EVENT_FIELD_HOSPITAL",
+   "text_key": "EVENT_FIELD_HOSPITAL_TEXT",
+   "weight": 20,
+   "acts": [
+    4
+   ],
+   "_note": "L'INFIRMERIE DE LA COMPAGNIE, PILLÉE À MOITIÉ. Le seul évènement du jeu qui rende des fioles ET des PV : c'est l'acte où l'ennemi se soigne, et le joueur doit pouvoir répondre sur le même terrain. Fouiller à fond coûte du temps, donc des forces.",
+   "options": [
+    {
+     "label_key": "EVENT_FIELD_HOSPITAL_RANSACK",
+     "success": {
+      "health": -0.08,
+      "items": 2
+     }
+    },
+    {
+     "label_key": "EVENT_FIELD_HOSPITAL_REST",
+     "success": {
+      "health": 0.18
+     }
+    }
+   ]
+  },
+  "paymaster_chest": {
+   "name_key": "EVENT_PAYMASTER_CHEST",
+   "text_key": "EVENT_PAYMASTER_CHEST_TEXT",
+   "weight": 18,
+   "acts": [
+    4
+   ],
+   "_note": "LE COFFRE DU PAYEUR SOUS UN PAN DE MUR. Le seul évènement de l'acte qui TIRE : deux chances sur trois d'un vrai magot, une sur trois de faire s'effondrer le reste du mur. L'autre option ne rend presque rien et ne risque rien — c'est le pari du § 29 en miniature.",
+   "options": [
+    {
+     "label_key": "EVENT_PAYMASTER_CHEST_DIG",
+     "chance": 0.66,
+     "success": {
+      "gold": 190
+     },
+     "failure": {
+      "health": -0.16
+     }
+    },
+    {
+     "label_key": "EVENT_PAYMASTER_CHEST_SCRAPE",
+     "success": {
+      "gold": 35
+     }
+    }
+   ]
   }
  }
 }

@@ -34,6 +34,15 @@ var ghost_cell: Vector2i = Vector2i(-1, -1)
 ## { cellule → dégâts annoncés }
 var threat: Dictionary = {}
 
+## { cellule → points de vie qu'un ennemi va RENDRE à un allié }.
+##
+## Cinquième information de la couche, et elle ne peut emprunter la
+## couleur d'aucune des quatre autres : le rouge dit « tu vas prendre », le
+## bleu-blanc « tu vas finir là », le vert l'objectif, l'or « c'est à lui ».
+## Sans elle, « qui tuer d'abord » se poserait à l'aveugle devant un
+## soigneur — l'inverse exact de ce que le § 39 promet.
+var mend: Dictionary = {}
+
 ## { cellule → dégâts de l'attaque en cours de prévisualisation }
 var preview_damage: Dictionary = {}
 
@@ -62,7 +71,7 @@ func clear_selection() -> void:
 
 
 func _process(delta: float) -> void:
-	if threat.is_empty() and shove_cells.is_empty():
+	if threat.is_empty() and shove_cells.is_empty() and mend.is_empty():
 		return
 	_pulse += delta
 	queue_redraw()
@@ -92,7 +101,7 @@ func _draw() -> void:
 ## La menace pulse doucement : c'est ce qui attire l'œil dessus en
 ## premier, avant même la lecture du chiffre.
 func _draw_threat() -> void:
-	if threat.is_empty() and shove_cells.is_empty():
+	if threat.is_empty() and shove_cells.is_empty() and mend.is_empty():
 		return
 	var period := maxf(ViewSettings.duration(&"telegraph_pulse"), 0.01)
 	var wave := 0.5 + 0.5 * sin(_pulse * TAU / period)
@@ -121,12 +130,29 @@ func _draw_threat() -> void:
 	# se perd derrière un sprite ; il lui faut donc sa pastille, dessinée
 	# par-dessus tout le reste, dans le coin de la case pour ne pas masquer
 	# ce qui s'y trouve.
+	# LE SOIN, dans la seule teinte que la couche n'employait pas, et son
+	# chiffre porte un « + » : « 20 » sur une case ennemie se lirait comme
+	# une menace de vingt, ce qui est le contraire de ce qui se passe.
+	if not mend.is_empty():
+		var care := ViewSettings.color(&"mend")
+		care.a *= 0.7 + 0.3 * wave
+		var care_border := ViewSettings.color(&"mend_border")
+		for cell: Vector2i in mend.keys():
+			if grid.contains(cell):
+				_fill([cell] as Array[Vector2i], care, care_border)
+
 	var badge_border := ViewSettings.color(&"telegraph_badge_border")
 
 	for cell: Vector2i in threat.keys():
 		if not grid.contains(cell):
 			continue
 		_badge(cell, str(int(threat[cell])), badge_border)
+
+	var mend_badge := ViewSettings.color(&"mend_badge_border")
+	for cell: Vector2i in mend.keys():
+		if not grid.contains(cell):
+			continue
+		_badge(cell, "+%d" % int(mend[cell]), mend_badge)
 
 
 ## Pastille chiffrée dans le coin d'une case, dessinée par-dessus tout.

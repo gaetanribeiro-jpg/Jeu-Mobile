@@ -29,6 +29,7 @@ const ENEMY_PATHS: Array[String] = [
 	"res://data/enemies/act1.json",
 	"res://data/enemies/act2.json",
 	"res://data/enemies/act3.json",
+	"res://data/enemies/act4.json",
 ]
 
 ## Les deux camps et les deux états d'une unité. Stockés en `int` plutôt
@@ -74,6 +75,23 @@ var sprite_id: StringName = &""
 ## Vide = une bête, cherchée dans la table des ennemis. C'est ce champ,
 ## et pas une devinette sur le nom, qui dit dans quelle table regarder.
 var sprite_color: String = ""
+
+## Variante de dessin, quand le pack en propose plusieurs pour un même
+## sprite. Vide = la version nue.
+##
+## LE PAWN PORTE QUATRE OUTILS — hache, pioche, marteau, couteau — chacun
+## avec son attente, sa course et son animation d'interaction. C'est la
+## seule famille du pack qui se décline autrement que par la couleur, et
+## c'est ce qui la sauve : mesuré, la couleur de faction ne change que
+## **7,9 %** des pixels d'un Pawn (contre 51 % pour un Lancier et 49 % pour
+## un Archer). Un Pawn jaune et un Pawn violet sont donc le même dessin ;
+## un Pawn à la pioche et un Pawn au marteau, non.
+##
+## La règle est un SUFFIXE, pas une table : le pack nomme déjà
+## `idle_pickaxe`, `run_pickaxe`, `interact_pickaxe`. Une variante qui
+## n'existe pas retombe sur l'animation nue plutôt que de ne rien dessiner
+## — la leçon des sept bêtes en ombre nue de T11.8.
+var sprite_variant: String = ""
 
 var side: int = Side.HEROES
 var cell: Vector2i = Vector2i.ZERO
@@ -241,6 +259,7 @@ static func from_stats(
 	unit.class_id = class_to_use
 	unit.sprite_id = StringName(stats.get("sprite", class_to_use))
 	unit.sprite_color = String(stats.get("sprite_color", ""))
+	unit.sprite_variant = String(stats.get("sprite_variant", ""))
 	unit.side = unit_side
 	unit.cell = at
 	unit.max_hit_points = int(stats.get("hit_points", 0))
@@ -471,6 +490,7 @@ func to_dictionary() -> Dictionary:
 		"class": String(class_id),
 		"sprite": String(sprite_id),
 		"sprite_color": sprite_color,
+		"sprite_variant": sprite_variant,
 		"side": int(side),
 		"x": cell.x,
 		"y": cell.y,
@@ -506,6 +526,7 @@ static func from_dictionary(data: Dictionary) -> Unit:
 	# le sprite pour tout l'acte 1 : la retombée est juste.
 	unit.sprite_id = StringName(data.get("sprite", data.get("class", "")))
 	unit.sprite_color = String(data.get("sprite_color", ""))
+	unit.sprite_variant = String(data.get("sprite_variant", ""))
 	unit.side = int(data.get("side", Side.HEROES))
 	unit.cell = Vector2i(int(data.get("x", 0)), int(data.get("y", 0)))
 	unit.max_hit_points = int(data.get("max_hit_points", 0))

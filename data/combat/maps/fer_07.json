@@ -1,0 +1,97 @@
+{
+ "_note": "LA RUINE FAIT PRENDRE UN DE PLUS, DES DEUX CÔTÉS. Sur une carte qui n'est que ça, chaque coup porte un cran au-dessus — ce qui aide le joueur autant que la Compagnie, sauf que la Compagnie a un aumônier.\n\nC'EST LA CARTE OÙ LE SOIN COMPTE LE PLUS, et c'est voulu : la question de l'acte se pose là dans sa forme la plus nue.\n\nRAPPROCHÉE DE DEUX COLONNES. Neuf rondes mesurées pour un plafond de huit : la carte n'était pas dure, elle était longue. Quatrième fois du projet qu'une carte se corrige en DISTANCE.",
+ "act": 4,
+ "name_key": "MAP_FER_07",
+ "rows": [
+  "..rr....rr..",
+  "..rr....rr..",
+  "....rrrr....",
+  "....rrrr....",
+  "rrrr....rrrr",
+  "....rrrr....",
+  "....rrrr....",
+  "..rr....rr..",
+  "..rr....rr.."
+ ],
+ "objective": {
+  "kind": "eliminate"
+ },
+ "deployment_cells": [
+  [
+   0,
+   2
+  ],
+  [
+   0,
+   3
+  ],
+  [
+   0,
+   5
+  ],
+  [
+   0,
+   6
+  ],
+  [
+   1,
+   3
+  ],
+  [
+   1,
+   4
+  ],
+  [
+   1,
+   5
+  ],
+  [
+   2,
+   4
+  ]
+ ],
+ "enemies": [
+  {
+   "type": "iron_chaplain",
+   "cell": [
+    6,
+    4
+   ]
+  },
+  {
+   "type": "iron_bulwark",
+   "cell": [
+    4,
+    4
+   ]
+  },
+  {
+   "type": "iron_pikeman",
+   "cell": [
+    5,
+    2
+   ]
+  },
+  {
+   "type": "iron_pikeman",
+   "cell": [
+    5,
+    6
+   ]
+  },
+  {
+   "type": "iron_marksman",
+   "cell": [
+    8,
+    3
+   ]
+  },
+  {
+   "type": "iron_sapper",
+   "cell": [
+    7,
+    5
+   ]
+  }
+ ]
+}

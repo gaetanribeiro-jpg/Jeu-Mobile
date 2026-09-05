@@ -1,0 +1,97 @@
+{
+ "_note": "UN OBSTACLE ENTRE LES DEUX CAMPS EST GRATUIT POUR LE JOUEUR. Premier écrit de l'acte : un anneau de ruines au MILIEU, la Compagnie dedans. Mesuré à 93 % de PV en huit rondes — l'équipe tirait pendant que les mercenaires traversaient un à un. C'est la leçon de T12.1 (« un terrain qui ralentit l'ennemi ne coûte rien ») élargie à tout obstacle.\n\nLES RUINES SONT DONC DU CÔTÉ DU JOUEUR. Elles font prendre UN DE PLUS à qui s'y tient : la zone de placement est dessus, et rester dedans coûte à chaque volée. L'équipe doit en sortir — vers eux.",
+ "act": 4,
+ "name_key": "MAP_FER_02",
+ "rows": [
+  "rr..........",
+  "rr..........",
+  "rrr.........",
+  "rrr.........",
+  "rrr.........",
+  "rrr.........",
+  "rrr.........",
+  "rr..........",
+  "rr.........."
+ ],
+ "objective": {
+  "kind": "eliminate"
+ },
+ "deployment_cells": [
+  [
+   0,
+   2
+  ],
+  [
+   0,
+   3
+  ],
+  [
+   0,
+   4
+  ],
+  [
+   0,
+   5
+  ],
+  [
+   0,
+   6
+  ],
+  [
+   1,
+   3
+  ],
+  [
+   1,
+   4
+  ],
+  [
+   1,
+   5
+  ]
+ ],
+ "enemies": [
+  {
+   "type": "iron_chaplain",
+   "cell": [
+    6,
+    4
+   ]
+  },
+  {
+   "type": "iron_bulwark",
+   "cell": [
+    4,
+    4
+   ]
+  },
+  {
+   "type": "iron_pikeman",
+   "cell": [
+    4,
+    3
+   ]
+  },
+  {
+   "type": "iron_pikeman",
+   "cell": [
+    4,
+    5
+   ]
+  },
+  {
+   "type": "iron_marksman",
+   "cell": [
+    6,
+    2
+   ]
+  },
+  {
+   "type": "iron_sapper",
+   "cell": [
+    6,
+    6
+   ]
+  }
+ ]
+}

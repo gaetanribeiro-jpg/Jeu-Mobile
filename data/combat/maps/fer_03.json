@@ -1,0 +1,97 @@
+{
+ "_note": "LA COLLINE DONNE UNE CASE DE PORTÉE ET UN DE DÉGÂTS, et c'est écrit dans `terrain.json` depuis la Phase 1. Un marksman posé dessus porte à HUIT : deux de plus que la Boule de feu du Mage. Attendre n'est plus une option, il faut monter — et la montée passe sous lui.\n\nLES ROCHERS COUPENT LA VUE. C'est la seule réponse gratuite offerte au joueur : `long_shot` exige la ligne de vue.",
+ "act": 4,
+ "name_key": "MAP_FER_03",
+ "rows": [
+  "............",
+  "....#.......",
+  ".......^^^..",
+  "............",
+  "....#..^^^..",
+  "............",
+  ".......^^^..",
+  "....#.......",
+  "............"
+ ],
+ "objective": {
+  "kind": "eliminate"
+ },
+ "deployment_cells": [
+  [
+   0,
+   2
+  ],
+  [
+   0,
+   3
+  ],
+  [
+   0,
+   4
+  ],
+  [
+   0,
+   5
+  ],
+  [
+   0,
+   6
+  ],
+  [
+   1,
+   3
+  ],
+  [
+   1,
+   4
+  ],
+  [
+   1,
+   5
+  ]
+ ],
+ "enemies": [
+  {
+   "type": "iron_marksman",
+   "cell": [
+    8,
+    2
+   ]
+  },
+  {
+   "type": "iron_marksman",
+   "cell": [
+    8,
+    6
+   ]
+  },
+  {
+   "type": "iron_bulwark",
+   "cell": [
+    6,
+    4
+   ]
+  },
+  {
+   "type": "iron_chaplain",
+   "cell": [
+    9,
+    4
+   ]
+  },
+  {
+   "type": "iron_pikeman",
+   "cell": [
+    6,
+    2
+   ]
+  },
+  {
+   "type": "iron_sapper",
+   "cell": [
+    6,
+    6
+   ]
+  }
+ ]
+}

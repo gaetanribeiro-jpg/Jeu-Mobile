@@ -185,7 +185,7 @@ REGION_BURNING_DUNES_DESC,Un désert sans ombre. On n'y va pas encore.
 REGION_FROZEN_MOUNTAINS,Les Montagnes Gelées
 REGION_FROZEN_MOUNTAINS_DESC,Des cols pris par la glace. On n'y va pas encore.
 REGION_BROKEN_LANDS,Les Terres Brisées
-REGION_BROKEN_LANDS_DESC,Ce qu'il reste après la faille. On n'y va pas encore.
+REGION_BROKEN_LANDS_DESC,"Une vieille ligne de forts, tenue par une compagnie qui se soigne."
 REGION_CURSED_LANDS,Les Terres Maudites
 REGION_CURSED_LANDS_DESC,Rien n'y meurt tout à fait. On n'y va pas encore.
 REGION_BLACK_EMPIRE,L'Empire Noir
@@ -509,3 +509,44 @@ STATUS_CHILLED,Gelé
 STATUS_TAUNTED,Provoqué
 HUD_ABILITY_COST,Coût : %d PA
 HUD_ROUND_TITLE,Ronde
+MAP_FER_01,La ligne de forts
+MAP_FER_02,Le camp des ruines
+MAP_FER_03,La crête
+MAP_FER_04,Le bourbier
+MAP_FER_05,Les deux lignes
+MAP_FER_06,Le carrefour
+MAP_FER_07,Les fondations
+MAP_FER_08,Le redan du Capitaine
+MAP_FER_09,La cour du prévôt
+ENEMY_IRON_SAPPER,Sapeur de la Compagnie
+ENEMY_IRON_PIKEMAN,Piquier de la Compagnie
+ENEMY_IRON_MARKSMAN,Tireur d'élite
+ENEMY_IRON_BULWARK,Rempart
+ENEMY_IRON_CHAPLAIN,Aumônier de la Compagnie
+ENEMY_IRON_PROVOST,Prévôt de la Compagnie
+ENEMY_THE_GILDED_CAPTAIN,Le Capitaine doré
+ABILITY_SAPPER_PICK,Coup de pioche
+ABILITY_PIKE_THRUST,Estoc de pique
+ABILITY_LONG_SHOT,Tir tendu
+ABILITY_BULWARK_BASH,Coup de bouclier
+ABILITY_FIELD_SUTURE,Suture de campagne
+ABILITY_PROVOST_HAMMER,Marteau du prévôt
+ABILITY_CAPTAIN_LANCE,Lance du Capitaine
+ABILITY_RALLY_ORDER,Ordre de ralliement
+EVENT_ABANDONED_REDOUBT,La redoute abandonnée
+EVENT_ABANDONED_REDOUBT_TEXT,"Un fort de bois, à moitié effondré. Personne ne l'a tenu depuis des années, mais les poutres sont saines."
+EVENT_ABANDONED_REDOUBT_STRIP,Démonter la charpente
+EVENT_ABANDONED_REDOUBT_CAMP,Camper à l'abri des murs
+EVENT_COMPANY_DESERTER,Le déserteur
+EVENT_COMPANY_DESERTER_TEXT,"Un homme en jaune, sans bannière et sans armes. Il dit connaître la position des prochains postes — et il a faim."
+EVENT_COMPANY_DESERTER_PAY,"L'écouter, et payer"
+EVENT_COMPANY_DESERTER_STRIP,Le dépouiller et le laisser partir
+EVENT_FIELD_HOSPITAL,L'infirmerie de campagne
+EVENT_FIELD_HOSPITAL_TEXT,"Des toiles tendues entre deux murs, des paillasses vides. La Compagnie soigne les siens ; elle est partie vite."
+EVENT_FIELD_HOSPITAL_RANSACK,Retourner les caisses une par une
+EVENT_FIELD_HOSPITAL_REST,Se reposer sur les paillasses
+EVENT_PAYMASTER_CHEST,Le coffre du payeur
+EVENT_PAYMASTER_CHEST_TEXT,"Un coffre ferré dépasse sous un pan de mur écroulé. Le reste du mur tient encore, mais pas de beaucoup."
+EVENT_PAYMASTER_CHEST_DIG,Dégager le coffre
+EVENT_PAYMASTER_CHEST_SCRAPE,Prendre ce qui traîne autour
+ABILITY_CHAPLAIN_STAFF,Coup de bâton

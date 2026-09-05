@@ -544,6 +544,23 @@ func _check_bestiary() -> void:
 		# milieu de visages.
 		elif not AssetTable.has_enemy_animation(sprite, &"avatar"):
 			_problems.append("l'ennemi « %s » n'a pas de portrait" % enemy_id)
+		# UNE VARIANTE QUI N'EXISTE PAS NE SE PLAINT PAS : la vue retombe
+		# sur l'animation nue et la bête se dessine, simplement pas comme
+		# on l'a écrite. C'est le défaut silencieux de T11.8 déplacé d'un
+		# cran — on le refuse ici.
+		var variant := String(entry.get("sprite_variant", ""))
+		if not variant.is_empty():
+			var dressed := StringName("idle_%s" % variant)
+			var known := (
+				AssetTable.has_unit_animation(sprite, dressed) if not color.is_empty()
+				else AssetTable.has_enemy_animation(sprite, dressed)
+			)
+			if not known:
+				_problems.append(
+					"l'ennemi « %s » veut la variante « %s », que « %s » ne dessine pas"
+					% [enemy_id, variant, sprite]
+				)
+
 		var abilities: Array = entry.get("abilities", [])
 		if abilities.is_empty():
 			_problems.append("l'ennemi « %s » n'a aucune compétence" % enemy_id)

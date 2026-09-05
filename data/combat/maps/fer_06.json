@@ -1,0 +1,97 @@
+{
+ "_note": "QUATRE PIQUIERS DANS UN GOULET, ET LEUR PIQUE EMBROCHE LES LEURS. C'est la carte qui enseigne `friendly_fire` : se coller à eux au lieu de reculer les fait se blesser entre eux. Trois actes ont appris à ne jamais se serrer ; celui-ci le récompense.\n\nLES ROCHERS FONT LE GOULET, donc ils ne peuvent pas s'étaler. Sans eux la leçon ne se poserait jamais.",
+ "act": 4,
+ "name_key": "MAP_FER_06",
+ "rows": [
+  "....##......",
+  "....##......",
+  "....##......",
+  "............",
+  "............",
+  "............",
+  "....##......",
+  "....##......",
+  "....##......"
+ ],
+ "objective": {
+  "kind": "eliminate"
+ },
+ "deployment_cells": [
+  [
+   0,
+   3
+  ],
+  [
+   0,
+   4
+  ],
+  [
+   0,
+   5
+  ],
+  [
+   1,
+   3
+  ],
+  [
+   1,
+   4
+  ],
+  [
+   1,
+   5
+  ],
+  [
+   2,
+   4
+  ],
+  [
+   2,
+   3
+  ]
+ ],
+ "enemies": [
+  {
+   "type": "iron_pikeman",
+   "cell": [
+    6,
+    3
+   ]
+  },
+  {
+   "type": "iron_pikeman",
+   "cell": [
+    6,
+    5
+   ]
+  },
+  {
+   "type": "iron_pikeman",
+   "cell": [
+    7,
+    4
+   ]
+  },
+  {
+   "type": "iron_pikeman",
+   "cell": [
+    8,
+    4
+   ]
+  },
+  {
+   "type": "iron_chaplain",
+   "cell": [
+    10,
+    4
+   ]
+  },
+  {
+   "type": "iron_marksman",
+   "cell": [
+    10,
+    2
+   ]
+  }
+ ]
+}

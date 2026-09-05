@@ -23,7 +23,20 @@ extends RefCounted
 ## relu au moment de l'affichage, ce qui garantit que le chiffre annoncé
 ## est le chiffre appliqué.
 
-enum Kind { NONE, ATTACK }
+## LE SOUTIEN EST UNE TROISIÈME INFORMATION, pas une attaque négative.
+##
+## Le § 39 demande l'information parfaite : si un ennemi va rendre vingt
+## points de vie à son voisin, le joueur doit le savoir AVANT de décider
+## qui il frappe — c'est même la seule façon dont la question « qui tuer
+## d'abord » se pose honnêtement. Un soin caché rendrait la mise à terre
+## d'un blessé aléatoire du point de vue du joueur.
+##
+## POURQUOI PAS DES DÉGÂTS NÉGATIFS. `_resolve_heal` en rend, et c'est
+## juste pour un JOURNAL qu'on rejoue. Mais le télégraphe se PEINT : une
+## case de soin dans le rouge de la menace, ou pire, additionnée au total
+## d'une case menacée, ferait lire un chiffre faux. Même raisonnement que
+## la case d'arrivée d'une poussée en T12.1.
+enum Kind { NONE, ATTACK, SUPPORT }
 
 var attacker_id: int = -1
 var kind: int = Kind.NONE
@@ -61,12 +74,40 @@ static func attack_cell(
 	return attack(unit_id, ability_to_use, to - from)
 
 
+## Soutien annoncé — un soin porté à un allié, exprimé depuis la position
+## du lanceur, comme une attaque.
+static func support(unit_id: int, ability_to_use: StringName, offset: Vector2i) -> CombatIntent:
+	var intent := CombatIntent.new()
+	intent.attacker_id = unit_id
+	intent.kind = Kind.SUPPORT
+	intent.ability_id = ability_to_use
+	intent.target_offset = offset
+	return intent
+
+
+## Soutien sur une case, exprimé en cases absolues.
+static func support_cell(
+	unit_id: int, ability_to_use: StringName, from: Vector2i, to: Vector2i
+) -> CombatIntent:
+	return support(unit_id, ability_to_use, to - from)
+
+
 func is_attack() -> bool:
 	return kind == Kind.ATTACK
 
 
+func is_support() -> bool:
+	return kind == Kind.SUPPORT
+
+
+## Une intention annoncée, quelle qu'elle soit. C'est ce qui décide si
+## l'activation a quelque chose à exécuter.
+func is_declared() -> bool:
+	return kind != Kind.NONE
+
+
 func ability() -> Ability:
-	return Ability.of(ability_id) if is_attack() else null
+	return Ability.of(ability_id) if is_declared() else null
 
 
 ## Case visée, depuis la position actuelle de l'attaquant.
@@ -77,7 +118,7 @@ func target_cell(attacker_cell: Vector2i) -> Vector2i:
 ## Cases réellement menacées, zone de la compétence comprise, depuis la
 ## position actuelle de l'attaquant.
 func target_cells(attacker_cell: Vector2i, grid: Grid) -> Array[Vector2i]:
-	if not is_attack():
+	if not is_declared():
 		return []
 	var used := ability()
 	if used == null:

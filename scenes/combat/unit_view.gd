@@ -241,7 +241,11 @@ func _tween_done(tween: Tween) -> void:
 
 
 func _attack_animation() -> StringName:
-	for candidate: StringName in [&"attack", &"attack1", &"shoot", &"throw", &"heal"]:
+	# `interact` est ce que le pack appelle le geste d'un Pawn qui travaille :
+	# c'est l'animation de coup d'un sapeur.
+	for candidate: StringName in [
+		&"attack", &"attack1", &"shoot", &"throw", &"heal", &"interact"
+	]:
 		if _frames_for(candidate) != null:
 			return candidate
 	return &"idle"
@@ -260,12 +264,30 @@ func _frames_for(animation: StringName) -> SpriteFrames:
 	# unités, une bête n'en a pas et se cherche parmi les ennemis. Deviner
 	# d'après le nom marcherait jusqu'au jour où une bête s'appellerait
 	# comme une classe.
+	# UNE VARIANTE EST UN SUFFIXE, ET ELLE RETOMBE. Le Pawn du pack se
+	# décline en quatre outils (`idle_pickaxe`, `run_pickaxe`,
+	# `interact_pickaxe`) et c'est sa seule façon de se distinguer : sa
+	# couleur de faction ne change que 7,9 % de ses pixels. Une variante
+	# absente retombe sur l'animation nue — ne rien dessiner est ce qui a
+	# donné sept bêtes en ombre nue en T11.8.
 	var frames: SpriteFrames = null
 	var tint := color if unit.is_hero() else unit.sprite_color
-	if unit.is_hero() or not unit.sprite_color.is_empty():
-		if AssetTable.has_unit_animation(unit.sprite_id, animation):
-			frames = SpriteFrameFactory.for_unit(unit.sprite_id, animation, tint)
-	elif AssetTable.has_enemy_animation(unit.sprite_id, animation):
-		frames = SpriteFrameFactory.for_enemy(unit.sprite_id, animation)
+	for name_: StringName in _variants_of(animation):
+		if unit.is_hero() or not unit.sprite_color.is_empty():
+			if AssetTable.has_unit_animation(unit.sprite_id, name_):
+				frames = SpriteFrameFactory.for_unit(unit.sprite_id, name_, tint)
+		elif AssetTable.has_enemy_animation(unit.sprite_id, name_):
+			frames = SpriteFrameFactory.for_enemy(unit.sprite_id, name_)
+		if frames != null:
+			break
 	_frames_cache[key] = frames
 	return frames
+
+
+## Les noms à essayer pour une animation, du plus précis au plus nu.
+func _variants_of(animation: StringName) -> Array[StringName]:
+	if unit.sprite_variant.is_empty():
+		return [animation] as Array[StringName]
+	return [
+		StringName("%s_%s" % [animation, unit.sprite_variant]), animation
+	] as Array[StringName]

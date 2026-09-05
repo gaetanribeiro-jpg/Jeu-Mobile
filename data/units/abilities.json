@@ -707,5 +707,143 @@
   },
   "cooldown": 1,
   "animation": "attack_right"
+ },
+ "sapper_pick": {
+  "_note": "LA PIOCHE DU SAPEUR, ET ELLE NE VISE PAS L'HOMME. Vingt dégâts sont ordinaires ; ce qui compte est la BOUE laissée derrière. Le feu du gobelin à torche brûle celui qui reste ; la boue ne blesse personne et coûte un PM de plus à qui passe. C'est la première compétence du jeu qui attaque le DÉPLACEMENT plutôt que les points de vie, et sur une carte de couloirs elle ferme une route sans tuer personne.",
+  "kind": "attack",
+  "scaling": "strength",
+  "action_points": 3,
+  "range_min": 1,
+  "range_max": 1,
+  "needs_line_of_sight": true,
+  "damage": 20,
+  "area": {
+   "shape": "single"
+  },
+  "leaves_terrain": "mud",
+  "animation": "attack"
+ },
+ "pike_thrust": {
+  "_note": "SA PIQUE EMBROCHE LES SIENS, et c'est tout l'intérêt. `friendly_fire` existait depuis la Phase 1 et seuls le joueur et sa Boule de feu s'en servaient ; c'est le premier ennemi qui en paie le prix. Se coller à un mercenaire devient une PROTECTION et ça inverse la leçon des trois premiers actes : ne jamais se serrer.\n\nNI RECHARGE NI SIX PA, ET C'EST MESURÉ. Une recharge sur la SEULE compétence d'une bête la fait chômer une ronde sur deux — l'acte rendait 95 % des PV avec six mercenaires dont deux ne frappaient jamais. Une recharge se paie quand il y a autre chose à faire pendant ; ici il n'y avait rien.",
+  "kind": "attack",
+  "scaling": "strength",
+  "action_points": 4,
+  "range_min": 1,
+  "range_max": 2,
+  "needs_line_of_sight": true,
+  "damage": 24,
+  "area": {
+   "shape": "line",
+   "length": 2
+  },
+  "friendly_fire": true,
+  "animation": "attack_right"
+ },
+ "long_shot": {
+  "_note": "SEPT CASES : une de plus que la meilleure portée du joueur, la Boule de feu du Mage à six. Les trois actes précédents plafonnent tous à six pile — chaman, feu follet, mine — donc l'échange était toujours équitable, et un échange équitable se gagne à quatre contre un sans bouger. C'est ce qui rendait l'attente si confortable et tout terrain ralentissant gratuit. À sept, attendre coûte une volée qu'on ne peut pas rendre.",
+  "kind": "attack",
+  "scaling": "agility",
+  "action_points": 3,
+  "range_min": 3,
+  "range_max": 7,
+  "needs_line_of_sight": true,
+  "damage": 16,
+  "area": {
+   "shape": "single"
+  },
+  "animation": "shoot"
+ },
+ "bulwark_bash": {
+  "_note": "Le coup du rempart : ordinaire, et c'est voulu. Il n'est pas là pour faire mal, il est là pour être DEVANT. Ce qui le rend dangereux n'est pas ce chiffre, c'est ce qu'il y a derrière lui.",
+  "kind": "attack",
+  "scaling": "strength",
+  "action_points": 3,
+  "range_min": 1,
+  "range_max": 1,
+  "needs_line_of_sight": true,
+  "damage": 18,
+  "area": {
+   "shape": "single"
+  },
+  "animation": "attack1"
+ },
+ "field_suture": {
+  "_note": "LE PREMIER SOIN ENNEMI DU JEU. `KIND_HEAL` servait aux potions depuis T10.1 et rien du côté ennemi ne l'employait — quatrième mécanique écrite et jamais branchée, après `KIND_PUSH`, `KIND_HEAL` lui-même et les 70 entrées `ui`.\n\nPORTÉE QUATRE, RECHARGE DEUX, et les deux chiffres portent la question. La portée l'oblige à se tenir DANS la mêlée des siens, donc à portée de qui va le chercher ; la recharge borne ce qu'il défait, sinon un aumônier seul rendrait un combat interminable — et un combat plus LONG n'est pas un combat plus dur (leçon de l'acte 2).",
+  "kind": "heal",
+  "scaling": "intelligence",
+  "action_points": 5,
+  "range_min": 1,
+  "range_max": 4,
+  "needs_line_of_sight": true,
+  "damage": 22,
+  "area": {
+   "shape": "single"
+  },
+  "cooldown": 2,
+  "animation": "heal",
+  "effect": "heal_effect"
+ },
+ "provost_hammer": {
+  "_note": "IL FAUT S'ÊTRE PLANTÉ POUR L'ABATTRE. `requires_not_moved` n'était lu que par le Tir puissant du joueur, et l'IA l'ignorait purement et simplement : un ennemi se serait déplacé PUIS aurait porté un coup réservé à qui ne bouge pas. Le prévôt est la bête qui referme ce trou.\n\nL'ordre de l'activation lui donne son sens : un ennemi annonce APRÈS s'être déplacé, donc ce marteau ne s'annonce que depuis un prévôt immobile. Le joueur le lit sur le télégraphe, et sa réponse est de le faire marcher — reculer d'une case lui coûte son meilleur coup.",
+  "kind": "attack",
+  "scaling": "strength",
+  "action_points": 6,
+  "range_min": 1,
+  "range_max": 1,
+  "needs_line_of_sight": true,
+  "damage": 38,
+  "area": {
+   "shape": "line",
+   "length": 2
+  },
+  "requires_not_moved": true,
+  "cooldown": 1,
+  "animation": "attack2"
+ },
+ "captain_lance": {
+  "_note": "La lance du capitaine, en ligne de deux comme celle du Jarl, et plus lourde d'un cran.",
+  "kind": "attack",
+  "scaling": "strength",
+  "action_points": 6,
+  "range_min": 1,
+  "range_max": 2,
+  "needs_line_of_sight": true,
+  "damage": 36,
+  "area": {
+   "shape": "line",
+   "length": 2
+  },
+  "cooldown": 1,
+  "animation": "attack_right"
+ },
+ "rally_order": {
+  "_note": "LE SOIN DE L'AUMÔNIER, MAIS SUR TOUTE LA COMPAGNIE. En croix de deux, il recoud jusqu'à cinq des siens d'un coup : c'est la question de l'acte portée à son échelle. La réponse n'est pas de frapper plus fort, c'est de ne plus laisser cinq blessés à portée les uns des autres — donc de tuer POUR DE BON avant d'entamer ailleurs.",
+  "kind": "heal",
+  "scaling": "intelligence",
+  "action_points": 6,
+  "range_min": 0,
+  "range_max": 4,
+  "needs_line_of_sight": true,
+  "damage": 18,
+  "area": {
+   "shape": "cross",
+   "radius": 2
+  },
+  "cooldown": 3,
+  "animation": "idle"
+ },
+ "chaplain_staff": {
+  "_note": "LE BÂTON DE L'AUMÔNIER, ET IL EST FAIBLE EXPRÈS. Un soigneur sans aucune attaque est un ennemi de plus à tuer qui ne coûte rien tant qu'il ne soigne pas — mesuré, l'acte rendait 95 % des PV. Douze au contact ne changent pas la question de l'acte (« qui tuer d'abord »), ils empêchent seulement que l'approcher soit gratuit.\n\nLE SOIN PASSE AVANT : `_intent_from_here` cherche un blessé d'abord. Le bâton ne sort que quand tout le monde va bien.",
+  "kind": "attack",
+  "scaling": "intelligence",
+  "action_points": 3,
+  "range_min": 1,
+  "range_max": 1,
+  "needs_line_of_sight": true,
+  "damage": 12,
+  "area": {
+   "shape": "single"
+  },
+  "animation": "idle"
  }
 }

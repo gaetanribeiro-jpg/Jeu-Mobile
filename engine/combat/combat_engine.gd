@@ -426,28 +426,69 @@ func telegraph() -> Array[Dictionary]:
 	var out: Array[Dictionary] = []
 	for enemy: Unit in _ordered(board.active_units(Unit.Side.ENEMIES)):
 		var intent: CombatIntent = _intents.get(enemy.id, null)
-		if intent == null or not intent.is_attack():
+		if intent == null or not intent.is_declared():
 			continue
 		var ability := intent.ability()
 		if ability == null:
 			continue
 		var cells: Array[Vector2i] = []
 		var damage: Array[int] = []
+		var mends: Array[int] = []
 		for cell: Vector2i in intent.target_cells(enemy.cell, board.grid):
 			if not board.grid.contains(cell):
 				continue
+			# UN SOIN NE S'ANNONCE QUE SUR QUI EN PROFITE. La zone d'un
+			# soin en croix couvre des cases vides et des héros ; peindre
+			# « +20 » dessus dirait que l'ennemi va soigner le joueur.
+			if intent.is_support():
+				var ally := board.unit_at(cell)
+				if ally == null or not ally.is_active() or ally.side != enemy.side:
+					continue
+				cells.append(cell)
+				mends.append(_mending_on(enemy, ability, ally))
+				# ZÉRO, PAS RIEN. `damage` et `mends` font toujours la
+				# longueur de `cells` : un consommateur qui indexe l'un par
+				# la position de l'autre ne peut donc pas tomber. Laisser
+				# l'un des deux vide était un piège, et il a pris un test
+				# d'intégration qui parcourait le télégraphe depuis la
+				# Phase 1 — deux appelants avaient été protégés à la main,
+				# le troisième non. On ne protège plus les appelants, on
+				# retire le piège.
+				damage.append(0)
+				continue
 			cells.append(cell)
 			damage.append(_damage_on_cell(enemy, ability, cell))
+			mends.append(0)
 		if cells.is_empty():
 			continue
 		out.append({
 			"attacker_id": enemy.id,
 			"ability": String(ability.id),
+			# LE GENRE EST EXPLICITE, et ce n'est pas du confort : sur une
+			# entrée de soutien, `damage` est VIDE alors que `cells` ne
+			# l'est pas. Un consommateur qui indexerait l'un par la
+			# position de l'autre tomberait — c'est ce que faisaient les
+			# deux qui existaient.
+			"kind": "support" if intent.is_support() else "attack",
 			"cells": cells,
 			"damage": damage,
+			"mends": mends,
 			"shoves": _shoves_of(enemy, ability, cells),
 		})
 	return out
+
+
+## Points de vie que ce soin rendrait vraiment à cet allié — PLAFONNÉS par
+## ce qui lui manque.
+##
+## Annoncer la valeur brute mentirait dans le seul cas qui compte : un
+## ennemi presque intact affiche « +24 » et n'en reprend que trois. Le
+## joueur décide qui il frappe sur ce chiffre ; il doit être le vrai.
+func _mending_on(healer: Unit, ability: Ability, ally: Unit) -> int:
+	var amount := ability.damage
+	if not ability.scaling.is_empty():
+		amount += healer.stat(ability.scaling)
+	return mini(maxi(amount, 0), ally.max_hit_points - ally.hit_points)
 
 
 ## Où atterrirait chaque héros repoussé par cette attaque.
@@ -485,6 +526,8 @@ func _shoves_of(
 func threat_on(cell: Vector2i) -> int:
 	var total := 0
 	for entry: Dictionary in telegraph():
+		if String(entry.get("kind", "attack")) != "attack":
+			continue
 		var cells: Array = entry["cells"]
 		var index := cells.find(cell)
 		if index >= 0:
@@ -840,7 +883,7 @@ func _run_enemy(enemy: Unit, log: Array[Dictionary]) -> void:
 ## joueur a déplacé sa cible, le coup part dans le vide.
 func _execute_intent(enemy: Unit, log: Array[Dictionary]) -> void:
 	var intent: CombatIntent = _intents.get(enemy.id, null)
-	if intent == null or not intent.is_attack():
+	if intent == null or not intent.is_declared():
 		return
 	var ability := intent.ability()
 	if ability == null:
@@ -848,12 +891,32 @@ func _execute_intent(enemy: Unit, log: Array[Dictionary]) -> void:
 	_intents[enemy.id] = CombatIntent.none(enemy.id)
 	if not enemy.can_spend_action_points(ability.action_points):
 		return
+	# La même règle qu'à l'annonce : un coup réservé à qui n'a pas bougé ne
+	# tombe pas si l'ennemi a bougé entre-temps. Il ne le peut pas dans le
+	# tour normal — il annonce après s'être déplacé — mais un combat
+	# rechargé, lui, restaure une intention sans restaurer le contexte.
+	if ability.requires_not_moved and enemy.has_moved:
+		return
 	enemy.spend_action_points(ability.action_points)
 	enemy.start_cooldown(ability.id, ability.cooldown)
 
 	var aimed := intent.target_cell(enemy.cell)
 	var report := board.resolve_ability(enemy, ability, aimed)
 	var hits: Array = report["hits"]
+	# LE SOIN EST DÉJÀ RÉSOLU PAR LE PLATEAU : `affected_units` fait
+	# basculer le sens du camp et `_resolve_heal` rend le même compte rendu
+	# qu'une attaque, aux mêmes clés. Il ne reste ici qu'à le journaliser
+	# sous son propre nom — une vue qui rejouerait « attaque » sur un soin
+	# jouerait le mauvais son et la mauvaise animation.
+	if intent.is_support():
+		for mended: Dictionary in hits:
+			log.append({
+				"event": "ally_mended", "healer_id": enemy.id,
+				"ability": String(ability.id),
+				"target_id": mended["target_id"], "cell": mended["cell"],
+				"healed": mended["healed"],
+			})
+		return
 	if hits.is_empty():
 		log.append({
 			"event": "attack_missed", "attacker_id": enemy.id,

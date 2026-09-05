@@ -190,3 +190,37 @@ func test_une_sauvegarde_conserve_le_sprite() -> void:
 		Unit.from_dictionary(ancienne).sprite_id, &"sand_serpent",
 		"faute de mieux, une vieille sauvegarde retombe sur la classe"
 	)
+
+
+## LE PAWN EST LE SEUL SPRITE DU PACK DONT LA COULEUR NE SE VOIT PAS.
+##
+## Mesuré sur les images d'attente : passer du Bleu à une autre couleur
+## change 51 % des pixels d'un Lancier, 49 % d'un Archer, 38 % d'un
+## Guerrier, 25 % d'un Moine — et **7,9 %** d'un Pawn. Trois actes de
+## factions humaines auraient donc eu le même sapeur.
+##
+## Sa variante d'outil est ce qui le sauve, et elle doit RETOMBER : une
+## variante absente ne doit pas rendre la bête invisible, comme les sept
+## ombres nues de T11.8.
+func test_une_variante_de_sprite_se_fabrique() -> void:
+	var unit := Unit.from_enemy(1, &"iron_sapper", Vector2i.ZERO)
+	assert_not_null(unit, "le sapeur doit se fabriquer")
+	assert_eq(unit.sprite_variant, "pickaxe", "il porte la pioche")
+	assert_true(
+		AssetTable.has_unit_animation(unit.sprite_id, &"idle_pickaxe"),
+		"et le pack dessine bien cette variante"
+	)
+
+
+func test_une_variante_survit_a_la_sauvegarde() -> void:
+	var unit := Unit.from_enemy(1, &"iron_sapper", Vector2i.ZERO)
+	assert_eq(
+		Unit.from_dictionary(unit.to_dictionary()).sprite_variant, "pickaxe",
+		"un combat repris ne doit pas perdre l'outil"
+	)
+
+
+## Aucune autre bête n'en déclare : la retombée doit rester le cas normal.
+func test_une_bete_sans_variante_reste_nue() -> void:
+	assert_eq(Unit.from_enemy(1, &"troll", Vector2i.ZERO).sprite_variant, "")
+

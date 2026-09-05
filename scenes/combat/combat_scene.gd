@@ -704,9 +704,21 @@ func _refresh_overlay() -> void:
 		_overlay.selected_cell = Vector2i(-1, -1)
 
 	var threat := {}
+	var mend := {}
 	var shoves: Array[Vector2i] = []
 	for entry: Dictionary in engine.telegraph():
 		var cells: Array = entry["cells"]
+		# LE SOIN ANNONCÉ EST UNE TROISIÈME INFORMATION (§ 39). L'ajouter au
+		# total de menace ferait lire un chiffre faux — et il est NÉGATIF,
+		# donc il masquerait une vraie menace sur la même case au lieu de
+		# s'en distinguer. Même raisonnement que la case d'arrivée d'une
+		# poussée en T12.1.
+		if String(entry.get("kind", "attack")) == "support":
+			var amounts: Array = entry["mends"]
+			for i in cells.size():
+				var healed: Vector2i = cells[i]
+				mend[healed] = int(mend.get(healed, 0)) + int(amounts[i])
+			continue
 		for i in cells.size():
 			var cell: Vector2i = cells[i]
 			threat[cell] = int(threat.get(cell, 0)) + int(entry["damage"][i])
@@ -733,6 +745,7 @@ func _refresh_overlay() -> void:
 				)
 
 	_overlay.threat = threat
+	_overlay.mend = mend
 	_refresh_ghost()
 	_overlay.queue_redraw()
 
