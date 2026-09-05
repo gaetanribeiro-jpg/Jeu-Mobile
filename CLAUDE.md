@@ -677,6 +677,17 @@ de « une source ne se teinte que si elle est claire ». `churned_mud` est
 calé sur ce qui marche déjà — la congère du Gel se sépare de 24,4 points,
 celle-ci de 24,0. **Réglée à l'œil elle serait restée à 7.**
 
+**LE BOSS DE L'ACTE 4 MESURE MOINS CHER QUE SON MINI-BOSS, ET LA MESURE
+MENT ICI** — troisième fois du projet, après le Jarl et « le pilote ne boit
+pas ». Sept corps donnent 9 rondes / 57 % de PV, six donnent 7 rondes /
+62 %, et le Capitaine à 215 comme à 250 rend EXACTEMENT le même chiffre :
+ce n'est pas sa barre de vie qui borne le combat, c'est le nombre de corps
+qui frappent. On garde six, parce que le plafond de huit rondes est une
+cible ÉCRITE quand le classement des coûts n'en est pas une — et parce que
+`simulate_combats` ne concentre JAMAIS ses coups sur l'aumônier, donc il
+subit le Ralliement sans jamais l'empêcher. Il joue le contraire de ce que
+la carte demande. **À rejuger à l'œil.**
+
 **LE PACK NE PARTAGE QU'UNE COULEUR (le vampire).** Les vingt et une
 bêtes n'ont en commun que `#161c2e` — le contour à alpha 255, l'ombre au
 sol à 69. Rien d'autre : chacune a ses 10 à 18 teintes propres. Un troll
