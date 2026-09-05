@@ -1,20 +1,48 @@
 {
- "_note": "LA RUINE FAIT PRENDRE UN DE PLUS, DES DEUX CÔTÉS. Sur une carte qui n'est que ça, chaque coup porte un cran au-dessus — ce qui aide le joueur autant que la Compagnie, sauf que la Compagnie a un aumônier.\n\nC'EST LA CARTE OÙ LE SOIN COMPTE LE PLUS, et c'est voulu : la question de l'acte se pose là dans sa forme la plus nue.\n\nRAPPROCHÉE DE DEUX COLONNES. Neuf rondes mesurées pour un plafond de huit : la carte n'était pas dure, elle était longue. Quatrième fois du projet qu'une carte se corrige en DISTANCE.",
+ "_note": "L'ENLÈVEMENT : prendre la cache au fond de la ligne et la ramener. La traversée se fait DEUX FOIS, et la seconde avec les canons déjà réveillés.\n\nC'est le seul objectif du jeu qui demande un aller-retour, et il dormait depuis l'acte 1 — `extract` était écrit, testé, et employé sur une seule carte en trente-six.",
  "act": 4,
  "name_key": "MAP_FER_07",
  "rows": [
-  "..rr....rr..",
-  "..rr....rr..",
-  "....rrrr....",
-  "....rrrr....",
-  "rrrr....rrrr",
-  "....rrrr....",
-  "....rrrr....",
-  "..rr....rr..",
-  "..rr....rr.."
+  "............",
+  "..f...#.....",
+  "............",
+  "..f....f....",
+  "......#.....",
+  "..f....f....",
+  "............",
+  "..f...#.....",
+  "............"
  ],
  "objective": {
-  "kind": "eliminate"
+  "kind": "extract",
+  "pickup_cells": [
+   [
+    10,
+    3
+   ],
+   [
+    11,
+    3
+   ],
+   [
+    10,
+    5
+   ],
+   [
+    11,
+    5
+   ]
+  ],
+  "cells": [
+   [
+    0,
+    4
+   ],
+   [
+    0,
+    5
+   ]
+  ]
  },
  "deployment_cells": [
   [
@@ -24,6 +52,10 @@
   [
    0,
    3
+  ],
+  [
+   0,
+   4
   ],
   [
    0,
@@ -44,53 +76,49 @@
   [
    1,
    5
-  ],
-  [
-   2,
-   4
   ]
  ],
  "enemies": [
   {
-   "type": "iron_chaplain",
+   "type": "siege_cannon",
    "cell": [
-    6,
-    4
-   ]
-  },
-  {
-   "type": "iron_bulwark",
-   "cell": [
-    4,
-    4
-   ]
-  },
-  {
-   "type": "iron_pikeman",
-   "cell": [
-    5,
+    11,
     2
    ]
   },
   {
-   "type": "iron_pikeman",
+   "type": "siege_cannon",
    "cell": [
-    5,
+    11,
     6
    ]
   },
   {
-   "type": "iron_marksman",
+   "type": "watch_tower",
    "cell": [
-    8,
-    3
+    9,
+    4
    ]
   },
   {
-   "type": "iron_sapper",
+   "type": "boar_lancer",
    "cell": [
     7,
-    5
+    4
+   ]
+  },
+  {
+   "type": "war_pig",
+   "cell": [
+    8,
+    2
+   ]
+  },
+  {
+   "type": "war_pig",
+   "cell": [
+    8,
+    6
    ]
   }
  ]

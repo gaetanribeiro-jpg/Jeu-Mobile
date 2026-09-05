@@ -209,11 +209,10 @@
     }
    },
    "night_roster": [
-    "iron_pikeman",
-    "iron_bulwark",
-    "iron_sapper"
+    "boar_lancer",
+    "war_pig"
    ],
-   "_night_note": "NI TIREUR NI AUMÔNIER DANS LE VIVIER DE NUIT. Le tirailleur recule quand on l'approche — `vallee_02` passait de 5,0 à 9,8 rondes — et un soigneur de plus rendrait le combat plus LONG, pas plus dur. Un renfort ajoute de la pression, pas de la durée.",
+   "_night_note": "QUE DE LA CAVALERIE DANS LE VIVIER DE NUIT. Un EMPLACEMENT ne bouge pas : le renfort rejoint le centre de la formation ennemie, et une tour à deux cents points de vie posée là ajoute de la DURÉE, pas de la pression — c'est la leçon du gnoll et du renfort de nuit. L'atelier est écarté pour la même raison : un second soigneur allonge sans durcir.",
    "resources_per_encounter": {
     "wood": 6,
     "stone": 11,

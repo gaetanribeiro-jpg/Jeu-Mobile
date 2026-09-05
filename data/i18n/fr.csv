@@ -101,9 +101,9 @@ ABILITY_ALREADY_MOVED,A déjà bougé
 ABILITY_UNKNOWN,Indisponible
 HUD_AP,PA
 HUD_MP,PM
-HUD_ACTIVE,"%d  %s  %d/%d PV"
-HUD_ABILITY,"%s · %d PA"
-HUD_ABILITY_COOLDOWN,"%s · %d r."
+HUD_ACTIVE,%d  %s  %d/%d PV
+HUD_ABILITY,%s · %d PA
+HUD_ABILITY_COOLDOWN,%s · %d r.
 HUD_TIMELINE,Ordre de jeu
 CHOICE_STURDY,Endurant
 CHOICE_SHARP,Aiguisé
@@ -115,7 +115,7 @@ BOOT_PICK_MAP,Choisir un combat
 COMBAT_BACK,Retour
 BOOT_SQUAD,Équipe — toucher pour changer de classe
 HUD_BEGIN_COMBAT,Commencer
-HUD_DEPLOY,"Placez votre équipe — %d à poser"
+HUD_DEPLOY,Placez votre équipe — %d à poser
 HUD_DEPLOY_READY,Équipe en place
 ITEM_RUSTY_SWORD,Épée rouillée
 ITEM_HUNTING_BOW,Arc de chasse
@@ -158,15 +158,15 @@ SLOT_HELMET,Casque
 SLOT_ARMOUR,Armure
 SLOT_ACCESSORY,Accessoire
 COMPANY_TITLE,Compagnie
-COMPANY_GOLD,"%d or"
-COMPANY_LEVEL,"niveau %d"
-COMPANY_EXPERIENCE,"Niveau %d — %d / %d d'expérience"
-COMPANY_MAX_LEVEL,"Niveau %d — au sommet"
-COMPANY_LEVEL_UP,"Passer au niveau %d"
-COMPANY_CHOOSE,"Niveau %d : un choix définitif"
+COMPANY_GOLD,%d or
+COMPANY_LEVEL,niveau %d
+COMPANY_EXPERIENCE,Niveau %d — %d / %d d'expérience
+COMPANY_MAX_LEVEL,Niveau %d — au sommet
+COMPANY_LEVEL_UP,Passer au niveau %d
+COMPANY_CHOOSE,Niveau %d : un choix définitif
 COMPANY_EMPTY,Aucun héros dans la compagnie.
 COMPANY_SLOT_EMPTY,—
-COMPANY_STASH,"Réserve (%d)"
+COMPANY_STASH,Réserve (%d)
 COMPANY_STASH_EMPTY,Rien en réserve.
 BOOT_COMPANY,Compagnie
 STAT_HIT_POINTS,PV
@@ -185,7 +185,7 @@ REGION_BURNING_DUNES_DESC,Un désert sans ombre. On n'y va pas encore.
 REGION_FROZEN_MOUNTAINS,Les Montagnes Gelées
 REGION_FROZEN_MOUNTAINS_DESC,Des cols pris par la glace. On n'y va pas encore.
 REGION_BROKEN_LANDS,Les Terres Brisées
-REGION_BROKEN_LANDS_DESC,"Une vieille ligne de forts, tenue par une compagnie qui se soigne."
+REGION_BROKEN_LANDS_DESC,"Une vieille ligne de forts, et ce qui s'y est installé."
 REGION_CURSED_LANDS,Les Terres Maudites
 REGION_CURSED_LANDS_DESC,Rien n'y meurt tout à fait. On n'y va pas encore.
 REGION_BLACK_EMPIRE,L'Empire Noir
@@ -509,30 +509,16 @@ STATUS_CHILLED,Gelé
 STATUS_TAUNTED,Provoqué
 HUD_ABILITY_COST,Coût : %d PA
 HUD_ROUND_TITLE,Ronde
-MAP_FER_01,La ligne de forts
-MAP_FER_02,Le camp des ruines
-MAP_FER_03,La crête
-MAP_FER_04,Le bourbier
-MAP_FER_05,Les deux lignes
-MAP_FER_06,Le carrefour
-MAP_FER_07,Les fondations
-MAP_FER_08,Le redan du Capitaine
-MAP_FER_09,La cour du prévôt
-ENEMY_IRON_SAPPER,Sapeur de la Compagnie
-ENEMY_IRON_PIKEMAN,Piquier de la Compagnie
-ENEMY_IRON_MARKSMAN,Tireur d'élite
-ENEMY_IRON_BULWARK,Rempart
-ENEMY_IRON_CHAPLAIN,Aumônier de la Compagnie
-ENEMY_IRON_PROVOST,Prévôt de la Compagnie
-ENEMY_THE_GILDED_CAPTAIN,Le Capitaine doré
-ABILITY_SAPPER_PICK,Coup de pioche
-ABILITY_PIKE_THRUST,Estoc de pique
-ABILITY_LONG_SHOT,Tir tendu
-ABILITY_BULWARK_BASH,Coup de bouclier
-ABILITY_FIELD_SUTURE,Suture de campagne
-ABILITY_PROVOST_HAMMER,Marteau du prévôt
-ABILITY_CAPTAIN_LANCE,Lance du Capitaine
-ABILITY_RALLY_ORDER,Ordre de ralliement
+MAP_FER_01,La traversée
+MAP_FER_02,Le passage
+MAP_FER_03,Le bois brûlé
+MAP_FER_04,Sous le feu
+MAP_FER_05,La redoute
+MAP_FER_06,La charge
+MAP_FER_07,L'enlèvement
+MAP_FER_08,Le chef de guerre
+MAP_FER_09,La grande bombarde
+ABILITY_FIELD_SUTURE,Réparation
 EVENT_ABANDONED_REDOUBT,La redoute abandonnée
 EVENT_ABANDONED_REDOUBT_TEXT,"Un fort de bois, à moitié effondré. Personne ne l'a tenu depuis des années, mais les poutres sont saines."
 EVENT_ABANDONED_REDOUBT_STRIP,Démonter la charpente
@@ -549,4 +535,16 @@ EVENT_PAYMASTER_CHEST,Le coffre du payeur
 EVENT_PAYMASTER_CHEST_TEXT,"Un coffre ferré dépasse sous un pan de mur écroulé. Le reste du mur tient encore, mais pas de beaucoup."
 EVENT_PAYMASTER_CHEST_DIG,Dégager le coffre
 EVENT_PAYMASTER_CHEST_SCRAPE,Prendre ce qui traîne autour
-ABILITY_CHAPLAIN_STAFF,Coup de bâton
+ENEMY_SIEGE_CANNON,Canon de siège
+ENEMY_WATCH_TOWER,Tour de guet
+ENEMY_REPAIR_SHED,Atelier de réparation
+ENEMY_BOAR_LANCER,Lancier monté
+ENEMY_WAR_PIG,Sanglier de guerre
+ENEMY_GREAT_BOMBARD,La Grande Bombarde
+ENEMY_THE_BOAR_CHIEF,Le Chef de guerre
+ABILITY_SIEGE_SHOT,Tir de siège
+ABILITY_TOWER_BOLT,Carreau de tour
+ABILITY_BOMBARD_SHELL,Obus
+ABILITY_BOAR_CHARGE,Charge
+ABILITY_TUSK_GORE,Coup de boutoir
+ABILITY_CHIEF_LANCE,Lance du Chef

@@ -1,16 +1,16 @@
 {
- "_note": "LA COLLINE DONNE UNE CASE DE PORTÉE ET UN DE DÉGÂTS, et c'est écrit dans `terrain.json` depuis la Phase 1. Un marksman posé dessus porte à HUIT : deux de plus que la Boule de feu du Mage. Attendre n'est plus une option, il faut monter — et la montée passe sous lui.\n\nLES ROCHERS COUPENT LA VUE. C'est la seule réponse gratuite offerte au joueur : `long_shot` exige la ligne de vue.",
+ "_note": "LE BOIS BRÛLÉ : presque aucune couverture, et de la cavalerie. C'est l'inverse de la traversée — ici le terrain ne protège personne, et ce qui coûte n'est plus la distance mais la LENTEUR. Un seul canon, au fond, pour que rester ne soit pas gratuit non plus.",
  "act": 4,
  "name_key": "MAP_FER_03",
  "rows": [
   "............",
-  "....#.......",
-  ".......^^^..",
+  "...^........",
   "............",
-  "....#..^^^..",
+  ".......f....",
   "............",
-  ".......^^^..",
-  "....#.......",
+  ".......f....",
+  "............",
+  "...^........",
   "............"
  ],
  "objective": {
@@ -52,45 +52,45 @@
  ],
  "enemies": [
   {
-   "type": "iron_marksman",
-   "cell": [
-    8,
-    2
-   ]
-  },
-  {
-   "type": "iron_marksman",
-   "cell": [
-    8,
-    6
-   ]
-  },
-  {
-   "type": "iron_bulwark",
-   "cell": [
-    6,
-    4
-   ]
-  },
-  {
-   "type": "iron_chaplain",
-   "cell": [
-    9,
-    4
-   ]
-  },
-  {
-   "type": "iron_pikeman",
+   "type": "boar_lancer",
    "cell": [
     6,
     2
    ]
   },
   {
-   "type": "iron_sapper",
+   "type": "boar_lancer",
    "cell": [
     6,
     6
+   ]
+  },
+  {
+   "type": "war_pig",
+   "cell": [
+    5,
+    4
+   ]
+  },
+  {
+   "type": "war_pig",
+   "cell": [
+    7,
+    3
+   ]
+  },
+  {
+   "type": "war_pig",
+   "cell": [
+    7,
+    5
+   ]
+  },
+  {
+   "type": "siege_cannon",
+   "cell": [
+    11,
+    4
    ]
   }
  ]

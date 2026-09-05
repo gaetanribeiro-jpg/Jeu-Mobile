@@ -1,20 +1,35 @@
 {
- "_note": "UN OBSTACLE ENTRE LES DEUX CAMPS EST GRATUIT POUR LE JOUEUR. Premier écrit de l'acte : un anneau de ruines au MILIEU, la Compagnie dedans. Mesuré à 93 % de PV en huit rondes — l'équipe tirait pendant que les mercenaires traversaient un à un. C'est la leçon de T12.1 (« un terrain qui ralentit l'ennemi ne coûte rien ») élargie à tout obstacle.\n\nLES RUINES SONT DONC DU CÔTÉ DU JOUEUR. Elles font prendre UN DE PLUS à qui s'y tient : la zone de placement est dessus, et rester dedans coûte à chaque volée. L'équipe doit en sortir — vers eux.",
+ "_note": "LE PASSAGE — et l'objectif n'est PAS d'éliminer. Il faut atteindre le bord opposé avant la septième ronde, sous le feu de deux canons qui ne bougeront jamais.\n\nC'EST LA CARTE QUI RÉPOND À LA CRITIQUE. Trente cartes sur trente-six avaient « éliminer » pour seul objectif, et les actes 3 et 4 ne connaissaient que celui-là : avec une IA qui vient au contact, attendre est toujours juste et les PM du joueur ne servent à rien. Ici l'horloge décide, et chaque PM compte.\n\nLA CAVALERIE EST LÀ POUR RETARDER, pas pour tuer : sept PM, elle rattrape qui court et l'oblige à s'arrêter — ce qui coûte l'échéance.",
  "act": 4,
  "name_key": "MAP_FER_02",
  "rows": [
-  "rr..........",
-  "rr..........",
-  "rrr.........",
-  "rrr.........",
-  "rrr.........",
-  "rrr.........",
-  "rrr.........",
-  "rr..........",
-  "rr.........."
+  "............",
+  "..f...#..f..",
+  "....##......",
+  "..f.....f...",
+  "......#.....",
+  "..f.....f...",
+  "....##......",
+  "..f...#..f..",
+  "............"
  ],
  "objective": {
-  "kind": "eliminate"
+  "kind": "seize",
+  "cells": [
+   [
+    11,
+    3
+   ],
+   [
+    11,
+    4
+   ],
+   [
+    11,
+    5
+   ]
+  ],
+  "deadline": 7
  },
  "deployment_cells": [
   [
@@ -52,45 +67,38 @@
  ],
  "enemies": [
   {
-   "type": "iron_chaplain",
+   "type": "siege_cannon",
+   "cell": [
+    11,
+    1
+   ]
+  },
+  {
+   "type": "siege_cannon",
+   "cell": [
+    11,
+    7
+   ]
+  },
+  {
+   "type": "boar_lancer",
    "cell": [
     6,
-    4
-   ]
-  },
-  {
-   "type": "iron_bulwark",
-   "cell": [
-    4,
-    4
-   ]
-  },
-  {
-   "type": "iron_pikeman",
-   "cell": [
-    4,
     3
    ]
   },
   {
-   "type": "iron_pikeman",
+   "type": "boar_lancer",
    "cell": [
-    4,
+    6,
     5
    ]
   },
   {
-   "type": "iron_marksman",
+   "type": "war_pig",
    "cell": [
-    6,
-    2
-   ]
-  },
-  {
-   "type": "iron_sapper",
-   "cell": [
-    6,
-    6
+    8,
+    4
    ]
   }
  ]

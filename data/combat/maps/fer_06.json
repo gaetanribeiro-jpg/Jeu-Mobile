@@ -1,17 +1,17 @@
 {
- "_note": "QUATRE PIQUIERS DANS UN GOULET, ET LEUR PIQUE EMBROCHE LES LEURS. C'est la carte qui enseigne `friendly_fire` : se coller à eux au lieu de reculer les fait se blesser entre eux. Trois actes ont appris à ne jamais se serrer ; celui-ci le récompense.\n\nLES ROCHERS FONT LE GOULET, donc ils ne peuvent pas s'étaler. Sans eux la leçon ne se poserait jamais.",
+ "_note": "LA CHARGE : rien que de la cavalerie, sur un terrain nu. Aucun emplacement, donc aucune raison d'avancer — et c'est voulu : cette carte est la preuve par l'absurde. Six montures à six et sept PM arrivent toutes ensemble à la deuxième ronde, et l'équipe qui a attendu les prend toutes en même temps.\n\nLES DEUX COLLINES SONT LA SEULE DÉCISION : un point de dégâts et une case de portée pour qui les tient, et il faut y monter AVANT qu'ils n'arrivent.",
  "act": 4,
  "name_key": "MAP_FER_06",
  "rows": [
-  "....##......",
-  "....##......",
-  "....##......",
   "............",
   "............",
+  "...^^.......",
+  "...^^.......",
   "............",
-  "....##......",
-  "....##......",
-  "....##......"
+  "...^^.......",
+  "...^^.......",
+  "............",
+  "............"
  ],
  "objective": {
   "kind": "eliminate"
@@ -19,6 +19,10 @@
  "deployment_cells": [
   [
    0,
+   2
+  ],
+  [
+   0,
    3
   ],
   [
@@ -30,6 +34,10 @@
    5
   ],
   [
+   0,
+   6
+  ],
+  [
    1,
    3
   ],
@@ -40,57 +48,56 @@
   [
    1,
    5
-  ],
-  [
-   2,
-   4
-  ],
-  [
-   2,
-   3
   ]
  ],
  "enemies": [
   {
-   "type": "iron_pikeman",
+   "type": "boar_lancer",
    "cell": [
-    6,
+    9,
+    2
+   ]
+  },
+  {
+   "type": "boar_lancer",
+   "cell": [
+    9,
+    6
+   ]
+  },
+  {
+   "type": "boar_lancer",
+   "cell": [
+    10,
+    4
+   ]
+  },
+  {
+   "type": "war_pig",
+   "cell": [
+    8,
     3
    ]
   },
   {
-   "type": "iron_pikeman",
+   "type": "war_pig",
    "cell": [
-    6,
+    8,
     5
    ]
   },
   {
-   "type": "iron_pikeman",
-   "cell": [
-    7,
-    4
-   ]
-  },
-  {
-   "type": "iron_pikeman",
-   "cell": [
-    8,
-    4
-   ]
-  },
-  {
-   "type": "iron_chaplain",
+   "type": "war_pig",
    "cell": [
     10,
-    4
+    1
    ]
   },
   {
-   "type": "iron_marksman",
+   "type": "war_pig",
    "cell": [
     10,
-    2
+    7
    ]
   }
  ]

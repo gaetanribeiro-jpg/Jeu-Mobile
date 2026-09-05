@@ -1,17 +1,17 @@
 {
- "_note": "LA PREMIÈRE PALISSADE D'UNE EXPÉDITION. Elle est `destructible` depuis la Phase 1 et `_breach_intent` sait l'ouvrir depuis T1.12, mais seule la défense du royaume s'en servait : personne n'avait jamais vu un ennemi défoncer un mur en sortie. Ici le mur est à EUX, et c'est le joueur qui doit passer.\n\nUN SEUL TROU, ET LE REMPART EST DEDANS. Le contourner demande de casser du bois sous le feu du tireur ; passer par le trou demande de tuer le rempart d'abord — et derrière lui, l'aumônier recoud.",
+ "_note": "LA TRAVERSÉE, et c'est la carte qui enseigne l'acte. Deux canons à neuf cases, une tour à sept, et rien qui vienne à vous : rester coûte trente par ronde sans rien rendre.\n\nLES BOSQUETS SONT LA RÉPONSE, et c'est la première fois du jeu. `forest` coupe la ligne de vue ET retire un point de dégâts, déclaré depuis la Phase 1 et jamais employé comme COUVERTURE — il ne servait qu'à gêner l'ennemi. Ils sont posés en quinconce : on avance de l'un à l'autre, jamais en ligne droite.",
  "act": 4,
  "name_key": "MAP_FER_01",
  "rows": [
-  "......p.....",
-  "......p..r..",
-  "......p.....",
-  "......p.....",
+  "....f.......",
+  "..#..f......",
+  ".....#......",
+  "..f....f....",
   "............",
-  "......p.....",
-  "......p.....",
-  "..r...p.....",
-  "......p....."
+  "..f....f....",
+  ".....#......",
+  "..#..f......",
+  "....f......."
  ],
  "objective": {
   "kind": "eliminate"
@@ -52,38 +52,45 @@
  ],
  "enemies": [
   {
-   "type": "iron_bulwark",
+   "type": "siege_cannon",
    "cell": [
-    7,
-    4
+    10,
+    2
    ]
   },
   {
-   "type": "iron_chaplain",
+   "type": "siege_cannon",
+   "cell": [
+    10,
+    6
+   ]
+  },
+  {
+   "type": "watch_tower",
    "cell": [
     9,
     4
    ]
   },
   {
-   "type": "iron_marksman",
+   "type": "boar_lancer",
    "cell": [
-    10,
+    7,
     3
    ]
   },
   {
-   "type": "iron_sapper",
+   "type": "war_pig",
    "cell": [
-    8,
-    2
+    7,
+    5
    ]
   },
   {
-   "type": "iron_pikeman",
+   "type": "repair_shed",
    "cell": [
-    8,
-    6
+    11,
+    4
    ]
   }
  ]

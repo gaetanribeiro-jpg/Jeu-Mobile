@@ -282,8 +282,51 @@ func enemy_portrait(sprite_id: StringName) -> Texture2D:
 	var texture: Texture2D = load(path)
 	if texture == null:
 		return null
-	_textures[cache] = texture
-	return texture
+	# UN AVATAR PEUT ÊTRE UNE BANDE, et il faut alors n'en prendre que la
+	# PREMIÈRE IMAGE. Les vingt et un visages du pack sont des images
+	# fixes ; les bêtes qui viennent d'`extra` — le canon, la tour,
+	# l'atelier — n'ont pas de portrait dessiné, et leur avatar pointe donc
+	# sur leur propre animation d'attente.
+	#
+	# SANS ÇA, LE BADGE MONTRE LA BANDE ENTIÈRE : un ruban de 3072 × 256
+	# écrasé dans un carré de 50 px donne une ligne pointillée d'un pixel
+	# de haut. Deux ennemis se sont affichés en badge VIDE, sans une seule
+	# erreur — même famille de défaut que les sept ombres nues de T11.8.
+	var frame_size := Vector2i(texture.get_width(), texture.get_height())
+	if StringName(entry.get("kind", AssetTable.KIND_IMAGE)) == AssetTable.KIND_STRIP:
+		frame_size = Vector2i(
+			int(entry.get("frame_w", frame_size.x)), int(entry.get("frame_h", frame_size.y))
+		)
+	# ET ON RECADRE SUR LES PIXELS OPAQUES. Les vingt et un portraits du
+	# pack sont des bustes SERRÉS ; une animation d'attente, non — un
+	# cavalier occupe le tiers d'un cadre de 256, donc son badge le montrait
+	# gros comme un pouce à côté des autres. La règle est uniforme et sans
+	# seuil : on recadre tout le monde, et les portraits déjà serrés ne
+	# bougent quasiment pas.
+	var region := _opaque_region(texture, frame_size)
+	if region.size.x <= 0.0 or region.size.y <= 0.0:
+		_textures[cache] = texture
+		return texture
+	var portrait := AtlasTexture.new()
+	portrait.atlas = texture
+	portrait.region = region
+	_textures[cache] = portrait
+	return portrait
+
+
+## La boîte des pixels opaques de la PREMIÈRE image d'une texture.
+## Rendue en coordonnées de la texture entière, prête pour un AtlasTexture.
+func _opaque_region(texture: Texture2D, frame: Vector2i) -> Rect2:
+	var image := texture.get_image()
+	if image == null:
+		return Rect2()
+	var used := image.get_used_rect()
+	# `get_used_rect` couvre la BANDE entière ; on la borne au premier cadre.
+	var right := mini(used.position.x + used.size.x, frame.x)
+	var bottom := mini(used.position.y + used.size.y, frame.y)
+	var left := mini(used.position.x, frame.x)
+	var top := mini(used.position.y, frame.y)
+	return Rect2(left, top, maxi(right - left, 0), maxi(bottom - top, 0))
 
 
 ## Le fond de l'écran : un aplat sombre, et un motif carrelé par-dessus.

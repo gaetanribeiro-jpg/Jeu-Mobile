@@ -1,16 +1,16 @@
 {
- "_note": "DEUX MURS ENTRE LES DEUX CAMPS DONNAIENT 95 % DE PV : le meilleur exemple de la règle. Le joueur n'avait rien à faire que d'attendre pendant que la Compagnie contournait ou défonçait.\n\nIL N'EN RESTE QU'UN, ET IL EST DERRIÈRE EUX. La palissade ne protège plus l'équipe de la Compagnie, elle protège le tireur de l'équipe : pour aller le chercher il faut casser du bois sous son feu, ou faire le tour par un seul trou. L'obstacle est enfin dans le sens qui coûte.",
+ "_note": "LA REDOUTE : deux tours, un atelier derrière une palissade. Les tours grignotent à sept cases, l'atelier les recoud, et le bois se casse.\n\nL'ATELIER EST AU FOND, ET C'EST LA QUESTION. Mordre la première tour venue ne mène nulle part tant qu'il répare ; il faut aller le chercher, donc traverser toute la ligne sous le feu des deux autres.",
  "act": 4,
  "name_key": "MAP_FER_05",
  "rows": [
   "........p...",
+  "..f.....p...",
   "........p...",
-  "........p...",
-  "........p...",
+  "..f.........",
   "............",
+  "..f.........",
   "........p...",
-  "........p...",
-  "........p...",
+  "..f.....p...",
   "........p..."
  ],
  "objective": {
@@ -19,21 +19,25 @@
  "deployment_cells": [
   [
    0,
-   3
-  ],
-  [
-   0,
-   4
-  ],
-  [
-   0,
-   5
-  ],
-  [
-   1,
    2
   ],
   [
+   0,
+   3
+  ],
+  [
+   0,
+   4
+  ],
+  [
+   0,
+   5
+  ],
+  [
+   0,
+   6
+  ],
+  [
    1,
    3
   ],
@@ -44,53 +48,49 @@
   [
    1,
    5
-  ],
-  [
-   1,
-   6
   ]
  ],
  "enemies": [
   {
-   "type": "iron_marksman",
+   "type": "watch_tower",
+   "cell": [
+    7,
+    2
+   ]
+  },
+  {
+   "type": "watch_tower",
+   "cell": [
+    7,
+    6
+   ]
+  },
+  {
+   "type": "repair_shed",
    "cell": [
     10,
     4
    ]
   },
   {
-   "type": "iron_marksman",
+   "type": "boar_lancer",
    "cell": [
-    10,
-    1
-   ]
-  },
-  {
-   "type": "iron_bulwark",
-   "cell": [
-    4,
+    5,
     4
    ]
   },
   {
-   "type": "iron_pikeman",
+   "type": "war_pig",
    "cell": [
-    4,
-    3
+    5,
+    2
    ]
   },
   {
-   "type": "iron_pikeman",
+   "type": "war_pig",
    "cell": [
-    4,
-    5
-   ]
-  },
-  {
-   "type": "iron_chaplain",
-   "cell": [
-    6,
-    4
+    5,
+    6
    ]
   }
  ]

@@ -708,67 +708,8 @@
   "cooldown": 1,
   "animation": "attack_right"
  },
- "sapper_pick": {
-  "_note": "LA PIOCHE DU SAPEUR, ET ELLE NE VISE PAS L'HOMME. Vingt dégâts sont ordinaires ; ce qui compte est la BOUE laissée derrière. Le feu du gobelin à torche brûle celui qui reste ; la boue ne blesse personne et coûte un PM de plus à qui passe. C'est la première compétence du jeu qui attaque le DÉPLACEMENT plutôt que les points de vie, et sur une carte de couloirs elle ferme une route sans tuer personne.",
-  "kind": "attack",
-  "scaling": "strength",
-  "action_points": 3,
-  "range_min": 1,
-  "range_max": 1,
-  "needs_line_of_sight": true,
-  "damage": 20,
-  "area": {
-   "shape": "single"
-  },
-  "leaves_terrain": "mud",
-  "animation": "attack"
- },
- "pike_thrust": {
-  "_note": "SA PIQUE EMBROCHE LES SIENS, et c'est tout l'intérêt. `friendly_fire` existait depuis la Phase 1 et seuls le joueur et sa Boule de feu s'en servaient ; c'est le premier ennemi qui en paie le prix. Se coller à un mercenaire devient une PROTECTION et ça inverse la leçon des trois premiers actes : ne jamais se serrer.\n\nNI RECHARGE NI SIX PA, ET C'EST MESURÉ. Une recharge sur la SEULE compétence d'une bête la fait chômer une ronde sur deux — l'acte rendait 95 % des PV avec six mercenaires dont deux ne frappaient jamais. Une recharge se paie quand il y a autre chose à faire pendant ; ici il n'y avait rien.",
-  "kind": "attack",
-  "scaling": "strength",
-  "action_points": 4,
-  "range_min": 1,
-  "range_max": 2,
-  "needs_line_of_sight": true,
-  "damage": 24,
-  "area": {
-   "shape": "line",
-   "length": 2
-  },
-  "friendly_fire": true,
-  "animation": "attack_right"
- },
- "long_shot": {
-  "_note": "SEPT CASES : une de plus que la meilleure portée du joueur, la Boule de feu du Mage à six. Les trois actes précédents plafonnent tous à six pile — chaman, feu follet, mine — donc l'échange était toujours équitable, et un échange équitable se gagne à quatre contre un sans bouger. C'est ce qui rendait l'attente si confortable et tout terrain ralentissant gratuit. À sept, attendre coûte une volée qu'on ne peut pas rendre.",
-  "kind": "attack",
-  "scaling": "agility",
-  "action_points": 3,
-  "range_min": 3,
-  "range_max": 7,
-  "needs_line_of_sight": true,
-  "damage": 16,
-  "area": {
-   "shape": "single"
-  },
-  "animation": "shoot"
- },
- "bulwark_bash": {
-  "_note": "Le coup du rempart : ordinaire, et c'est voulu. Il n'est pas là pour faire mal, il est là pour être DEVANT. Ce qui le rend dangereux n'est pas ce chiffre, c'est ce qu'il y a derrière lui.",
-  "kind": "attack",
-  "scaling": "strength",
-  "action_points": 3,
-  "range_min": 1,
-  "range_max": 1,
-  "needs_line_of_sight": true,
-  "damage": 18,
-  "area": {
-   "shape": "single"
-  },
-  "animation": "attack1"
- },
  "field_suture": {
-  "_note": "LE PREMIER SOIN ENNEMI DU JEU. `KIND_HEAL` servait aux potions depuis T10.1 et rien du côté ennemi ne l'employait — quatrième mécanique écrite et jamais branchée, après `KIND_PUSH`, `KIND_HEAL` lui-même et les 70 entrées `ui`.\n\nPORTÉE QUATRE, RECHARGE DEUX, et les deux chiffres portent la question. La portée l'oblige à se tenir DANS la mêlée des siens, donc à portée de qui va le chercher ; la recharge borne ce qu'il défait, sinon un aumônier seul rendrait un combat interminable — et un combat plus LONG n'est pas un combat plus dur (leçon de l'acte 2).",
+  "_note": "LE SOIN ENNEMI, ET IL A SURVÉCU AU CHANGEMENT DE FACTION. Écrit pour l'aumônier de la Compagnie dorée, il est passé à l'atelier qui répare les emplacements — la mécanique ne dépendait pas de qui la portait, et c'est bien pour ça qu'elle vaut la peine.\n\n`KIND_HEAL` servait aux potions depuis T10.1 et rien du côté ennemi ne l'employait. PORTÉE QUATRE, RECHARGE DEUX : la portée oblige l'atelier à se tenir DANS la ligne, donc à portée de qui va le chercher ; la recharge borne ce qu'il défait, sinon un combat deviendrait interminable — et un combat plus LONG n'est pas un combat plus dur.",
   "kind": "heal",
   "scaling": "intelligence",
   "action_points": 5,
@@ -783,67 +724,94 @@
   "animation": "heal",
   "effect": "heal_effect"
  },
- "provost_hammer": {
-  "_note": "IL FAUT S'ÊTRE PLANTÉ POUR L'ABATTRE. `requires_not_moved` n'était lu que par le Tir puissant du joueur, et l'IA l'ignorait purement et simplement : un ennemi se serait déplacé PUIS aurait porté un coup réservé à qui ne bouge pas. Le prévôt est la bête qui referme ce trou.\n\nL'ordre de l'activation lui donne son sens : un ennemi annonce APRÈS s'être déplacé, donc ce marteau ne s'annonce que depuis un prévôt immobile. Le joueur le lit sur le télégraphe, et sa réponse est de le faire marcher — reculer d'une case lui coûte son meilleur coup.",
+ "siege_shot": {
+  "_note": "NEUF CASES, ET LE CANON NE PEUT PAS VENIR À TOI. Trois de plus que la meilleure portée du joueur (la Boule de feu du Mage, à six). Les trois actes précédents plafonnaient à six pile : l'échange était équitable, et un échange équitable se gagne à quatre contre un SANS BOUGER. C'est ce qui rendait l'attente confortable et tout terrain gratuit pour le joueur.\n\nIL EXIGE LA LIGNE DE VUE, et c'est la moitié qui donne son sens au terrain : un rocher ou un bosquet coupe le tir. Pour la première fois du jeu, la COUVERTURE existe — `blocks_sight` était déclaré depuis la Phase 1 et aucune carte ne s'en servait pour protéger le joueur.",
+  "kind": "attack",
+  "scaling": "agility",
+  "action_points": 5,
+  "range_min": 4,
+  "range_max": 9,
+  "needs_line_of_sight": true,
+  "damage": 30,
+  "area": {
+   "shape": "single"
+  },
+  "cooldown": 1,
+  "animation": "idle"
+ },
+ "tower_bolt": {
+  "_note": "DEUX TIRS PAR RONDE, ET C'EST SA DIFFÉRENCE AVEC LE CANON. Trois PA sur six : la tour n'assomme pas, elle grignote sans arrêt pendant toute la traversée. Le canon punit d'être resté loin, la tour punit d'avoir été lent.",
+  "kind": "attack",
+  "scaling": "agility",
+  "action_points": 3,
+  "range_min": 2,
+  "range_max": 7,
+  "needs_line_of_sight": true,
+  "damage": 18,
+  "area": {
+   "shape": "single"
+  },
+  "animation": "idle"
+ },
+ "bombard_shell": {
+  "_note": "L'OBUS DU MINI-BOSS : dix cases, et il éclate en croix. Traverser à couvert demande de se serrer derrière les mêmes rochers — c'est exactement ce qu'il punit. Les deux réponses de l'acte se contredisent enfin.",
+  "kind": "attack",
+  "scaling": "agility",
+  "action_points": 6,
+  "range_min": 4,
+  "range_max": 10,
+  "needs_line_of_sight": true,
+  "damage": 32,
+  "area": {
+   "shape": "cross",
+   "radius": 1
+  },
+  "cooldown": 1,
+  "animation": "idle"
+ },
+ "boar_charge": {
+  "_note": "LA CHARGE DU SANGLIER. Vingt-six au contact, deux cases d'allonge : ordinaire. Ce qui la rend dangereuse est les SEPT PM de sa monture — elle arrive pendant que l'équipe traverse à découvert.",
   "kind": "attack",
   "scaling": "strength",
-  "action_points": 6,
+  "action_points": 3,
+  "range_min": 1,
+  "range_max": 2,
+  "needs_line_of_sight": true,
+  "damage": 26,
+  "area": {
+   "shape": "single"
+  },
+  "animation": "attack"
+ },
+ "tusk_gore": {
+  "_note": "Le coup de boutoir du sanglier seul. Rien de neuf, et c'est voulu : il est là pour être NOMBREUX et rapide, pas pour poser une question de plus.",
+  "kind": "attack",
+  "scaling": "strength",
+  "action_points": 3,
   "range_min": 1,
   "range_max": 1,
   "needs_line_of_sight": true,
-  "damage": 38,
+  "damage": 20,
   "area": {
-   "shape": "line",
-   "length": 2
+   "shape": "single"
   },
-  "requires_not_moved": true,
-  "cooldown": 1,
-  "animation": "attack2"
+  "animation": "idle"
  },
- "captain_lance": {
-  "_note": "La lance du capitaine, en ligne de deux comme celle du Jarl, et plus lourde d'un cran.",
+ "chief_lance": {
+  "_note": "LA LANCE DU CHEF, ET IL FAUT S'ÊTRE ARRÊTÉ POUR LA PORTER. `requires_not_moved` n'était lu que par le Tir puissant du joueur et l'IA l'ignorait purement et simplement — un ennemi se serait déplacé PUIS aurait porté un coup réservé à qui reste planté.\n\nSUR UNE MONTURE À SIX PM, ÇA DEVIENT UNE DÉCISION : le chef choisit entre charger et frapper fort, il ne peut pas les deux dans la même activation. Le joueur le lit sur le télégraphe, et sa réponse est de le forcer à courir.",
   "kind": "attack",
   "scaling": "strength",
   "action_points": 6,
   "range_min": 1,
   "range_max": 2,
   "needs_line_of_sight": true,
-  "damage": 36,
+  "damage": 34,
   "area": {
    "shape": "line",
    "length": 2
   },
+  "requires_not_moved": true,
   "cooldown": 1,
-  "animation": "attack_right"
- },
- "rally_order": {
-  "_note": "LE SOIN DE L'AUMÔNIER, MAIS SUR TOUTE LA COMPAGNIE. En croix de deux, il recoud jusqu'à cinq des siens d'un coup : c'est la question de l'acte portée à son échelle. La réponse n'est pas de frapper plus fort, c'est de ne plus laisser cinq blessés à portée les uns des autres — donc de tuer POUR DE BON avant d'entamer ailleurs.",
-  "kind": "heal",
-  "scaling": "intelligence",
-  "action_points": 6,
-  "range_min": 0,
-  "range_max": 4,
-  "needs_line_of_sight": true,
-  "damage": 18,
-  "area": {
-   "shape": "cross",
-   "radius": 2
-  },
-  "cooldown": 3,
-  "animation": "idle"
- },
- "chaplain_staff": {
-  "_note": "LE BÂTON DE L'AUMÔNIER, ET IL EST FAIBLE EXPRÈS. Un soigneur sans aucune attaque est un ennemi de plus à tuer qui ne coûte rien tant qu'il ne soigne pas — mesuré, l'acte rendait 95 % des PV. Douze au contact ne changent pas la question de l'acte (« qui tuer d'abord »), ils empêchent seulement que l'approcher soit gratuit.\n\nLE SOIN PASSE AVANT : `_intent_from_here` cherche un blessé d'abord. Le bâton ne sort que quand tout le monde va bien.",
-  "kind": "attack",
-  "scaling": "intelligence",
-  "action_points": 3,
-  "range_min": 1,
-  "range_max": 1,
-  "needs_line_of_sight": true,
-  "damage": 12,
-  "area": {
-   "shape": "single"
-  },
-  "animation": "idle"
+  "animation": "attack"
  }
 }

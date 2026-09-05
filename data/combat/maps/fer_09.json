@@ -1,17 +1,17 @@
 {
- "_note": "LE MINI-BOSS, ET IL SE BAT EN LE FAISANT MARCHER. Son marteau exige de n'avoir pas bougé ; un ennemi annonce APRÈS s'être déplacé, donc trente-huit en ligne de deux ne s'annoncent que depuis un prévôt planté.\n\nLA COUR EST OUVERTE EXPRÈS. Sur une carte encombrée il n'aurait jamais de raison de bouger et le marteau tomberait tout le temps ; ici, reculer d'une case l'oblige à choisir entre avancer et frapper.\n\nPAS D'AUMÔNIER SUR CETTE CARTE, ET C'EST MESURÉ. Retirer un rempart la ramenait de neuf rondes à six, mais de 62 % à 91 % de PV : gratuite. Remettre le rempart la remettait à neuf rondes. Le corps n'était pas le problème — le SOIN l'était : trois cent cinquante points de vie de remparts, recousus, c'est de la durée, pas de la difficulté (leçon de l'acte 2).\n\nLE PIQUIER PREND SA PLACE : autant de corps, autant de coups, et rien qui remonte. La question du prévôt est son marteau conditionnel, et tout ce qui allonge la fouille l'enterre. Le Ralliement du Capitaine garde donc le soin à grande échelle pour la carte du boss, où c'est LA question.",
+ "_note": "LA GRANDE BOMBARDE — le mini-boss, et il punit la réponse de l'acte. On traverse à couvert, donc on se serre derrière les mêmes rochers ; son obus éclate en croix à dix cases. Rester groupé pour rester à l'abri, ou s'étaler pour éviter l'éclatement et sortir de la couverture : les deux réponses de l'acte se contredisent enfin.",
  "act": 4,
  "name_key": "MAP_FER_09",
  "rows": [
+  "..#.....#...",
   "............",
-  "..#......#..",
+  "..f.....f...",
   "............",
-  "....rrrr....",
-  "....r..r....",
-  "....rrrr....",
+  "......##....",
   "............",
-  "..#......#..",
-  "............"
+  "..f.....f...",
+  "............",
+  "..#.....#..."
  ],
  "objective": {
   "kind": "eliminate"
@@ -52,45 +52,45 @@
  ],
  "enemies": [
   {
-   "type": "iron_provost",
+   "type": "great_bombard",
    "cell": [
-    6,
+    10,
     4
    ]
   },
   {
-   "type": "iron_bulwark",
-   "cell": [
-    5,
-    3
-   ]
-  },
-  {
-   "type": "iron_bulwark",
-   "cell": [
-    5,
-    5
-   ]
-  },
-  {
-   "type": "iron_pikeman",
-   "cell": [
-    7,
-    4
-   ]
-  },
-  {
-   "type": "iron_marksman",
+   "type": "watch_tower",
    "cell": [
     8,
     2
    ]
   },
   {
-   "type": "iron_marksman",
+   "type": "watch_tower",
    "cell": [
     8,
     6
+   ]
+  },
+  {
+   "type": "boar_lancer",
+   "cell": [
+    6,
+    3
+   ]
+  },
+  {
+   "type": "boar_lancer",
+   "cell": [
+    6,
+    5
+   ]
+  },
+  {
+   "type": "repair_shed",
+   "cell": [
+    11,
+    4
    ]
   }
  ]

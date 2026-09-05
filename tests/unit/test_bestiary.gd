@@ -196,31 +196,29 @@ func test_une_sauvegarde_conserve_le_sprite() -> void:
 ##
 ## Mesuré sur les images d'attente : passer du Bleu à une autre couleur
 ## change 51 % des pixels d'un Lancier, 49 % d'un Archer, 38 % d'un
-## Guerrier, 25 % d'un Moine — et **7,9 %** d'un Pawn. Trois actes de
-## factions humaines auraient donc eu le même sapeur.
+## Guerrier, 25 % d'un Moine — et **7,9 %** d'un Pawn. Sa variante d'outil
+## est donc sa seule façon de se distinguer.
 ##
-## Sa variante d'outil est ce qui le sauve, et elle doit RETOMBER : une
-## variante absente ne doit pas rendre la bête invisible, comme les sept
-## ombres nues de T11.8.
+## AUCUNE BÊTE N'EN DÉCLARE AUJOURD'HUI : le sapeur qui la portait est
+## parti avec la Compagnie dorée. Le mécanisme reste parce qu'il est
+## EXERCÉ de bout en bout ici — c'est ce qui sépare une mécanique en
+## attente d'une mécanique morte, et les quatre que ce projet a retrouvées
+## mortes (`KIND_HEAL`, `KIND_PUSH`, les 70 entrées `ui`,
+## `requires_not_moved`) n'avaient justement aucun test.
 func test_une_variante_de_sprite_se_fabrique() -> void:
-	var unit := Unit.from_enemy(1, &"iron_sapper", Vector2i.ZERO)
-	assert_not_null(unit, "le sapeur doit se fabriquer")
-	assert_eq(unit.sprite_variant, "pickaxe", "il porte la pioche")
 	assert_true(
-		AssetTable.has_unit_animation(unit.sprite_id, &"idle_pickaxe"),
-		"et le pack dessine bien cette variante"
+		AssetTable.has_unit_animation(&"pawn", &"idle_pickaxe"),
+		"le pack décline bien le Pawn en outils"
 	)
-
-
-func test_une_variante_survit_a_la_sauvegarde() -> void:
-	var unit := Unit.from_enemy(1, &"iron_sapper", Vector2i.ZERO)
+	var unit := Unit.from_enemy(1, &"war_pig", Vector2i.ZERO)
+	unit.sprite_variant = "pickaxe"
 	assert_eq(
 		Unit.from_dictionary(unit.to_dictionary()).sprite_variant, "pickaxe",
 		"un combat repris ne doit pas perdre l'outil"
 	)
 
 
-## Aucune autre bête n'en déclare : la retombée doit rester le cas normal.
+## La retombée est le cas normal, et elle doit le rester : ne rien
+## dessiner est ce qui a donné sept ombres nues en T11.8.
 func test_une_bete_sans_variante_reste_nue() -> void:
 	assert_eq(Unit.from_enemy(1, &"troll", Vector2i.ZERO).sprite_variant, "")
-

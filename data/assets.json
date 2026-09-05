@@ -1112,6 +1112,123 @@
      "h": 256
     }
    }
+  },
+  "pig_rider": {
+   "_note": "LE PACK A DE LA CAVALERIE, et le carnet affirmait le contraire depuis le premier jour. Un gobelin lancier monté sur un sanglier, avec attente, course ET attaque — une unité complète. Elle dormait dans `extra`, la catégorie que l'inventaire des bêtes ne comptait pas : les « 21 visages » ne comptaient que `enemies`.\n\nCADRES DE 256, pas 192 : un cavalier est plus haut qu'un homme à pied, et c'est mesuré sur le fichier, jamais supposé.",
+   "root": "extra",
+   "animations": {
+    "idle": {
+     "file": "Extra/Pig Rider Spear Goblin/Pig Rider_Idle.png",
+     "kind": "strip",
+     "frames": 8,
+     "frame_w": 256,
+     "frame_h": 256
+    },
+    "run": {
+     "file": "Extra/Pig Rider Spear Goblin/Pig Rider_Run.png",
+     "kind": "strip",
+     "frames": 4,
+     "frame_w": 256,
+     "frame_h": 256
+    },
+    "attack": {
+     "file": "Extra/Pig Rider Spear Goblin/Pig Rider_Attack.png",
+     "kind": "strip",
+     "frames": 7,
+     "frame_w": 256,
+     "frame_h": 256
+    },
+    "avatar": {
+     "file": "Extra/Pig Rider Spear Goblin/Pig Rider_Idle.png",
+     "kind": "strip",
+     "frames": 8,
+     "frame_w": 256,
+     "frame_h": 256
+    }
+   }
+  },
+  "war_pig": {
+   "_note": "LE SANGLIER SEUL, sans son cavalier. Dix images d'attente, quatre de course, et AUCUNE attaque : il charge et piétine, il ne frappe pas d'une arme. C'est la vue qui retombe sur l'attente quand une animation d'attaque manque.",
+   "root": "extra",
+   "animations": {
+    "idle": {
+     "file": "Extra/Pig/Pig_Idle.png",
+     "kind": "strip",
+     "frames": 10,
+     "frame_w": 192,
+     "frame_h": 192
+    },
+    "run": {
+     "file": "Extra/Pig/Pig_Run.png",
+     "kind": "strip",
+     "frames": 4,
+     "frame_w": 192,
+     "frame_h": 192
+    },
+    "avatar": {
+     "file": "Extra/Pig/Pig_Idle.png",
+     "kind": "strip",
+     "frames": 10,
+     "frame_w": 192,
+     "frame_h": 192
+    }
+   }
+  },
+  "siege_cannon": {
+   "_note": "UN CANON NE VIENT PAS À TOI, et c'est tout l'intérêt. Le pack le dessine en CINQ directions plus son boulet, et rien ne s'en servait.\n\nUNE IMAGE FIXE, PAS UNE BANDE : `SpriteFrameFactory` la refusait jusqu'à T12.1. On prend la vue `right`, celle qui regarde le joueur venir depuis l'ouest — les quatre autres directions demanderaient une orientation d'unité que le moteur n'a pas, et le § 16 a déjà tranché que seul le Lancier est directionnel.",
+   "root": "extra",
+   "animations": {
+    "idle": {
+     "file": "Extra/Cannon/Cannon_Right.png",
+     "kind": "image",
+     "w": 128,
+     "h": 128
+    },
+    "avatar": {
+     "file": "Extra/Cannon/Cannon_Right.png",
+     "kind": "image",
+     "w": 128,
+     "h": 128
+    }
+   }
+  },
+  "watch_tower": {
+   "_note": "LA TOUR DE GUET, qui ne bouge pas non plus. Version « ground » : la version « water » est animée sur huit images et attend un plateau qui aura de l'eau autour d'elle.",
+   "root": "extra",
+   "animations": {
+    "idle": {
+     "file": "Extra/Pirate Tower/Pirate Tower_Ground.png",
+     "kind": "image",
+     "w": 128,
+     "h": 192
+    },
+    "avatar": {
+     "file": "Extra/Pirate Tower/Pirate Tower_Ground.png",
+     "kind": "image",
+     "w": 128,
+     "h": 192
+    }
+   }
+  },
+  "repair_shed": {
+   "_note": "LA HUTTE GOBELINE, SEIZE IMAGES D'ANIMATION, jamais employée. Elle fait l'atelier qui répare les emplacements : c'est le porteur du soin ennemi écrit pour la Compagnie dorée, et il survit au changement de faction parce que la mécanique ne dépendait pas de qui la portait.",
+   "root": "extra",
+   "animations": {
+    "idle": {
+     "file": "Extra/Goblin Hut/Goblin Hut.png",
+     "kind": "strip",
+     "frames": 16,
+     "frame_w": 192,
+     "frame_h": 256
+    },
+    "avatar": {
+     "file": "Extra/Goblin Hut/Goblin Hut.png",
+     "kind": "strip",
+     "frames": 16,
+     "frame_w": 192,
+     "frame_h": 256
+    }
+   }
   }
  },
  "extra": {

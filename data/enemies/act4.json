@@ -1,130 +1,116 @@
 {
- "_note": "ACTE 4 — LES TERRES BRISÉES, ET LA COMPAGNIE DORÉE.\n\nL'ACTE OÙ LES DÉGÂTS NE RESTENT PAS. Les trois premiers actes enseignent à choisir sa cible ; celui-ci apprend qu'on peut choisir MAL. L'aumônier recoud un blessé, le capitaine en recoud cinq : entamer quatre ennemis revient à n'en avoir tué aucun. C'est la première fois que « tuer POUR DE BON avant d'entamer ailleurs » est la bonne réponse — et les vingt-huit bêtes des trois premiers actes ne la posaient jamais, parce qu'aucune d'elles ne remontait.\n\nSEPT BÊTES POUR CINQ SPRITES, et ce n'est pas une économie de misère : l'acte 3 le fait déjà (`ice_raider` et `raid_champion` partagent le `warrior`). Le pack dessine cinq classes en cinq couleurs ; les vingt et un visages de bêtes sont ENTIÈREMENT consommés par les actes 1 à 3. Le Jaune est ce qui reste, avec le Violet et le Noir pour les deux actes suivants.\n\nLA PALISSADE EST LA SIGNATURE DE L'ACTE. Elle est `destructible` depuis la Phase 1 et `_breach_intent` sait l'ouvrir depuis T1.12 — mais seule la défense du royaume (§ 38) s'en servait, donc aucune expédition n'avait jamais vu un ennemi défoncer un mur. La vieille ligne de forts la rend ordinaire.",
- "iron_sapper": {
-  "sprite": "pawn",
-  "sprite_color": "Yellow",
-  "sprite_variant": "pickaxe",
-  "role": "melee",
-  "hit_points": 100,
+ "_note": "ACTE 4 — LES TERRES BRISÉES : LA LIGNE ARTILLÉE.\n\nL'ACTE QUI OBLIGE LE JOUEUR À BOUGER. Trente cartes sur trente-six avaient pour objectif « éliminer », et les actes 3 et 4 ne connaissaient QUE celui-là. Avec « éliminer » et une IA qui vient au contact, attendre est toujours la bonne réponse : les PM du joueur ne servent qu'à se replacer de deux cases, et tout terrain lui est gratuit. Déplacer les obstacles de son côté ne soignait que le symptôme.\n\nDEUX FAMILLES, ET CHACUNE FERME UNE PORTE. Les EMPLACEMENTS — canon, tour, atelier — ne bougent PAS et portent jusqu'à neuf cases : rester coûte sans rendre. La CAVALERIE — gobelin monté, sanglier — court à six et sept PM : avancer à découvert coûte aussi. Entre les deux, il reste le terrain, et pour la première fois du jeu il sert au JOUEUR : `blocks_sight` est déclaré depuis la Phase 1 et aucune carte ne l'employait comme COUVERTURE.\n\nAUCUN HUMAIN, AUCUNE COULEUR DÉPENSÉE. Les cinq couleurs du pack sont un budget : trois vont aux rangs des héros (Bleu, Violet, Or) et deux aux factions ennemies (Rouge des Rougefer à l'acte 3, Noir de l'Empire à l'acte 6). Une couleur ne peut pas être à la fois un rang et une faction.\n\nCES SPRITES DORMAIENT DANS `extra`, la catégorie que l'inventaire des bêtes ne comptait pas : les « vingt et un visages » ne comptaient que `enemies`. Le pack a donc de la CAVALERIE, que le carnet déclarait absente depuis le premier jour.",
+ "siege_cannon": {
+  "sprite": "siege_cannon",
+  "role": "blocker",
+  "hit_points": 80,
   "action_points": 6,
-  "movement_points": 4,
-  "initiative": 6,
-  "strength": 6,
-  "agility": 4,
+  "movement_points": 0,
+  "initiative": 3,
+  "strength": 1,
+  "agility": 6,
   "intelligence": 1,
   "defence": 4,
   "abilities": [
-   "sapper_pick"
+   "siege_shot"
   ],
-  "question": "IL N'ATTAQUE PAS L'HOMME, IL ATTAQUE LA ROUTE. Sa pioche laisse de la boue, qui coûte un PM de plus et ne blesse personne. Le gobelin à torche brûlait le terrain gagné ; celui-ci le rend simplement long à traverser, et sur une carte de ruines et de couloirs, long à traverser veut dire une ronde sous les flèches. C'est la première bête qui vise les PM.",
-  "_note": "LA PIOCHE EST CE QUI LE REND VISIBLE. Mesuré : la couleur de faction ne change que 7,9 % des pixels d'un Pawn — contre 51 % pour un Lancier et 49 % pour un Archer. Un sapeur jaune, un sapeur violet et un sapeur noir seraient donc LE MÊME DESSIN sur trois actes. Le pack décline le Pawn en quatre outils avec leurs animations complètes ; c'est la seule famille qui se distingue autrement que par la couleur, et ça donne trois sapeurs distincts pour les actes 4, 5 et 6."
+  "question": "LE PREMIER ENNEMI QUI NE PEUT PAS VENIR À TOI. Zéro PM, et neuf cases de portée — trois de plus que la Boule de feu du Mage. Les vingt-huit bêtes des trois premiers actes venaient toutes au contact, donc attendre était toujours la bonne réponse et les PM du joueur ne servaient à rien. Ici, attendre coûte trente par ronde sans rien rendre : il FAUT traverser. Et comme il exige la ligne de vue, la traversée se joue de rocher en bosquet."
  },
- "iron_pikeman": {
-  "sprite": "lancer",
-  "sprite_color": "Yellow",
-  "role": "melee",
-  "hit_points": 120,
-  "action_points": 8,
-  "movement_points": 4,
-  "initiative": 6,
-  "strength": 7,
-  "agility": 4,
-  "intelligence": 1,
-  "defence": 4,
-  "abilities": [
-   "pike_thrust"
-  ],
-  "question": "SA PIQUE EMBROCHE LES SIENS. Trois actes ont appris à ne jamais se serrer ; celui-là inverse la leçon — se coller à un mercenaire est une PROTECTION, parce que la Compagnie tire quand même. Premier ennemi du jeu à porter `friendly_fire`, que seule la Boule de feu du joueur employait."
- },
- "iron_marksman": {
-  "sprite": "archer",
-  "sprite_color": "Yellow",
-  "role": "skirmisher",
-  "hit_points": 75,
+ "watch_tower": {
+  "sprite": "watch_tower",
+  "role": "blocker",
+  "hit_points": 200,
   "action_points": 6,
-  "movement_points": 5,
-  "initiative": 9,
-  "strength": 3,
-  "agility": 7,
-  "intelligence": 1,
-  "defence": 2,
-  "abilities": [
-   "long_shot"
-  ],
-  "question": "SEPT CASES, ET C'EST LE PREMIER À DÉPASSER LE JOUEUR. Les trois actes précédents plafonnent tous à six — le chaman, le feu follet, la mine — c'est-à-dire EXACTEMENT la portée de la Boule de feu du Mage. Six contre six est un échange équitable, et un échange équitable se gagne à quatre contre un sans avancer d'une case : c'est ce qui rendait l'attente si confortable. À sept, attendre coûte une volée qu'on ne peut pas rendre.",
-  "_note": "`verify_world` exige par acte quelqu'un qui porte AU MOINS aussi loin que le joueur. Le marksman est le premier à porter PLUS LOIN, et c'est le seul de l'acte : deux tireurs hors de portée rendraient la traversée obligatoire au lieu de la rendre coûteuse."
- },
- "iron_bulwark": {
-  "sprite": "warrior",
-  "sprite_color": "Yellow",
-  "role": "melee",
-  "hit_points": 150,
-  "action_points": 6,
-  "movement_points": 3,
-  "initiative": 4,
-  "strength": 5,
-  "agility": 3,
+  "movement_points": 0,
+  "initiative": 2,
+  "strength": 1,
+  "agility": 5,
   "intelligence": 1,
   "defence": 7,
   "abilities": [
-   "bulwark_bash"
+   "tower_bolt"
   ],
-  "question": "LE PREMIER BARRAGE QU'ON NE PEUT PAS IGNORER. La tortue de l'acte 2 enseignait exactement le contraire : huit de défense, presque aucun dégât, et la bonne réponse était de la contourner. Le rempart a la même stature et la réponse s'inverse, parce que ce qu'il couvre de son corps est l'aumônier. Le contourner, c'est laisser recoudre tout ce qu'on vient d'entamer.",
-  "_note": "IL N'EST PLUS `blocker`, ET C'EST LA MESURE QUI L'A IMPOSÉ. Un `blocker` ne bouge JAMAIS : sur une carte ouverte il attend qu'on vienne à lui, et le pilote de la simulation ne vient pas. Il mourait donc sans avoir porté un seul coup — cent cinquante points de vie offerts. Le rôle n'a de sens que sur un goulet, et l'acte 2 a déjà la tortue pour ça.\n\nSA DÉFENSE FAIT LE RESTE : sept, contre quatre au piquier. Ce qui le rend incontournable n'est pas qu'il refuse d'avancer, c'est ce qu'il couvre."
+  "question": "ELLE GRIGNOTE, LÀ OÙ LE CANON ASSOMME. Trois PA sur six : deux tirs par ronde à dix-huit, sans recharge. Sept de défense et deux cents points de vie : on ne l'efface pas en passant. Le canon punit d'être resté loin, la tour punit d'avoir été LENT — les deux moitiés de la même contrainte, et elles se lisent différemment sur le télégraphe."
  },
- "iron_chaplain": {
-  "sprite": "monk",
-  "sprite_color": "Yellow",
+ "repair_shed": {
+  "sprite": "repair_shed",
   "role": "support",
-  "hit_points": 85,
+  "hit_points": 120,
   "action_points": 8,
-  "movement_points": 4,
-  "initiative": 7,
-  "strength": 2,
-  "agility": 4,
+  "movement_points": 0,
+  "initiative": 4,
+  "strength": 1,
+  "agility": 2,
   "intelligence": 7,
-  "defence": 3,
-  "abilities": [
-   "field_suture",
-   "chaplain_staff"
-  ],
-  "question": "LA QUESTION DE L'ACTE, ET LA PREMIÈRE BÊTE DU JEU QUI REMONTE. Vingt-huit ennemis en trois actes, et pas un ne récupérait un point de vie : entamer quelqu'un était toujours un acquis. L'aumônier le reprend. Sa portée de quatre l'oblige à se tenir dans la mêlée des siens — donc il est atteignable — et sa recharge de deux borne ce qu'il défait : un combat plus LONG n'est pas un combat plus dur, leçon de l'acte 2."
- },
- "iron_provost": {
-  "sprite": "warrior",
-  "sprite_color": "Yellow",
-  "role": "brute",
-  "hit_points": 195,
-  "action_points": 8,
-  "movement_points": 3,
-  "initiative": 5,
-  "strength": 8,
-  "agility": 4,
-  "intelligence": 1,
   "defence": 5,
   "abilities": [
-   "provost_hammer"
+   "field_suture"
   ],
-  "question": "LE MINI-BOSS, ET ON LE BAT EN LE FAISANT MARCHER. Son marteau exige de n'avoir pas bougé : un ennemi annonce APRÈS s'être déplacé, donc trente-huit en ligne de deux ne s'annoncent que depuis un prévôt planté. Reculer d'une case lui coûte son meilleur coup — c'est le premier ennemi dont la réponse est un déplacement à soi plutôt qu'un coup.",
-  "_note": "CENT QUATRE-VINGT-QUINZE, PAS DEUX CENT TRENTE. Neuf rondes mesurées pour un plafond de huit : il n'était pas dur, il était long. Sa difficulté tient à son marteau conditionnel, pas à sa barre de vie — et gonfler les PV allonge sans durcir, leçon de l'acte 2."
+  "question": "IL RÉPARE CE QUE TU BOMBARDES. Vingt-huit bêtes en trois actes et pas une ne récupérait un point de vie : entamer était toujours un acquis. L'atelier le reprend, et sur des emplacements à deux cents points de vie que l'on met déjà trois rondes à abattre. La réponse n'est pas de frapper plus fort, c'est de le tuer LUI d'abord — donc d'aller au fond de la ligne au lieu de mordre le premier canon venu."
  },
- "the_gilded_captain": {
-  "sprite": "lancer",
-  "sprite_color": "Yellow",
-  "role": "brute",
-  "hit_points": 250,
-  "action_points": 10,
-  "movement_points": 4,
-  "initiative": 12,
-  "strength": 9,
-  "agility": 6,
-  "intelligence": 6,
+ "boar_lancer": {
+  "sprite": "pig_rider",
+  "role": "melee",
+  "hit_points": 115,
+  "action_points": 6,
+  "movement_points": 7,
+  "initiative": 7,
+  "strength": 7,
+  "agility": 5,
+  "intelligence": 1,
+  "defence": 4,
+  "abilities": [
+   "boar_charge"
+  ],
+  "question": "SEPT PM, LA MONTURE LA PLUS RAPIDE DU JEU, et c'est de la CAVALERIE — que le pack était censé ne pas dessiner. Il traverse la moitié du plateau dans la ronde même où l'équipe quitte sa couverture pour aller chercher les canons. C'est le prix de l'avance : le serpent des dunes rendait la ligne arrière indéfendable par la distance, celui-ci rend la TRAVERSÉE indéfendable par la formation."
+ },
+ "war_pig": {
+  "sprite": "war_pig",
+  "role": "melee",
+  "hit_points": 75,
+  "action_points": 6,
+  "movement_points": 6,
+  "initiative": 6,
+  "strength": 5,
+  "agility": 4,
+  "intelligence": 1,
+  "defence": 3,
+  "abilities": [
+   "tusk_gore"
+  ],
+  "question": "IL NE POSE PAS DE QUESTION NEUVE, ET C'EST SON RÔLE. Rapide, fragile, nombreux : il occupe les PA de l'équipe pendant que le canon travaille. Un acte a besoin d'une bête qu'on tue sans réfléchir, sinon chaque activation devient un problème et le combat n'a plus de rythme."
+ },
+ "great_bombard": {
+  "sprite": "siege_cannon",
+  "role": "blocker",
+  "hit_points": 240,
+  "action_points": 8,
+  "movement_points": 0,
+  "initiative": 2,
+  "strength": 1,
+  "agility": 7,
+  "intelligence": 1,
   "defence": 6,
   "abilities": [
-   "captain_lance",
-   "rally_order"
+   "bombard_shell"
   ],
-  "question": "LE BOSS, ET IL JOUE AVANT TOUT LE MONDE. Douze d'initiative contre huit à l'Archer : sa première annonce tombe avant que le joueur ait posé un seul geste, là où le Troll jouait toujours en dernier et où on savait donc ce qui venait. Et son Ralliement recoud CINQ des siens en croix de deux — la question de l'acte à son échelle. Frapper plus fort n'y répond pas ; ne plus laisser cinq blessés côte à côte, si.",
-  "_note": "DEUX CENT CINQUANTE, ET C'EST UN ALLER-RETOUR MESURÉ. Trois cent quarante avec sept corps faisaient DIX rondes ; deux cent quinze avec six en faisaient sept, mais le boss coûtait alors 62 % quand son propre mini-boss en coûtait 46 — un boss moins cher que son gardien est une inversion.\n\nSON SOIN EST DÉJÀ DES POINTS DE VIE, donc sa barre n'a pas à être celle du Jarl (300), qui ne se recoud pas. Ce qui a permis de la remonter est l'allègement de son escorte, pas un gonflement : un corps de moins vaut mieux que cent points de vie de plus (leçon de l'acte 2)."
+  "question": "LE MINI-BOSS, ET IL PUNIT LA RÉPONSE À L'ACTE. On traverse à couvert, donc on se serre derrière les mêmes rochers — son obus éclate en croix à dix cases. Les deux réponses se contredisent enfin : rester groupé pour rester à l'abri, ou s'étaler pour éviter l'éclatement et sortir de la couverture."
+ },
+ "the_boar_chief": {
+  "sprite": "pig_rider",
+  "role": "brute",
+  "hit_points": 280,
+  "action_points": 10,
+  "movement_points": 6,
+  "initiative": 9,
+  "strength": 9,
+  "agility": 6,
+  "intelligence": 1,
+  "defence": 6,
+  "abilities": [
+   "chief_lance",
+   "boar_charge"
+  ],
+  "question": "LE BOSS, ET IL CHOISIT ENTRE COURIR ET FRAPPER FORT. Sa lance exige de n'avoir pas bougé ; un ennemi annonce APRÈS s'être déplacé, donc trente-quatre en ligne de deux ne s'annoncent que depuis un chef arrêté. Sur une monture à six PM, ça devient une décision à chaque activation — et la réponse du joueur est de le forcer à courir, c'est-à-dire de ne jamais rester à sa portée."
  }
 }

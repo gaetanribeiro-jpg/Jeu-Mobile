@@ -1,16 +1,16 @@
 {
- "_note": "LE BOSS, ET SON RALLIEMENT RECOUD CINQ DES SIENS EN CROIX DE DEUX. La réponse n'est pas de frapper plus fort : c'est de ne plus laisser cinq blessés côte à côte, donc de finir POUR DE BON avant d'entamer ailleurs.\n\nIL JOUE AVANT TOUT LE MONDE — douze d'initiative contre huit à l'Archer. Sa première annonce tombe avant le premier geste du joueur, là où le Troll jouait toujours en dernier.\n\nLE REDAN EST EN PALISSADE : le joueur peut l'ouvrir, mais chaque planche coûte des PA que le Ralliement rendra en points de vie.\n\nSIX CORPS, ET LA MESURE MENT ICI — comme pour le Jarl.\n\nLes trois réglages essayés, mesurés sur cinquante graines : sept corps → 9 rondes / 57 % de PV ; six corps → 7 rondes / 62 % ; et le Capitaine à 215 comme à 250 rend EXACTEMENT le même chiffre. Ce n'est donc pas sa barre de vie qui borne ce combat, c'est le nombre de corps qui frappent — troisième fois que la mesure refuse un gonflement de statistiques.\n\nON GARDE SIX, DONC SEPT RONDES, parce que le plafond de huit est une cible ÉCRITE (`rules.json`) quand le classement des coûts n'en est pas une. Le boss coûte 62 % là où sa cour du prévôt en coûte 46 : un boss moins cher que son gardien, ce qui se lit comme une inversion.\n\nET C'EST LE PILOTE QUI SE TROMPE, PAS LA CARTE. `simulate_combats` frappe ce qu'il a devant lui : il ne concentre JAMAIS ses coups sur l'aumônier, donc il subit le Ralliement sans jamais l'empêcher — c'est-à-dire qu'il joue exactement le contraire de ce que la carte demande. Même limite que « le pilote ne boit pas » (T10.1) et que la menace positionnelle du Jarl (T12.1). À REJUGER À L'ŒIL.",
+ "_note": "LE CHEF DE GUERRE — le boss. Sa lance exige de n'avoir pas bougé, et il monte une bête à six PM : à chaque activation il choisit entre courir et frapper fort, jamais les deux. La réponse du joueur est de ne jamais rester à sa portée, c'est-à-dire de bouger tout le temps.\n\nET LES CANONS INTERDISENT DE RECULER À L'INFINI : fuir la lance ramène dans leur ligne de tir. La carte est un étau entre ce qui ne bouge pas et ce qui va trop vite — les deux moitiés de l'acte, en même temps.",
  "act": 4,
  "name_key": "MAP_FER_08",
  "rows": [
   "............",
-  "......pppp..",
-  "......p.....",
-  "......p.....",
+  "..f.....#...",
   "............",
-  "......p.....",
-  "......p.....",
-  "......pppp..",
+  "......f.....",
+  "............",
+  "......f.....",
+  "............",
+  "..f.....#...",
   "............"
  ],
  "objective": {
@@ -52,45 +52,45 @@
  ],
  "enemies": [
   {
-   "type": "the_gilded_captain",
+   "type": "the_boar_chief",
+   "cell": [
+    8,
+    4
+   ]
+  },
+  {
+   "type": "boar_lancer",
+   "cell": [
+    7,
+    2
+   ]
+  },
+  {
+   "type": "boar_lancer",
+   "cell": [
+    7,
+    6
+   ]
+  },
+  {
+   "type": "siege_cannon",
+   "cell": [
+    11,
+    2
+   ]
+  },
+  {
+   "type": "siege_cannon",
+   "cell": [
+    11,
+    6
+   ]
+  },
+  {
+   "type": "war_pig",
    "cell": [
     9,
     4
-   ]
-  },
-  {
-   "type": "iron_bulwark",
-   "cell": [
-    7,
-    4
-   ]
-  },
-  {
-   "type": "iron_pikeman",
-   "cell": [
-    8,
-    3
-   ]
-  },
-  {
-   "type": "iron_pikeman",
-   "cell": [
-    8,
-    5
-   ]
-  },
-  {
-   "type": "iron_chaplain",
-   "cell": [
-    10,
-    4
-   ]
-  },
-  {
-   "type": "iron_marksman",
-   "cell": [
-    10,
-    1
    ]
   }
  ]
