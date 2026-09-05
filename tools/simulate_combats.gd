@@ -110,9 +110,70 @@ func _init() -> void:
 	quit(0)
 
 
-func _squad() -> Array[Unit]:
+## L'ÉQUIPE QUE LE JOUEUR A PLAUSIBLEMENT À CETTE PROFONDEUR.
+##
+## L'OUTIL MESURAIT LA MAUVAISE ÉQUIPE PENDANT QUATRE ACTES.
+## `Unit.from_hero_class` rend un héros de NIVEAU UN, sans équipement, sans
+## arbre de compétences et sans les bonus du royaume. Mesuré : un Guerrier
+## au niveau maximum a 1,60 × ses points de vie et 1,83 × sa force — avant
+## même le premier objet. Tout l'équilibrage des actes 1 à 4 a donc été
+## réglé contre l'équipe la plus FAIBLE possible, et un joueur qui arrive
+## à l'acte 4 monté et équipé trouve bien plus facile que les chiffres
+## annoncés.
+##
+## LE NIVEAU ET LA RARETÉ VIENNENT DE LA RÉGION (`expected_hero_level`,
+## `expected_rarity`), pas d'une constante ici : c'est du réglage, donc ça
+## vit dans les données (règle 1).
+##
+## CE QUI RESTE NON MODÉLISÉ : les neuf points d'arbre de compétences et
+## les `grants` du royaume. Les chiffres restent un PLANCHER — mais un
+## plancher plausible, au lieu d'un plancher absurde. Même famille de
+## réserve que « le pilote ne boit pas » (T10.1).
+func _squad(map_id: StringName = &"") -> Array[Unit]:
 	var wanted: Array = [&"warrior", &"archer", &"mage", &"warrior"]
-	return Unit.squad_from_classes(wanted.slice(0, CombatRules.team_size()))
+	wanted = wanted.slice(0, CombatRules.team_size())
+
+	var region := Region.of_map(map_id)
+	var level := 1
+	var rarity := &""
+	if not region.is_empty():
+		level = maxi(Region.expected_hero_level(region), 1)
+		rarity = Region.expected_rarity(region)
+	if level <= 1 and rarity.is_empty():
+		return Unit.squad_from_classes(wanted)
+
+	var out: Array[Unit] = []
+	for i in wanted.size():
+		var class_id := StringName(wanted[i])
+		var hero := Hero.create(i + 1, class_id, "sim")
+		hero.level = level
+		_dress(hero, rarity)
+		var unit := Unit.from_stats(
+			i + 1, class_id, Unit.Side.HEROES, Vector2i.ZERO, hero.effective_stats()
+		)
+		if unit == null:
+			continue
+		unit.slot = i + 1
+		out.append(unit)
+	return out
+
+
+## Équipe le héros de ce que la région propose, un objet par emplacement.
+## Le premier qui convient à la classe : on ne cherche pas le meilleur
+## assemblage, on cherche un assemblage ORDINAIRE.
+func _dress(hero: Hero, rarity: StringName) -> void:
+	if rarity.is_empty():
+		return
+	for slot: StringName in Equipment.slots():
+		for item_id: StringName in Equipment.ids():
+			if Equipment.slot_of(item_id) != slot:
+				continue
+			if Equipment.rarity_of(item_id) != rarity:
+				continue
+			if not Equipment.allows(item_id, hero.class_id):
+				continue
+			hero.equip(item_id)
+			break
 
 
 func _run(
@@ -129,7 +190,7 @@ func _run(
 		map.board, moment, Region.night_roster(&"greenlands"),
 		map.deployment_cells, rng, map.objective
 	)
-	var engine := map.to_engine(_squad(), rng)
+	var engine := map.to_engine(_squad(map_id), rng)
 	engine.start()
 	# Les simulations ne choisissent pas leur placement : ce serait une
 	# stratégie de plus à écrire, et c'est justement la décision qu'on veut

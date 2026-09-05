@@ -104,6 +104,22 @@ static func act_of(region_id: StringName) -> int:
 	return int(entry(region_id).get("act", 1))
 
 
+## L'ÉQUIPE QUE LE JOUEUR A PLAUSIBLEMENT EN ARRIVANT ICI — le niveau de
+## ses héros et la rareté de leur équipement.
+##
+## Sert à l'ÉQUILIBRAGE, pas au jeu : `simulate_combats` jouait avec des
+## héros de niveau un, nus, pendant quatre actes. Un Guerrier au niveau
+## maximum a 1,60 × ses points de vie et 1,83 × sa force, avant même le
+## premier objet — les actes ont donc été réglés contre l'équipe la plus
+## faible possible.
+static func expected_hero_level(region_id: StringName) -> int:
+	return int(entry(region_id).get("expected_hero_level", 1))
+
+
+static func expected_rarity(region_id: StringName) -> StringName:
+	return StringName(entry(region_id).get("expected_rarity", ""))
+
+
 ## Ce que la région ajoute au butin : { gold_multiplier, rarity_bonus }.
 ##
 ## À PROFONDEUR ÉGALE, TOUTES LES RÉGIONS RENDAIENT LE MÊME BUTIN. Rien

@@ -602,6 +602,34 @@ un test refusent que l'entrée disparaisse ou qu'un des trois auteurs
 cesse d'être nommé. Le liseré porte le RÉGIME de licence, comme un bouton
 porte son rôle.
 
+**L'INSTRUMENT D'ÉQUILIBRAGE MESURAIT LA MAUVAISE ÉQUIPE, PENDANT QUATRE
+ACTES.** `simulate_combats` jouait avec `Unit.from_hero_class` : des héros
+de **niveau 1, sans équipement, sans arbre de compétences, sans les bonus
+du royaume**. Mesuré : un Guerrier au niveau maximum a **1,60 × ses points
+de vie et 1,83 × sa force**, avant même le premier objet.
+
+**LA COURBE DE DIFFICULTÉ ÉTAIT DONC INVERSÉE**, et c'est le chiffre qui
+compte :
+
+| acte | contre des héros nus | contre l'équipe réelle |
+|---|---|---|
+| 1 | 19 % | 15 % |
+| 2 | 27 % | 15 % |
+| 3 | 30 % | **12 %** |
+| 4 | 33 % | **11 %** |
+
+Plus le joueur avance, plus c'est FACILE — parce que chaque acte a été
+réglé contre une équipe figée au niveau 1 pendant que la sienne triplait.
+Le jeu entier coûte **13 % des PV** et fait tomber **0,03 personnage par
+combat**, c'est-à-dire personne. La difficulté n'est pas trop basse par
+accident : elle est ANTI-réglée.
+
+`expected_hero_level` et `expected_rarity` vivent dans `regions.json`,
+comme tout réglage. **Ce qui reste non modélisé :** les neuf points
+d'arbre de compétences et les `grants` du royaume — les chiffres restent
+un plancher, mais un plancher plausible au lieu d'un plancher absurde.
+Même famille de réserve que « le pilote ne boit pas ».
+
 **L'ACTE 4 OBLIGE LE JOUEUR À BOUGER, et c'est Gaetan qui a vu le défaut.**
 « Pourquoi c'est toujours l'ennemi qui traverse ? À quoi servent les PM du
 joueur ? » — **30 cartes sur 36 avaient « éliminer » pour seul objectif**,

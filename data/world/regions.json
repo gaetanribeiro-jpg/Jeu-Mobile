@@ -55,7 +55,9 @@
    "reward": {
     "gold_multiplier": 1.0,
     "rarity_bonus": 0
-   }
+   },
+   "expected_hero_level": 1,
+   "expected_rarity": "common"
   },
   "burning_dunes": {
    "name_key": "REGION_BURNING_DUNES",
@@ -111,7 +113,9 @@
    "reward": {
     "gold_multiplier": 1.35,
     "rarity_bonus": 1
-   }
+   },
+   "expected_hero_level": 3,
+   "expected_rarity": "uncommon"
   },
   "frozen_mountains": {
    "name_key": "REGION_FROZEN_MOUNTAINS",
@@ -166,7 +170,9 @@
    "reward": {
     "gold_multiplier": 1.7,
     "rarity_bonus": 1
-   }
+   },
+   "expected_hero_level": 5,
+   "expected_rarity": "rare"
   },
   "broken_lands": {
    "name_key": "REGION_BROKEN_LANDS",
@@ -221,23 +227,30 @@
    "reward": {
     "gold_multiplier": 2.05,
     "rarity_bonus": 1
-   }
+   },
+   "expected_hero_level": 7,
+   "expected_rarity": "rare"
   },
   "cursed_lands": {
    "name_key": "REGION_CURSED_LANDS",
    "description_key": "REGION_CURSED_LANDS_DESC",
    "act": 5,
    "unlocked": false,
-   "accent": "plum"
+   "accent": "plum",
+   "expected_hero_level": 9,
+   "expected_rarity": "epic"
   },
   "black_empire": {
    "name_key": "REGION_BLACK_EMPIRE",
    "description_key": "REGION_BLACK_EMPIRE_DESC",
    "act": 6,
    "unlocked": false,
-   "accent": "ash"
+   "accent": "ash",
+   "expected_hero_level": 10,
+   "expected_rarity": "legendary"
   },
   "_accent_note": "LA COULEUR D'UNE RÉGION (T11.6). Elle teinte son carré de terre sur la carte du monde et le liseré de sa fiche. Six régions qui se ressemblent ne font pas une carte, elles font une liste : le joueur doit pouvoir reconnaître les Dunes Ardentes sans lire leur nom.\n\nLA CLÉ EST CELLE D'UNE COULEUR DE `theme.json`, jamais un code hexadécimal : le jour où la palette change, aucune région ne bouge.",
-  "_reward_note": "CE QU'UNE RÉGION PAIE, ET POURQUOI ELLE DOIT PAYER PLUS (T11.8).\n\nÀ PROFONDEUR ÉGALE, L'ACTE 2 RENDAIT EXACTEMENT LE MÊME BUTIN QUE L'ACTE 1. Rien ne le disait — `Loot` ne connaît que la profondeur et l'heure — et rien ne cassait : une région plus dure qui paie pareil se joue parfaitement, elle n'a simplement aucune raison d'être choisie. Le § 29 fait de « je rentre ou je continue » une question ; aller dans les Dunes doit être la même question, à l'échelle de la campagne.\n\nLES DUNES COÛTENT 49 % DES PV À LEUR BOSS CONTRE 35 % AUX TERRES VERTES, mesuré. Elles paient donc 35 % d'or de plus et relèvent la rareté d'un cran — le même levier que la nuit du § 36, qui ajoute un ennemi et paie 20 % de plus.\n\nCE BONUS SE CUMULE AVEC CELUI DE L'HEURE, et c'est voulu : une sortie de nuit au fond des Dunes est le sommet de la courbe de risque, donc le sommet de la courbe de récompense."
+  "_reward_note": "CE QU'UNE RÉGION PAIE, ET POURQUOI ELLE DOIT PAYER PLUS (T11.8).\n\nÀ PROFONDEUR ÉGALE, L'ACTE 2 RENDAIT EXACTEMENT LE MÊME BUTIN QUE L'ACTE 1. Rien ne le disait — `Loot` ne connaît que la profondeur et l'heure — et rien ne cassait : une région plus dure qui paie pareil se joue parfaitement, elle n'a simplement aucune raison d'être choisie. Le § 29 fait de « je rentre ou je continue » une question ; aller dans les Dunes doit être la même question, à l'échelle de la campagne.\n\nLES DUNES COÛTENT 49 % DES PV À LEUR BOSS CONTRE 35 % AUX TERRES VERTES, mesuré. Elles paient donc 35 % d'or de plus et relèvent la rareté d'un cran — le même levier que la nuit du § 36, qui ajoute un ennemi et paie 20 % de plus.\n\nCE BONUS SE CUMULE AVEC CELUI DE L'HEURE, et c'est voulu : une sortie de nuit au fond des Dunes est le sommet de la courbe de risque, donc le sommet de la courbe de récompense.",
+  "_expected_note": "CE QUE LE JOUEUR A PLAUSIBLEMENT EN ARRIVANT ICI, et c'est l'instrument d'équilibrage qui en avait besoin.\n\n`simulate_combats` jouait avec `Unit.from_hero_class` : des héros de NIVEAU UN, sans équipement, sans arbre de compétences et sans les bonus du royaume. Mesuré, un Guerrier au niveau maximum a 1,60 × ses points de vie et 1,83 × sa force — avant même le premier objet. Les quatre actes ont donc été réglés contre l'équipe la plus faible possible, et un joueur qui arrive à l'acte 4 monté et équipé trouve bien plus facile que les chiffres annoncés.\n\nTUNER LA DIFFICULTÉ SANS ÇA rendrait les premiers actes brutaux et les derniers triviaux : c'est le même écart, appliqué à l'envers. Ces deux champs disent au simulateur quelle équipe opposer à quelle région.\n\nCE QUI N'EST TOUJOURS PAS MODÉLISÉ : l'arbre de compétences (neuf points) et les `grants` du royaume. Les chiffres restent donc un PLANCHER — mais un plancher plausible, au lieu d'un plancher absurde."
  }
 }
