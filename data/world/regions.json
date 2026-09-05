@@ -176,18 +176,18 @@
    "accent": "rust",
    "ground": "rust",
    "encounter_maps": [
-    "fer_02",
     "fer_04",
-    "fer_05",
     "fer_07",
+    "fer_02",
     "fer_01",
-    "fer_06",
-    "fer_03"
+    "fer_05",
+    "fer_03",
+    "fer_06"
    ],
    "miniboss_map": "fer_09",
    "boss_map": "fer_08",
    "map_window": {
-    "_note": "L'ORDRE EST MESURÉ, PAS SUPPOSÉ, comme aux trois actes précédents. Coût moyen de jour, colonne PV de `tools/simulate_combats.gd` sur cinquante graines : 02 → 82 %, 04 → 81 %, 05 → 81 %, 07 → 71 %, 01 → 69 %, 06 → 51 %, 03 → 49 %. Mini-boss (09) et boss (08) à part.\n\nL'ACTE COÛTE 32 % DES PV EN MOYENNE contre 30 % à l'acte 3 : un acte plus tardif coûte enfin plus. Il en coûtait 25 % au premier jet, parce que deux mercenaires sur six ne frappaient jamais — un `blocker` qui n'avance pas sur une carte ouverte, et un aumônier sans arme.\n\n`size` cartes tirables à la fois, la fenêtre avance de `slide` par rencontre passée.",
+    "_note": "L'ORDRE EST MESURÉ, comme aux trois actes précédents. Colonne PV de `tools/simulate_combats.gd` sur cinquante graines : 04 → 93 %, 07 → 88 %, 02 → 81 %, 01 → 62 %, 05 → 60 %, 03 → 41 %, 06 → 28 %. Mini-boss (09) 77 %, boss (08) 74 %.\n\nLES TROIS PREMIÈRES SONT LES OBJECTIFS AUTRES QU'« ÉLIMINER », et ce n'est pas un hasard : tenir, extraire et saisir se concluent VITE, donc l'usure y est faible par construction. La mesure les sous-estime aussi — le pilote de la simulation n'a aucune notion d'échéance, il traverse sans jamais craindre l'horloge. Même limite que « le pilote ne boit pas » (T10.1). À REJUGER À L'ŒIL.\n\nL'ACTE COÛTE 33 % DES PV en moyenne, contre 30 % à l'acte 3.\n\n`size` cartes tirables à la fois, la fenêtre avance de `slide` par rencontre passée.",
     "size": 4,
     "slide": 0.5
    },

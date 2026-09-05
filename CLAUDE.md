@@ -602,11 +602,58 @@ un test refusent que l'entrée disparaisse ou qu'un des trois auteurs
 cesse d'être nommé. Le liseré porte le RÉGIME de licence, comme un bouton
 porte son rôle.
 
+**L'ACTE 4 OBLIGE LE JOUEUR À BOUGER, et c'est Gaetan qui a vu le défaut.**
+« Pourquoi c'est toujours l'ennemi qui traverse ? À quoi servent les PM du
+joueur ? » — **30 cartes sur 36 avaient « éliminer » pour seul objectif**,
+et les actes 3 et 4 ne connaissaient QUE celui-là quand l'acte 1 employait
+les six. Le jeu s'était RÉTRÉCI en avançant. Avec « éliminer » et une IA
+qui vient au contact, attendre est toujours juste : les PM ne servent qu'à
+se replacer de deux cases et tout terrain est gratuit pour le joueur.
+Déplacer les obstacles de son côté ne soigne que le symptôme.
+
+**UN EMPLACEMENT HORS DE PORTÉE N'EST PAS UN ENNEMI, C'EST DU DÉCOR.**
+Treize sur dix-huit avaient été posés au bord du plateau, par le réflexe
+qui met un ennemi « au fond ». **C'est l'inverse exact de la leçon sur les
+obstacles :** pour une bête MOBILE la distance n'est qu'un délai — elle
+finit par arriver, et c'est pour ça qu'une carte molle se corrige en la
+rapprochant. Pour un emplacement, la distance est une ANNULATION, et
+`fer_04` rendait 100 % des PV pour cette seule raison. `verify_maps` le
+refuse, en exemptant les unités SANS attaque : un soutien n'a pas à tirer.
+
+**MON INVENTAIRE DU PACK ÉTAIT FAUX, et c'est Gaetan qui a douté.** Je ne
+comptais que la catégorie `enemies` : les « vingt et un visages ». La
+catégorie `extra` dormait avec un **gobelin lancier MONTÉ SUR UN
+SANGLIER** (attente, course ET attaque), un sanglier seul, un canon en
+cinq directions, une tour au sol et sur l'eau, une hutte animée sur seize
+images, une caverne, des barques. Le carnet déclarait « pas de cavalerie »
+depuis le premier jour. **Compter une catégorie n'est pas compter le
+pack.**
+
+**LES CINQ COULEURS SONT UN BUDGET, et une couleur ne peut pas être à la
+fois un rang et une faction.** Décision de Gaetan : trois vont aux héros
+(**Bleu → Violet → Or**, l'ascension) et deux aux factions (**Rouge** des
+Rougefer à l'acte 3, **Noir** de l'Empire à l'acte 6). Les actes 4 et 5
+n'ont donc PAS d'humains. `Hero.color` existe déjà, avec sa valeur par
+défaut `"Blue"` — sixième mécanique déclarée et jamais branchée ; seules
+les vues figent le bleu en constante.
+
+**UN AVATAR PEUT ÊTRE UNE BANDE.** Les bêtes d'`extra` n'ont pas de
+portrait dessiné, donc leur avatar pointe sur leur propre attente — et le
+badge affichait la BANDE ENTIÈRE, un ruban de 3072 × 256 écrasé dans
+50 px, c'est-à-dire une ligne pointillée d'un pixel de haut. Deux badges
+VIDES, sans une seule erreur. `enemy_portrait` prend la première image
+puis RECADRE sur les pixels opaques : une attente n'est pas un buste, un
+cavalier occupait le tiers de son cadre. Règle uniforme et sans seuil —
+les vingt et un portraits serrés du pack ne bougent pas.
+
 **L'ACTE 4 EST CELUI OÙ LES DÉGÂTS NE RESTENT PAS.** Vingt-huit bêtes en
 trois actes et pas une ne récupérait un point de vie : entamer quelqu'un
-était toujours un acquis. L'aumônier de la Compagnie dorée le reprend, le
-Ralliement du Capitaine en recoud cinq d'un coup, et la bonne réponse
-devient « finir POUR DE BON avant d'entamer ailleurs ». Quatre choses à ne
+était toujours un acquis. L'atelier qui répare les emplacements le reprend, et la bonne réponse
+devient « aller le chercher AU FOND de la ligne plutôt que mordre le
+premier canon venu ». **La mécanique a survécu au changement de faction —
+écrite pour un aumônier humain, elle est passée à une hutte** : c'est ce
+qui prouve qu'elle valait la peine, une mécanique qui ne survit pas au
+déménagement de son porteur était une statistique déguisée. Quatre choses à ne
 pas défaire :
 - **`Kind.SUPPORT` est une TROISIÈME information, pas une attaque
   négative.** Le § 39 veut que le joueur voie le soin AVANT de choisir sa
