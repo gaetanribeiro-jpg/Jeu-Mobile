@@ -1,5 +1,5 @@
 {
- "_note": "LE MINI-BOSS, ET IL SE BAT EN LE FAISANT MARCHER. Son marteau exige de n'avoir pas bougé ; un ennemi annonce APRÈS s'être déplacé, donc trente-huit en ligne de deux ne s'annoncent que depuis un prévôt planté.\n\nLA COUR EST OUVERTE EXPRÈS. Sur une carte encombrée il n'aurait jamais de raison de bouger et le marteau tomberait tout le temps ; ici, reculer d'une case l'oblige à choisir entre avancer et frapper.\n\nUN REMPART DE MOINS. Deux remparts à cent cinquante devant un aumônier faisaient neuf rondes : trois cents points de vie qu'on recoud, c'est de la durée, pas de la difficulté. La question du prévôt est son marteau conditionnel ; tout ce qui allonge la fouille l'enterre.",
+ "_note": "LE MINI-BOSS, ET IL SE BAT EN LE FAISANT MARCHER. Son marteau exige de n'avoir pas bougé ; un ennemi annonce APRÈS s'être déplacé, donc trente-huit en ligne de deux ne s'annoncent que depuis un prévôt planté.\n\nLA COUR EST OUVERTE EXPRÈS. Sur une carte encombrée il n'aurait jamais de raison de bouger et le marteau tomberait tout le temps ; ici, reculer d'une case l'oblige à choisir entre avancer et frapper.\n\nPAS D'AUMÔNIER SUR CETTE CARTE, ET C'EST MESURÉ. Retirer un rempart la ramenait de neuf rondes à six, mais de 62 % à 91 % de PV : gratuite. Remettre le rempart la remettait à neuf rondes. Le corps n'était pas le problème — le SOIN l'était : trois cent cinquante points de vie de remparts, recousus, c'est de la durée, pas de la difficulté (leçon de l'acte 2).\n\nLE PIQUIER PREND SA PLACE : autant de corps, autant de coups, et rien qui remonte. La question du prévôt est son marteau conditionnel, et tout ce qui allonge la fouille l'enterre. Le Ralliement du Capitaine garde donc le soin à grande échelle pour la carte du boss, où c'est LA question.",
  "act": 4,
  "name_key": "MAP_FER_09",
  "rows": [
@@ -62,27 +62,34 @@
    "type": "iron_bulwark",
    "cell": [
     5,
-    4
+    3
    ]
   },
   {
-   "type": "iron_chaplain",
+   "type": "iron_bulwark",
    "cell": [
-    9,
+    5,
+    5
+   ]
+  },
+  {
+   "type": "iron_pikeman",
+   "cell": [
+    7,
     4
    ]
   },
   {
    "type": "iron_marksman",
    "cell": [
-    10,
+    8,
     2
    ]
   },
   {
    "type": "iron_marksman",
    "cell": [
-    10,
+    8,
     6
    ]
   }

@@ -238,7 +238,7 @@ dur : passer par `data/assets.json`.
   constat vérifié dans `docs/etat-des-lieux.md` § 5. **Faits :** T11.2 le
   son, T11.3 l'écran de titre, T11.4 le déverrouillage et la fin, T11.6
   la couleur partout, T11.7 l'acte 2, T11.8 la passe de finition, T11.9 le décor et
-  l'air d'un acte, T12.1 l'acte 3.
+  l'air d'un acte, T12.1 l'acte 3, T12.2 l'acte 4.
   **Restent :** T11.1 le téléphone (il te faut le SDK) et T11.5 le
   tutoriel, volontairement gardé pour après ta première partie.
   **849 tests passent, les dix vérificateurs sont verts.**
@@ -601,6 +601,81 @@ exige l'attribution des dix-huit icônes de game-icons.net. `verify_ui` et
 un test refusent que l'entrée disparaisse ou qu'un des trois auteurs
 cesse d'être nommé. Le liseré porte le RÉGIME de licence, comme un bouton
 porte son rôle.
+
+**L'ACTE 4 EST CELUI OÙ LES DÉGÂTS NE RESTENT PAS.** Vingt-huit bêtes en
+trois actes et pas une ne récupérait un point de vie : entamer quelqu'un
+était toujours un acquis. L'aumônier de la Compagnie dorée le reprend, le
+Ralliement du Capitaine en recoud cinq d'un coup, et la bonne réponse
+devient « finir POUR DE BON avant d'entamer ailleurs ». Quatre choses à ne
+pas défaire :
+- **`Kind.SUPPORT` est une TROISIÈME information, pas une attaque
+  négative.** Le § 39 veut que le joueur voie le soin AVANT de choisir sa
+  cible, sans quoi « qui tuer d'abord » se pose à l'aveugle. Peint en
+  violet à 285° : la seule teinte libre de la couche, à 75° de la plus
+  proche couleur saturée. Le vert aurait été le réflexe — c'est celui de
+  l'objectif.
+- **Le chiffre annoncé est PLAFONNÉ par ce qui manque.** Annoncer la
+  valeur brute mentirait dans le seul cas qui compte : un ennemi presque
+  intact afficherait « +29 » et n'en reprendrait que trois.
+- **`damage` et `mends` font TOUJOURS la longueur de `cells`.** Laisser
+  l'un vide était un piège : deux appelants avaient été protégés à la
+  main, le troisième — un test d'intégration de la Phase 1 — est tombé. On
+  retire le piège, on ne protège pas les appelants.
+- **Un soigneur a son PROPRE barème de placement.** Un bonus ajouté ne
+  suffit pas : sans attaque, `_useful_range` vaut 1 et la retombée « se
+  rapprocher de la portée utile » le tire au CONTACT à dix points par
+  case. Il partait droit sur le Guerrier.
+
+**UN OBSTACLE ENTRE LES DEUX CAMPS EST GRATUIT POUR LE JOUEUR.**
+Généralisation de la leçon de T12.1, et elle vaut pour TOUT relief, pas
+seulement pour ce qui ralentit. Les trois cartes molles de l'acte 4 —
+93 %, 90 %, 95 % de PV — avaient toutes leur relief au MILIEU : l'équipe
+tirait pendant que la Compagnie traversait. Les ruines et la boue sont
+passées du côté du joueur, une palissade sur deux derrière les
+mercenaires. **Corollaire mesuré : la boue ne coûte RIEN à un joueur qui
+n'a pas de raison d'avancer.** Ce qui coûte à un joueur immobile est la
+PORTÉE, et elle seule — `fer_04` n'est devenu cher qu'en gagnant un
+second tireur.
+
+**DEUX MERCENAIRES SUR SIX NE FRAPPAIENT JAMAIS.** Trois causes, toutes
+invisibles sans la mesure : un `blocker` ne bouge JAMAIS, donc sur une
+carte ouverte il attend qu'on vienne à lui et meurt sans un coup (le rôle
+n'a de sens que sur un goulet) ; un soigneur sans arme est un corps
+gratuit tant qu'il ne soigne pas ; et une recharge sur la SEULE compétence
+d'une bête la fait chômer une ronde sur deux. L'acte est passé de 25 % à
+32 % du coût en PV, contre 30 % à l'acte 3.
+
+**`requires_not_moved` ÉTAIT IGNORÉ PAR L'IA.** Elle choisissait sa
+compétence sans jamais le lire : un ennemi se serait déplacé PUIS aurait
+porté un coup réservé à qui reste planté. Personne ne l'avait vu parce
+qu'aucune bête ne portait le champ — quatrième mécanique déclarée et
+jamais branchée, après `KIND_HEAL`, `KIND_PUSH` et les 70 entrées `ui`.
+
+**LE PAWN EST LE SEUL SPRITE DONT LA COULEUR NE SE VOIT PAS.** Mesuré sur
+les images d'attente, passer du Bleu à une autre couleur change **51 %**
+des pixels d'un Lancier, **49 %** d'un Archer, **38 %** d'un Guerrier,
+**25 %** d'un Moine — et **7,9 %** d'un Pawn. Trois actes de factions
+humaines auraient eu le même sapeur. `sprite_variant` est un SUFFIXE
+(`idle_pickaxe`), jamais une table, et il RETOMBE sur l'animation nue :
+ne rien dessiner est ce qui a donné sept ombres nues en T11.8.
+
+**LE PACK EST À SEC, ET VOICI LE COMPTE.** C'est le constat que l'acte 4
+avait pour but d'établir :
+- **Les 21 visages de bêtes sont ENTIÈREMENT consommés** par les actes 1 à
+  3. Il n'en reste zéro.
+- Restent **5 classes humaines × 4 couleurs** (Rouge partiellement pris),
+  soit trois factions pour les actes 4, 5 et 6 — et pas une de plus.
+- **La famille des ossements compte CINQ images** et les actes en ont pris
+  quatre. Il en reste UNE pour deux actes.
+- Le vampire est la première réponse à ça : dessiné, versionné, et il
+  n'entre encore dans aucun bestiaire.
+
+**LA BOUE NE SE VOYAIT PAS, ET SEULE LA MESURE LE DISAIT.** `quicksand`
+est un brun, le sol de l'acte 4 est un brun-rouge : **11 points de
+luminance sur 255**, pour un terrain qui coûte deux PM. Sixième variante
+de « une source ne se teinte que si elle est claire ». `churned_mud` est
+calé sur ce qui marche déjà — la congère du Gel se sépare de 24,4 points,
+celle-ci de 24,0. **Réglée à l'œil elle serait restée à 7.**
 
 **LE PACK NE PARTAGE QU'UNE COULEUR (le vampire).** Les vingt et une
 bêtes n'ont en commun que `#161c2e` — le contour à alpha 255, l'ombre au

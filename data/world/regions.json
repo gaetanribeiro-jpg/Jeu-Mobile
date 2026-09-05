@@ -176,18 +176,18 @@
    "accent": "rust",
    "ground": "rust",
    "encounter_maps": [
-    "fer_01",
     "fer_02",
-    "fer_03",
     "fer_04",
     "fer_05",
+    "fer_07",
+    "fer_01",
     "fer_06",
-    "fer_07"
+    "fer_03"
    ],
    "miniboss_map": "fer_09",
    "boss_map": "fer_08",
    "map_window": {
-    "_note": "ORDRE PROVISOIRE — À REMESURER. Les trois actes précédents rangent leurs cartes sur le coût mesuré par `tools/simulate_combats.gd`, jamais sur l'ordre d'écriture. Celui-ci part de l'ordre d'écriture et sera remis dans l'ordre du coût dès la première mesure.\n\n`size` cartes tirables à la fois, la fenêtre avance de `slide` par rencontre passée.",
+    "_note": "L'ORDRE EST MESURÉ, PAS SUPPOSÉ, comme aux trois actes précédents. Coût moyen de jour, colonne PV de `tools/simulate_combats.gd` sur cinquante graines : 02 → 82 %, 04 → 81 %, 05 → 81 %, 07 → 71 %, 01 → 69 %, 06 → 51 %, 03 → 49 %. Mini-boss (09) et boss (08) à part.\n\nL'ACTE COÛTE 32 % DES PV EN MOYENNE contre 30 % à l'acte 3 : un acte plus tardif coûte enfin plus. Il en coûtait 25 % au premier jet, parce que deux mercenaires sur six ne frappaient jamais — un `blocker` qui n'avance pas sur une carte ouverte, et un aumônier sans arme.\n\n`size` cartes tirables à la fois, la fenêtre avance de `slide` par rencontre passée.",
     "size": 4,
     "slide": 0.5
    },

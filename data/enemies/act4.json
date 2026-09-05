@@ -112,7 +112,7 @@
   "sprite": "lancer",
   "sprite_color": "Yellow",
   "role": "brute",
-  "hit_points": 215,
+  "hit_points": 250,
   "action_points": 10,
   "movement_points": 4,
   "initiative": 12,
@@ -125,6 +125,6 @@
    "rally_order"
   ],
   "question": "LE BOSS, ET IL JOUE AVANT TOUT LE MONDE. Douze d'initiative contre huit à l'Archer : sa première annonce tombe avant que le joueur ait posé un seul geste, là où le Troll jouait toujours en dernier et où on savait donc ce qui venait. Et son Ralliement recoud CINQ des siens en croix de deux — la question de l'acte à son échelle. Frapper plus fort n'y répond pas ; ne plus laisser cinq blessés côte à côte, si.",
-  "_note": "TROIS CENT QUARANTE PV PLUS UN RALLIEMENT FAISAIENT DIX RONDES, pour un plafond de huit. Son soin EST déjà des points de vie — les empiler sur une grosse barre revient à payer deux fois la même défense, et un combat plus LONG n'est pas un combat plus dur (leçon de l'acte 2). Deux cent cinquante, contre trois cents au Jarl qui, lui, ne se recoud pas."
+  "_note": "DEUX CENT CINQUANTE, ET C'EST UN ALLER-RETOUR MESURÉ. Trois cent quarante avec sept corps faisaient DIX rondes ; deux cent quinze avec six en faisaient sept, mais le boss coûtait alors 62 % quand son propre mini-boss en coûtait 46 — un boss moins cher que son gardien est une inversion.\n\nSON SOIN EST DÉJÀ DES POINTS DE VIE, donc sa barre n'a pas à être celle du Jarl (300), qui ne se recoud pas. Ce qui a permis de la remonter est l'allègement de son escorte, pas un gonflement : un corps de moins vaut mieux que cent points de vie de plus (leçon de l'acte 2)."
  }
 }
