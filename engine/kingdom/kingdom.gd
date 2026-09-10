@@ -226,15 +226,46 @@ func hero_bonuses(class_id: StringName) -> Dictionary:
 			continue
 		var gained := Buildings.grants_up_to(building_id, level_of(building_id))
 		for key: Variant in gained.keys():
-			# Le plafond de population et le soin ne sont pas des
-			# statistiques de combat : les laisser passer les ferait
+			# Le plafond de population, le soin et la brasserie ne sont pas
+			# des statistiques de combat : les laisser passer les ferait
 			# atterrir dans `Unit.from_stats`, qui les ignorerait en
 			# silence — et un gain qu'on croit acquis sans qu'il le soit
-			# est pire qu'un gain absent.
-			if key in ["population_cap", "heal_between_steps"]:
+			# est pire qu'un gain absent. La liste est dans les données,
+			# parce qu'écrite ici elle oubliait la clé suivante.
+			if Buildings.is_kingdom_grant(StringName(key)):
 				continue
 			out[key] = Buildings.sum_grant(out.get(key, 0), gained[key])
 	return out
+
+
+## Combien de potions le royaume prépare par cycle, et laquelle.
+##
+## LE PREMIER BÂTIMENT QUI PRODUIT AUTRE CHOSE QU'UN CHIFFRE. Le reproche
+## était « les bâtiments ne font que monter des chiffres » : la Tour y
+## répond en OUVRANT l'ascension, le Monastère en alimentant le sac.
+##
+## C'EST UN MAILLON D'OBTENTION, et c'est ce que `verify_world` a appris à
+## chercher en Phase 10 : une mécanique complète dont il manque la façon
+## d'y accéder n'est pas une mécanique. Les potions ne tombaient que du
+## butin et de l'étal — deux fils que l'expédition alimente. Le royaume en
+## ouvre un troisième, et c'est le seul qui récompense d'être RENTRÉ.
+##
+## LA POTION EST COMMUNE, exprès. Le monastère ne doit pas prendre la
+## place du butin, qui reste la source des bonnes fioles ; il assure le
+## fond de sac, pas la trouvaille.
+func brew_per_cycle() -> int:
+	return maxi(int(_grants().get(&"brew", 0)), 0)
+
+
+## La potion préparée par le premier bâtiment qui en prépare une.
+func brewed_potion() -> StringName:
+	for building_id: StringName in levels.keys():
+		if not Buildings.exists(building_id) or level_of(building_id) <= 0:
+			continue
+		var potion := Buildings.brews(building_id)
+		if not potion.is_empty():
+			return potion
+	return &""
 
 
 ## Le rang d'ascension le plus haut que le royaume autorise aujourd'hui.
@@ -542,11 +573,22 @@ func run_cycle(company: Company = null) -> Dictionary:
 		population += 1
 		arrived = true
 
+	# LA POTION VA DANS LE SAC, PAS DANS LA RÉSERVE — même raisonnement
+	# qu'en T10.2 : elle est buvable à la sortie suivante, sinon le fil
+	# d'obtention s'arrête juste avant de servir.
+	var brewed := {}
+	var potion := brewed_potion()
+	var batch := brew_per_cycle()
+	if company != null and batch > 0 and Consumable.exists(potion):
+		company.supplies[potion] = int(company.supplies.get(potion, 0)) + batch
+		brewed[potion] = batch
+
 	return {
 		"produced": produced,
 		"eaten": eaten,
 		"arrived": arrived,
 		"hungry": hungry,
+		"brewed": brewed,
 		"cycle": cycles,
 	}
 

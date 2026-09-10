@@ -65,17 +65,20 @@ n'est à réécrire le jour où on les ressort.
 
 ### Demandé par Gaetan, pas encore fait (2026-09-05)
 
-- **L'ascension des héros par la couleur** — Bleu → Violet → Or, trois
-  rangs. Un héros élevé change de couleur, donc on lit son rang d'un coup
-  d'œil. `Hero.color` existe déjà avec sa valeur par défaut `"Blue"` et
-  n'est câblé nulle part : sixième mécanique déclarée et jamais branchée.
-  **Décidé, pas commencé.** C'est ce qui donne enfin aux bâtiments une
-  réponse à « qu'est-ce que ça permet à mes héros ? ».
-- **La refonte de la ville** — le royaume existe (5 bâtiments × 5 niveaux,
-  4 chantiers, invasions, défense) mais il est mince : les bâtiments ne
-  font que monter des chiffres (`+1 force`), le recrutement n'offre aucun
-  choix (un bâtiment = une classe = un héros générique), 30 objets pour 25
-  cases de tableau, et 3 des 8 bâtiments du pack dorment (tour, 2 maisons).
+- ~~**L'ascension des héros par la couleur**~~ — **FAIT le 2026-09-10.**
+  Bleu → Violet → Or, trois rangs, ouverts par la Tour.
+- **La refonte de la ville** — **entamée le 2026-09-10.** Le royaume
+  existe (6 bâtiments × 5 niveaux, 4 chantiers, invasions, défense) et
+  deux reproches sur quatre sont levés : la Tour OUVRE l'ascension au lieu
+  de monter un chiffre, et le recrutement propose trois candidats aux
+  caractères échangés au lieu d'un héros générique. **Restent :** les
+  quatre autres bâtiments ne font toujours que monter des chiffres, et 30
+  objets pour 25 cases de tableau.
+  **« 2 des 8 bâtiments du pack dorment » était FAUX** (vérifié le
+  2026-09-10) : les trois maisons servent DÉJÀ, une par palier de niveau
+  du bâtiment `houses` — c'est le seul dont le pack sait montrer
+  l'évolution, et le § 8 était honoré depuis la Phase 4. Avec la Tour, les
+  huit bâtiments du pack sont maintenant employés, aucun ne dort.
 - **Les actes 5 et 6** — Terres Maudites (le vampire y est destiné, déjà
   dessiné et versionné, dans aucun bestiaire) et Empire Noir (faction
   humaine Noire, la seconde des deux couleurs réservées aux ennemis).

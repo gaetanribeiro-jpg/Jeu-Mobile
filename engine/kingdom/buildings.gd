@@ -213,3 +213,20 @@ static func sum_grant(left: Variant, right: Variant) -> float:
 ## ont besoin de le savoir sans le deviner.
 static func is_fraction(key: StringName) -> bool:
 	return key == &"heal_between_steps"
+
+
+## Ce gain s'arrête-t-il au royaume, au lieu de descendre jusqu'aux
+## statistiques d'un héros ?
+##
+## LA LISTE VIT DANS LES DONNÉES, et c'est un piège désamorcé : elle était
+## écrite en dur dans `Kingdom.hero_bonuses`, à deux entrées. Une clé de
+## royaume oubliée là serait passée à `Unit.from_stats`, qui l'ignore SANS
+## RIEN DIRE — la troisième mécanique du projet à s'être perdue en silence
+## faute d'un maillon déclaré quelque part.
+static func is_kingdom_grant(key: StringName) -> bool:
+	return (data().get("kingdom_grants", []) as Array).has(String(key))
+
+
+## La potion que ce bâtiment prépare à chaque cycle, ou rien.
+static func brews(building_id: StringName) -> StringName:
+	return StringName(entry(building_id).get("brews", ""))

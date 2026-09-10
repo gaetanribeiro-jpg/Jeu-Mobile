@@ -374,6 +374,14 @@ func report_cycle(report: Dictionary) -> void:
 			tr(ResourceTable.name_key(StringName(key))),
 			int((report["produced"] as Dictionary)[key]),
 		])
+	# LA BRASSERIE SE DIT DANS LE COMPTE RENDU, sinon le troisième fil
+	# d'obtention des potions serait invisible : le sac grossirait tout
+	# seul et le joueur n'aurait aucune raison de monter le monastère.
+	for key: Variant in (report.get("brewed", {}) as Dictionary).keys():
+		pieces.append("%s +%d" % [
+			tr(Consumable.name_key(StringName(key))),
+			int((report["brewed"] as Dictionary)[key]),
+		])
 	pieces.append(tr("KINGDOM_EATEN") % int(report.get("eaten", 0)))
 	if bool(report.get("arrived", false)):
 		pieces.append(tr("KINGDOM_ARRIVED"))

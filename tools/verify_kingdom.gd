@@ -207,11 +207,42 @@ func _check_recruiting() -> void:
 	for class_id: StringName in Unit.hero_class_ids():
 		if not served.has(class_id):
 			_problems.append("aucun bâtiment ne recrute un %s" % class_id)
+	_check_brewing()
 	if Buildings.candidate_count() < 2:
 		# Un seul candidat n'est pas un choix, c'est un bouton — le
 		# reproche exact auquel les traits répondent.
 		_problems.append("le recrutement ne propose que %d candidat"
 			% Buildings.candidate_count())
+
+
+## DEUX MOITIÉS QUI NE SE PARLENT PAS NE FONT PAS UNE MÉCANIQUE — c'est
+## la leçon de `verify_world` en Phase 10, appliquée au royaume. Un
+## bâtiment qui accorde `brew` sans dire QUOI ne préparerait rien, en
+## silence ; un bâtiment qui déclare une potion sans jamais accorder
+## `brew` ne la préparerait jamais. Les deux se lisent juste séparément.
+func _check_brewing() -> void:
+	for building_id: StringName in Buildings.ids():
+		var potion := Buildings.brews(building_id)
+		var top := Buildings.grants_up_to(building_id, Buildings.max_level(building_id))
+		var batch := int(top.get(&"brew", 0))
+		if batch > 0 and potion.is_empty():
+			_problems.append("%s : prépare %d fiole(s) sans dire laquelle"
+				% [building_id, batch])
+		if not potion.is_empty() and batch <= 0:
+			_problems.append("%s : déclare « %s » et n'en prépare jamais"
+				% [building_id, potion])
+		if not potion.is_empty() and not Consumable.exists(potion):
+			_problems.append("%s : prépare « %s », qui n'existe pas"
+				% [building_id, potion])
+		if batch > 0:
+			print("%s : %d × %s par cycle au maximum"
+				% [building_id, batch, potion])
+	# Un gain de royaume non déclaré file jusqu'à `Unit.from_stats`, qui
+	# l'ignore sans rien dire. On vérifie donc que les clés qui ne sont
+	# pas des statistiques sont bien triées comme telles.
+	for key: StringName in [&"population_cap", &"heal_between_steps", &"brew"]:
+		if not Buildings.is_kingdom_grant(key):
+			_problems.append("« %s » n'est pas déclaré comme gain de royaume" % key)
 
 
 ## CHAQUE TRAIT EST UN ÉCHANGE, JAMAIS UN BONUS. C'est ce qui fait des

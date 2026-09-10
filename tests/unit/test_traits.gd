@@ -257,3 +257,68 @@ func test_un_trait_inconnu_disparait_a_la_relecture() -> void:
 	var saved := hero.to_dictionary()
 	saved["trait"] = "trait_qui_n_existe_plus"
 	assert_true(Hero.from_dictionary(saved).trait_id.is_empty())
+
+
+# --- La brasserie du monastère ---------------------------------------------
+#
+# LE PREMIER BÂTIMENT QUI PRODUIT AUTRE CHOSE QU'UN CHIFFRE, avec la Tour.
+# Le reproche était « les bâtiments ne font que monter des chiffres » ; la
+# Tour OUVRE l'ascension, le Monastère alimente le sac.
+#
+# C'EST UN MAILLON D'OBTENTION, et c'est ce que `verify_world` a appris à
+# chercher en Phase 10 : les potions ne tombaient que du butin et de
+# l'étal, deux fils que l'expédition alimente. Le royaume en ouvre un
+# troisième, et c'est le seul qui récompense d'être RENTRÉ.
+
+func _monastery(level: int) -> Kingdom:
+	var kingdom := _rich()
+	kingdom.levels[&"monastery"] = level
+	return kingdom
+
+
+func test_un_cycle_remplit_le_sac() -> void:
+	var kingdom := _monastery(Buildings.max_level(&"monastery"))
+	var company := _purse()
+	var potion := kingdom.brewed_potion()
+	assert_true(Consumable.exists(potion), "le monastère ne prépare rien de connu")
+	var before := int(company.supplies.get(potion, 0))
+	var report := kingdom.run_cycle(company)
+	assert_eq(
+		int(company.supplies.get(potion, 0)) - before, kingdom.brew_per_cycle()
+	)
+	assert_eq(
+		int((report.get("brewed", {}) as Dictionary).get(potion, 0)),
+		kingdom.brew_per_cycle(),
+		"le compte rendu ne dit pas ce qui a été préparé"
+	)
+
+
+## Un monastère de niveau 1 ne prépare rien : la brasserie s'ouvre au
+## niveau 2, donc bâtir plus haut a une conséquence qui n'est pas un
+## chiffre de plus.
+func test_le_premier_niveau_ne_prepare_rien() -> void:
+	var kingdom := _monastery(1)
+	assert_eq(kingdom.brew_per_cycle(), 0)
+	var company := _purse()
+	kingdom.run_cycle(company)
+	assert_eq(company.supplies.size(), 0)
+
+
+func test_sans_monastere_personne_ne_prepare() -> void:
+	var kingdom := _rich()
+	kingdom.levels[&"monastery"] = 0
+	assert_eq(kingdom.brewed_potion(), &"")
+	assert_eq(kingdom.brew_per_cycle(), 0)
+
+
+## LA BRASSERIE NE DOIT PAS ATTEINDRE `Unit.from_stats`, qui l'ignorerait
+## SANS RIEN DIRE. La liste des gains qui s'arrêtent au royaume vit dans
+## les données depuis qu'elle a compté trois entrées : écrite en dur, elle
+## oubliait la suivante.
+func test_la_brasserie_n_est_pas_une_statistique_de_combat() -> void:
+	var kingdom := _monastery(Buildings.max_level(&"monastery"))
+	var bonuses := kingdom.hero_bonuses(&"mage")
+	assert_false(bonuses.has(&"brew"), "la brasserie est partie dans les statistiques")
+	assert_false(bonuses.has(&"heal_between_steps"))
+	assert_false(bonuses.has(&"population_cap"))
+	assert_true(Buildings.is_kingdom_grant(&"brew"))

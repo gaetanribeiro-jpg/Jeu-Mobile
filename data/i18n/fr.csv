@@ -349,6 +349,7 @@ GRANT_INTELLIGENCE,Intelligence
 GRANT_DEFENCE,Défense
 GRANT_CRITICAL,Critique
 GRANT_HEAL_BETWEEN_STEPS,Soin entre rencontres
+GRANT_BREW,Fioles par cycle
 KINGDOM_RECRUIT,Recruter un %s\n%s
 KINGDOM_RECRUITED,%s rejoint la compagnie (%s).
 TRAIT_NONE,Sans histoire
