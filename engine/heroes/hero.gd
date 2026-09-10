@@ -28,7 +28,21 @@ var class_id: StringName = &""
 
 ## Couleur de faction, parmi les cinq du pack. Décide du sprite et du
 ## portrait, pas des statistiques.
+##
+## ELLE DÉCOULE DU RANG depuis l'ascension : c'est `rank` la source de
+## vérité, et `color` en est la trace écrite dans la sauvegarde. On garde
+## les deux parce qu'une partie sauvée AVANT l'ascension n'a qu'une
+## couleur, et qu'un héros ne doit pas redevenir bleu en rechargeant.
 var color: String = "Blue"
+
+## RANG D'ASCENSION : 0 commun (Bleu), 1 rare (Violet), 2 légendaire (Or).
+##
+## POURQUOI LA COULEUR PORTE LE RANG. Un héros élevé doit se reconnaître EN
+## COMBAT, au milieu du plateau, sans ouvrir sa fiche — même règle que pour
+## les régions (T11.6) : la couleur porte une information, jamais une
+## décoration. Et le pack la dessine gratuitement, en cinq exemplaires par
+## classe.
+var rank: int = 0
 
 var level: int = 1
 var experience: int = 0
@@ -49,6 +63,17 @@ var learned: Array[StringName] = []
 var equipment: Dictionary = {}
 
 
+## LE SEUL POINT D'ENTRÉE POUR CHANGER DE RANG.
+##
+## `rank` et `color` ne peuvent pas diverger : la couleur est la trace
+## VISIBLE du rang, et poser l'une sans l'autre donne un héros qui redevient
+## bleu à la première sauvegarde. Deux champs pour une information est une
+## faute qu'on borne en n'offrant qu'une porte.
+func set_rank(index: int) -> void:
+	rank = clampi(index, 0, Ascension.top_rank())
+	color = Ascension.color_of(rank)
+
+
 static func create(
 	hero_id: int, class_to_use: StringName, name_: String, faction_color: String = "Blue"
 ) -> Hero:
@@ -59,6 +84,10 @@ static func create(
 	hero.class_id = class_to_use
 	hero.given_name = name_
 	hero.color = faction_color
+	# LE RANG ET LA COULEUR NE PEUVENT PAS DIVERGER. `recruit()` accepte une
+	# couleur, et un héros créé en Violet doit être au rang qui la porte —
+	# sinon la sauvegarde le relit au rang 0 et il redevient bleu.
+	hero.rank = Ascension.rank_of_color(faction_color)
 	return hero
 
 
@@ -235,8 +264,14 @@ func effective_stats(bonuses: Dictionary = {}) -> Dictionary:
 	for node_id: StringName in learned:
 		_apply(stats, SkillTree.grants(node_id), primary)
 
+	_apply(stats, Ascension.grants_up_to(rank), primary)
 	_apply(stats, equipment_bonuses(), primary)
 	_apply(stats, _clean(bonuses), primary)
+	# LA COULEUR VOYAGE AVEC LES STATISTIQUES, parce que c'est le seul
+	# chemin qui mène du `Hero` à la `Unit` : `Unit.from_stats` lit
+	# `sprite_color` dans ce bloc. Sans ça, les vues devaient figer le bleu
+	# en constante — ce qu'elles faisaient dans cinq endroits.
+	stats["sprite_color"] = color
 	return stats
 
 
@@ -337,6 +372,7 @@ func to_dictionary() -> Dictionary:
 		"epithet": epithet,
 		"class": String(class_id),
 		"color": color,
+		"rank": rank,
 		"level": level,
 		"experience": experience,
 		"learned": _learned_as_strings(),
@@ -350,7 +386,16 @@ static func from_dictionary(data: Dictionary) -> Hero:
 	hero.given_name = String(data.get("name", ""))
 	hero.epithet = String(data.get("epithet", ""))
 	hero.class_id = StringName(data.get("class", ""))
-	hero.color = String(data.get("color", "Blue"))
+	hero.rank = int(data.get("rank", 0))
+	# UNE SAUVEGARDE D'AVANT L'ASCENSION n'a pas de rang, et son héros ne
+	# doit pas repartir de zéro : sa couleur enregistrée fait foi, et le
+	# rang s'en déduit. L'inverse — un rang sans couleur — vient d'une
+	# sauvegarde neuve, et c'est le rang qui décide.
+	hero.color = String(data.get("color", Ascension.color_of(hero.rank)))
+	if data.has("rank"):
+		hero.color = Ascension.color_of(hero.rank)
+	elif data.has("color"):
+		hero.rank = Ascension.rank_of_color(hero.color)
 	hero.level = int(data.get("level", 1))
 	hero.experience = int(data.get("experience", 0))
 	for node_id: Variant in data.get("learned", []):

@@ -37,7 +37,8 @@ signal pause_pressed
 
 ## La couleur de faction des héros, la même que celle des sprites du
 ## plateau : un portrait bleu au-dessus d'un guerrier rouge se remarque.
-const HERO_COLOR := "Blue"
+## PLUS DE COULEUR DE HÉROS FIGÉE : elle vient de l'unité, qui la tient de
+## son rang d'ascension (Bleu → Violet → Or).
 
 const TOUCH_TARGET_PX := 96
 const TOP_BAR_PX := 62
@@ -562,7 +563,7 @@ func _timeline_badge(unit: Unit, is_current: bool) -> Control:
 	# et par le même champ.
 	var face: Texture2D = null
 	if unit.is_hero():
-		face = UiSkin.portrait(unit.class_id, HERO_COLOR)
+		face = UiSkin.portrait(unit.class_id, unit.sprite_color)
 	elif not unit.sprite_color.is_empty():
 		face = UiSkin.portrait(unit.sprite_id, unit.sprite_color)
 	else:
@@ -615,7 +616,7 @@ func _refresh_active(engine: CombatEngine) -> void:
 		_action_pips.set_points(0, 0, ViewSettings.color(&"ap_pip"))
 		_movement_pips.set_points(0, 0, ViewSettings.color(&"mp_pip"))
 		return
-	_active_face.texture = UiSkin.portrait(unit.class_id, HERO_COLOR)
+	_active_face.texture = UiSkin.portrait(unit.class_id, unit.sprite_color)
 	_active_name.text = tr("HUD_ACTIVE") % [
 		unit.slot, tr("CLASS_%s" % String(unit.class_id).to_upper()),
 		unit.hit_points, unit.max_hit_points,
@@ -792,7 +793,7 @@ func _refresh_squad(engine: CombatEngine) -> void:
 ## qu'on lit vingt fois par combat.
 func _hero_card(unit: Unit, state: StringName) -> Control:
 	var card := UiSkin.hero_card(
-		UiSkin.portrait(unit.class_id, HERO_COLOR),
+		UiSkin.portrait(unit.class_id, unit.sprite_color),
 		"%d  %s" % [unit.slot, tr("CLASS_%s" % String(unit.class_id).to_upper())],
 		unit.hit_points, unit.max_hit_points, state == &"active", "",
 		Unit.class_accent(unit.class_id)

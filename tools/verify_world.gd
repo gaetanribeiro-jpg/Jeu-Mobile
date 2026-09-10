@@ -20,7 +20,20 @@ const MINIMUM_EVENT_POOL := 4
 
 ## La couleur des héros. Un ennemi qui la porterait serait indistinguable
 ## d'un allié sur le plateau.
-const HERO_COLOR := "Blue"
+## LES COULEURS RÉSERVÉES AUX HÉROS — les trois rangs d'ascension.
+##
+## C'ÉTAIT UNE SEULE COULEUR, ET C'EST DEVENU TROIS. Tant que les héros
+## n'étaient que bleus, un ennemi violet ou jaune ne posait aucun problème ;
+## depuis l'ascension, une couleur ne peut plus être à la fois un RANG et
+## une FACTION. Un mercenaire en or se lirait comme un héros élevé.
+##
+## La liste n'est pas écrite ici : elle est LUE dans `ascension.json`, donc
+## le jour où un rang change de couleur, ce contrôle suit tout seul.
+static func _hero_colors() -> Array[String]:
+	var out: Array[String] = []
+	for index in Ascension.rank_count():
+		out.append(Ascension.color_of(index))
+	return out
 
 var _problems: Array[String] = []
 
@@ -43,6 +56,7 @@ func _init() -> void:
 	_check_supplies()
 	_check_bestiary()
 	_check_expedition_rules()
+	_check_ascension()
 	_check_day_night()
 
 	if _problems.is_empty():
@@ -526,9 +540,10 @@ func _check_bestiary() -> void:
 					"l'ennemi « %s » veut la couleur « %s », que le pack ne dessine pas"
 					% [enemy_id, color]
 				)
-			elif color == HERO_COLOR:
+			elif _hero_colors().has(color):
 				_problems.append(
-					"l'ennemi « %s » porte la couleur des héros" % enemy_id
+					"l'ennemi « %s » porte « %s », réservée à un rang de héros"
+					% [enemy_id, color]
 				)
 			elif not AssetTable.has_unit_animation(sprite, &"idle"):
 				_problems.append(
@@ -670,6 +685,52 @@ func _check_reach_per_act() -> void:
 ## continuerait. Une nuit qui paie sans rien ajouter est un cadeau, et
 ## tout le monde continuerait. Dans les deux cas le § 29 s'effondre — et
 ## aucun test unitaire ne le dirait, parce que chaque moitié serait juste.
+## L'ASCENSION : trois rangs, trois couleurs que le pack dessine, et des
+## exigences qui MONTENT.
+##
+## Un rang qui coûterait moins cher que le précédent, ou qui demanderait un
+## niveau plus bas, ferait de l'élévation un ordre à deviner au lieu d'une
+## progression. Et une couleur que le pack ne dessine pas rendrait le héros
+## en ombre nue — le défaut silencieux de T11.8.
+func _check_ascension() -> void:
+	print("\nL'ascension :\n")
+	var seen := {}
+	var previous_level := 0
+	var previous_tower := 0
+	var previous_cost := -1
+	for index in Ascension.rank_count():
+		var color := Ascension.color_of(index)
+		var level := Ascension.requires_level(index)
+		var tower := Ascension.requires_tower(index)
+		var cost := 0
+		for key: Variant in Ascension.cost_of(index).keys():
+			cost += int(Ascension.cost_of(index)[key])
+		print("  rang %d  %-8s niveau %2d  tour %d  coût %d" % [
+			index, color, level, tower, cost])
+		_check_translation(StringName("rang %d" % index), Ascension.name_key_of(index))
+		if not AssetTable.has_color(color):
+			_problems.append(
+				"le rang %d veut la couleur « %s », que le pack ne dessine pas"
+				% [index, color]
+			)
+		if seen.has(color):
+			_problems.append("deux rangs portent la couleur « %s »" % color)
+		seen[color] = true
+		if index > 0:
+			if level <= previous_level:
+				_problems.append(
+					"le rang %d ne demande pas un niveau plus haut que le précédent"
+					% index
+				)
+			if tower < previous_tower:
+				_problems.append("le rang %d demande une tour PLUS BASSE" % index)
+			if cost <= previous_cost:
+				_problems.append("le rang %d coûte moins que le précédent" % index)
+		previous_level = level
+		previous_tower = tower
+		previous_cost = cost
+
+
 func _check_day_night() -> void:
 	var schedule := DayNight.schedule()
 	if schedule.is_empty():

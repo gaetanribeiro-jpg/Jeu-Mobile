@@ -50,10 +50,24 @@ func test_chaque_batiment_accorde_quelque_chose_a_chaque_niveau() -> void:
 			)
 
 
-func test_la_tour_n_est_pas_batissable_au_mvp() -> void:
-	# Le pack la dessine, mais elle sert à la défense et les invasions sont
-	# la Phase 5. Une tour sans invasion ne répond à rien.
-	assert_false(Buildings.exists(&"tower"))
+## LA TOUR EST DEVENUE BÂTISSABLE, et ce test disait le contraire.
+##
+## Il avait raison quand il a été écrit : « une tour sans invasion ne
+## répond à rien ». Ce qui a changé n'est pas l'invasion mais l'ASCENSION —
+## la tour est le premier bâtiment du jeu qui OUVRE quelque chose (élever
+## un héros) au lieu d'ajouter un chiffre, et c'est exactement la question
+## que la règle du royaume pose à chaque bâtiment.
+func test_la_tour_ouvre_l_ascension() -> void:
+	assert_true(Buildings.exists(&"tower"), "la tour est bâtissable")
+	assert_eq(
+		Ascension.BUILDING, &"tower",
+		"et c'est elle que l'ascension demande"
+	)
+	assert_true(
+		Buildings.hero_class(&"tower").is_empty(),
+		"elle ne sert AUCUNE classe en particulier : une tour de guet "
+		+ "protège la place entière, sinon elle deviendrait une sixième voie"
+	)
 
 
 func test_chaque_classe_du_mvp_a_son_batiment() -> void:

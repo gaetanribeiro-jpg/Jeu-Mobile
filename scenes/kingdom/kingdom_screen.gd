@@ -176,6 +176,47 @@ func _build_building_panel(building_id: StringName) -> void:
 		label = tr("KINGDOM_NEEDS_RESOURCES")
 	_action(label, _upgrade.bind(building_id), reason.is_empty())
 	_recruit_button(building_id)
+	_ascend_buttons(building_id)
+
+
+## ÉLEVER UN HÉROS EST CE QUE LA TOUR PERMET, et c'est le premier bâtiment
+## du jeu qui OUVRE quelque chose au lieu d'ajouter un chiffre. La règle du
+## royaume demande à chaque bâtiment « qu'est-ce que ça permet à mes
+## héros ? » ; les cinq premiers répondaient « +1 de force ».
+##
+## UN BOUTON PAR HÉROS, et les refusés restent AFFICHÉS avec leur raison.
+## Cacher ce qui manque obligerait à deviner pourquoi un héros n'est pas
+## élevable — c'est la même promesse que le télégraphe fait au combat :
+## information parfaite, toujours.
+func _ascend_buttons(building_id: StringName) -> void:
+	if building_id != Ascension.BUILDING or _kingdom.level_of(building_id) <= 0:
+		return
+	if _company == null or _company.heroes.is_empty():
+		return
+	for hero: Hero in _company.heroes:
+		var blocked := _kingdom.cannot_ascend_because(hero, _company)
+		var target := Ascension.next_rank(hero.rank)
+		var label := ""
+		match blocked:
+			Ascension.BLOCKED_MAXED:
+				label = "%s — %s" % [hero.display_name(), tr("ASCENSION_MAXED")]
+			Ascension.BLOCKED_LEVEL:
+				label = "%s — %s" % [
+					hero.display_name(),
+					tr("ASCENSION_LEVEL") % Ascension.requires_level(target),
+				]
+			Ascension.BLOCKED_TOWER:
+				label = "%s — %s" % [
+					hero.display_name(),
+					tr("ASCENSION_TOWER") % Ascension.requires_tower(target),
+				]
+			Ascension.BLOCKED_COST:
+				label = "%s — %s" % [hero.display_name(), tr("ASCENSION_COST")]
+			_:
+				label = tr("ASCENSION_DO") % hero.display_name() + "\n" + _costs(
+					Ascension.cost_of(target)
+				)
+		_action(label, _ascend.bind(hero), blocked.is_empty())
 
 
 ## Recruter est la seconde chose qu'un bâtiment militaire permet, et le
@@ -265,6 +306,18 @@ func _upgrade(building_id: StringName) -> void:
 		return
 	AudioManager.play_cue(&"build")
 	_note(tr("KINGDOM_BUILT") % [tr(Buildings.name_key(building_id)), reached])
+	changed.emit()
+	refresh()
+
+
+func _ascend(hero: Hero) -> void:
+	var reached := _kingdom.ascend(hero, _company)
+	if reached < 0:
+		return
+	AudioManager.play_cue(&"recruit")
+	_note(tr("KINGDOM_ASCENDED") % [
+		hero.display_name(), tr(Ascension.name_key_of(reached))
+	])
 	changed.emit()
 	refresh()
 

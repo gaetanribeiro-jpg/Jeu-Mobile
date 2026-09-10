@@ -223,6 +223,13 @@ static func from_hero_class(
 	var stats := hero_class(class_to_use)
 	if stats.is_empty():
 		return null
+	# UN HÉROS PORTE TOUJOURS UNE COULEUR, même fabriqué sans `Hero` — le
+	# banc d'essai et `simulate_combats` passent par ici. Sans elle, les
+	# vues devraient garder une constante de repli, et c'est exactement ce
+	# qu'on est en train de retirer : un héros incolore se dessinerait en
+	# ombre nue, comme les sept bêtes de T11.8.
+	stats = stats.duplicate(true)
+	stats["sprite_color"] = Ascension.color_of(0)
 	return Unit.from_stats(unit_id, class_to_use, Side.HEROES, at, stats)
 
 

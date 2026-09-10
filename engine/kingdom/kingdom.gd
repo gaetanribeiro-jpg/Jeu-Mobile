@@ -226,6 +226,39 @@ func hero_bonuses(class_id: StringName) -> Dictionary:
 	return out
 
 
+## Le rang d'ascension le plus haut que le royaume autorise aujourd'hui.
+##
+## C'est la TOUR qui décide, et son niveau se lit directement plutôt que
+## par un `grant` : un rang n'est pas une statistique qui s'additionne, et
+## le faire passer par `_grants()` l'aurait mélangé aux modificateurs de
+## combat, où `Unit.from_stats` l'ignorerait en silence — le piège que
+## `hero_bonuses` écarte déjà pour le plafond de population et le soin.
+func tower_level() -> int:
+	return level_of(Ascension.BUILDING)
+
+
+## Élève un héros d'un rang. Rend le nouveau rang, ou -1 si c'est refusé.
+##
+## LE ROYAUME PAIE, LE HÉROS MONTE, et c'est le premier endroit du jeu où
+## les deux systèmes se touchent vraiment (§ 45). Recruter demandait déjà
+## un bâtiment, mais recruter est un DÉBUT ; élever est ce qui rend le
+## royaume nécessaire à un héros qu'on a déjà.
+func ascend(hero: Hero, company: Company = null) -> int:
+	if not Ascension.can_ascend(hero, tower_level(), self, company):
+		return -1
+	var target := Ascension.next_rank(hero.rank)
+	if not pay(Ascension.cost_of(target), company):
+		return -1
+	hero.rank = target
+	hero.color = Ascension.color_of(target)
+	return target
+
+
+## Pourquoi ce héros ne peut pas s'élever. Chaîne vide s'il le peut.
+func cannot_ascend_because(hero: Hero, company: Company = null) -> StringName:
+	return Ascension.blocked_because(hero, tower_level(), self, company)
+
+
 ## Fraction des PV que le royaume rend à l'équipe entre deux rencontres.
 ##
 ## C'est le seul effet du royaume qui touche à l'expédition elle-même, et

@@ -47,7 +47,9 @@ var _pause: Node = null
 
 enum Selection { NONE, UNIT, PREVIEW }
 
-const HERO_COLOR := "Blue"
+## PLUS DE COULEUR DE HÉROS FIGÉE : elle vient de l'unité, qui la tient de
+## son rang d'ascension. Le bleu était écrit en dur dans cinq endroits, et
+## `Hero.color` existait depuis la Phase 2 sans que rien ne le lise.
 const ENEMY_COLOR := "Red"
 
 var engine: CombatEngine
@@ -222,7 +224,7 @@ func _spawn_view(unit: Unit) -> void:
 	var view := Node2D.new()
 	view.set_script(load("res://scenes/combat/unit_view.gd"))
 	_units_root.add_child(view)
-	view.setup(unit, HERO_COLOR if unit.is_hero() else ENEMY_COLOR)
+	view.setup(unit, unit.sprite_color if unit.is_hero() else ENEMY_COLOR)
 	view.position = _centre_of(unit.cell)
 	_views[unit.id] = view
 
@@ -471,7 +473,9 @@ func _refresh_ghost() -> void:
 		return
 	var frames: SpriteFrames = null
 	if _selected.is_hero():
-		frames = SpriteFrameFactory.for_unit(_selected.sprite_id, &"idle", HERO_COLOR)
+		frames = SpriteFrameFactory.for_unit(
+			_selected.sprite_id, &"idle", _selected.sprite_color
+		)
 	if frames == null or frames.get_frame_count(&"default") == 0:
 		_ghost.visible = false
 		return

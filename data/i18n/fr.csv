@@ -548,3 +548,17 @@ ABILITY_BOMBARD_SHELL,Obus
 ABILITY_BOAR_CHARGE,Charge
 ABILITY_TUSK_GORE,Coup de boutoir
 ABILITY_CHIEF_LANCE,Lance du Chef
+BUILDING_TOWER,Tour de guet
+BUILDING_TOWER_DESC,"Elle veille sur la place — et c'est d'elle qu'on élève un héros."
+RANK_COMMON,Commun
+RANK_RARE,Rare
+RANK_LEGENDARY,Légendaire
+ASCENSION_TITLE,Élévation
+ASCENSION_DO,"Élever — %s"
+ASCENSION_AT_TOP,Au sommet de son art
+ASCENSION_MAXED,Déjà au rang le plus haut
+ASCENSION_LEVEL,"Niveau %d requis"
+ASCENSION_TOWER,"Tour de guet de niveau %d requise"
+ASCENSION_COST,Ressources insuffisantes
+ASCENSION_RANK,"Rang : %s"
+KINGDOM_ASCENDED,"%s est élevé au rang %s."

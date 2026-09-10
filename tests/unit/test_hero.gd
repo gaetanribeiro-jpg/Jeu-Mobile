@@ -362,7 +362,10 @@ func test_l_unite_ne_recalcule_jamais_les_bonus() -> void:
 func test_aller_retour_de_serialisation() -> void:
 	var hero := _hero(&"archer")
 	hero.epithet = "la Rousse"
-	hero.color = "Purple"
+	# LE RANG PORTE LA COULEUR depuis l'ascension : poser `color` seule
+	# donnait un héros qui redevenait bleu à la relecture, parce que
+	# `from_dictionary` fait foi du rang.
+	hero.set_rank(1)
 	hero.add_experience(999999)
 	hero.level_up_free()
 	for node_id: StringName in SkillTree.node_ids(hero.class_id):
