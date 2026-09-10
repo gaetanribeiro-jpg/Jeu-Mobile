@@ -483,6 +483,28 @@ var _air: StringName = &""
 ## script lancé par `-s` ne reçoit aucun autoload.
 
 
+## Le caractère d'un héros, en une ligne : son nom, puis ce qu'il donne ET
+## ce qu'il retire.
+##
+## PARTAGÉE PAR DEUX ÉCRANS — le royaume au moment de choisir, la
+## compagnie six mois plus tard. Les laisser l'écrire chacun de leur côté
+## est la faute de T9.7 : deux dessins pour une même information.
+##
+## LES DEUX MOITIÉS SONT DITES, et c'est ce qui compte ici. N'annoncer que
+## le gain ferait passer un échange pour un bonus, et les trois candidats
+## cesseraient d'être un choix.
+func trait_line(trait_id: StringName) -> String:
+	if not HeroTrait.exists(trait_id):
+		return tr("TRAIT_NONE")
+	var pieces := PackedStringArray()
+	var modifiers := HeroTrait.modifiers(trait_id)
+	for key: Variant in modifiers.keys():
+		pieces.append("%s %+d" % [
+			tr("STAT_%s" % String(key).to_upper()), int(modifiers[key])
+		])
+	return "%s — %s" % [tr(HeroTrait.name_key(trait_id)), ", ".join(pieces)]
+
+
 ## La carte d'un personnage : portrait encadré, nom, jauge de vie.
 ##
 ## PARTAGÉE PAR TROIS ÉCRANS — combat, expédition, compagnie. C'est la

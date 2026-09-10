@@ -31,6 +31,7 @@ func _init() -> void:
 		_check_building(building_id)
 	_check_food_balance()
 	_check_recruiting()
+	_check_traits()
 	_check_invasions()
 
 	if _problems.is_empty():
@@ -206,6 +207,48 @@ func _check_recruiting() -> void:
 	for class_id: StringName in Unit.hero_class_ids():
 		if not served.has(class_id):
 			_problems.append("aucun bâtiment ne recrute un %s" % class_id)
+	if Buildings.candidate_count() < 2:
+		# Un seul candidat n'est pas un choix, c'est un bouton — le
+		# reproche exact auquel les traits répondent.
+		_problems.append("le recrutement ne propose que %d candidat"
+			% Buildings.candidate_count())
+
+
+## CHAQUE TRAIT EST UN ÉCHANGE, JAMAIS UN BONUS. C'est ce qui fait des
+## trois candidats une décision : si l'un d'eux était meilleur, en
+## proposer trois reviendrait à en proposer un avec deux distractions.
+##
+## Le barème est celui de l'équipement — la même mesure que `verify_items`
+## applique aux objets, parce que c'est la même monnaie. Un trait qui
+## donne 4 points doit en retirer 4, à la virgule près.
+func _check_traits() -> void:
+	print("")
+	print("%-10s %7s %7s  %s" % ["trait", "donne", "retire", "clé"])
+	for trait_id: StringName in HeroTrait.ids():
+		var given := Equipment.price_of_grants(HeroTrait.grants(trait_id))
+		var taken := Equipment.price_of_grants(HeroTrait.costs(trait_id))
+		print("%-10s %7.1f %7.1f  %s"
+			% [trait_id, given, taken, HeroTrait.name_key(trait_id)])
+		_check_translation(trait_id, HeroTrait.name_key(trait_id))
+		if given <= 0.0:
+			_problems.append("%s : ne donne rien" % trait_id)
+		if taken <= 0.0:
+			# Un trait gratuit serait « le bon » candidat, toujours.
+			_problems.append("%s : ne retire rien" % trait_id)
+		if not is_equal_approx(given, taken):
+			_problems.append("%s : donne %.1f pour %.1f retiré"
+				% [trait_id, given, taken])
+		# Un trait qui donne et retire la MÊME statistique s'annule en
+		# partie, et le joueur lit deux chiffres pour un demi-effet.
+		for key: Variant in HeroTrait.grants(trait_id).keys():
+			if HeroTrait.costs(trait_id).has(key):
+				_problems.append("%s : donne et retire « %s »" % [trait_id, key])
+	if HeroTrait.ids().size() < Buildings.candidate_count():
+		# En dessous, deux candidats porteraient le même caractère et
+		# l'étal proposerait deux fois la même personne.
+		_problems.append("%d traits pour %d candidats"
+			% [HeroTrait.ids().size(), Buildings.candidate_count()])
+
 
 
 func _costs(cost: Dictionary) -> String:

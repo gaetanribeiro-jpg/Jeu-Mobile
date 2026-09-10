@@ -6,6 +6,7 @@ extends Node
 ##     xvfb-run -a godot --path . -- --capture /tmp/x.png --frames 90
 ##     xvfb-run -a godot --path . -- --capture /tmp/x.png --press "Partir|Partir pour"
 ##     xvfb-run -a godot --path . -- --capture /tmp/x.png --press "La brèche|@0,3|@0,4|@1,3|@1,4|Commencer"
+##     xvfb-run -a godot --path . -- --capture /tmp/x.png --press "Royaume|!430,300"
 ##
 ## `--press` presse des boutons par leur TEXTE, dans l'ordre, en laissant
 ## respirer entre chacun. C'est ce qui permet de photographier un écran
@@ -40,6 +41,8 @@ const ARG_FRAMES := "--frames"
 const ARG_PRESS := "--press"
 ## Préfixe d'une étape qui touche une case de la grille : « @x,y ».
 const TAP_PREFIX := "@"
+## Préfixe d'une étape qui touche un PIXEL de la fenêtre : « !x,y ».
+const CLICK_PREFIX := "!"
 const DEFAULT_FRAMES := 45
 
 ## Images laissées passer après chaque pression.
@@ -111,6 +114,9 @@ func _walk() -> bool:
 		if label.begins_with(TAP_PREFIX):
 			if not _tap(label.substr(TAP_PREFIX.length())):
 				return false
+		elif label.begins_with(CLICK_PREFIX):
+			if not _click(label.substr(CLICK_PREFIX.length())):
+				return false
 		else:
 			var button := _find_button(get_tree().root, label)
 			if button == null:
@@ -138,6 +144,41 @@ func _tap(coordinates: String) -> bool:
 			% [TAP_PREFIX, coordinates])
 		return false
 	scene.call("handle_tap", Vector2i(parts[0].to_int(), parts[1].to_int()))
+	return true
+
+
+## Touche un PIXEL de la fenêtre, avec un vrai évènement d'entrée.
+##
+## POURQUOI UNE TROISIÈME SORTE D'ÉTAPE. `@x,y` connaît la grille de
+## combat et rien d'autre ; le royaume, lui, se pilote en touchant un
+## BÂTIMENT sur son terrain, et sans ça l'écran du royaume bâti était
+## inatteignable en capture — exactement le trou que `@x,y` avait bouché
+## pour le combat.
+##
+## Il passe par `Input.parse_input_event`, donc par le chemin du doigt :
+## le `_gui_input` visé ne peut pas distinguer ce clic d'un vrai, et rien
+## n'est monté à la main. `emulate_touch_from_mouse` est actif, donc c'est
+## bien un toucher qui arrive au bout.
+func _click(coordinates: String) -> bool:
+	var parts := coordinates.split(",", false)
+	if parts.size() != 2:
+		push_error("Capture : « %s%s » ne se lit pas — il faut « %sx,y »"
+			% [CLICK_PREFIX, coordinates, CLICK_PREFIX])
+		return false
+	var at := Vector2(parts[0].to_float(), parts[1].to_float())
+	# L'appui ET le relâchement : un `_gui_input` peut attendre l'un ou
+	# l'autre, et n'en envoyer qu'un laisserait la moitié des écrans muets.
+	# Pas d'`await` ici — la fonction rend un booléen, et une seule
+	# expression `await` en ferait une coroutine que `_walk` lirait comme
+	# un signal. Les images de repos de `_walk` suffisent.
+	for pressed: bool in [true, false]:
+		var event := InputEventMouseButton.new()
+		event.button_index = MOUSE_BUTTON_LEFT
+		event.button_mask = MOUSE_BUTTON_MASK_LEFT if pressed else 0
+		event.pressed = pressed
+		event.position = at
+		event.global_position = at
+		Input.parse_input_event(event)
 	return true
 
 

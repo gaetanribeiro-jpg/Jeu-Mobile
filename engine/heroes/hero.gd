@@ -44,6 +44,18 @@ var color: String = "Blue"
 ## classe.
 var rank: int = 0
 
+## TRAIT DE CARACTÈRE, choisi au recrutement et DÉFINITIF.
+##
+## C'est ce qui fait du recrutement un choix : trois candidats, trois
+## traits, et deux Guerriers cessent d'être interchangeables. Chaque trait
+## est un ÉCHANGE au barème de l'équipement — il donne autant qu'il retire
+## — sinon l'un des trois serait « le bon » et en proposer trois
+## reviendrait à en proposer un avec deux distractions.
+##
+## Vide est une valeur valable : un héros d'une sauvegarde d'avant les
+## traits n'en a pas, et il reste parfaitement jouable.
+var trait_id: StringName = &""
+
 var level: int = 1
 var experience: int = 0
 
@@ -97,9 +109,15 @@ static func create(
 ##
 ## Le tirage passe par `CombatRng` : une compagnie doit se régénérer à
 ## l'identique à partir de sa graine.
+##
+## `trait_to_use` est le caractère du recruté. Il est OPTIONNEL parce que
+## le compagnon de départ n'en a pas : les trois premiers héros sont
+## donnés, pas choisis, et un trait sans choix ne serait qu'un chiffre de
+## plus.
 static func recruit(
 	hero_id: int, class_to_use: StringName, rng: CombatRng,
-	company: Array[Hero] = [], faction_color: String = "Blue"
+	company: Array[Hero] = [], faction_color: String = "Blue",
+	trait_to_use: StringName = &""
 ) -> Hero:
 	var taken: Array[String] = []
 	for other: Hero in company:
@@ -110,6 +128,8 @@ static func recruit(
 		return null
 	if taken.has(name_):
 		hero.epithet = HeroNames.epithet(rng)
+	if HeroTrait.exists(trait_to_use):
+		hero.trait_id = trait_to_use
 	return hero
 
 
@@ -264,6 +284,12 @@ func effective_stats(bonuses: Dictionary = {}) -> Dictionary:
 	for node_id: StringName in learned:
 		_apply(stats, SkillTree.grants(node_id), primary)
 
+	# LE TRAIT PASSE AVANT LE RANG ET L'ÉQUIPEMENT, et l'ordre est sans
+	# conséquence ici : `_apply` additionne. Il est écrit en premier parce
+	# qu'il vient d'avant tout le reste — c'est ce que le héros ÉTAIT en
+	# arrivant.
+	if not trait_id.is_empty():
+		_apply(stats, HeroTrait.modifiers(trait_id), primary)
 	_apply(stats, Ascension.grants_up_to(rank), primary)
 	_apply(stats, equipment_bonuses(), primary)
 	_apply(stats, _clean(bonuses), primary)
@@ -373,6 +399,7 @@ func to_dictionary() -> Dictionary:
 		"class": String(class_id),
 		"color": color,
 		"rank": rank,
+		"trait": String(trait_id),
 		"level": level,
 		"experience": experience,
 		"learned": _learned_as_strings(),
@@ -387,6 +414,11 @@ static func from_dictionary(data: Dictionary) -> Hero:
 	hero.epithet = String(data.get("epithet", ""))
 	hero.class_id = StringName(data.get("class", ""))
 	hero.rank = int(data.get("rank", 0))
+	# Un trait retiré des données depuis la sauvegarde disparaît, sans
+	# emporter le héros avec lui — même règle que pour les nœuds d'arbre.
+	var saved_trait := StringName(data.get("trait", ""))
+	if HeroTrait.exists(saved_trait):
+		hero.trait_id = saved_trait
 	# UNE SAUVEGARDE D'AVANT L'ASCENSION n'a pas de rang, et son héros ne
 	# doit pas repartir de zéro : sa couleur enregistrée fait foi, et le
 	# rang s'en déduit. L'inverse — un rang sans couleur — vient d'une

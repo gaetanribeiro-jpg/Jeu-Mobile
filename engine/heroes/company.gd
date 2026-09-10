@@ -64,6 +64,26 @@ func recruit(class_id: StringName, rng: CombatRng, color: String = "Blue") -> He
 	return hero
 
 
+## Prochain identifiant libre. Le royaume en a besoin pour fabriquer un
+## CANDIDAT : un héros qu'on regarde sans l'engager doit porter un
+## identifiant plausible sans en consommer un.
+func next_id() -> int:
+	return _next_id
+
+
+## Fait entrer un candidat déjà fabriqué, qui reçoit ICI son identifiant.
+##
+## POURQUOI PAS `add()` : un candidat vit avant d'être engagé, et pendant
+## ce temps la compagnie a pu changer. Lui laisser l'identifiant qu'il
+## portait à sa fabrication en ferait un doublon le jour où deux écrans
+## recrutent — et un doublon écrase un héros à la sauvegarde.
+func take(hero: Hero) -> bool:
+	if hero == null:
+		return false
+	hero.id = _next_id
+	return add(hero)
+
+
 ## Retire un héros de la compagnie et rend son équipement à la réserve.
 func remove(hero_id: int) -> Hero:
 	var hero := hero_by_id(hero_id)

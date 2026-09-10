@@ -50,6 +50,17 @@ var threat: int = 0
 ## qu'une nouvelle.
 var invasion: Invasion = null
 
+## Numéro de la fournée de candidats. Il monte d'un cran à chaque
+## embauche, et c'est LUI qui renouvelle l'étal du recrutement.
+##
+## LES CANDIDATS SONT UNE FONCTION, PAS UN TIRAGE. Même raison que les
+## rochers du rivage en T9.10 : ils ne doivent pas consommer la graine de
+## la partie — sinon recruter décalerait le hasard de tout le reste — et
+## surtout ils ne doivent pas changer quand on sort de l'écran et qu'on y
+## revient. Un joueur qui peut relancer les dés en cliquant deux fois n'a
+## pas trois candidats, il en a huit.
+var recruit_round: int = 0
+
 
 static func create() -> Kingdom:
 	var kingdom := Kingdom.new()
@@ -278,32 +289,75 @@ func recruitable_classes() -> Array[StringName]:
 	return out
 
 
-## Recrute un héros dans un bâtiment. Renvoie le héros, ou null.
+## Les candidats que ce bâtiment propose en ce moment : même classe, mais
+## trois noms et trois CARACTÈRES différents.
+##
+## L'HABITANT N'EST PAS UN HÉROS. Recruter ne prend personne à la
+## population : un royaume qui perdrait un bûcheron chaque fois qu'il forme
+## un Guerrier punirait le joueur d'avoir joué. Le § 9 les distingue
+## d'ailleurs — les habitants travaillent, l'armée se bat.
+##
+## C'EST LE REPROCHE DE GAETAN, TRAITÉ : « un bâtiment = une classe = un
+## héros générique ». Avec un seul recruté possible, l'écran n'offrait pas
+## une décision, il offrait un bouton. Trois candidats dont aucun n'est
+## meilleur — chaque trait rend exactement ce qu'il retire — obligent à
+## répondre « de quoi mon équipe manque-t-elle ? ».
+##
+## AUCUN TIRAGE N'EST CONSOMMÉ sur `rng` : on en DÉRIVE un, salé par le
+## bâtiment et par la fournée. Deux conséquences voulues : appeler deux
+## fois rend les mêmes trois, et recruter ne décale pas le hasard des
+## combats à venir.
+func candidates(building_id: StringName, company: Company, rng: CombatRng) -> Array[Hero]:
+	var out: Array[Hero] = []
+	var class_id := Buildings.hero_class(building_id)
+	if company == null or rng == null or class_id.is_empty():
+		return out
+	if level_of(building_id) <= 0:
+		return out
+	var draw := rng.derive(hash([String(building_id), recruit_round]))
+	# Les candidats se connaissent entre eux : ils évitent les prénoms de
+	# la compagnie ET ceux de leurs concurrents, sinon l'étal proposerait
+	# deux fois la même personne.
+	var seen: Array[Hero] = company.heroes.duplicate()
+	var traits: Array[StringName] = []
+	for i in Buildings.candidate_count():
+		var trait_id := HeroTrait.draw(draw, traits)
+		var hero := Hero.recruit(company.next_id(), class_id, draw, seen, "Blue", trait_id)
+		if hero == null:
+			continue
+		traits.append(trait_id)
+		seen.append(hero)
+		out.append(hero)
+	return out
+
+
+## Engage le candidat numéro `index`. Renvoie le héros, ou null.
 ##
 ## LE COÛT EST EN OR ET EN NOURRITURE : l'or parce qu'un héros s'équipe, la
 ## nourriture parce qu'il mange. Une seule monnaie aurait fait du
 ## recrutement un robinet ; deux en font un arbitrage contre les bâtiments,
 ## qui puisent dans la même bourse.
 ##
-## L'HABITANT N'EST PAS UN HÉROS. Recruter ne prend personne à la
-## population : un royaume qui perdrait un bûcheron chaque fois qu'il forme
-## un Guerrier punirait le joueur d'avoir joué. Le § 9 les distingue
-## d'ailleurs — les habitants travaillent, l'armée se bat.
-func recruit(building_id: StringName, company: Company, rng: CombatRng) -> Hero:
-	if company == null or rng == null:
-		return null
-	var class_id := Buildings.hero_class(building_id)
-	if class_id.is_empty() or level_of(building_id) <= 0:
+## LES DEUX AUTRES CANDIDATS PARTENT AVEC LUI. La fournée avance, donc
+## celui qu'on n'a pas pris est perdu : c'est ce qui donne son poids au
+## choix. Prendre le troisième « pour plus tard » n'existe pas.
+func hire(
+	building_id: StringName, index: int, company: Company, rng: CombatRng
+) -> Hero:
+	var offered := candidates(building_id, company, rng)
+	if index < 0 or index >= offered.size():
 		return null
 	var cost := Buildings.recruit_cost(building_id)
 	if cost.is_empty() or not pay(cost, company):
 		return null
-	var hero := company.recruit(class_id, rng)
-	if hero == null:
-		# Le recrutement a échoué après le paiement : on rend l'argent
-		# plutôt que de laisser le joueur avec un trou dans ses réserves
-		# et personne de plus.
+	var hero := offered[index]
+	if not company.take(hero):
+		# L'embauche a échoué après le paiement : on rend l'argent plutôt
+		# que de laisser le joueur avec un trou dans ses réserves et
+		# personne de plus.
 		grant(cost, company)
+		return null
+	recruit_round += 1
 	return hero
 
 
@@ -516,6 +570,7 @@ func to_dictionary() -> Dictionary:
 		"levels": saved_levels,
 		"cycles": cycles,
 		"threat": threat,
+		"recruit_round": recruit_round,
 		"invasion": invasion.to_dictionary() if invasion != null else {},
 	}
 
@@ -548,6 +603,9 @@ static func from_dictionary(data: Dictionary) -> Kingdom:
 				Buildings.max_level(building_id)
 			)
 	kingdom.threat = int(data.get("threat", 0))
+	# Sans elle, rouvrir une partie sauvegardée reproposerait la fournée du
+	# tout premier jour — et l'étal du recrutement remonterait le temps.
+	kingdom.recruit_round = maxi(int(data.get("recruit_round", 0)), 0)
 	kingdom.invasion = Invasion.from_dictionary(data.get("invasion", {}))
 	kingdom.settle_assignments()
 	return kingdom

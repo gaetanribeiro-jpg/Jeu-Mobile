@@ -160,6 +160,13 @@ static func recruit_cost(building_id: StringName) -> Dictionary:
 	return out
 
 
+## Combien de candidats un bâtiment propose à la fois. Trois : deux ne
+## feraient pas un choix mais une comparaison, quatre demanderaient de lire
+## quatre fiches pour une décision qui tient en une phrase.
+static func candidate_count() -> int:
+	return maxi(int(data().get("candidate_count", 1)), 1)
+
+
 ## Le bâtiment qui forme cette classe, ou rien.
 static func trainer_of(class_id: StringName) -> StringName:
 	for building_id: StringName in ids():

@@ -177,10 +177,20 @@ func _build_sheet() -> void:
 		hero.display_name(), tr("CLASS_%s" % String(hero.class_id).to_upper())
 	], 32))
 	_sheet.add_child(_experience_line(hero))
+	_sheet.add_child(_trait_line(hero))
 	_build_level_choice(hero)
 	_sheet.add_child(_stats_grid(hero))
 	_sheet.add_child(_abilities_line(hero))
 	_build_equipment(hero)
+
+
+## LE CARACTÈRE SE RELIT APRÈS L'EMBAUCHE. Il est définitif, donc c'est
+## une information permanente de la fiche et pas un détail du recrutement :
+## six mois plus tard le joueur doit pouvoir se demander pourquoi ce
+## Guerrier-ci encaisse mieux que l'autre. Les DEUX moitiés sont dites —
+## n'annoncer que le gain ferait passer un échange pour un bonus.
+func _trait_line(hero: Hero) -> Label:
+	return _label(UiSkin.trait_line(hero.trait_id), 22)
 
 
 func _experience_line(hero: Hero) -> Label:

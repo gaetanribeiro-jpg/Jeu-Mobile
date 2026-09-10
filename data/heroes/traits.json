@@ -1,0 +1,46 @@
+{
+ "_readme": "LES TRAITS FONT DU RECRUTEMENT UN CHOIX, et c'est le reproche exact de Gaetan : « le recrutement n'offre aucun choix — un bâtiment = une classe = un héros générique ».\n\nCHAQUE TRAIT EST UN ÉCHANGE, JAMAIS UN BONUS. Il donne autant qu'il retire, au barème de l'équipement (`data/items/equipment.json`, section `costs`). Sans ça, l'un des trois candidats serait « le bon », et proposer trois personnes reviendrait à en proposer une avec deux distractions — la même faute que `verify_skills` refuse déjà entre deux branches d'arbre.\n\nCE QUE ÇA CHANGE POUR LE JOUEUR. Deux Guerriers ne sont plus interchangeables : l'un encaisse, l'autre frappe, un troisième joue tôt. Ça donne une raison de garder un vivier au-delà de l'équipe de quatre, et une raison de recruter encore quand on a déjà sa classe.\n\nLE TRAIT EST DÉFINITIF. On ne le change pas : c'est ce qui fait du recrutement une décision plutôt qu'un tirage qu'on corrigera plus tard. Même raison que les nœuds d'arbre, définitifs eux aussi.",
+ "traits": {
+  "hardy": {
+   "name_key": "TRAIT_HARDY",
+   "grants": { "hit_points": 20 },
+   "costs": { "agility": 2 }
+  },
+  "keen": {
+   "name_key": "TRAIT_KEEN",
+   "grants": { "agility": 2 },
+   "costs": { "hit_points": 20 }
+  },
+  "brutal": {
+   "name_key": "TRAIT_BRUTAL",
+   "grants": { "strength": 2 },
+   "costs": { "defence": 2 }
+  },
+  "guarded": {
+   "name_key": "TRAIT_GUARDED",
+   "grants": { "defence": 2 },
+   "costs": { "strength": 2 }
+  },
+  "quick": {
+   "name_key": "TRAIT_QUICK",
+   "grants": { "initiative": 4 },
+   "costs": { "hit_points": 20 }
+  },
+  "studious": {
+   "name_key": "TRAIT_STUDIOUS",
+   "grants": { "intelligence": 2 },
+   "costs": { "hit_points": 20 }
+  },
+  "lucky": {
+   "name_key": "TRAIT_LUCKY",
+   "grants": { "critical": 4 },
+   "costs": { "defence": 2 }
+  },
+  "steady": {
+   "name_key": "TRAIT_STEADY",
+   "grants": { "hit_points": 10, "defence": 1 },
+   "costs": { "initiative": 4 }
+  }
+ },
+ "_balance_note": "AU BARÈME DE L'ÉQUIPEMENT : 1 PV vaut 0,2 point, une statistique primaire 2 points, le critique et l'initiative 1 point chacun. Chaque trait rend donc exactement 4 points et en retire 4 — sauf `steady`, qui rend 2 + 2 et retire 4. Aucun n'est gratuit, aucun n'est une punition.\n\n`verify_kingdom` refuse tout écart, comme `verify_items` le fait pour les objets. On n'ajoute jamais un trait sans le faire passer par là."
+}

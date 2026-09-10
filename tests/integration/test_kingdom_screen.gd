@@ -175,25 +175,57 @@ func test_on_ne_recrute_pas_sans_le_batiment() -> void:
 	# Sans caserne, pas de Guerrier.
 	_select(_screen._view.KIND_BUILDING, &"barracks")
 	await wait_process_frames(1)
-	assert_null(_button("Recruter"))
+	assert_eq(_kingdom.candidates(&"barracks", _company, _screen._rng).size(), 0)
+	# On cherche un CARACTÈRE et pas le nom de la classe : la description
+	# de la caserne dit déjà « Guerrier », et l'assertion évidente passait
+	# donc à côté de ce qu'elle croyait vérifier.
+	for button: Button in _panel_buttons():
+		for trait_id: StringName in HeroTrait.ids():
+			assert_false(
+				button.text.contains(tr(HeroTrait.name_key(trait_id))),
+				"la caserne non bâtie propose quand même quelqu'un"
+			)
 
 
-func test_recruter_ajoute_un_heros_et_coute() -> void:
+## L'ÉCRAN MONTRE LES TROIS QUE LE MOTEUR PROPOSE, et presser le deuxième
+## engage le deuxième. Un écran qui afficherait sa propre fournée serait
+## la faute de T11.8 : deux moitiés justes qui ne parlent pas de la même
+## chose.
+func test_recruter_ajoute_le_candidat_choisi_et_coute() -> void:
 	_kingdom.build(&"barracks", _company)
 	_select(_screen._view.KIND_BUILDING, &"barracks")
 	await wait_process_frames(1)
 	var gold := _company.gold
 	var food := _kingdom.amount(&"food")
 
-	var button := _button("Recruter")
-	assert_not_null(button, "aucun bouton de recrutement")
+	var offered := _kingdom.candidates(&"barracks", _company, _screen._rng)
+	assert_eq(offered.size(), Buildings.candidate_count())
+	var wanted := offered[1]
+	var button := _button(wanted.display_name())
+	assert_not_null(button, "le deuxième candidat n'a pas de bouton")
 	button.pressed.emit()
 	await wait_process_frames(1)
 
 	assert_eq(_company.size(), 1)
 	assert_eq(_company.heroes[0].class_id, &"warrior")
+	assert_eq(_company.heroes[0].display_name(), wanted.display_name())
+	assert_eq(_company.heroes[0].trait_id, wanted.trait_id)
 	assert_lt(_company.gold, gold)
 	assert_lt(_kingdom.amount(&"food"), food)
+
+
+## LE CARACTÈRE SE LIT SUR LE BOUTON, avec ses DEUX moitiés : n'annoncer
+## que le gain ferait passer un échange pour un bonus, et les trois
+## candidats cesseraient d'être un choix.
+func test_le_bouton_dit_le_caractere_et_son_prix() -> void:
+	_kingdom.build(&"barracks", _company)
+	_select(_screen._view.KIND_BUILDING, &"barracks")
+	await wait_process_frames(1)
+	var offered := _kingdom.candidates(&"barracks", _company, _screen._rng)
+	var button := _button(offered[0].display_name())
+	assert_not_null(button)
+	assert_string_contains(button.text, tr(HeroTrait.name_key(offered[0].trait_id)))
+	assert_string_contains(button.text, "-", "le bouton ne dit pas ce que ça coûte")
 
 
 func test_recruter_ne_prend_personne_a_la_population() -> void:
@@ -201,7 +233,7 @@ func test_recruter_ne_prend_personne_a_la_population() -> void:
 	# Guerrier punirait le joueur d'avoir joué.
 	_kingdom.build(&"barracks", _company)
 	var people := _kingdom.population
-	_kingdom.recruit(&"barracks", _company, CombatRng.new(3))
+	_kingdom.hire(&"barracks", 0, _company, CombatRng.new(3))
 	assert_eq(_kingdom.population, people)
 
 

@@ -175,7 +175,7 @@ func _build_building_panel(building_id: StringName) -> void:
 	elif reason == &"cost":
 		label = tr("KINGDOM_NEEDS_RESOURCES")
 	_action(label, _upgrade.bind(building_id), reason.is_empty())
-	_recruit_button(building_id)
+	_recruit_buttons(building_id)
 	_ascend_buttons(building_id)
 
 
@@ -220,22 +220,38 @@ func _ascend_buttons(building_id: StringName) -> void:
 
 
 ## Recruter est la seconde chose qu'un bâtiment militaire permet, et le
-## § 45 la met dans cette phase. Le bouton n'apparaît que là où quelqu'un
-## se forme.
-func _recruit_button(building_id: StringName) -> void:
+## § 45 la met dans cette phase. Les boutons n'apparaissent que là où
+## quelqu'un se forme.
+##
+## TROIS CANDIDATS, PAS UN BOUTON. Le reproche était « un bâtiment = une
+## classe = un héros générique » : avec un seul recruté possible, l'écran
+## n'offrait pas une décision. Chacun porte son NOM et son CARACTÈRE, et
+## aucun n'est meilleur — un trait rend exactement ce qu'il retire, donc
+## la question posée est « de quoi mon équipe manque-t-elle ? ».
+##
+## LE PRIX EST DIT UNE FOIS, au-dessus des trois : il est le même pour
+## tous, et le répéter trois fois donnerait à lire trois chiffres
+## identiques au lieu des trois caractères qui, eux, diffèrent.
+func _recruit_buttons(building_id: StringName) -> void:
 	var class_id := Buildings.hero_class(building_id)
 	if class_id.is_empty() or _kingdom.level_of(building_id) <= 0:
 		return
 	var blocked := _kingdom.cannot_recruit_because(building_id, _company)
-	# Sur deux lignes : le nom, puis le prix. Une seule ligne dépassait la
-	# largeur du panneau, et c'est ce qui a fait boucler la mise en page.
-	var label := tr("KINGDOM_RECRUIT") % [
+	_line(tr("KINGDOM_RECRUIT") % [
 		tr("CLASS_%s" % String(class_id).to_upper()),
 		_costs(Buildings.recruit_cost(building_id)),
-	]
+	], 20)
 	if blocked == &"cost":
-		label = tr("KINGDOM_NEEDS_RESOURCES")
-	_action(label, _recruit.bind(building_id), blocked.is_empty())
+		_line(tr("KINGDOM_NEEDS_RESOURCES"), 19)
+	var offered := _kingdom.candidates(building_id, _company, _rng)
+	for i in offered.size():
+		# Sur deux lignes : qui c'est, puis ce que ça change. Une seule
+		# ligne dépassait la largeur du panneau, et c'est ce qui a fait
+		# boucler la mise en page.
+		var label := "%s\n%s" % [
+			offered[i].display_name(), UiSkin.trait_line(offered[i].trait_id)
+		]
+		_action(label, _hire.bind(building_id, i), blocked.is_empty())
 
 
 func _build_worksite_panel(worksite_id: StringName) -> void:
@@ -322,12 +338,11 @@ func _ascend(hero: Hero) -> void:
 	refresh()
 
 
-func _recruit(building_id: StringName) -> void:
-	var hero := _kingdom.recruit(building_id, _company, _rng)
-	if hero != null:
-		AudioManager.play_cue(&"recruit")
+func _hire(building_id: StringName, index: int) -> void:
+	var hero := _kingdom.hire(building_id, index, _company, _rng)
 	if hero == null:
 		return
+	AudioManager.play_cue(&"recruit")
 	_note(tr("KINGDOM_RECRUITED") % [
 		hero.display_name(), tr("CLASS_%s" % String(hero.class_id).to_upper())
 	])

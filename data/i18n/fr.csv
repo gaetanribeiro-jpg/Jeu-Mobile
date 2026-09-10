@@ -351,6 +351,15 @@ GRANT_CRITICAL,Critique
 GRANT_HEAL_BETWEEN_STEPS,Soin entre rencontres
 KINGDOM_RECRUIT,Recruter un %s\n%s
 KINGDOM_RECRUITED,%s rejoint la compagnie (%s).
+TRAIT_NONE,Sans histoire
+TRAIT_HARDY,Endurci
+TRAIT_KEEN,Vif
+TRAIT_BRUTAL,Brutal
+TRAIT_GUARDED,Sur ses gardes
+TRAIT_QUICK,Leste
+TRAIT_STUDIOUS,Studieux
+TRAIT_LUCKY,Chanceux
+TRAIT_STEADY,Impassible
 BOOT_KINGDOM,Royaume
 OPTIONS_TITLE,Options
 OPTIONS_AUDIO,Son
