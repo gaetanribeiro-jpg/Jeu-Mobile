@@ -69,6 +69,22 @@ func is_temporary() -> bool:
 ## Recouvrir une case DÉJÀ recouverte ne fait que rallumer le compteur :
 ## sinon deux torches d'affilée feraient perdre le terrain d'origine, et
 ## la case resterait en cendres pour toujours.
+## Le même test que `cover_with`, sans rien appliquer.
+##
+## IL EXISTE POUR QUE LE FEU ENNEMI PUISSE ATTENDRE. Un feu allumé au
+## milieu de la salve ennemie change le sol sous un héros, et les annonces
+## des ennemis qui n'ont pas encore joué deviennent fausses — un
+## télégraphe qui ment est pire qu'une absence de télégraphe. Le moteur
+## relève donc les cases ici et ne les allume qu'une fois la salve finie.
+func can_cover_with(terrain: StringName, duration: int = -1) -> bool:
+	if duration == 0 or not is_flammable():
+		return false
+	var turns := duration
+	if turns < 0:
+		turns = int(CombatRules.terrain_property(terrain, &"duration", 0))
+	return turns > 0
+
+
 func cover_with(terrain: StringName, duration: int = -1) -> bool:
 	if duration == 0 or not is_flammable():
 		return false

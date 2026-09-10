@@ -30,6 +30,8 @@ const ENEMY_PATHS: Array[String] = [
 	"res://data/enemies/act2.json",
 	"res://data/enemies/act3.json",
 	"res://data/enemies/act4.json",
+	"res://data/enemies/act5.json",
+	"res://data/enemies/act6.json",
 ]
 
 ## Les deux camps et les deux états d'une unité. Stockés en `int` plutôt

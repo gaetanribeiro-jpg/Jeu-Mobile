@@ -53,11 +53,25 @@ const ACTIVATION_CAP := 500
 
 func _init() -> void:
 	var runs := 50
+	var only := ""
 	var arguments := OS.get_cmdline_user_args()
 	if arguments.size() > 0 and arguments[0].is_valid_int():
 		runs = maxi(1, arguments[0].to_int())
+	# UN FILTRE PAR PRÉFIXE, parce qu'un acte se règle en dix passes et
+	# que mesurer les cinquante-quatre cartes à chaque fois coûte huit
+	# minutes pour neuf lignes qu'on lit. `-- 50 maudit` ne mesure que
+	# l'acte 5. La moyenne générale n'a de sens qu'en passe complète, et
+	# l'outil le DIT plutôt que de laisser croire à un chiffre comparable.
+	for argument: String in arguments:
+		if not argument.is_valid_int():
+			only = argument
 
-	print("Simulation : %d graines par carte, politique de joueur triviale.\n" % runs)
+	if only.is_empty():
+		print("Simulation : %d graines par carte, politique de joueur triviale.\n" % runs)
+	else:
+		print("Simulation : %d graines, cartes commençant par « %s ».\n" % [runs, only])
+		print("PASSE PARTIELLE — la moyenne générale ci-dessous ne se compare")
+		print("à rien : le repère de T1.11 est celui des cartes AU COMPLET.\n")
 	print("%-14s %-7s %9s %8s %7s %8s"
 		% ["carte", "heure", "victoire", "rondes", "PV", "tombés"])
 	print("-".repeat(58))
@@ -67,6 +81,8 @@ func _init() -> void:
 	var total_downed := 0.0
 	var total_runs := 0
 	for id: StringName in CombatMap.map_ids():
+		if not only.is_empty() and not String(id).begins_with(only):
+			continue
 		for moment: StringName in [&"day", &"night"]:
 			var wins := 0
 			var turns_sum := 0

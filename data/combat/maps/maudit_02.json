@@ -1,0 +1,83 @@
+{
+ "_note": "LA FLORAISON QUI BOIT L'ATTENTE. Sept cases de portée, et chaque ronde passée hors de la sienne la rend plus dure à abattre : c'est la seule bête du jeu que le joueur RENFORCE en ne faisant rien.\n\nLA FLORAISON EST À PORTÉE DE LA ZONE DE PLACEMENT, et c'est vérifié : un emplacement posé au fond du plateau est du décor, pas un ennemi (`fer_04`, 100 % des PV).",
+ "act": 5,
+ "name_key": "MAP_MAUDIT_02",
+ "rows": [
+  "............",
+  "...f........",
+  "............",
+  ".r.....#....",
+  "............",
+  ".r.....#....",
+  "............",
+  "...f........",
+  "............"
+ ],
+ "objective": {
+  "kind": "eliminate"
+ },
+ "deployment_cells": [
+  [
+   0,
+   2
+  ],
+  [
+   0,
+   3
+  ],
+  [
+   0,
+   4
+  ],
+  [
+   0,
+   5
+  ],
+  [
+   0,
+   6
+  ],
+  [
+   1,
+   3
+  ],
+  [
+   1,
+   4
+  ],
+  [
+   1,
+   5
+  ]
+ ],
+ "enemies": [
+  {
+   "type": "pale_bloom",
+   "cell": [
+    6,
+    4
+   ]
+  },
+  {
+   "type": "vampire_spawn",
+   "cell": [
+    7,
+    2
+   ]
+  },
+  {
+   "type": "vampire_spawn",
+   "cell": [
+    7,
+    6
+   ]
+  },
+  {
+   "type": "blood_thrall",
+   "cell": [
+    8,
+    4
+   ]
+  }
+ ]
+}

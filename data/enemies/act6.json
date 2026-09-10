@@ -1,0 +1,127 @@
+{
+ "_note": "ACTE 6 — L'EMPIRE NOIR : LA LIGNE QUI NE SE BRISE PAS.\n\nLA QUESTION DE L'ACTE : L'ENNEMI JOUE ENFIN LE MÊME JEU. Cinq actes de bêtes, de warbands et de machines ; l'Empire, lui, est une ARMÉE — il tient une formation, il protège ses tireurs, il recoud sa ligne et il ne charge pas. Son archer porte à SIX cases, exactement la portée du Mage : c'est le seul acte où l'échange est à armes égales, et le vainqueur n'est plus celui qui porte le plus loin mais celui qui se place mieux. C'est ce qu'on attend d'un dernier acte.\n\nCE QUE ÇA PUNIT, C'EST L'HABITUDE. Cinq actes ont appris au joueur à se serrer derrière un rocher ; la lance impériale traverse deux cases et touche celui de derrière. La bonne habitude devient mauvaise — la seule façon honnête de durcir un acte tardif sans gonfler un chiffre.\n\nLA PIQUE CALÉE PORTE ENFIN `requires_not_moved`. Déclaré depuis la Phase 1, ignoré par l'IA jusqu'à l'acte 4, porté par personne jusqu'ici : c'est maintenant l'identité d'une faction. L'Empire tient, il ne court pas.\n\nLE NOIR EST LA SECONDE DES DEUX COULEURS DE FACTION, et la dernière. Les cinq couleurs du pack sont un budget : trois aux rangs des héros (Bleu, Violet, Or), deux aux ennemis (Rouge des Rougefer à l'acte 3, Noir ici). Une couleur ne peut pas être à la fois un rang et une faction, et le jeu n'en dépensera plus une seule.\n\nAPRÈS CET ACTE, LE PACK EST ENTIÈREMENT CONSOMMÉ. Vingt et un visages de bêtes (actes 1 à 3), toute la catégorie `extra` (actes 4 et 5), les deux couleurs de faction (actes 3 et 6). Un acte 7 devra être dessiné de bout en bout — c'est le constat que ces trois derniers actes avaient pour but d'établir.",
+ "black_shieldman": {
+  "sprite": "warrior",
+  "sprite_color": "Black",
+  "role": "blocker",
+  "hit_points": 248,
+  "action_points": 6,
+  "movement_points": 3,
+  "initiative": 4,
+  "strength": 9,
+  "agility": 3,
+  "intelligence": 1,
+  "defence": 8,
+  "abilities": [
+   "braced_pike"
+  ],
+  "question": "IL NE FRAPPE QUE S'IL N'A PAS BOUGÉ, et c'est la première fois du jeu qu'une bête porte `requires_not_moved`. Un mur qui ne poursuit pas : le contourner est possible, et c'est le prix de la carte — pendant qu'on contourne, les archers derrière lui tirent. Le rôle `blocker` n'a de sens que sur un goulet (leçon de l'acte 4), donc les cartes lui en donnent un."
+ },
+ "black_archer": {
+  "sprite": "archer",
+  "sprite_color": "Black",
+  "role": "skirmisher",
+  "hit_points": 158,
+  "action_points": 6,
+  "movement_points": 5,
+  "initiative": 9,
+  "strength": 4,
+  "agility": 9,
+  "intelligence": 2,
+  "defence": 3,
+  "abilities": [
+   "imperial_volley"
+  ],
+  "question": "SIX CASES : EXACTEMENT LA PORTÉE DU MAGE. Les actes précédents ont posé des tireurs plus COURTS que le joueur — l'échange est équitable, donc attendre gagne — puis plus LONGS — l'attente coûte. Celui-ci est à égalité, et c'est le seul du jeu : ni la portée ni la patience ne tranchent, seul le placement le fait."
+ },
+ "black_lancer": {
+  "sprite": "lancer",
+  "sprite_color": "Black",
+  "role": "melee",
+  "hit_points": 214,
+  "action_points": 6,
+  "movement_points": 5,
+  "initiative": 7,
+  "strength": 9,
+  "agility": 5,
+  "intelligence": 1,
+  "defence": 5,
+  "abilities": [
+   "imperial_lance"
+  ],
+  "question": "IL PUNIT LE COUVERT, donc cinq actes d'habitudes. Trois cases en ligne : se serrer derrière un rocher, ce que le joueur a appris à l'acte 4, met désormais deux personnages sur la même trajectoire. C'est le seul ennemi du jeu dont la réponse soit de S'ÉCARTER au lieu de se rapprocher ou de se cacher."
+ },
+ "black_chaplain": {
+  "sprite": "monk",
+  "sprite_color": "Black",
+  "role": "support",
+  "hit_points": 196,
+  "action_points": 8,
+  "movement_points": 4,
+  "initiative": 6,
+  "strength": 2,
+  "agility": 3,
+  "intelligence": 7,
+  "defence": 4,
+  "abilities": [
+   "black_litany",
+   "censer_flame"
+  ],
+  "question": "LE TROISIÈME SOIGNEUR DU JEU, ET LE PREMIER QUI MARCHE. L'atelier de l'acte 4 et la chapelle de l'acte 5 étaient des emplacements qu'on allait chercher ; celui-ci RECULE derrière ses boucliers. On ne le contourne pas, on perce. Il a une arme, et c'est une leçon payée : un soigneur désarmé est un corps gratuit tant qu'il ne soigne pas."
+ },
+ "black_sapper": {
+  "sprite": "pawn",
+  "sprite_color": "Black",
+  "role": "melee",
+  "hit_points": 132,
+  "action_points": 6,
+  "movement_points": 6,
+  "initiative": 8,
+  "strength": 6,
+  "agility": 5,
+  "intelligence": 1,
+  "defence": 3,
+  "sprite_variant": "hammer",
+  "abilities": [
+   "sapper_charge"
+  ],
+  "question": "IL N'EST PAS LÀ POUR TUER, IL EST LÀ POUR ARRIVER. Corps bon marché, six PM, un coup faible : il encaisse le tour de l'équipe pendant que la ligne avance intacte derrière lui. C'est le premier ennemi du jeu dont la bonne réponse soit de NE PAS le frapper — et le seul moyen de le rendre lisible est son OUTIL, pas sa couleur : le Pawn ne change que de 7,9 % de ses pixels d'une couleur à l'autre."
+ },
+ "black_praetorian": {
+  "sprite": "warrior",
+  "sprite_color": "Black",
+  "role": "brute",
+  "hit_points": 344,
+  "action_points": 8,
+  "movement_points": 4,
+  "initiative": 5,
+  "strength": 10,
+  "agility": 4,
+  "intelligence": 1,
+  "defence": 6,
+  "abilities": [
+   "imperial_lance",
+   "braced_pike"
+  ],
+  "question": "LA LIGNE ET LA CHARGE DANS LE MÊME CORPS. Deux coups, donc il ne chôme jamais — et le joueur ne peut plus deviner s'il vaut mieux rester à deux cases ou se coller. C'est le mini-boss : il ne pose pas une mécanique neuve, il retire la certitude que les deux autres donnaient séparément."
+ },
+ "the_black_marshal": {
+  "sprite": "lancer",
+  "sprite_color": "Black",
+  "role": "brute",
+  "hit_points": 356,
+  "action_points": 8,
+  "movement_points": 4,
+  "initiative": 8,
+  "strength": 12,
+  "agility": 6,
+  "intelligence": 3,
+  "defence": 7,
+  "abilities": [
+   "marshal_sentence",
+   "marshal_command"
+  ],
+  "question": "DERNIER BOSS DU JEU, ET IL EST CE QUE L'EMPIRE FAIT, EN PLUS GRAND. La Sentence porte à trois cases, touche trois de rang, et exige de n'avoir pas bougé : le seul ennemi qu'on ne puisse ni contourner ni attendre. Son second coup existe pour qu'il ne chôme pas la ronde où la Sentence recharge — une bête à compétence unique et à recharge chôme une ronde sur deux, mesuré à l'acte 4. Le déloger de sa place est la vraie réponse, et c'est le coup d'épaule des Rougefer qui revient trois actes plus tard, entre les mains du joueur cette fois.",
+  "_balance_note": "NEUF RONDES MESURÉES À 402 PV, RAMENÉ À 356. Le plafond de huit rondes est une cible ÉCRITE ; le classement des coûts n'en est pas une. Un boss plus long n'est pas un boss plus dur — troisième fois que la leçon de T11.7 sert dans cette session."
+ }
+}

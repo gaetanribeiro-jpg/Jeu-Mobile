@@ -34,10 +34,24 @@ func test_une_seule_region_est_ouverte_au_mvp() -> void:
 	assert_eq(Region.unlocked_ids(), [&"greenlands"] as Array[StringName])
 
 
-func test_une_region_verrouillee_n_a_pas_de_cartes_et_ne_plante_pas() -> void:
-	assert_true(Region.encounter_maps(&"black_empire").is_empty())
-	assert_true(Region.boss_map(&"black_empire").is_empty())
-	assert_true(Region.chain_pattern(&"black_empire").is_empty())
+## IL N'Y A PLUS DE COQUILLE VIDE, ET C'EST LE CHANGEMENT. Ce test lisait
+## `black_empire` comme exemple de région déclarée mais sans cartes ;
+## depuis que les actes 5 et 6 sont écrits, il n'en reste aucune. Ce qu'il
+## garde est l'invariant DEVENU vrai : les six régions du § 26 sont
+## jouables entièrement, aucune n'est un décor sur la carte du monde.
+func test_toutes_les_regions_declarees_sont_jouables() -> void:
+	for region_id: StringName in Region.ids():
+		assert_false(
+			Region.encounter_maps(region_id).is_empty(),
+			"%s n'a aucune rencontre" % region_id
+		)
+		assert_false(
+			Region.boss_map(region_id).is_empty(), "%s n'a pas de boss" % region_id
+		)
+		assert_false(
+			Region.chain_pattern(region_id).is_empty(),
+			"%s n'a pas de route" % region_id
+		)
 
 
 func test_une_region_inconnue_se_signale() -> void:

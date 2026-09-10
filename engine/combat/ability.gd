@@ -82,6 +82,26 @@ var status_duration: int = 0
 ## dévie comme les autres.
 var push: int = 0
 
+## Part des dégâts RÉELLEMENT portés que l'attaquant récupère, de 0 à 1.
+##
+## LA MORSURE QUI NOURRIT. Sur vingt-huit bêtes en quatre actes, aucune ne
+## remontait jamais : entamer quelqu'un était toujours un acquis. La
+## tortue enseigne « il vaut mieux l'ignorer » ; ceci en est l'exact
+## inverse — la seule bête qu'on ne peut pas garder pour la fin.
+##
+## LE GAIN EST PLAFONNÉ PAR SES PROPRES PV MAXIMUM, et c'est la leçon de
+## T11.7 : soigner un ennemi rend le combat plus LONG, pas plus dur. Un
+## drain qui déborderait ferait une barre de vie sans fond, donc un combat
+## sans fin.
+##
+## SUR LES DÉGÂTS PORTÉS, PAS SUR LA VALEUR ANNONCÉE : mordre une armure
+## qui encaisse tout ne doit rien rendre, sinon la défense du joueur
+## nourrirait son agresseur.
+##
+## C'EST UNE ATTAQUE ORDINAIRE pour tout le reste du moteur, comme le coup
+## d'épaule : elle s'annonce, se chiffre et se dévie comme les autres.
+var drain: float = 0.0
+
 ## Terrain laissé sur la case touchée, s'il y en a un.
 var leaves_terrain: StringName = &""
 
@@ -171,6 +191,7 @@ static func from_dictionary(ability_id: StringName, data: Dictionary) -> Ability
 	ability.friendly_fire = bool(data.get("friendly_fire", false))
 	ability.duration = int(data.get("duration", 0))
 	ability.push = int(data.get("push", 0))
+	ability.drain = clampf(float(data.get("drain", 0.0)), 0.0, 1.0)
 	ability.leaves_terrain = StringName(data.get("leaves_terrain", ""))
 	ability.animation = StringName(data.get("animation", ""))
 	ability.effect = StringName(data.get("effect", ""))

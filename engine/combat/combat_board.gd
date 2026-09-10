@@ -449,15 +449,27 @@ func predicted_damage(attacker: Unit, ability: Ability, target: Unit) -> int:
 ## Ne dépense NI les PA NI la recharge : c'est le moteur qui décide qu'une
 ## action a lieu, le plateau ne fait que l'appliquer. Cela permet à l'IA
 ## et au télégraphe de simuler sans consommer.
-func resolve_ability(attacker: Unit, ability: Ability, target: Vector2i) -> Dictionary:
+## `lay_terrain` à faux RELÈVE les cases à enflammer sans les enflammer.
+## C'est ce qui permet au moteur de retarder le feu ENNEMI jusqu'à la fin
+## de la salve : allumé tout de suite, il change le sol sous un héros et
+## rend fausses les annonces des ennemis qui n'ont pas encore joué.
+func resolve_ability(
+	attacker: Unit, ability: Ability, target: Vector2i, lay_terrain: bool = true
+) -> Dictionary:
 	if ability.kind == Ability.KIND_HEAL:
 		return _resolve_heal(attacker, ability, target)
 	var hits: Array[Dictionary] = []
 	var downed_ids: Array[int] = []
+	# LA MORSURE QUI NOURRIT. Ce qui est rendu se compte sur les dégâts
+	# RÉELLEMENT portés, sur toute la zone, et se verse À LA FIN : verser
+	# à chaque victime ferait dépendre le total de l'ordre des cases dès
+	# que le plafond des PV entre en jeu.
+	var bitten := 0
 	for victim: Unit in affected_units(attacker, ability, target):
 		var amount := predicted_damage(attacker, ability, victim)
 		var struck_at := victim.cell
 		var downed := victim.take_damage(amount)
+		bitten += amount
 		if not ability.status_id.is_empty():
 			victim.apply_status(ability.status_id, ability.status_duration)
 		if downed:
@@ -500,8 +512,19 @@ func resolve_ability(attacker: Unit, ability: Ability, target: Vector2i) -> Dict
 	if not ability.leaves_terrain.is_empty():
 		for cell: Vector2i in affected_cells(attacker, ability, target):
 			var tile := tile_at(cell)
-			if tile != null and tile.cover_with(ability.leaves_terrain):
+			if tile == null:
+				continue
+			if lay_terrain:
+				if tile.cover_with(ability.leaves_terrain):
+					burned.append(cell)
+			elif tile.can_cover_with(ability.leaves_terrain):
 				burned.append(cell)
+
+	# Le plafond est celui de `Unit.heal`, qui rend ce qu'il a pu donner :
+	# un attaquant intact ne gagne rien, et le rapport le dit.
+	var drained := 0
+	if ability.drain > 0.0 and bitten > 0 and attacker.is_active():
+		drained = attacker.heal(int(round(float(bitten) * ability.drain)))
 
 	return {
 		"caster_id": attacker.id,
@@ -512,6 +535,7 @@ func resolve_ability(attacker: Unit, ability: Ability, target: Vector2i) -> Dict
 		"downed_ids": downed_ids,
 		"broken": broken,
 		"burned": burned,
+		"drained": drained,
 	}
 
 

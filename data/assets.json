@@ -1229,6 +1229,82 @@
      "frame_h": 256
     }
    }
+  },
+  "risen_troll": {
+   "_note": "LE TROLL MORT, DIX IMAGES, jamais employé. Le pack l'a dessiné pour la fin d'un combat de l'acte 1 ; ici c'est une attente. UNE BOUCLE DE MORT JOUÉE EN BOUCLE est un corps qui n'arrive pas à tomber — c'est exactement ce que les Terres Maudites racontent, et c'est la seule fois du projet où une animation change de SENS sans changer d'image. À juger à l'œil : si elle se lit comme un bug plutôt que comme un râle, il faut la ralentir ou n'en garder que les dernières images.",
+   "root": "extra",
+   "animations": {
+    "idle": {
+     "file": "Extra/Troll Dead/Troll_Dead.png",
+     "kind": "strip",
+     "frames": 10,
+     "frame_w": 384,
+     "frame_h": 384
+    },
+    "avatar": {
+     "file": "Extra/Troll Dead/Troll_Dead.png",
+     "kind": "strip",
+     "frames": 10,
+     "frame_w": 384,
+     "frame_h": 384
+    }
+   }
+  },
+  "barrow_mouth": {
+   "_note": "LA CAVERNE, HUIT IMAGES, jamais employée. Le seul « ennemi » du jeu qui soit un trou dans le sol : il ne bouge pas, il ne poursuit pas, il souffle sur ce qui passe devant. C'est du décor qui mord, et ça n'existait pas.",
+   "root": "extra",
+   "animations": {
+    "idle": {
+     "file": "Extra/Cave/Cave_Idle.png",
+     "kind": "strip",
+     "frames": 8,
+     "frame_w": 192,
+     "frame_h": 192
+    },
+    "avatar": {
+     "file": "Extra/Cave/Cave_Idle.png",
+     "kind": "strip",
+     "frames": 8,
+     "frame_w": 192,
+     "frame_h": 192
+    }
+   }
+  },
+  "pale_bloom": {
+   "_note": "LA TOUR DES GNOMES, une image fixe, jamais employée — ET C'EST UN CHAMPIGNON, pas une tour. La capture l'a dit : le pack dessine une bâtisse-champignon rose et fantasque. Je l'avais baptisée « tour des cryptes » sans la regarder, ce qui est exactement concevoir CONTRE le pack.\n\nEn floraison blême elle est juste : une excroissance pâle qui siphonne à distance dans une terre maudite, c'est ce que le dessin montre déjà. Elle porte la longue portée que `verify_world` exige par acte, et elle la porte en DRAINANT — ce qui la sépare de la tour de guet de l'acte 4 : celle-là punissait d'avoir été lent, celle-ci se nourrit d'avoir attendu.",
+   "root": "extra",
+   "animations": {
+    "idle": {
+     "file": "Extra/Gnome Buildings/Gnome Tower.png",
+     "kind": "image",
+     "w": 128,
+     "h": 256
+    },
+    "avatar": {
+     "file": "Extra/Gnome Buildings/Gnome Tower.png",
+     "kind": "image",
+     "w": 128,
+     "h": 256
+    }
+   }
+  },
+  "spore_hovel": {
+   "_note": "LA HUTTE DES GNOMES, une image fixe, jamais employée — une bâtisse ronde COIFFÉE DE FEUILLAGE. Sœur de la floraison blême, et renommée pour la même raison : « chapelle creuse » ne décrivait rien de ce que le pack dessine.\n\nElle n'est pas là pour poser une question neuve, elle est là pour rendre la question de l'acte insoutenable si on la laisse debout.",
+   "root": "extra",
+   "animations": {
+    "idle": {
+     "file": "Extra/Gnome Buildings/Gnome Hut.png",
+     "kind": "image",
+     "w": 128,
+     "h": 192
+    },
+    "avatar": {
+     "file": "Extra/Gnome Buildings/Gnome Hut.png",
+     "kind": "image",
+     "w": 128,
+     "h": 192
+    }
+   }
   }
  },
  "extra": {

@@ -237,7 +237,11 @@ dur : passer par `data/assets.json`.
 
 *(à tenir à jour à chaque fin de session)*
 
-- **Phase courante : 11 — la bêta.** Les chantiers sont listés avec leur
+- **Phase courante : 12 — la campagne entière.** T12.3 le recrutement à
+  trois candidats, T12.4 la brasserie du Monastère, T12.5 les actes 5 et 6.
+  **La campagne se joue de bout en bout : six actes, 54 cartes.**
+  **907 tests passent, les dix vérificateurs sont verts.**
+- **Phase 11 — la bêta.** Les chantiers sont listés avec leur
   constat vérifié dans `docs/etat-des-lieux.md` § 5. **Faits :** T11.2 le
   son, T11.3 l'écran de titre, T11.4 le déverrouillage et la fin, T11.6
   la couleur partout, T11.7 l'acte 2, T11.8 la passe de finition, T11.9 le décor et
@@ -828,6 +832,73 @@ d'une attaque, comme `push` en T12.1 — et le piège est connu d'avance :
 soigner un ennemi rend le combat plus LONG, pas plus dur (T11.7), donc le
 gain doit être plafonné par ses PV maximum.
 
+**LE PACK EST ENTIÈREMENT CONSOMMÉ, ET VOICI LE COMPTE FINAL (T12.5).**
+C'est le constat que les actes 4, 5 et 6 avaient pour but d'établir, et il
+est maintenant chiffré :
+- **21 visages de bêtes** — pris par les actes 1 à 3. Zéro restant.
+- **Toute la catégorie `extra`** — la cavalerie et l'artillerie à l'acte 4,
+  puis les QUATRE dernières images inemployées à l'acte 5 (le troll mort,
+  la caverne, la hutte et la tour des gnomes). Zéro restant.
+- **Les deux couleurs de faction** — Rouge à l'acte 3, Noir à l'acte 6.
+  Les trois autres sont les rangs des héros et ne se dépensent pas.
+- **Un acte 7 devra être dessiné de bout en bout.** La balance PixelLab est
+  à **0,00 $** : le vampire l'a vidée, et c'est ce qui a empêché de dessiner
+  un bestiaire neuf pour l'acte 5.
+
+**L'ACTE 5 EST CELUI OÙ LES DÉGÂTS NE RESTENT PAS (T12.5).** Le `drain`
+était la question non écrite du vampire depuis qu'il a été dessiné : sur
+trente-cinq bêtes en quatre actes, aucune ne remontait jamais. Quatre
+choses à ne pas défaire :
+- **LE GAIN EST PLAFONNÉ PAR LES PV MAXIMUM**, et il se compte sur les
+  dégâts RÉELLEMENT portés. Sans le plafond, une barre de vie sans fond
+  fait un combat sans fin — soigner un ennemi rend le combat plus LONG,
+  pas plus dur (T11.7), et cette leçon a servi TROIS fois dans la seule
+  session : la Comtesse à onze rondes, `maudit_09` à quatorze, `empire_08`
+  à onze. À chaque fois la correction a été de retirer un CORPS.
+- **LE DRAIN S'ANNONCE, sur la case du MORDEUR et dans la couche du soin.**
+  Le § 39 l'exige : sans le chiffre, « lequel tuer d'abord » se pose à
+  l'aveugle, exactement comme devant le soin ennemi de l'acte 4. Pas de
+  quatrième couleur — « quelqu'un va remonter » est la même information.
+- **`drains` EST UN ENTIER, pas un tableau par case.** `damage`, `mends` et
+  `shoves` font la longueur de `cells` ; le drain est un total qui revient
+  à l'attaquant, pas une quantité posée sur le plateau. Lui donner la forme
+  des trois autres inviterait à l'indexer comme eux — le piège de T12.1.
+- **LE PILOTE JOUE LE CONTRAIRE DE CE QUE L'ACTE DEMANDE.**
+  `simulate_combats` ne CONCENTRE jamais ses coups, et concentrer est
+  toute la réponse. Ses 34 % sont un plancher plus bas qu'ailleurs. Même
+  famille de réserve que « le pilote ne boit pas ».
+
+**LE FEU ENNEMI ATTEND LA FIN DE LA SALVE (T12.5).** Le sol d'une case
+entre dans le chiffre annoncé — une ruine ajoute un point de dégâts reçus,
+et une ruine est INFLAMMABLE. Un ennemi qui brûlait la ruine sous un héros
+faisait donc mentir de un point l'annonce de tous les ennemis qui n'avaient
+pas encore frappé, et le joueur avait décidé sur l'ancien chiffre : il ne
+pouvait pas savoir. **Le défaut dormait depuis le gobelin torche de
+l'acte 2** ; il a fallu un brûleur et une ruine sur la même carte pour le
+réveiller, et c'est le test qui parcourt une partie ENTIÈRE qui l'a vu —
+aucun test unitaire ne le disait, chaque moitié étant juste séparément.
+**Le feu du JOUEUR prend tout de suite** : l'écran recalcule le télégraphe
+après chaque action de héros.
+
+**LE DESSIN DÉCIDE DU NOM, PAS L'INVERSE (T12.5).** J'avais baptisé deux
+sprites « tour des cryptes » et « chapelle creuse » sans les regarder : le
+pack dessine deux BÂTISSES-CHAMPIGNONS, roses et coiffées de feuillage.
+C'est exactement concevoir CONTRE le pack. Renommées floraison blême et nid
+de spores, elles sont justes — et les Terres Maudites y gagnent une
+identité que le pack sait dessiner : vampires, fongus blafard, piques d'os
+et un troll qui n'arrive pas à tomber. **Seule la capture le disait.**
+
+**UNE TROISIÈME SORTE D'ÉTAPE DE CAPTURE : « !x,y » (T12.3).** Elle touche
+un PIXEL de la fenêtre avec un vrai évènement d'entrée. Le royaume se
+pilote en touchant un bâtiment sur son terrain, et sans elle l'écran du
+royaume BÂTI était inatteignable — exactement le trou que « @x,y » avait
+bouché pour le combat.
+
+**LE SIMULATEUR PREND UN FILTRE (T12.5) :** `-- 50 maudit` ne mesure que
+l'acte 5. Un acte se règle en dix passes, et mesurer les cinquante-quatre
+cartes à chaque fois coûte huit minutes pour neuf lignes qu'on lit. La
+moyenne d'une passe partielle ne se compare à rien, et l'outil le DIT.
+
 **L'expédition se joue, sur PC.** Écran de titre → carte du monde →
 composition de l'équipe → départ → route du § 28 (combats, évènements,
 marchand, mini-boss, boss) → rentrer ou continuer.
@@ -836,9 +907,14 @@ comme un doigt. **Le banc d'essai des cartes reste sur l'écran de
 titre** : ouvrir une carte précise en deux clics est la seule façon de
 vérifier un combat sans traverser une sortie entière.
 
-**Les neuf cartes sont au format 12 × 9** et se jouent en 3 à 8 rondes.
-Sept en rencontre ordinaire, `vallee_09` en mini-boss, `vallee_08` en
-boss ; l'ordre du § 28 suit le coût mesuré, pas l'ordre d'écriture.
+**Les cinquante-quatre cartes sont au format 12 × 9** et se jouent en 3 à
+8 rondes. Neuf par acte, sept en rencontre ordinaire plus un mini-boss et
+un boss ; l'ordre du § 28 suit le coût MESURÉ, pas l'ordre d'écriture.
+
+**LA COURBE MONTE ENFIN DANS LE BON SENS.** Coût en PV par acte, colonne
+PV de `simulate_combats` sur cinquante graines contre l'équipe réelle :
+**15 % → 20 % → 30 % → 33 % → 34 % → 36 %.** C'est la correction de
+l'inversion mesurée à l'acte 4, tenue jusqu'au dernier acte.
 
 **UNE EXPÉDITION EST UNE JOURNÉE (§ 36, T8.1).** On part au matin et
 chaque étape avance l'heure : aller plus loin, c'est rentrer plus tard.

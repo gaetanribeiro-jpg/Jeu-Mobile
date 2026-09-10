@@ -1,0 +1,112 @@
+{
+ "_note": "SAISIR AVANT QU'ILS SE REMPLISSENT. Cinq tours d'échéance : la carte interdit l'usure par construction, ce que l'acte réclame déjà par ses drains. Les deux moitiés disent la même chose et se renforcent.\n\nLA BOUE EST DU CÔTÉ DU JOUEUR ET ELLE COÛTE, cette fois : avec une échéance, il DOIT avancer, donc deux PM la case se paient enfin. C'est le corollaire mesuré de l'acte 4 — la boue ne coûte rien à un joueur qui n'a pas de raison d'avancer.\n\nLA FLORAISON EST AVANCÉE À HUIT, pas posée au fond : sept cases de portée depuis la colonne dix ne touchent jamais une équipe placée en colonne un. C'est l'erreur de `fer_04`, et `verify_maps` l'a reprise du premier coup.\n\nMESURÉE À 97 % DES PV, PUIS RAPPROCHÉE DE L'OBJECTIF. Les buveurs étaient derrière les cases à saisir : l'équipe arrivait, saisissait et le combat s'arrêtait sans avoir eu lieu. Posés DEVANT, ils barrent la case — on ne saisit pas une case occupée.\n\nUN CORPS SUR LA CASE À SAISIR, et c'est ce qui a fini par mordre. Rapprocher les buveurs ne suffisait pas : on ne perd pas de temps à contourner ce qu'on peut ignorer, et l'objectif se prenait à côté. On ne saisit pas une case OCCUPÉE — il faut l'abattre, et l'échéance court pendant ce temps.",
+ "act": 5,
+ "name_key": "MAP_MAUDIT_03",
+ "rows": [
+  "............",
+  "............",
+  "...bb.......",
+  "...bb.......",
+  "..bb........",
+  "...bb.......",
+  "...bb.......",
+  "............",
+  "............"
+ ],
+ "objective": {
+  "kind": "seize",
+  "cells": [
+   [
+    11,
+    3
+   ],
+   [
+    11,
+    4
+   ],
+   [
+    11,
+    5
+   ]
+  ],
+  "deadline": 5
+ },
+ "deployment_cells": [
+  [
+   0,
+   2
+  ],
+  [
+   0,
+   3
+  ],
+  [
+   0,
+   4
+  ],
+  [
+   0,
+   5
+  ],
+  [
+   0,
+   6
+  ],
+  [
+   1,
+   3
+  ],
+  [
+   1,
+   4
+  ],
+  [
+   1,
+   5
+  ]
+ ],
+ "enemies": [
+  {
+   "type": "vampire_spawn",
+   "cell": [
+    10,
+    3
+   ]
+  },
+  {
+   "type": "vampire_spawn",
+   "cell": [
+    10,
+    5
+   ]
+  },
+  {
+   "type": "blood_thrall",
+   "cell": [
+    9,
+    4
+   ]
+  },
+  {
+   "type": "pale_bloom",
+   "cell": [
+    8,
+    4
+   ]
+  },
+  {
+   "type": "blood_thrall",
+   "cell": [
+    9,
+    6
+   ]
+  },
+  {
+   "type": "vampire_spawn",
+   "cell": [
+    11,
+    4
+   ]
+  }
+ ]
+}

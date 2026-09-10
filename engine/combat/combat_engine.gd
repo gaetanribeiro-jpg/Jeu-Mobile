@@ -70,6 +70,15 @@ var _opening_log: Array[Dictionary] = []
 ## elle achète exactement un tour de timeline aux autres.
 var _taunting: Array[int] = []
 
+## Feux qu'un ennemi a posés et qui n'ont pas encore pris : { cell,
+## terrain, unit_id }. Vidé à la fin de chaque salve ennemie.
+##
+## IL N'EST PAS SÉRIALISÉ, ET C'EST JUSTE : il ne vit qu'à l'intérieur
+## d'un `end_activation()`, qui est atomique. La sauvegarde a lieu APRÈS,
+## quand la liste est déjà vide — même raisonnement que la pile
+## d'annulation, qui ne vaut qu'à l'intérieur d'une activation.
+var _pending_terrain: Array[Dictionary] = []
+
 
 func _init(
 	combat_board: CombatBoard,
@@ -474,8 +483,31 @@ func telegraph() -> Array[Dictionary]:
 			"damage": damage,
 			"mends": mends,
 			"shoves": _shoves_of(enemy, ability, cells),
+			# CE QU'IL VA SE RENDRE, et le § 39 l'exige : sans ce chiffre,
+			# « lequel tuer d'abord » se pose à l'aveugle exactement comme
+			# devant le soin ennemi de l'acte 4. UN ENTIER, PAS UN TABLEAU
+			# par case : c'est un total qui revient à l'attaquant, pas une
+			# quantité posée sur le plateau, et lui donner la forme des
+			# trois autres inviterait à l'indexer comme eux.
+			"drains": _drain_of(enemy, ability, damage),
 		})
 	return out
+
+
+## Ce qu'un attaquant se rendrait en portant ce coup, plafonné par ce qui
+## lui manque — annoncer la valeur brute mentirait dans le seul cas qui
+## compte : une bête presque intacte afficherait un gros chiffre et n'en
+## reprendrait que trois. Même règle que le soin de l'acte 4.
+func _drain_of(enemy: Unit, ability: Ability, damage: Array[int]) -> int:
+	if ability.drain <= 0.0:
+		return 0
+	var bitten := 0
+	for amount: int in damage:
+		bitten += amount
+	if bitten <= 0:
+		return 0
+	var missing := enemy.max_hit_points - enemy.hit_points
+	return mini(int(round(float(bitten) * ability.drain)), maxi(missing, 0))
 
 
 ## Points de vie que ce soin rendrait vraiment à cet allié — PLAFONNÉS par
@@ -818,7 +850,35 @@ func end_activation() -> Array[Dictionary]:
 	var log: Array[Dictionary] = []
 	_undo_stack.clear()
 	_drain(log)
+	_lay_pending_terrain(log)
 	return log
+
+
+## Allume les feux que les ennemis ont posés pendant la salve.
+##
+## LE FEU ENNEMI ATTEND LA FIN DE LA SALVE, ET C'EST LE § 39 QUI L'EXIGE.
+## Le sol d'une case entre dans le chiffre annoncé — une ruine ajoute un
+## point de dégâts reçus, et une ruine est INFLAMMABLE. Un chapelain qui
+## brûlait la ruine sous un héros faisait donc mentir de un point
+## l'annonce de tous les ennemis qui n'avaient pas encore frappé, et le
+## joueur avait décidé sur l'ancien chiffre : il ne pouvait pas savoir.
+##
+## Le défaut dormait depuis le gobelin torche de l'acte 2 ; il a fallu un
+## brûleur et une ruine sur la même carte pour le réveiller, et c'est le
+## test qui parcourt une partie entière qui l'a vu.
+##
+## LE FEU DU JOUEUR, LUI, PREND TOUT DE SUITE : l'écran recalcule le
+## télégraphe après chaque action de héros, donc le joueur voit le
+## nouveau chiffre avant de décider de la suite.
+func _lay_pending_terrain(log: Array[Dictionary]) -> void:
+	for pending: Dictionary in _pending_terrain:
+		var tile := board.tile_at(pending["cell"])
+		if tile != null and tile.cover_with(StringName(pending["terrain"])):
+			log.append({
+				"event": "terrain_burned", "unit_id": int(pending["unit_id"]),
+				"cell": pending["cell"],
+			})
+	_pending_terrain.clear()
 
 
 ## Fait tourner la timeline jusqu'à ce que ce soit de nouveau au joueur,
@@ -901,7 +961,15 @@ func _execute_intent(enemy: Unit, log: Array[Dictionary]) -> void:
 	enemy.start_cooldown(ability.id, ability.cooldown)
 
 	var aimed := intent.target_cell(enemy.cell)
-	var report := board.resolve_ability(enemy, ability, aimed)
+	# `false` : on RELÈVE les cases à enflammer sans les enflammer. Voir
+	# `_lay_pending_terrain` — un feu allumé au milieu de la salve rend
+	# fausses les annonces des ennemis qui n'ont pas encore frappé.
+	var report := board.resolve_ability(enemy, ability, aimed, false)
+	for cell: Vector2i in report["burned"]:
+		_pending_terrain.append({
+			"cell": cell, "terrain": String(ability.leaves_terrain),
+			"unit_id": enemy.id,
+		})
 	var hits: Array = report["hits"]
 	# LE SOIN EST DÉJÀ RÉSOLU PAR LE PLATEAU : `affected_units` fait
 	# basculer le sens du camp et `_resolve_heal` rend le même compte rendu

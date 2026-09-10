@@ -351,7 +351,21 @@
    0.14,
    0.85
   ],
-  "_churned_mud_note": "LA BOUE DES TERRES BRISÉES, ET SON ALPHA EST MESURÉ. `quicksand` est un BRUN et le sol de l'acte est un brun-rouge : sur la capture, la boue ne se séparait du sol que de 11 points de luminance sur 255 — invisible, pour un terrain qui coûte deux PM. Sixième variante de « une source ne se teinte que si elle est claire » : un brun ne teinte pas un brun.\n\nLE CALIBRE VIENT DE CE QUI MARCHE DÉJÀ : la congère du Gel se sépare de son sol de 24,4 points. Celle-ci est réglée à 24,0 — froide et sombre, donc elle se sépare par la teinte ET par la clarté. Réglé à l'œil elle serait restée trop discrète : le premier essai « visiblement mieux » ne donnait que 7 points."
+  "_churned_mud_note": "LA BOUE DES TERRES BRISÉES, ET SON ALPHA EST MESURÉ. `quicksand` est un BRUN et le sol de l'acte est un brun-rouge : sur la capture, la boue ne se séparait du sol que de 11 points de luminance sur 255 — invisible, pour un terrain qui coûte deux PM. Sixième variante de « une source ne se teinte que si elle est claire » : un brun ne teinte pas un brun.\n\nLE CALIBRE VIENT DE CE QUI MARCHE DÉJÀ : la congère du Gel se sépare de son sol de 24,4 points. Celle-ci est réglée à 24,0 — froide et sombre, donc elle se sépare par la teinte ET par la clarté. Réglé à l'œil elle serait restée trop discrète : le premier essai « visiblement mieux » ne donnait que 7 points.",
+  "grave_mire": [
+   0.32,
+   0.38,
+   0.3,
+   0.8
+  ],
+  "_grave_mire_note": "LA FANGE DES TERRES MAUDITES, mesurée deux fois comme celle de l'Empire. Le sol de l'acte est un plum CLAIR — la plus lumineuse des cinq nuances — donc une fange sombre s'en sépare largement, à l'inverse du brun-sur-brun des Terres Brisées.\n\nPREMIER RÉGLAGE : 61,2, puis 40,6 — points de luminance sur 255. Trop, et c'est le défaut de `quicksand` pris par l'autre bout : la case cesse d'être un sol et devient un trou. Rabattue en deux passes à 26,7, dans le calibre de ce qui marche déjà (24,4 pour la congère du Gel, 24,0 pour la boue des Terres Brisées).\n\nVERTE-NOIRE PLUTÔT QUE NEUTRE : un neutre posé sur du violet vire au gris et cesse de dire « ça colle aux bottes ». La teinte porte, la clarté mesure.",
+  "trench_mud": [
+   0.31,
+   0.25,
+   0.17,
+   0.85
+  ],
+  "_trench_mud_note": "LA BOUE DE L'EMPIRE, ET ELLE A ÉTÉ MESURÉE DEUX FOIS. Le sol de l'acte est `ash`, un gris NEUTRE et moyen — le cas le plus difficile des six, parce qu'un neutre ne se sépare ni par la teinte ni franchement par la clarté.\n\nPREMIER RÉGLAGE : 55,4 points de luminance sur 255, mesurés à la capture. C'est le défaut de `quicksand` pris par l'AUTRE BOUT — trop sombre, la case cesse d'être un sol et devient un TROU. Rabattue à 28,4, dans le calibre de ce qui marche déjà : la congère du Gel se sépare de 24,4, la boue des Terres Brisées de 24,0.\n\nLe piège n'est donc pas « trop discret », c'est « pas dans le calibre » — et il se rate dans les deux sens."
  },
  "sizes": {
   "highlight_inset_px": 3.0,
@@ -428,6 +442,12 @@
   },
   "rust": {
    "mud": "churned_mud"
+  },
+  "plum": {
+   "mud": "grave_mire"
+  },
+  "ash": {
+   "mud": "trench_mud"
   }
  },
  "terrain_decorations": {
@@ -520,6 +540,34 @@
     "skull_decorations_skull_spike_02"
    ]
   },
-  "_note_rust": "LES TERRES BRISÉES PRENNENT LA QUATRIÈME IMAGE D'OSSEMENTS. La famille en compte CINQ — `bones_01/02/03`, `skull_spike_01/02` — et les actes en ont déjà pris quatre : `bones_02` par défaut (Terres Vertes), `bones_03` aux Dunes, `bones_01` au Gel, `skull_spike_01` aux Dunes pour la palissade. Il en reste UNE pour les actes 5 et 6, qui devront donc partager ou se distinguer autrement. C'est le premier vivier de décors du pack qu'on épuise."
+  "_note_rust": "LES TERRES BRISÉES PRENNENT LA QUATRIÈME IMAGE D'OSSEMENTS. La famille en compte CINQ — `bones_01/02/03`, `skull_spike_01/02` — et les actes en ont déjà pris quatre : `bones_02` par défaut (Terres Vertes), `bones_03` aux Dunes, `bones_01` au Gel, `skull_spike_01` aux Dunes pour la palissade. Il en reste UNE pour les actes 5 et 6, qui devront donc partager ou se distinguer autrement. C'est le premier vivier de décors du pack qu'on épuise.",
+  "plum": {
+   "forest": [
+    "extra",
+    "dead_tree_dead_tree"
+   ],
+   "ruin": [
+    "extra",
+    "skull_decorations_bones_02"
+   ],
+   "palisade": [
+    "extra",
+    "skull_decorations_skull_spike_01"
+   ]
+  },
+  "ash": {
+   "forest": [
+    "extra",
+    "dead_tree_dead_tree"
+   ],
+   "ruin": [
+    "extra",
+    "skull_decorations_bones_03"
+   ],
+   "palisade": [
+    "extra",
+    "wooden_fence_wooden_fence_64x64_tile"
+   ]
+  }
  }
 }

@@ -238,7 +238,49 @@
    "unlocked": false,
    "accent": "plum",
    "expected_hero_level": 9,
-   "expected_rarity": "epic"
+   "expected_rarity": "epic",
+   "ground": "plum",
+   "encounter_maps": [
+    "maudit_01",
+    "maudit_04",
+    "maudit_03",
+    "maudit_05",
+    "maudit_06",
+    "maudit_02",
+    "maudit_07"
+   ],
+   "miniboss_map": "maudit_09",
+   "boss_map": "maudit_08",
+   "map_window": {
+    "_note": "L'ORDRE EST MESURÉ, comme aux quatre actes précédents. Colonne PV de `tools/simulate_combats.gd` sur cinquante graines : 01 → 87 %, 04 → 80 %, 03 → 78 %, 05 → 73 %, 06 → 73 %, 02 → 72 %, 07 → 38 %. Mini-boss (09) 54 %, boss (08) 36 %.\n\nL'ACTE COÛTE 34 % DES PV en moyenne, contre 33 % à l'acte 4.\n\nLA CARTE QUI ENSEIGNE DOIT SORTIR EN PREMIER, et c'est ce qui a décidé de son réglage : `maudit_01` n'a que DEUX corps, le minimum pour que la faute « frapper deux cibles » soit possible. À trois elle tombait sixième dans l'ordre du coût, et le joueur rencontrait la tour et le troll avant d'avoir compris la morsure.\n\nLA MESURE SOUS-ESTIME CET ACTE PLUS QUE LES AUTRES, et il faut le savoir : `simulate_combats` ne CONCENTRE jamais ses coups, et concentrer est précisément la réponse que l'acte demande. Le pilote joue donc le contraire de ce qu'il faut, et gagne quand même — un joueur qui a compris trouvera l'acte plus facile que ces chiffres. Même famille de réserve que « le pilote ne boit pas ». À REJUGER À L'ŒIL.\n\n`size` cartes tirables à la fois, la fenêtre avance de `slide` par rencontre passée.",
+    "size": 4,
+    "slide": 0.5
+   },
+   "chain": {
+    "pattern": [
+     "combat",
+     "event",
+     "combat",
+     "merchant"
+    ],
+    "tail": [
+     "miniboss",
+     "reward",
+     "boss"
+    ],
+    "body": {
+     "min": 5,
+     "max": 8
+    }
+   },
+   "night_roster": [
+    "vampire_spawn"
+   ],
+   "_night_note": "PAS DE TIRAILLEUR DANS LE VIVIER DE NUIT — règle de T8.1 : le décrocheur allonge le combat au lieu d'ajouter de la pression, et `blood_thrall` en est un. PAS D'EMPLACEMENT NON PLUS : un renfort qui ne bouge pas, posé au centre de la formation, ne rejoint jamais personne. Reste le rejeton, qui avance et qui mord.",
+   "reward": {
+    "gold_multiplier": 2.4,
+    "rarity_bonus": 1
+   }
   },
   "black_empire": {
    "name_key": "REGION_BLACK_EMPIRE",
@@ -247,7 +289,49 @@
    "unlocked": false,
    "accent": "ash",
    "expected_hero_level": 10,
-   "expected_rarity": "legendary"
+   "expected_rarity": "legendary",
+   "ground": "ash",
+   "encounter_maps": [
+    "empire_07",
+    "empire_01",
+    "empire_02",
+    "empire_03",
+    "empire_05",
+    "empire_04",
+    "empire_06"
+   ],
+   "miniboss_map": "empire_09",
+   "boss_map": "empire_08",
+   "map_window": {
+    "_note": "L'ORDRE EST MESURÉ, comme aux cinq actes précédents. Colonne PV de `tools/simulate_combats.gd` sur cinquante graines : 07 → 78 %, 01 → 74 %, 02 → 73 %, 03 → 66 %, 05 → 66 %, 04 → 64 %, 06 → 60 %. Mini-boss (09) 51 %, boss (08) 48 %.\n\nL'ACTE COÛTE 36 % DES PV en moyenne, contre 34 % à l'acte 5 et 33 % à l'acte 4. La courbe monte enfin dans le bon sens sur les trois derniers actes — c'est la correction de l'inversion mesurée à l'acte 4, tenue jusqu'au bout.\n\n`empire_07` EN TÊTE EST UN ARTEFACT CONNU, pas un jugement : le pilote de la simulation n'a aucune notion d'ÉCHÉANCE, il traverse sans jamais craindre l'horloge. Une carte à saisir en cinq tours lui coûte donc peu et coûtera plus à un joueur. Même réserve qu'à l'acte 4 pour `fer_04`. À REJUGER À L'ŒIL.\n\n`size` cartes tirables à la fois, la fenêtre avance de `slide` par rencontre passée.",
+    "size": 4,
+    "slide": 0.5
+   },
+   "chain": {
+    "pattern": [
+     "combat",
+     "event",
+     "combat",
+     "merchant"
+    ],
+    "tail": [
+     "miniboss",
+     "reward",
+     "boss"
+    ],
+    "body": {
+     "min": 5,
+     "max": 8
+    }
+   },
+   "reward": {
+    "gold_multiplier": 2.8,
+    "rarity_bonus": 1
+   },
+   "night_roster": [
+    "black_sapper"
+   ],
+   "_night_note": "PAS D'ARCHER DANS LE VIVIER DE NUIT : le tirailleur décroche, et un décrocheur allonge le combat au lieu d'ajouter de la pression (T8.1, mesuré sur `vallee_02` : 5,0 → 9,8 rondes). PAS DE BOUCHER NON PLUS — un `blocker` posé au centre de la formation ne bouge jamais et ne rejoint personne. Reste le sapeur, qui court à six et qui arrive."
   },
   "_accent_note": "LA COULEUR D'UNE RÉGION (T11.6). Elle teinte son carré de terre sur la carte du monde et le liseré de sa fiche. Six régions qui se ressemblent ne font pas une carte, elles font une liste : le joueur doit pouvoir reconnaître les Dunes Ardentes sans lire leur nom.\n\nLA CLÉ EST CELLE D'UNE COULEUR DE `theme.json`, jamais un code hexadécimal : le jour où la palette change, aucune région ne bouge.",
   "_reward_note": "CE QU'UNE RÉGION PAIE, ET POURQUOI ELLE DOIT PAYER PLUS (T11.8).\n\nÀ PROFONDEUR ÉGALE, L'ACTE 2 RENDAIT EXACTEMENT LE MÊME BUTIN QUE L'ACTE 1. Rien ne le disait — `Loot` ne connaît que la profondeur et l'heure — et rien ne cassait : une région plus dure qui paie pareil se joue parfaitement, elle n'a simplement aucune raison d'être choisie. Le § 29 fait de « je rentre ou je continue » une question ; aller dans les Dunes doit être la même question, à l'échelle de la campagne.\n\nLES DUNES COÛTENT 49 % DES PV À LEUR BOSS CONTRE 35 % AUX TERRES VERTES, mesuré. Elles paient donc 35 % d'or de plus et relèvent la rareté d'un cran — le même levier que la nuit du § 36, qui ajoute un ennemi et paie 20 % de plus.\n\nCE BONUS SE CUMULE AVEC CELUI DE L'HEURE, et c'est voulu : une sortie de nuit au fond des Dunes est le sommet de la courbe de risque, donc le sommet de la courbe de récompense.",

@@ -1,0 +1,90 @@
+{
+ "_note": "LE NID D'ABORD. Elle ne pose pas de question neuve, et c'est assumé : sur une carte où quatre bêtes se recousent déjà toutes seules, un soigneur de plus rend la question de l'acte INSOUTENABLE tant qu'il est debout. Il transforme « je devrais concentrer » en « je dois concentrer, et sur elle ».\n\nELLE EST DERRIÈRE SA LIGNE, à cinq cases de portée : aller la chercher demande de traverser les buveurs, ce qui est précisément le prix.",
+ "act": 5,
+ "name_key": "MAP_MAUDIT_06",
+ "rows": [
+  "............",
+  "..r......p..",
+  "............",
+  ".r.......p..",
+  "......f.....",
+  ".r.......p..",
+  "............",
+  "..r......p..",
+  "............"
+ ],
+ "objective": {
+  "kind": "eliminate"
+ },
+ "deployment_cells": [
+  [
+   0,
+   2
+  ],
+  [
+   0,
+   3
+  ],
+  [
+   0,
+   4
+  ],
+  [
+   0,
+   5
+  ],
+  [
+   0,
+   6
+  ],
+  [
+   1,
+   3
+  ],
+  [
+   1,
+   4
+  ],
+  [
+   1,
+   5
+  ]
+ ],
+ "enemies": [
+  {
+   "type": "spore_hovel",
+   "cell": [
+    10,
+    4
+   ]
+  },
+  {
+   "type": "vampire_spawn",
+   "cell": [
+    7,
+    3
+   ]
+  },
+  {
+   "type": "vampire_spawn",
+   "cell": [
+    7,
+    5
+   ]
+  },
+  {
+   "type": "blood_thrall",
+   "cell": [
+    8,
+    2
+   ]
+  },
+  {
+   "type": "blood_thrall",
+   "cell": [
+    8,
+    6
+   ]
+  }
+ ]
+}

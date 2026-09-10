@@ -1,0 +1,90 @@
+{
+ "_note": "À ARMES ÉGALES. Trois archers à six cases — exactement la portée du Mage — et rien d'autre pour trancher que le placement. C'est la carte-thèse de l'acte : ni la portée ni la patience ne gagnent, seule la position le fait.\n\nLES BOSQUETS SONT AU MILIEU, ET POUR UNE FOIS C'EST JUSTE : ils coupent la vue des DEUX côtés. L'obstacle n'est gratuit pour le joueur que lorsqu'il n'a pas de raison d'avancer ; ici, rester à découvert le fait tirer dessus par trois.",
+ "act": 6,
+ "name_key": "MAP_EMPIRE_02",
+ "rows": [
+  "............",
+  "....f...f...",
+  "............",
+  "....f.......",
+  "......f.....",
+  "....f.......",
+  "............",
+  "....f...f...",
+  "............"
+ ],
+ "objective": {
+  "kind": "eliminate"
+ },
+ "deployment_cells": [
+  [
+   0,
+   2
+  ],
+  [
+   0,
+   3
+  ],
+  [
+   0,
+   4
+  ],
+  [
+   0,
+   5
+  ],
+  [
+   0,
+   6
+  ],
+  [
+   1,
+   3
+  ],
+  [
+   1,
+   4
+  ],
+  [
+   1,
+   5
+  ]
+ ],
+ "enemies": [
+  {
+   "type": "black_archer",
+   "cell": [
+    8,
+    2
+   ]
+  },
+  {
+   "type": "black_archer",
+   "cell": [
+    9,
+    4
+   ]
+  },
+  {
+   "type": "black_archer",
+   "cell": [
+    8,
+    6
+   ]
+  },
+  {
+   "type": "black_sapper",
+   "cell": [
+    6,
+    3
+   ]
+  },
+  {
+   "type": "black_sapper",
+   "cell": [
+    6,
+    5
+   ]
+  }
+ ]
+}

@@ -731,6 +731,16 @@ func _refresh_overlay() -> void:
 		for landing: Variant in entry.get("shoves", []):
 			if not shoves.has(landing):
 				shoves.append(landing)
+		# CE QUE LE MORDEUR SE RENDRA, peint sur SA case et dans la couche
+		# du soin. C'est la même information — « quelqu'un va remonter » —
+		# et lui inventer une quatrième couleur ferait lire trois teintes
+		# pour deux idées. Le § 39 la réclame : sans elle, « lequel tuer
+		# d'abord » se pose à l'aveugle devant une bête qui se recoud.
+		var drains := int(entry.get("drains", 0))
+		if drains > 0:
+			var biter := engine.board.unit_by_id(int(entry["attacker_id"]))
+			if biter != null:
+				mend[biter.cell] = int(mend.get(biter.cell, 0)) + drains
 	_overlay.shove_cells = shoves
 	# Dégâts que porterait l'attaque en cours de prévisualisation. Le joueur
 	# doit lire le chiffre AVANT de valider, comme il lit ceux du télégraphe.

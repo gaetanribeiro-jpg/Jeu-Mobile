@@ -79,9 +79,19 @@ n'est à réécrire le jour où on les ressort.
   du bâtiment `houses` — c'est le seul dont le pack sait montrer
   l'évolution, et le § 8 était honoré depuis la Phase 4. Avec la Tour, les
   huit bâtiments du pack sont maintenant employés, aucun ne dort.
-- **Les actes 5 et 6** — Terres Maudites (le vampire y est destiné, déjà
-  dessiné et versionné, dans aucun bestiaire) et Empire Noir (faction
-  humaine Noire, la seconde des deux couleurs réservées aux ennemis).
+- ~~**Les actes 5 et 6**~~ — **FAITS le 2026-09-10.** Terres Maudites (le
+  vampire y entre enfin, avec le `drain` qui était sa question non écrite)
+  et Empire Noir (faction humaine Noire, la seconde des deux couleurs
+  réservées aux ennemis). La campagne se joue de bout en bout.
+- **ACHETER DES CRÉDITS PIXELLAB, ou un futur pack Pixel Frog** — c'est le
+  constat que les actes 4, 5 et 6 avaient pour but d'établir, et il est
+  maintenant chiffré. **Le pack est ENTIÈREMENT consommé** : les 21 visages
+  de bêtes (actes 1–3), toute la catégorie `extra` (actes 4 et 5, dont les
+  quatre dernières images inemployées), les deux couleurs de faction
+  (actes 3 et 6). Il ne reste RIEN pour un acte 7. La balance PixelLab est
+  à **0,00 $** : le vampire l'a vidée, et c'est ce qui a empêché de dessiner
+  un bestiaire neuf pour l'acte 5 — il a donc été bâti sur les quatre
+  dernières images du pack plus le vampire. (2026-09-10)
 - **Des objectifs variés dans l'ACTE 3** — 30 cartes sur 36 n'avaient que
   « éliminer », l'acte 4 est corrigé, l'acte 3 ne l'est pas : ses neuf
   cartes sont toutes « éliminer ».
@@ -102,3 +112,16 @@ n'est à réécrire le jour où on les ressort.
   question de l'acte 4 en dépend. (2026-09-05)
 - **La palissade se lit mal sur le sol rouille** — le pack ne dessine
   qu'un piquet de clôture, fin et pâle. (2026-09-05)
+- **Le sol violet des Terres Maudites** est franc, plus encore que le rouge
+  de l'acte 4. Il distingue l'acte d'un coup d'œil ; huit rondes dessus,
+  c'est à juger. (2026-09-10)
+- **Le troll relevé est une animation de MORT jouée en boucle** — un corps
+  qui n'arrive pas à tomber. C'est exactement ce que l'acte raconte, et
+  c'est la seule fois du projet où une animation change de SENS sans
+  changer d'image. Si elle se lit comme un bug plutôt que comme un râle,
+  il faut la ralentir ou n'en garder que les dernières images. (2026-09-10)
+- **L'acte 5 est mesuré par un pilote qui joue le CONTRAIRE de ce qu'il
+  demande** — `simulate_combats` ne concentre jamais ses coups, et
+  concentrer est toute la réponse à l'acte. Ses 34 % sont donc un plancher
+  plus bas qu'ailleurs : un joueur qui a compris le trouvera plus facile.
+  À rejuger à l'œil. (2026-09-10)

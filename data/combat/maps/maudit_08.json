@@ -1,0 +1,83 @@
+{
+ "_note": "LE TRÔNE DE LA COMTESSE — BOSS. Trois quarts de ce qu'elle porte lui reviennent : on ne la tue pas à l'usure, quatre rondes de grignotage la laissent au plein. La seule réponse est la concentration totale dans la même ronde, et son second coup — qui ne boit pas — est la fenêtre.\n\nSIX CORPS, PAS SEPT, et c'est la leçon mesurée de l'acte 4 : ce n'est pas la barre de vie du boss qui borne le combat, c'est le nombre de corps qui frappent. Le plafond de huit rondes est une cible ÉCRITE.\n\nMESURÉ À ZÉRO VICTOIRE, PUIS DÉGARNI. La chapelle recousait la Comtesse pendant que quatre buveurs se recousaient eux-mêmes : trois soins empilés sur la même carte, et le pilote n'en abat aucun puisqu'il ne CONCENTRE jamais ses coups. Le boss doit poser la question de l'acte à son extrême, pas la poser trois fois.",
+ "act": 5,
+ "name_key": "MAP_MAUDIT_08",
+ "rows": [
+  "............",
+  "..r....p.p..",
+  "............",
+  ".r.....p.p..",
+  "......f.....",
+  ".r.....p.p..",
+  "............",
+  "..r....p.p..",
+  "............"
+ ],
+ "objective": {
+  "kind": "eliminate"
+ },
+ "deployment_cells": [
+  [
+   0,
+   2
+  ],
+  [
+   0,
+   3
+  ],
+  [
+   0,
+   4
+  ],
+  [
+   0,
+   5
+  ],
+  [
+   0,
+   6
+  ],
+  [
+   1,
+   3
+  ],
+  [
+   1,
+   4
+  ],
+  [
+   1,
+   5
+  ]
+ ],
+ "enemies": [
+  {
+   "type": "the_countess",
+   "cell": [
+    10,
+    4
+   ]
+  },
+  {
+   "type": "vampire_spawn",
+   "cell": [
+    6,
+    3
+   ]
+  },
+  {
+   "type": "vampire_spawn",
+   "cell": [
+    6,
+    5
+   ]
+  },
+  {
+   "type": "blood_thrall",
+   "cell": [
+    8,
+    1
+   ]
+  }
+ ]
+}

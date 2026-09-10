@@ -814,5 +814,223 @@
   "cooldown": 1,
   "animation": "attack"
  },
- "_scaling_note": "L'ÉCHELLE DES ENNEMIS SUIT CELLE DU JOUEUR, SUR DEUX AXES, et il a fallu se tromper une fois pour comprendre pourquoi les deux.\n\nMESURÉ, la croissance du joueur est ASYMÉTRIQUE : ses points de vie montent de ×1,23 / ×1,54 / ×1,68 par acte, ses dégâts de ×1,10 / ×1,13 / ×1,17 seulement. C'est la règle du § 47 qui le veut — les statistiques sont des MODIFICATEURS, pas des multiplicateurs, et elles tiennent dans une fourchette de 1 à 8. Un héros devient donc bien plus résistant qu'il ne devient meurtrier.\n\nPREMIER ESSAI : monter les dégâts ennemis de ×1,20 / ×1,40 / ×1,25. Résultat mesuré : 87 % → 85 % de PV, courbe toujours PLATE. Parce que ces multiplicateurs suivaient à peu près la croissance des PV du joueur, donc maintenaient la menace CONSTANTE — et parce qu'à 4,8 rondes de moyenne, les ennemis meurent avant d'avoir frappé : leurs dégâts ne servent que s'ils vivent assez pour les porter.\n\nDONC LES DEUX AXES. Les dégâts DÉPASSENT la croissance des PV du joueur, sinon rien ne monte ; les points de vie suivent la croissance de ses dégâts, sinon les dégâts ne sortent jamais. Monter les PV seuls resterait faux — ça allonge sans durcir, leçon de l'acte 2 — mais les monter AVEC les dégâts est ce qui préserve le taux d'échange.\n\nDERNIÈRE RETOUCHE, MESURÉE : l'acte 2 ne montait qu'à 18 % quand l'acte 1 en coûte 15, et l'acte 4 (30 %) passait SOUS l'acte 3 (32 %). Un acte plus tardif ne doit jamais coûter moins — même règle que pour le butin, que `verify_world` fait déjà respecter."
+ "_scaling_note": "L'ÉCHELLE DES ENNEMIS SUIT CELLE DU JOUEUR, SUR DEUX AXES, et il a fallu se tromper une fois pour comprendre pourquoi les deux.\n\nMESURÉ, la croissance du joueur est ASYMÉTRIQUE : ses points de vie montent de ×1,23 / ×1,54 / ×1,68 par acte, ses dégâts de ×1,10 / ×1,13 / ×1,17 seulement. C'est la règle du § 47 qui le veut — les statistiques sont des MODIFICATEURS, pas des multiplicateurs, et elles tiennent dans une fourchette de 1 à 8. Un héros devient donc bien plus résistant qu'il ne devient meurtrier.\n\nPREMIER ESSAI : monter les dégâts ennemis de ×1,20 / ×1,40 / ×1,25. Résultat mesuré : 87 % → 85 % de PV, courbe toujours PLATE. Parce que ces multiplicateurs suivaient à peu près la croissance des PV du joueur, donc maintenaient la menace CONSTANTE — et parce qu'à 4,8 rondes de moyenne, les ennemis meurent avant d'avoir frappé : leurs dégâts ne servent que s'ils vivent assez pour les porter.\n\nDONC LES DEUX AXES. Les dégâts DÉPASSENT la croissance des PV du joueur, sinon rien ne monte ; les points de vie suivent la croissance de ses dégâts, sinon les dégâts ne sortent jamais. Monter les PV seuls resterait faux — ça allonge sans durcir, leçon de l'acte 2 — mais les monter AVEC les dégâts est ce qui préserve le taux d'échange.\n\nDERNIÈRE RETOUCHE, MESURÉE : l'acte 2 ne montait qu'à 18 % quand l'acte 1 en coûte 15, et l'acte 4 (30 %) passait SOUS l'acte 3 (32 %). Un acte plus tardif ne doit jamais coûter moins — même règle que pour le butin, que `verify_world` fait déjà respecter.",
+ "blood_bite": {
+  "_note": "LA PREMIÈRE MORSURE QUI NOURRIT. Sur trente-cinq bêtes en quatre actes, aucune ne remontait jamais : entamer quelqu'un était un acquis, et le meilleur ordre de cibles était toujours « le plus dangereux d'abord ». Ici il devient « le buveur d'abord », parce que ce qu'on lui laisse, il le reprend.\n\nLA MOITIÉ DE CE QU'IL PORTE, et le gain est plafonné par ses propres PV maximum : soigner un ennemi rend le combat plus LONG, pas plus dur (T11.7). Ce qu'on veut, c'est punir le grignotage, pas allonger la barre.",
+  "kind": "attack",
+  "scaling": "strength",
+  "action_points": 3,
+  "range_min": 1,
+  "range_max": 1,
+  "damage": 58,
+  "drain": 0.5,
+  "area": {
+   "shape": "single"
+  },
+  "animation": "attack1"
+ },
+ "siphon_bolt": {
+  "_note": "LA LONGUE PORTÉE DE L'ACTE, ET ELLE BOIT. `verify_world` exige par acte quelqu'un qui porte au moins aussi loin que le joueur, sinon attendre reste gratuit et tout terrain avec.\n\nSEPT CASES COMME LA TOUR DE GUET DE L'ACTE 4, ET C'EST VOULU : la différence n'est pas la portée, c'est ce que l'attente COÛTE. La tour punissait d'avoir été lent ; celle-ci se nourrit d'avoir attendu, donc chaque ronde passée à distance la rend plus dure à abattre quand on arrive enfin dessus.",
+  "kind": "attack",
+  "scaling": "intelligence",
+  "action_points": 4,
+  "range_min": 2,
+  "range_max": 7,
+  "needs_line_of_sight": true,
+  "damage": 56,
+  "drain": 0.4,
+  "area": {
+   "shape": "single"
+  },
+  "animation": "idle"
+ },
+ "grave_smash": {
+  "_note": "LE SEUL COUP DE L'ACTE QUI NE BOIT PAS, et c'est un piège tendu au joueur. Devant quatre buveurs, la cible « sûre » est celle qui ne se recoud pas — sauf qu'elle frappe le plus fort du lot. Choisir l'ordre des cibles cesse d'avoir une bonne réponse évidente, ce qui est exactement ce qu'on demande à une décision.",
+  "kind": "attack",
+  "scaling": "strength",
+  "action_points": 4,
+  "range_min": 1,
+  "range_max": 1,
+  "damage": 80,
+  "area": {
+   "shape": "single"
+  },
+  "animation": "attack1"
+ },
+ "grave_breath": {
+  "_note": "LE SOUFFLE DE LA CAVERNE. Zéro PM, quatre cases, et une croix : ce n'est pas un tireur, c'est un passage qu'on ne franchit pas impunément. Il ne draine pas — un trou dans le sol n'a pas de barre de vie à remonter, et lui en donner une aurait fait de tout l'acte une seule idée répétée six fois.",
+  "kind": "attack",
+  "scaling": "intelligence",
+  "action_points": 5,
+  "range_min": 2,
+  "range_max": 4,
+  "needs_line_of_sight": true,
+  "damage": 62,
+  "area": {
+   "shape": "cross",
+   "radius": 1
+  },
+  "cooldown": 1,
+  "animation": "idle"
+ },
+ "grave_knit": {
+  "_note": "LA HUTTE RECOUD, comme l'atelier de l'acte 4 — et c'est le seul emprunt assumé de l'acte. Sur une carte où quatre bêtes se recousent déjà toutes seules, un soigneur de plus ne pose pas une question neuve : il rend la question de l'acte INSOUTENABLE tant qu'il est debout. C'est ce qui force l'ordre des cibles au lieu de le suggérer.\n\nPORTÉE CINQ, RECHARGE DEUX : une case de plus que l'atelier, parce que les buveurs, eux, avancent — la hutte doit pouvoir suivre sa ligne sans se mettre au contact.",
+  "kind": "heal",
+  "scaling": "intelligence",
+  "action_points": 5,
+  "range_min": 1,
+  "range_max": 5,
+  "damage": 22,
+  "area": {
+   "shape": "single"
+  },
+  "cooldown": 2,
+  "animation": "idle"
+ },
+ "countess_embrace": {
+  "_note": "TROIS QUARTS DE CE QU'ELLE PORTE. La Comtesse ne se tue pas à l'usure : quatre rondes de grignotage la laissent au plein. La seule réponse est la CONCENTRATION — tout le monde sur elle, dans la même ronde, avant qu'elle ait mordu deux fois. C'est la question de l'acte poussée à son extrême, et c'est pour ça qu'elle en est le boss.\n\nLE PLAFOND DE SES PV MAXIMUM LA BORNE, sans quoi le combat n'aurait pas de fin plutôt que d'être difficile.",
+  "kind": "attack",
+  "scaling": "strength",
+  "action_points": 5,
+  "range_min": 1,
+  "range_max": 2,
+  "damage": 78,
+  "drain": 0.6,
+  "area": {
+   "shape": "single"
+  },
+  "cooldown": 1,
+  "animation": "attack1"
+ },
+ "blood_call": {
+  "_note": "SON SECOND COUP, ET IL NE BOIT PAS. Une compétence unique avec recharge fait chômer une bête une ronde sur deux — mesuré à l'acte 4, et c'est une des trois causes qui laissaient deux mercenaires sur six sans jamais frapper. La Comtesse a donc de quoi remplir la ronde où l'Étreinte recharge, et ce coup-là est le moment où elle est vulnérable : elle ne se rend rien.\n\nMESURÉ ET RABATTU : une croix à cinquante-quatre touche jusqu'à cinq cases, et sur le trône elle effaçait l'équipe en deux rondes — zéro victoire sur trente graines. La fenêtre où la Comtesse ne boit pas doit rester une fenêtre, pas le moment où elle tue.",
+  "kind": "attack",
+  "scaling": "intelligence",
+  "action_points": 4,
+  "range_min": 1,
+  "range_max": 3,
+  "needs_line_of_sight": true,
+  "damage": 42,
+  "area": {
+   "shape": "cross",
+   "radius": 1
+  },
+  "animation": "attack1"
+ },
+ "braced_pike": {
+  "_note": "LA PIQUE CALÉE — ELLE NE FRAPPE QUE S'IL N'A PAS BOUGÉ. `requires_not_moved` était déclaré depuis la Phase 1, IGNORÉ PAR L'IA jusqu'à l'acte 4, et porté par personne. Ici c'est l'identité d'une faction : l'Empire tient une ligne, il ne charge pas.\n\nDEUX CASES ET UN COUP EN LIGNE : contourner le boucher est possible, et c'est le prix de la carte. Un mur qu'on ne peut pas contourner serait un couloir ; un mur gratuit à contourner ne serait pas un mur.",
+  "kind": "attack",
+  "scaling": "strength",
+  "action_points": 4,
+  "range_min": 1,
+  "range_max": 2,
+  "damage": 79,
+  "area": {
+   "shape": "line",
+   "length": 2
+  },
+  "requires_not_moved": true,
+  "animation": "attack1"
+ },
+ "imperial_volley": {
+  "_note": "SIX CASES — EXACTEMENT LA PORTÉE DU MAGE, ET C'EST LE PROPOS. Les cinq actes précédents ont posé des tireurs plus courts (l'échange est équitable, donc l'attente gagne) puis plus longs (l'attente coûte). Celui-ci est À ÉGALITÉ : personne ne gagne l'échange par la portée, et le vainqueur est celui qui se place mieux. C'est le seul acte où ça se joue à armes égales, et c'est ce qu'on attend d'un dernier acte.",
+  "kind": "attack",
+  "scaling": "agility",
+  "action_points": 3,
+  "range_min": 2,
+  "range_max": 6,
+  "needs_line_of_sight": true,
+  "damage": 51,
+  "area": {
+   "shape": "single"
+  },
+  "animation": "shoot"
+ },
+ "imperial_lance": {
+  "_note": "LE COUP EN LIGNE QUI PUNIT LE COUVERT. Cinq actes ont appris au joueur à se serrer derrière un rocher ; celui-ci traverse deux cases et touche celui de derrière. La bonne habitude devient une mauvaise, et c'est la seule façon honnête de rendre un acte tardif difficile sans gonfler un chiffre.",
+  "kind": "attack",
+  "scaling": "strength",
+  "action_points": 5,
+  "range_min": 1,
+  "range_max": 2,
+  "damage": 86,
+  "area": {
+   "shape": "line",
+   "length": 3
+  },
+  "cooldown": 1,
+  "animation": "attack_right"
+ },
+ "black_litany": {
+  "_note": "LE CHAPELAIN RECOUD SA LIGNE. Troisième soigneur du jeu après l'atelier de l'acte 4 et la chapelle de l'acte 5, et il est différent des deux : il MARCHE. Les deux autres étaient des emplacements qu'on allait chercher ; celui-ci recule derrière ses boucliers, donc il faut percer la ligne au lieu de la contourner.\n\nCE QUI L'A FAIT BAISSER N'ÉTAIT PAS LUI, et c'est la leçon de mesure de cette passe. `empire_04` restait bloquée à seize rondes sans victoire, l'équipe intacte à 57 % : j'ai accusé le soin DEUX FOIS — moins de puissance, puis plus de recharge — sans que le chiffre bouge d'un point. La cause était un CINQUIÈME CORPS. Un soigneur est le coupable évident d'un combat qui ne finit pas, et c'est exactement pour ça qu'il faut mesurer au lieu de deviner : retirer un archer a rendu 100 % de victoires et six rondes.\n\nIl garde donc sa recharge de deux, et son intelligence rabaissée reste — un soigneur du dernier acte n'a pas besoin d'être plus fort que celui de l'acte 4, il a besoin d'être derrière une ligne.",
+  "kind": "heal",
+  "scaling": "intelligence",
+  "action_points": 5,
+  "range_min": 1,
+  "range_max": 4,
+  "damage": 24,
+  "area": {
+   "shape": "single"
+  },
+  "cooldown": 2,
+  "animation": "idle"
+ },
+ "censer_flame": {
+  "_note": "SON ARME, ET C'EST UNE LEÇON PAYÉE. Un soigneur sans arme est un corps gratuit tant qu'il ne soigne pas : mesuré à l'acte 4, où deux mercenaires sur six ne frappaient jamais. Le chapelain a donc de quoi remplir la ronde où la litanie recharge.\n\nIL LAISSE DU FEU AU SOL, seule reprise de l'acte 2 dans tout l'acte — et elle est ici pour couper une retraite, pas pour brûler.",
+  "kind": "attack",
+  "scaling": "intelligence",
+  "action_points": 4,
+  "range_min": 2,
+  "range_max": 4,
+  "needs_line_of_sight": true,
+  "damage": 44,
+  "area": {
+   "shape": "single"
+  },
+  "leaves_terrain": "fire",
+  "cooldown": 1,
+  "animation": "attack1"
+ },
+ "sapper_charge": {
+  "_note": "LE SAPEUR EMPIRE. Le Pawn est le sprite dont la couleur ne se voit pas — 7,9 % de pixels changés contre 51 % pour un Lancier — donc il porte un OUTIL pour se distinguer, pas une teinte. Corps bon marché, six PM, un coup faible : il n'est pas là pour tuer, il est là pour ARRIVER, encaisser le tour de l'équipe et laisser la ligne avancer intacte derrière lui.",
+  "kind": "attack",
+  "scaling": "strength",
+  "action_points": 3,
+  "range_min": 1,
+  "range_max": 1,
+  "damage": 41,
+  "area": {
+   "shape": "single"
+  },
+  "animation": "attack1"
+ },
+ "marshal_sentence": {
+  "_note": "LE COUP DU MARÉCHAL : trois cases en ligne, quatre-vingt-dix-huit, et il n'a besoin de rien d'autre que d'être resté en place. C'est la pique calée poussée à son terme — le boss de l'Empire est ce que l'Empire fait, en plus grand, et non une mécanique inventée pour lui.\n\nDERNIER BOSS DU JEU : il est le seul à cumuler la ligne ET la portée, donc le seul qu'on ne puisse ni contourner ni attendre.\n\nMESURÉ ET RABATTU : trois cases de rang à quatre-vingt-dix-huit font près de trois cents dégâts par ronde sur une équipe qui en totalise sept cents — zéro victoire sur trente graines, quatre personnages à terre. Deux de rang à soixante-seize : il reste le seul qu'on ne puisse ni contourner ni attendre, sans effacer l'équipe en trois rondes.",
+  "kind": "attack",
+  "scaling": "strength",
+  "action_points": 6,
+  "range_min": 1,
+  "range_max": 3,
+  "damage": 76,
+  "area": {
+   "shape": "line",
+   "length": 2
+  },
+  "cooldown": 1,
+  "requires_not_moved": true,
+  "animation": "attack_right"
+ },
+ "marshal_command": {
+  "_note": "SON SECOND COUP, POUR NE PAS CHÔMER. Une bête à compétence unique et à recharge chôme une ronde sur deux — mesuré à l'acte 4. La Sentence exige en plus de n'avoir pas bougé : sans ce second coup, le Maréchal qui se déplace une fois ne ferait plus RIEN de la ronde, et le joueur n'aurait qu'à le tirer hors de sa place.",
+  "kind": "attack",
+  "scaling": "strength",
+  "action_points": 4,
+  "range_min": 1,
+  "range_max": 2,
+  "damage": 62,
+  "area": {
+   "shape": "single"
+  },
+  "animation": "attack1"
+ }
 }

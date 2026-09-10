@@ -1,0 +1,118 @@
+{
+ "_note": "EXTRAIRE DEVANT LES GUEULES. Deux cavernes ne poursuivent pas : elles INTERDISENT une ligne, et la cache est derrière elles. Le détour est ce qui donne aux buveurs le temps d'arriver — le décor et les corps se relaient au lieu de s'additionner.\n\nLES CAVERNES SONT À PORTÉE DE LA ZONE DE PLACEMENT : un souffle à quatre cases posé au fond ne souffle jamais.",
+ "act": 5,
+ "name_key": "MAP_MAUDIT_05",
+ "rows": [
+  "............",
+  "....##......",
+  "............",
+  "......f.....",
+  "....##......",
+  "......f.....",
+  "............",
+  "....##......",
+  "............"
+ ],
+ "objective": {
+  "kind": "extract",
+  "pickup_cells": [
+   [
+    10,
+    3
+   ],
+   [
+    11,
+    3
+   ],
+   [
+    10,
+    5
+   ],
+   [
+    11,
+    5
+   ]
+  ],
+  "cells": [
+   [
+    0,
+    4
+   ],
+   [
+    0,
+    5
+   ]
+  ]
+ },
+ "deployment_cells": [
+  [
+   0,
+   2
+  ],
+  [
+   0,
+   3
+  ],
+  [
+   0,
+   4
+  ],
+  [
+   0,
+   5
+  ],
+  [
+   0,
+   6
+  ],
+  [
+   1,
+   3
+  ],
+  [
+   1,
+   4
+  ],
+  [
+   1,
+   5
+  ]
+ ],
+ "enemies": [
+  {
+   "type": "barrow_mouth",
+   "cell": [
+    4,
+    2
+   ]
+  },
+  {
+   "type": "barrow_mouth",
+   "cell": [
+    4,
+    6
+   ]
+  },
+  {
+   "type": "vampire_spawn",
+   "cell": [
+    8,
+    4
+   ]
+  },
+  {
+   "type": "blood_thrall",
+   "cell": [
+    9,
+    2
+   ]
+  },
+  {
+   "type": "blood_thrall",
+   "cell": [
+    9,
+    6
+   ]
+  }
+ ]
+}

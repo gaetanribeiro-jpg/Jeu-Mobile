@@ -1,0 +1,90 @@
+{
+ "_note": "LE MARÉCHAL — DERNIER BOSS DU JEU. La Sentence porte à trois cases, touche trois de rang, et exige de n'avoir pas bougé : on ne peut ni la contourner ni l'attendre. Le DÉLOGER de sa place est la vraie réponse, et c'est le coup d'épaule des Rougefer qui revient trois actes plus tard, entre les mains du joueur cette fois.\n\nSIX CORPS, PAS SEPT : ce n'est pas la barre de vie du boss qui borne le combat, c'est le nombre de corps qui frappent (mesuré à l'acte 4). Le plafond de huit rondes est une cible écrite.\n\nONZE RONDES MESURÉES, PUIS LE CHAPELAIN RETIRÉ. Un soigneur sur la carte du boss ne rend pas le boss plus dur, il rend le combat plus LONG — et le plafond de huit rondes est une cible écrite. Exactement la correction faite au trône de la Comtesse une heure plus tôt : le boss doit poser la question de son acte à son extrême, pas ajouter une seconde question par-dessus.",
+ "act": 6,
+ "name_key": "MAP_EMPIRE_08",
+ "rows": [
+  "............",
+  "..r....p.p..",
+  "............",
+  "..r....p.p..",
+  "......f.....",
+  "..r....p.p..",
+  "............",
+  "..r....p.p..",
+  "............"
+ ],
+ "objective": {
+  "kind": "eliminate"
+ },
+ "deployment_cells": [
+  [
+   0,
+   2
+  ],
+  [
+   0,
+   3
+  ],
+  [
+   0,
+   4
+  ],
+  [
+   0,
+   5
+  ],
+  [
+   0,
+   6
+  ],
+  [
+   1,
+   3
+  ],
+  [
+   1,
+   4
+  ],
+  [
+   1,
+   5
+  ]
+ ],
+ "enemies": [
+  {
+   "type": "the_black_marshal",
+   "cell": [
+    10,
+    4
+   ]
+  },
+  {
+   "type": "black_shieldman",
+   "cell": [
+    6,
+    3
+   ]
+  },
+  {
+   "type": "black_shieldman",
+   "cell": [
+    6,
+    5
+   ]
+  },
+  {
+   "type": "black_archer",
+   "cell": [
+    8,
+    1
+   ]
+  },
+  {
+   "type": "black_archer",
+   "cell": [
+    8,
+    7
+   ]
+  }
+ ]
+}

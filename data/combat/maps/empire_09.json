@@ -1,0 +1,90 @@
+{
+ "_note": "LE PRÉTORIEN — MINI-BOSS. Deux coups dans le même corps : la ligne et la charge. Le joueur ne peut plus deviner s'il vaut mieux rester à deux cases ou se coller, et c'est tout ce que la carte demande.\n\nIL NE POSE PAS DE MÉCANIQUE NEUVE : il RETIRE la certitude que le boucher et le lancier donnaient séparément. Un mini-boss n'a pas à inventer, il a à vérifier qu'on a compris.\n\nMESURÉE À 81 % DES PV, PUIS RAPPROCHÉE. Une carte molle se corrige en DISTANCE avant de se corriger en nombre : pour une bête MOBILE la distance n'est qu'un délai, et un mini-boss qui arrive à la sixième ronde arrive après la bataille.\n\nPUIS RECULÉE ET DÉGARNIE : à 34 % elle coûtait PLUS que le boss, ce qui range les deux étapes dans le désordre — le § 28 fait passer le mini-boss AVANT. Un mini-boss vérifie qu'on a compris, il ne remplace pas la fin.",
+ "act": 6,
+ "name_key": "MAP_EMPIRE_09",
+ "rows": [
+  "............",
+  "...f...#....",
+  "............",
+  "..r....#....",
+  "......^.....",
+  "..r....#....",
+  "............",
+  "...f...#....",
+  "............"
+ ],
+ "objective": {
+  "kind": "eliminate"
+ },
+ "deployment_cells": [
+  [
+   0,
+   2
+  ],
+  [
+   0,
+   3
+  ],
+  [
+   0,
+   4
+  ],
+  [
+   0,
+   5
+  ],
+  [
+   0,
+   6
+  ],
+  [
+   1,
+   3
+  ],
+  [
+   1,
+   4
+  ],
+  [
+   1,
+   5
+  ]
+ ],
+ "enemies": [
+  {
+   "type": "black_praetorian",
+   "cell": [
+    6,
+    4
+   ]
+  },
+  {
+   "type": "black_archer",
+   "cell": [
+    9,
+    2
+   ]
+  },
+  {
+   "type": "black_archer",
+   "cell": [
+    9,
+    6
+   ]
+  },
+  {
+   "type": "black_sapper",
+   "cell": [
+    6,
+    3
+   ]
+  },
+  {
+   "type": "black_sapper",
+   "cell": [
+    6,
+    5
+   ]
+  }
+ ]
+}

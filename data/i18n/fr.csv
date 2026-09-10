@@ -187,7 +187,7 @@ REGION_FROZEN_MOUNTAINS_DESC,Des cols pris par la glace. On n'y va pas encore.
 REGION_BROKEN_LANDS,Les Terres Brisées
 REGION_BROKEN_LANDS_DESC,"Une vieille ligne de forts, et ce qui s'y est installé."
 REGION_CURSED_LANDS,Les Terres Maudites
-REGION_CURSED_LANDS_DESC,Rien n'y meurt tout à fait. On n'y va pas encore.
+REGION_CURSED_LANDS_DESC,"Rien n'y meurt tout à fait. Ce qu'on entame se recoud, et ce qui mord se nourrit."
 REGION_BLACK_EMPIRE,L'Empire Noir
 REGION_BLACK_EMPIRE_DESC,La source de tout ceci. On n'y va pas encore.
 EVENT_OASIS,L'oasis
@@ -572,3 +572,50 @@ ASCENSION_TOWER,"Tour de guet de niveau %d requise"
 ASCENSION_COST,Ressources insuffisantes
 ASCENSION_RANK,"Rang : %s"
 KINGDOM_ASCENDED,"%s est élevé au rang %s."
+MAP_MAUDIT_01,Le bois exsangue
+MAP_MAUDIT_02,La floraison blême
+MAP_MAUDIT_03,Le gué de cendre
+MAP_MAUDIT_04,Le tertre du géant
+MAP_MAUDIT_05,Les deux gueules
+MAP_MAUDIT_06,Le nid de spores
+MAP_MAUDIT_07,La longue nuit
+MAP_MAUDIT_08,Le trône de la Comtesse
+MAP_MAUDIT_09,La gueule du tertre
+ENEMY_VAMPIRE_SPAWN,Rejeton de sang
+ENEMY_BLOOD_THRALL,Servant de sang
+ENEMY_RISEN_TROLL,Troll relevé
+ENEMY_PALE_BLOOM,Floraison blême
+ENEMY_BARROW_MOUTH,Gueule du tertre
+ENEMY_SPORE_HOVEL,Nid de spores
+ENEMY_THE_COUNTESS,La Comtesse
+ABILITY_BLOOD_BITE,Morsure
+ABILITY_SIPHON_BOLT,Trait siphon
+ABILITY_GRAVE_SMASH,Coup de tombe
+ABILITY_GRAVE_BREATH,Souffle du tertre
+ABILITY_GRAVE_KNIT,Recousure
+ABILITY_COUNTESS_EMBRACE,Étreinte de la Comtesse
+ABILITY_BLOOD_CALL,Appel du sang
+MAP_EMPIRE_01,La porte de fer
+MAP_EMPIRE_02,Le champ nu
+MAP_EMPIRE_03,Les ruines basses
+MAP_EMPIRE_04,Les deux portes
+MAP_EMPIRE_05,La dépêche
+MAP_EMPIRE_06,L'ordre de tenir
+MAP_EMPIRE_07,Le poste avancé
+MAP_EMPIRE_08,Le Maréchal
+MAP_EMPIRE_09,Le prétorien
+ENEMY_BLACK_SHIELDMAN,Boucher impérial
+ENEMY_BLACK_ARCHER,Archer impérial
+ENEMY_BLACK_LANCER,Lancier impérial
+ENEMY_BLACK_CHAPLAIN,Chapelain noir
+ENEMY_BLACK_SAPPER,Sapeur impérial
+ENEMY_BLACK_PRAETORIAN,Prétorien
+ENEMY_THE_BLACK_MARSHAL,Le Maréchal Noir
+ABILITY_BRACED_PIKE,Pique calée
+ABILITY_IMPERIAL_VOLLEY,Volée impériale
+ABILITY_IMPERIAL_LANCE,Lance impériale
+ABILITY_BLACK_LITANY,Litanie noire
+ABILITY_CENSER_FLAME,Flamme d'encensoir
+ABILITY_SAPPER_CHARGE,Coup de masse
+ABILITY_MARSHAL_SENTENCE,Sentence
+ABILITY_MARSHAL_COMMAND,Commandement

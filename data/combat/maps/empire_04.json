@@ -1,0 +1,83 @@
+{
+ "_note": "PERCER, PAS CONTOURNER. Le chapelain recule derrière ses boucliers : c'est le premier soigneur du jeu qui MARCHE, donc le premier qu'on ne puisse pas simplement aller chercher par le flanc.\n\nDEUX BOUCHERS SUR DEUX GOULETS, et l'un des deux est plus court : la carte a une bonne réponse, et elle se lit sur le terrain.\n\nMESURÉ À SEIZE RONDES ET ZÉRO VICTOIRE, PUIS ÉLARGI. Un goulet d'UNE case ne laisse qu'un seul héros frapper le boucher : deux cent quarante-huit points de vie divisés par un attaquant font cinq rondes par porte, pendant que le chapelain recoud. Ça ne faisait pas un combat plus dur, ça faisait un combat plus LONG — leçon de T11.7, prise pour la troisième fois de la session.\n\nDEUX CASES PAR PORTE : le boucher garde son rôle, et la carte garde sa question — percer, pas contourner.\n\nPUIS LE CINQUIÈME CORPS RETIRÉ, ET C'ÉTAIT LUI. Élargir les portes n'a rien changé au blocage : seize rondes, zéro victoire, l'équipe intacte à 57 %. J'ai accusé le chapelain deux fois avant de compter les corps. Un archer de moins : 100 % de victoires, six rondes, 64 % des PV. « On corrige une carte en CORPS » vaut aussi dans ce sens-là.",
+ "act": 6,
+ "name_key": "MAP_EMPIRE_04",
+ "rows": [
+  "......#.....",
+  "......#.....",
+  "............",
+  "............",
+  "......#.....",
+  "............",
+  "............",
+  "......#.....",
+  "......#....."
+ ],
+ "objective": {
+  "kind": "eliminate"
+ },
+ "deployment_cells": [
+  [
+   0,
+   2
+  ],
+  [
+   0,
+   3
+  ],
+  [
+   0,
+   4
+  ],
+  [
+   0,
+   5
+  ],
+  [
+   0,
+   6
+  ],
+  [
+   1,
+   3
+  ],
+  [
+   1,
+   4
+  ],
+  [
+   1,
+   5
+  ]
+ ],
+ "enemies": [
+  {
+   "type": "black_shieldman",
+   "cell": [
+    6,
+    2
+   ]
+  },
+  {
+   "type": "black_shieldman",
+   "cell": [
+    6,
+    6
+   ]
+  },
+  {
+   "type": "black_chaplain",
+   "cell": [
+    9,
+    4
+   ]
+  },
+  {
+   "type": "black_archer",
+   "cell": [
+    8,
+    2
+   ]
+  }
+ ]
+}
