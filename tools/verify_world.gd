@@ -58,6 +58,7 @@ func _init() -> void:
 	_check_expedition_rules()
 	_check_ascension()
 	_check_day_night()
+	_check_atlas()
 
 	if _problems.is_empty():
 		print("\nLe monde est cohérent.")
@@ -826,3 +827,89 @@ func _check_day_night() -> void:
 					% [region_id, enemy_id, role]
 					+ "il ajouterait de la DURÉE, pas de la pression."
 				)
+
+
+# --- La carte du monde (T12.11) --------------------------------------------
+#
+# UNE RÉGION SANS CONTOUR NE SE DESSINE PAS, et elle ne se plaint pas non
+# plus : la vue saute un polygone de moins de trois points. On ajouterait
+# un acte 7 dans `regions.json`, il n'apparaîtrait nulle part sur la carte
+# et rien ne le dirait — exactement le défaut que `verify_world` attrape
+# depuis la Phase 10, une mécanique complète dont il manque un maillon.
+
+func _check_atlas() -> void:
+	var canvas := WorldAtlas.canvas()
+	print("\nLa carte du monde : toile %d × %d\n" % [canvas.x, canvas.y])
+	if canvas == Vector2.ZERO:
+		_problems.append("la carte du monde n'a pas de toile")
+		return
+
+	_check_shape(WorldAtlas.HOME, canvas)
+	for region_id: StringName in Region.ids():
+		if not WorldAtlas.has_node(region_id):
+			_problems.append(
+				"« %s » n'est nulle part sur la carte : elle ne se dessinera pas"
+				% region_id)
+			continue
+		_check_shape(region_id, canvas)
+		print("%-18s acte %d  centre %s" % [
+			region_id, Region.act_of(region_id), WorldAtlas.anchor_of(region_id)])
+	# L'INVERSE AUSSI : une terre dessinée qui ne serait plus une région se
+	# lirait comme un ailleurs qu'on ne peut jamais atteindre.
+	for drawn: StringName in WorldAtlas.ids():
+		if not Region.exists(drawn):
+			_problems.append("la carte dessine « %s », qui n'est pas une région" % drawn)
+
+	# LA ROUTE REND L'ORDRE LISIBLE, donc elle doit le DIRE juste : une
+	# route qui sauterait un acte ou remonterait le temps dessinerait une
+	# progression que le jeu ne suit pas.
+	var reached := {String(WorldAtlas.HOME): true}
+	var previous := 0
+	for road: Array in WorldAtlas.roads():
+		var from: StringName = road[0]
+		var to: StringName = road[1]
+		for node_id: StringName in [from, to]:
+			if not WorldAtlas.has_node(node_id):
+				_problems.append("une route cite « %s », qui n'est pas sur la carte" % node_id)
+		if not reached.has(String(from)):
+			_problems.append("la route part de « %s », qu'aucune route n'atteint" % from)
+		reached[String(to)] = true
+		var act := Region.act_of(to) if Region.exists(to) else 0
+		if act <= previous:
+			_problems.append(
+				"la route mène à « %s » (acte %d) après un acte %d : elle remonte le temps"
+				% [to, act, previous])
+		previous = maxi(previous, act)
+	for region_id: StringName in Region.ids():
+		if not reached.has(String(region_id)):
+			_problems.append("aucune route ne mène à « %s »" % region_id)
+
+	# LES VOISINES SE LISENT SUR LA CARTE, et leur teinte dit leur crédit.
+	# Une ville déclarée sans place, ou placée sans exister, ne se verrait
+	# nulle part.
+	for town_id: StringName in Neighbour.ids():
+		if not WorldAtlas.town(town_id).is_empty():
+			continue
+		_problems.append("« %s » n'a pas de place sur la carte" % town_id)
+	for drawn: StringName in WorldAtlas.towns():
+		if not Neighbour.exists(drawn):
+			_problems.append("la carte pose « %s », qui n'est pas une voisine" % drawn)
+			continue
+		# UNE VILLE AU LARGE CONTREDIRAIT SON TEXTE : « à deux jours de
+		# marche » ne se dessine pas par un caillou en pleine mer.
+		if not Geometry2D.is_point_in_polygon(
+				WorldAtlas.town_at(drawn), WorldAtlas.shape_of(WorldAtlas.HOME)):
+			_problems.append("« %s » est posée hors de l'île du royaume" % drawn)
+
+
+func _check_shape(node_id: StringName, canvas: Vector2) -> void:
+	var shape := WorldAtlas.shape_of(node_id)
+	if shape.size() < 3:
+		_problems.append("« %s » n'a pas de contour : elle ne se dessinera pas" % node_id)
+		return
+	for point: Vector2 in shape:
+		if point.x < 0.0 or point.y < 0.0 or point.x > canvas.x or point.y > canvas.y:
+			_problems.append("le contour de « %s » sort de la toile en %s" % [node_id, point])
+			return
+	if not Geometry2D.is_point_in_polygon(WorldAtlas.anchor_of(node_id), shape):
+		_problems.append("le centre de « %s » tombe hors de sa propre terre" % node_id)

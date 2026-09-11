@@ -41,20 +41,14 @@ func before_each() -> void:
 	await wait_process_frames(2)
 
 
-func _region_button(region_id: StringName) -> Button:
-	# LE TEXTE SE CHERCHE DANS L'ARBRE, pas sur le bouton. Depuis T11.6 une
-	# rangée de région est un bouton qui CONTIENT un carré de terre, un nom
-	# et un état : le libellé n'est plus sur le bouton lui-même. Un test qui
-	# fixe la forme d'un nœud d'habillage casse au premier changement de
-	# style sans que rien ne soit faux — la leçon des deux tests
-	# d'expédition de T9.7.
-	for child: Node in _screen._regions.get_children():
-		if child is Button and _texts_of(child).any(
-			func(text: String) -> bool:
-				return text.begins_with(tr(Region.name_key(region_id)))
-		):
-			return child
-	return null
+## LA CARTE SE TOUCHE, ELLE NE SE CLIQUE PLUS PAR RANGÉE (T12.11). L'écran
+## n'empile plus six boutons : `world_map_view` dessine la mer, les terres
+## et la route, et rend un identifiant de région. Un test qui fixerait la
+## forme d'un nœud d'habillage casserait au premier changement de style
+## sans que rien ne soit faux — la leçon des deux tests d'expédition de
+## T9.7, prise ici par avance.
+func _pick(region_id: StringName) -> void:
+	_screen._atlas.picked.emit(region_id)
 
 
 func _texts_of(node: Node) -> Array[String]:
@@ -70,23 +64,39 @@ func _texts_of(node: Node) -> Array[String]:
 
 # --- Le monde se voit en entier -------------------------------------------
 
-func test_les_six_regions_sont_affichees() -> void:
-	assert_eq(_screen._regions.get_child_count(), Region.ids().size())
+func test_les_six_regions_sont_sur_la_carte() -> void:
+	for region_id: StringName in Region.ids():
+		assert_true(
+			WorldAtlas.has_node(region_id),
+			"« %s » n'est nulle part sur la carte" % region_id
+		)
+		_pick(region_id)
+		await wait_process_frames(1)
+		assert_eq(_screen.selected_region(), region_id)
+
+
+## La carte reçoit ce qu'il lui faut pour se dessiner : ce qui est ouvert,
+## et le crédit des voisines qui décide de leur couleur.
+func test_la_carte_recoit_la_campagne_et_le_royaume() -> void:
+	assert_not_null(_screen._atlas.campaign)
+	assert_eq(_screen._atlas.selected, _screen.selected_region())
 
 
 func test_une_region_verrouillee_se_lit() -> void:
 	# Le verrou dit qu'il y a une suite, et c'est gratuit.
-	var button := _region_button(&"black_empire")
-	assert_not_null(button)
-	assert_false(button.disabled, "on ne peut même pas la consulter")
-	assert_true(
-		_texts_of(button).has(tr("WORLD_LOCKED")),
-		"une région verrouillée doit le dire"
-	)
+	_pick(&"black_empire")
+	await wait_process_frames(1)
+	var lines := PackedStringArray()
+	for child: Node in _screen._brief.get_children():
+		if child is Label:
+			lines.append((child as Label).text)
+	var joined := " ".join(lines)
+	assert_string_contains(joined, tr(Region.name_key(&"black_empire")))
+	assert_string_contains(joined, tr("WORLD_LOCKED_TEXT"))
 
 
 func test_consulter_une_region_verrouillee_interdit_le_depart() -> void:
-	_region_button(&"black_empire").pressed.emit()
+	_pick(&"black_empire")
 	await wait_process_frames(1)
 	assert_eq(_screen.selected_region(), &"black_empire")
 	assert_true(_screen._depart.disabled, "on peut partir vers une région verrouillée")

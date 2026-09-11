@@ -13,6 +13,14 @@ extends Control
 ## bouton. Le verrou dit qu'il y a une suite, et c'est gratuit : les cinq
 ## régions verrouillées n'ont qu'un nom et une ligne.
 ##
+## C'EST UNE CARTE DEPUIS T12.11, et le nom mentait avant. L'écran empilait
+## six BOÎTES rectangulaires portant chacune un carré de terre : rien n'y
+## disait où sont les Dunes par rapport aux Terres Vertes, ni que l'Empire
+## est au bout du monde — donc le § 27, « le joueur découvre », n'avait
+## rien à découvrir. `world_map_view` dessine la mer, les terres et la
+## route des six actes ; cet écran garde ce qu'il faisait déjà, la fiche et
+## la composition de l'équipe.
+##
 ## L'ÉQUIPE SE COMPOSE ICI ET PAS DANS L'EXPÉDITION. Une fois partie, elle
 ## ne change plus : c'est ce qui fait de sa composition une décision, et
 ## d'une déroute une conséquence de cette décision-là.
@@ -22,9 +30,6 @@ signal departed(region_id: StringName, squad_ids: Array)
 
 signal closed
 
-## Hauteur d'une rangée de région, et côté de son carré de terre.
-const ROW_HEIGHT_PX := 84
-const SWATCH_PX := 56
 const SQUAD_CARD_PX := 250
 const SQUAD_CARD_HEIGHT_PX := 112
 
@@ -39,7 +44,8 @@ var _kingdom: Kingdom = null
 @onready var _title: Label = %Title
 @onready var _gold: Label = %Gold
 @onready var _back: Button = %Back
-@onready var _regions: VBoxContainer = %Regions
+@onready var _atlas: Control = %Atlas
+@onready var _atlas_frame: PanelContainer = %AtlasFrame
 @onready var _brief: VBoxContainer = %Brief
 @onready var _brief_frame: PanelContainer = %BriefFrame
 @onready var _squad: HBoxContainer = %Squad
@@ -54,6 +60,13 @@ func _ready() -> void:
 	_back.text = tr("COMBAT_BACK")
 	_back.pressed.connect(func() -> void: closed.emit())
 	_depart.pressed.connect(_on_depart)
+	_atlas.picked.connect(_on_region_picked)
+	_atlas_frame.add_theme_stylebox_override("panel", UiSkin.framed_style(&"panel"))
+	refresh()
+
+
+func _on_region_picked(region_id: StringName) -> void:
+	_selected = region_id
 	refresh()
 
 
@@ -120,89 +133,16 @@ func refresh() -> void:
 
 # --- Les régions -----------------------------------------------------------
 
+## LA CARTE EST DESSINÉE, PAS EMPILÉE (T12.11). Six rangées identiques ne
+## font pas une carte, elles font une liste — et c'est exactement ce que
+## cet écran était. La vue reçoit la campagne (qui est ouvert), le royaume
+## (le crédit des voisines, qui décide de leur couleur) et la région
+## choisie ; elle rend un clic.
 func _build_regions() -> void:
-	for child in _regions.get_children():
-		child.queue_free()
-	for region_id: StringName in Region.ids():
-		_regions.add_child(_region_row(region_id))
-
-
-## Une région : son carré de terre, son nom, son état.
-##
-## SIX RANGÉES IDENTIQUES NE FONT PAS UNE CARTE, elles font une liste —
-## et c'est exactement ce que la carte du monde était : six boîtes brunes
-## portant six noms. Chaque région a maintenant SA couleur, qui teinte à
-## la fois son carré d'herbe et le liseré de sa rangée. On reconnaît les
-## Dunes Ardentes sans lire leur nom, ce qui est la seule chose qu'une
-## carte doit savoir faire.
-##
-## UN BOUTON, PAS UN PANNEAU, malgré les apparences : la rangée se
-## clique, donc elle doit être un `Button`. Le décor est posé DEDANS, en
-## `MOUSE_FILTER_IGNORE`, sinon le carré d'herbe avale le clic.
-func _region_row(region_id: StringName) -> Button:
-	var open := _campaign.is_open(region_id)
-	var accent := Region.accent_of(region_id)
-
-	var button := Button.new()
-	button.custom_minimum_size = Vector2(0, ROW_HEIGHT_PX)
-	button.toggle_mode = true
-	button.button_pressed = region_id == _selected
-	# Une région verrouillée reste LISIBLE et cliquable : le joueur a le
-	# droit de lire ce qui l'attend. Elle ne peut simplement pas être
-	# choisie pour partir, et le bouton du bas le dit.
-	button.disabled = false
-	UiSkin.dress_button(button, accent if open else &"muted")
-	button.pressed.connect(func() -> void:
-		_selected = region_id
-		refresh())
-
-	var row := HBoxContainer.new()
-	row.add_theme_constant_override("separation", UiTheme.metric(&"card_margin"))
-	row.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	row.offset_left = UiTheme.metric(&"card_margin")
-	row.offset_right = -UiTheme.metric(&"card_margin")
-	row.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	button.add_child(row)
-
-	var swatch := TextureRect.new()
-	swatch.texture = UiSkin.terrain_swatch(UiTheme.color(accent), SWATCH_PX)
-	swatch.custom_minimum_size = Vector2(SWATCH_PX, SWATCH_PX)
-	swatch.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-	swatch.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
-	swatch.size_flags_vertical = Control.SIZE_SHRINK_CENTER
-	swatch.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	# UNE RÉGION VERROUILLÉE EST ÉTEINTE, pas cachée : on voit qu'il y a
-	# une terre là-bas, on ne sait pas encore de quelle couleur elle est.
-	swatch.modulate = Color(1, 1, 1, 1.0 if open else 0.35)
-	row.add_child(swatch)
-
-	var column := VBoxContainer.new()
-	column.add_theme_constant_override("separation", 0)
-	column.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	column.size_flags_vertical = Control.SIZE_SHRINK_CENTER
-	column.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	row.add_child(column)
-
-	var name_ := Label.new()
-	name_.text = tr(Region.name_key(region_id))
-	name_.add_theme_font_size_override("font_size", UiTheme.font_size(&"subheading"))
-	name_.add_theme_color_override(
-		"font_color", UiTheme.color(accent) if open else UiTheme.color(&"ink_muted")
-	)
-	name_.add_theme_constant_override("outline_size", 0)
-	name_.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	column.add_child(name_)
-
-	var state := Label.new()
-	state.text = (
-		tr("WORLD_ACT") % Region.act_of(region_id) if open else tr("WORLD_LOCKED")
-	)
-	state.add_theme_font_size_override("font_size", UiTheme.font_size(&"small"))
-	state.add_theme_color_override("font_color", UiTheme.color(&"ink_soft"))
-	state.add_theme_constant_override("outline_size", 0)
-	state.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	column.add_child(state)
-	return button
+	_atlas.campaign = _campaign
+	_atlas.kingdom = _kingdom
+	_atlas.selected = _selected
+	_atlas.refresh()
 
 
 func _build_brief() -> void:

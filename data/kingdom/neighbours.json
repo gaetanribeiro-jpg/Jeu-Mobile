@@ -5,12 +5,33 @@
   "minimum": -3,
   "maximum": 3,
   "levels": [
-   { "from": -3, "name_key": "STANDING_HOSTILE" },
-   { "from": -1, "name_key": "STANDING_COLD" },
-   { "from": 0, "name_key": "STANDING_NEUTRAL" },
-   { "from": 1, "name_key": "STANDING_CORDIAL" },
-   { "from": 3, "name_key": "STANDING_ALLIED" }
-  ]
+   {
+    "from": -3,
+    "name_key": "STANDING_HOSTILE",
+    "tint": "health_low"
+   },
+   {
+    "from": -1,
+    "name_key": "STANDING_COLD",
+    "tint": "steel"
+   },
+   {
+    "from": 0,
+    "name_key": "STANDING_NEUTRAL",
+    "tint": "wood_dim"
+   },
+   {
+    "from": 1,
+    "name_key": "STANDING_CORDIAL",
+    "tint": "moss"
+   },
+   {
+    "from": 3,
+    "name_key": "STANDING_ALLIED",
+    "tint": "gold"
+   }
+  ],
+  "_tint_note": "LA TEINTE DIT LE CRÉDIT SUR LA CARTE DU MONDE (T12.11). Le bâtiment d'une ville est DÉSATURÉ puis reteint à la couleur de son palier : on lit d'un coup d'œil qui vous aime, et ça ne dépense aucune des cinq couleurs du pack, qui sont un budget déjà tenu. C'est la règle de T11.6 — la couleur porte une information, jamais une décoration.\n\nELLES SONT TOUTES CLAIRES, ET C'EST MESURÉ : un bâtiment désaturé puis MULTIPLIÉ par une couleur rend d'autant plus sombre que la couleur l'est. Le gris `stone` (0,42) donnait trois SILHOUETTES NOIRES sur la carte — on ne distinguait plus une tour d'une maison. Neuvième variante de « une source ne se teinte que si elle est claire », prise cette fois par l'autre bout : c'est la TEINTE qui doit être claire."
  },
  "towns": {
   "valmont": {

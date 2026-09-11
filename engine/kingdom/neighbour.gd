@@ -121,6 +121,18 @@ static func levels() -> Array:
 
 ## Le nom du palier où tombe un crédit. L'écran dit « cordial » plutôt que
 ## « +1 », qui ne veut rien dire pour personne.
+## La couleur du palier où tombe un crédit — le NOM d'une couleur de la
+## palette, jamais un code (règle de T11.6). `verify_kingdom` refuse une
+## couleur inconnue.
+static func standing_tint(value: int) -> StringName:
+	var found := &""
+	for level: Variant in levels():
+		var step: Dictionary = level
+		if value >= int(step.get("from", 0)):
+			found = StringName(step.get("tint", ""))
+	return found
+
+
 static func standing_key(value: int) -> String:
 	var found := ""
 	for level: Variant in levels():

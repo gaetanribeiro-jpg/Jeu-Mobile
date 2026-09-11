@@ -19,8 +19,8 @@
    "asset": "resources/tree1",
    "slots": 3,
    "spot": [
-    330,
-    545
+    160,
+    500
    ],
    "scale": 0.5
   },
@@ -32,8 +32,8 @@
    "asset": "decorations/rock3",
    "slots": 3,
    "spot": [
-    500,
-    545
+    352,
+    516
    ],
    "scale": 1.8
   },
@@ -45,8 +45,8 @@
    "asset": "resources/gold_stone_4",
    "slots": 3,
    "spot": [
-    650,
-    545
+    544,
+    504
    ],
    "scale": 1.2,
    "_asset_note": "PAS `gold_resource` : c'est la pépite que le Pawn PORTE, vingt-quatre pixels de contenu perdus dans une toile de 128. À l'écran, la mine d'or était un point jaune illisible. `gold_stone_4` est le rocher aurifère, soixante-trois pixels de contenu — c'est le gisement, et il se voit. Trouvé en capture d'écran, comme le feu invisible de T1.12."
@@ -59,8 +59,8 @@
    "asset": "resources/sheep_idle",
    "slots": 3,
    "spot": [
-    810,
-    545
+    736,
+    512
    ],
    "scale": 1.0
   },

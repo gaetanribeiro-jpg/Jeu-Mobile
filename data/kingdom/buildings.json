@@ -46,8 +46,8 @@
    ],
    "_grants_note": "Le vrai pouvoir du château n'est pas dans cette colonne : c'est lui qui PLAFONNE le niveau de tous les autres bâtiments. Un habitant de plus par niveau est la prime, pas la fonction.",
    "spot": [
-    340,
-    300
+    288,
+    264
    ]
   },
   "houses": {
@@ -84,8 +84,8 @@
     }
    ],
    "spot": [
-    120,
-    520
+    160,
+    444
    ]
   },
   "barracks": {
@@ -123,8 +123,8 @@
     }
    ],
    "spot": [
-    580,
-    300
+    608,
+    246
    ],
    "recruit_cost": {
     "gold": 180,
@@ -171,8 +171,8 @@
     }
    ],
    "spot": [
-    790,
-    300
+    800,
+    258
    ],
    "recruit_cost": {
     "gold": 180,
@@ -213,8 +213,8 @@
     }
    ],
    "spot": [
-    110,
-    300
+    96,
+    250
    ],
    "recruit_cost": {
     "gold": 180,
@@ -257,18 +257,18 @@
     }
    ],
    "spot": [
-    700,
-    425
+    480,
+    380
    ],
    "_spot_note": "ELLE ÉTAIT EN 930 SUR UNE TOILE DE 900, donc DESSINÉE HORS DU TERRAIN depuis qu'elle existe : un joueur qui bâtissait la tour — et il le faut pour l'ascension — ne voyait rien apparaître. Aucun test ne le disait, seule la capture. `verify_kingdom` refuse désormais un emplacement qui sort de la toile."
   }
  },
- "_layout_note": "`spot` est le pied du bâtiment sur le terrain du royaume, en pixels d'une toile de 900 x 560. C'est de la MISE EN SCÈNE, et elle vit ici plutôt que dans le code parce que le § 5 fait de l'évolution visuelle du royaume une exigence : déplacer une caserne doit se faire en changeant deux nombres, pas en recompilant.",
+ "_layout_note": "LES EMPLACEMENTS SONT DES PIXELS DE LA GRILLE de `ground.json` (15 × 9 cases de 64 = 960 × 576), posés PAR LE PIED. `verify_kingdom` refuse un emplacement hors de la toile — la tour de guet était dessinée en 930 sur 900 depuis sa création (T12.8) — et refuse depuis T12.11 un bâtiment posé à l'eau ou dans un rocher : il se dessinerait très bien, et se lirait comme un défaut.\n\nLES ORDONNÉES SONT LÉGÈREMENT DÉCALÉES, exprès. Quatre bâtiments alignés au pixel se lisent comme une LISTE ; quelques pixels d'écart en font un village. C'est la même raison qui décale les rochers du rivage dans leur case (T9.10).",
  "_recruit_note": "Le § 45 met le recrutement dans la Phase 4, et c'est le bâtiment qui l'autorise : sans caserne, pas de Guerrier. Le coût est en OR et en NOURRITURE — l'or parce qu'un héros s'équipe, la nourriture parce qu'il mange. Payer en bois pour un homme n'aurait rien voulu dire, et une seule monnaie aurait fait du recrutement un robinet plutôt qu'un arbitrage contre les bâtiments.",
  "_ward_note": "CE QU'UN BÂTIMENT DÉFEND, `ward`, et tous n'en font pas autant. Une MAISON défendait exactement comme une tour de guet tant que la défense comptait des NIVEAUX de bâtiment : le seul bâtiment dont le rôle soit la défense n'avait donc aucun rôle. La tour en donne trois par niveau, le château deux — il a des murs —, la caserne et le camp d'archers un chacun, parce qu'on y forme des gens d'armes. Les maisons et le monastère n'en donnent aucun : ils servent à autre chose, et c'est ce qui fait de bâtir un arbitrage entre produire plus et tenir mieux.",
  "canvas": [
-  900,
-  560
+  960,
+  576
  ],
  "_canvas_note": "LA TOILE DE RÉFÉRENCE du terrain du royaume, en pixels. Les emplacements des bâtiments et des chantiers s'y expriment, et la vue la met à l'échelle du contrôle.\n\nELLE VIT ICI POUR POUVOIR ÊTRE VÉRIFIÉE. Déclarée en constante dans `kingdom_view.gd`, aucun outil ne pouvait comparer un emplacement à ses bornes — et la tour est restée hors du terrain sans que rien ne s'en plaigne."
 }

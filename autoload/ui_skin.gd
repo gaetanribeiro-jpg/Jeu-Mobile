@@ -690,6 +690,56 @@ func tinted_tileset(ground: StringName) -> Texture2D:
 	return texture
 
 
+## UN BÂTIMENT DÉSATURÉ PUIS RETEINT (T12.11) — pour les villes voisines
+## de la carte du monde.
+##
+## LA COULEUR PORTE UNE INFORMATION, JAMAIS UNE DÉCORATION (T11.6) : la
+## teinte d'une ville dit son CRÉDIT — grise tant qu'on ne la connaît pas,
+## verte quand on est cordial, or quand on est allié, rouge quand on est
+## brouillé. On lit d'un coup d'œil qui vous aime.
+##
+## ET ÇA NE DÉPENSE AUCUNE DES CINQ COULEURS DU PACK, qui sont un budget
+## déjà tenu : trois rangs de héros, deux factions. Le sprite est passé en
+## gris avant d'être teint, donc le Bleu des héros n'est pas engagé —
+## huitième emploi de « une source ne se teinte que si elle est claire ».
+## `lift` REMONTE LES DEMI-TONS AVANT LA TEINTE, et il le faut : un
+## bâtiment du pack a une luminance MÉDIANE de 0,34 pour un maximum de
+## 0,85. Ramener son plus clair à blanc (ce que fait `_desaturate` depuis
+## les jauges de T9.2) ne le remonte qu'à 0,40 — multiplié par une teinte,
+## il retombe sous 0,30 et les trois villes rendaient des SILHOUETTES
+## NOIRES où l'on ne distinguait plus une tour d'une maison.
+##
+## C'est « une source ne se teinte que si elle est claire » prise par le
+## troisième bout : ni la source ni la teinte n'étaient claires, et il a
+## fallu éclaircir la source pour de bon.
+func tinted_building(key: StringName, tint: Color, lift: float = 1.0) -> Texture2D:
+	var cache := StringName("town|%s|%s|%.2f" % [key, tint.to_html(false), lift])
+	if _textures.has(cache):
+		return _textures[cache]
+	var entry := AssetTable.building(key, "Blue")
+	if entry.is_empty():
+		return null
+	var source := _load_image(String(entry.get("path", "")))
+	if source == null:
+		return null
+	_desaturate(source, true)
+	for y in source.get_height():
+		for x in source.get_width():
+			var pixel := source.get_pixel(x, y)
+			if pixel.a <= 0.0:
+				continue
+			var raised := (
+				Color(pow(pixel.r, lift), pow(pixel.g, lift), pow(pixel.b, lift))
+				if lift != 1.0 else pixel
+			)
+			source.set_pixel(x, y, Color(
+				raised.r * tint.r, raised.g * tint.g, raised.b * tint.b, pixel.a
+			))
+	var texture := ImageTexture.create_from_image(source)
+	_textures[cache] = texture
+	return texture
+
+
 ## L'icône d'une ressource, par la référence « catégorie/clé » que ses
 ## données déclarent.
 ##

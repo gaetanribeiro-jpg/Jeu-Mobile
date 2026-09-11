@@ -392,7 +392,18 @@
   "sea_edge_tiles": 0.75,
   "_sea_side_note": "LA MER AUTOUR DU PLATEAU (T9.9). Le plateau est une île : l'eau est déjà son fond, et hors grille compte déjà comme de l'eau pour le dessin des rives. Il lui manquait sa mer.\n\nÀ L'HORIZONTALE SEULEMENT. Un premier essai débordait des quatre côtés : l'écran devenait entièrement bleu et le fond sombre à motif disparaissait. La mer ne fait donc que deux bandes, à gauche et à droite, là où il y avait du vide entre les panneaux et l'île.\n\nCE N'EST PAS DU JEU, ET ÇA NE DOIT JAMAIS LE DEVENIR : la grille reste 12 × 9, la caméra cadre TOUJOURS sur elle seule, et le clamp de déplacement ne bouge pas. Élargir la zone cadrée coûterait 17 % de la taille des cases — c'est la hauteur qui contraint le cadrage (0,85 contre 0,94), donc ajouter deux colonnes fait passer la contrainte en largeur et TOUT rétrécit.\n\nTROIS CASES, DONT DEUX DE FONDU. La mer ne peut pas simplement s'arrêter sous les panneaux : ceux-ci ne descendent pas jusqu'en bas de l'écran, et sous eux le turquoise redeviendrait visible jusqu'au bord de la fenêtre — c'est ce qui donnait « le fond est entièrement bleu ». Elle s'éteint donc vers la couleur du FOND de l'interface, ce qui laisse une case d'eau franche contre l'île puis deux d'extinction. Ce qu'on voit entre un panneau et le plateau vaut environ 1,75 case.",
   "decoration_max_tiles": 1.6,
-  "_decoration_max_tiles_note": "Largeur maximale d'un décor, en cases. Les bâtiments du pack font 128 à 320 pixels de large pour des cases de 64 : posés à leur taille native sur une carte de défense, ils se recouvraient les uns les autres et débordaient du plateau. Les décors plus petits qu'une case et demie ne sont pas touchés — un arbre garde sa taille."
+  "_decoration_max_tiles_note": "Largeur maximale d'un décor, en cases. Les bâtiments du pack font 128 à 320 pixels de large pour des cases de 64 : posés à leur taille native sur une carte de défense, ils se recouvraient les uns les autres et débordaient du plateau. Les décors plus petits qu'une case et demie ne sont pas touchés — un arbre garde sa taille.",
+  "_map_note": "LA CARTE DU MONDE (T12.11). Tout ce qui suit est du ressenti de carte — épaisseur d'un rivage, d'une route, taille d'un nom. `view.json` plutôt que `theme.json` parce que c'est un DÉCOR qu'on regarde, pas un menu qu'on lit : le ressenti d'une côte n'est pas la lisibilité d'un bouton. Les longueurs sont en pixels de la toile de l'atlas (1000 × 560), donc elles suivent le cadrage.",
+  "map_coast_width": 2.5,
+  "map_select_width": 4.0,
+  "map_road_width": 6.0,
+  "map_castle_scale": 0.26,
+  "map_font": 26.0,
+  "map_town_font": 18.0,
+  "map_caption_drop": 26.0,
+  "map_town_caption_drop": 16.0,
+  "map_text_outline": 5.0,
+  "map_town_lift": 0.5
  },
  "idle_float": {
   "_note": "Flottement sinusoïdal des sprites au repos (§ 12). Trivial à coder, fort en impact.",

@@ -284,11 +284,24 @@ func _check_trades() -> void:
 ## toile était une constante de la VUE que rien d'autre ne lisait.
 func _check_spots() -> void:
 	var canvas := Buildings.canvas()
-	print("\ntoile du royaume : %d × %d" % [canvas.x, canvas.y])
+	var ground := KingdomGround.canvas()
+	print("\ntoile du royaume : %d × %d  (terrain %d × %d cases)"
+		% [canvas.x, canvas.y, KingdomGround.width(), KingdomGround.height()])
+	# LA TOILE EST LA GRILLE, et les deux fichiers doivent le dire pareil.
+	# Une toile plus grande que le terrain poserait un bâtiment dans la mer
+	# hors plateau ; plus petite, elle rendrait des cases inatteignables.
+	# La tour de guet est restée dessinée hors du terrain depuis sa
+	# création parce que la toile était une CONSTANTE DE LA VUE (T12.8).
+	if canvas != ground:
+		_problems.append(
+			"la toile de `buildings.json` %s ne vaut pas le terrain %s"
+			% [canvas, ground]
+		)
 	for building_id: StringName in Buildings.ids():
 		_check_spot(building_id, Buildings.spot_of(building_id), canvas)
 	for worksite_id: StringName in Worksite.ids():
 		_check_spot(worksite_id, Worksite.spot_of(worksite_id), canvas)
+	_check_fence()
 
 
 func _check_spot(owner_id: StringName, spot: Vector2, canvas: Vector2) -> void:
@@ -297,6 +310,53 @@ func _check_spot(owner_id: StringName, spot: Vector2, canvas: Vector2) -> void:
 			"%s : emplacement %s hors de la toile %s — il ne se dessinera pas"
 			% [owner_id, spot, canvas]
 		)
+		return
+	# UN BÂTIMENT POSÉ À L'EAU SE DESSINE TRÈS BIEN (T12.11), et se lit
+	# comme un défaut. Depuis que le sol du royaume est un vrai plateau, la
+	# question a une réponse : la case porte-t-elle quelqu'un ?
+	if not KingdomGround.can_stand_at(spot):
+		_problems.append(
+			"%s : emplacement %s sur du « %s » — on n'y bâtit pas"
+			% [owner_id, spot, KingdomGround.terrain_at(KingdomGround.cell_of(spot))]
+		)
+
+
+## LA CLÔTURE EST UNE DÉLIMITATION, PAS UNE FRISE (T12.11). Deux choses la
+## rendent muette sans rien casser : un morceau nommé qui n'existe pas dans
+## l'atlas — `fence_part` rend alors (−1, −1) et la vue saute la case, donc
+## un TROU au milieu de la ligne —, et une enceinte sans ouverture, qui
+## enfermerait le village au lieu de le border.
+func _check_fence() -> void:
+	var pieces := KingdomGround.fence_pieces()
+	if pieces.is_empty():
+		return
+	var declared := AssetTable.sprite(&"extra", KingdomGround.fence_atlas())
+	if declared.is_empty():
+		_problems.append("la clôture cite « %s », absent de la table"
+			% KingdomGround.fence_atlas())
+		return
+	var columns := int(declared.get("columns", 0))
+	var rows := int(declared.get("rows", 0))
+	var covered := {}
+	for piece: Dictionary in pieces:
+		var part := StringName(piece["part"])
+		var cell: Vector2i = KingdomGround.fence_part(part)
+		if cell.x < 0 or cell.x >= columns or cell.y < 0 or cell.y >= rows:
+			_problems.append(
+				"la clôture demande « %s » en %s, hors d'un atlas de %d × %d"
+				% [part, cell, columns, rows])
+		covered[piece["cell"]] = true
+	var gaps := 0
+	for row in KingdomGround.height():
+		var seen := false
+		for column in KingdomGround.width():
+			var here: bool = covered.has(Vector2i(column, row))
+			if seen and not here:
+				gaps += 1
+			seen = here
+	print("clôture : %d morceaux, %d ouverture(s)" % [pieces.size(), gaps])
+	if gaps <= 0:
+		_problems.append("la clôture n'a aucune ouverture : le village est enfermé")
 
 
 ## DEUX MOITIÉS QUI NE SE PARLENT PAS NE FONT PAS UNE MÉCANIQUE — c'est
@@ -526,6 +586,16 @@ func _check_neighbours() -> void:
 			_problems.append("les paliers de crédit ne montent pas : %d après %d" % [from, previous])
 		previous = from
 		_check_translation(&"standing", String(step.get("name_key", "")))
+		# LA TEINTE DIT LE CRÉDIT SUR LA CARTE DU MONDE (T12.11), par le NOM
+		# d'une couleur de la palette et jamais par un code — règle de
+		# T11.6. Un nom inconnu rend du noir opaque, sans une erreur.
+		var tint := StringName(step.get("tint", ""))
+		if tint.is_empty():
+			_problems.append("le palier « %s » n'a pas de teinte"
+				% step.get("name_key", ""))
+		elif not UiTheme.has_color(tint):
+			_problems.append("le palier « %s » cite la couleur inconnue « %s »"
+				% [step.get("name_key", ""), tint])
 	for value in range(Neighbour.minimum(), Neighbour.maximum() + 1):
 		if Neighbour.standing_key(value).is_empty():
 			_problems.append("le crédit %+d ne tombe dans aucun palier" % value)

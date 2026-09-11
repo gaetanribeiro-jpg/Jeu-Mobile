@@ -245,7 +245,8 @@ dur : passer par `data/assets.json`.
 - **Phase courante : 12 — la campagne entière.** T12.3 le recrutement à
   trois candidats, T12.4 la brasserie du Monastère, T12.5 les actes 5 et 6,
   T12.7 le Lancier, T12.8 la garde et la fonte, T12.9 les habitants,
-  T12.10 le conseil du royaume et les villes voisines.
+  T12.10 le conseil du royaume et les villes voisines, T12.11 la carte du
+  monde dessinée et le royaume qui a une tête.
   **La campagne se joue de bout en bout : six actes, 54 cartes.**
   **991 tests passent, les dix vérificateurs sont verts.**
 - **Phase 11 — la bêta.** Les chantiers sont listés avec leur
@@ -1161,6 +1162,92 @@ un barème.
   dessinent pas. Le pack donne huit bâtiments en cinq couleurs et les cinq
   couleurs sont un budget déjà tenu (trois rangs de héros, deux factions) :
   poser Valmont sur la carte rouvrirait cette décision verrouillée.
+
+**LA CARTE DU MONDE ÉTAIT UNE LISTE, ET LE NOM MENTAIT DEPUIS T3.6
+(T12.11).** Reproche de Gaetan : « pour la carte du monde, dessine-la ».
+Il avait raison — l'écran empilait six BOÎTES rectangulaires portant
+chacune un carré de terre. Rien n'y disait où sont les Dunes par rapport
+aux Terres Vertes, ni que l'Empire est au bout du monde : le § 27, « le
+joueur découvre », n'avait rien à découvrir. Cinq choses à ne pas
+défaire :
+- **AUCUN PIXEL N'A ÉTÉ DESSINÉ POUR CET ÉCRAN.** La mer est la tuile
+  d'eau du pack carrelée, les terres sont son tileset DÉSATURÉ puis
+  reteinté à l'accent de chaque région — la même opération que le carré
+  qu'elles remplacent, donc les deux ne peuvent pas diverger —, et les
+  villes sont ses bâtiments. Les contours sont des polygones remplis par
+  `draw_colored_polygon` avec des UV en cases de 64 : le tileset se
+  carrelle dans une forme organique au lieu de faire un carré.
+- **LA ROUTE DES SIX ACTES EST CE QUI REND L'ORDRE LISIBLE.** Sans elle,
+  six terres posées sur une mer sont six terres ; avec elle, c'est un
+  chemin. Elle part du royaume, suit les actes en s'éloignant et ne se
+  croise jamais. `verify_world` refuse une route qui REMONTE LE TEMPS, une
+  région qu'aucune route n'atteint, et une terre dessinée qui ne serait
+  plus une région.
+- **LES ROUTES PASSENT SOUS LES TERRES**, et c'est ce qui leur donne l'air
+  d'aborder une côte : leurs deux bouts disparaissent sous le rivage au
+  lieu de s'arrêter net au milieu de la mer.
+- **LES VOISINES DISENT LEUR CRÉDIT PAR LEUR COULEUR** — grises tant qu'on
+  ne les connaît pas, vertes quand on est cordial, or quand on est allié,
+  rouges quand on est brouillé. C'est la règle de T11.6 (la couleur porte
+  une information) et **ça ne dépense AUCUNE des cinq couleurs du pack**,
+  qui sont un budget déjà tenu : le bâtiment est désaturé avant d'être
+  teint. Elles sont posées SUR l'île du royaume, pas au large — leur texte
+  dit « à deux jours de marche », et `verify_world` refuse une ville en
+  pleine mer. Il a attrapé Fort-Aubin du premier coup.
+- **`ink_disabled` N'EST PAS UNE TEINTE DE LAVAGE :** il porte un alpha de
+  0,38, donc une terre verrouillée devenait transparente EN PLUS d'être
+  sombre et se noyait dans la mer. Une couleur qui multiplie doit être
+  opaque.
+
+**LE ROYAUME ÉTAIT DES BÂTIMENTS POSÉS SUR DE L'HERBE (T12.11).** Reproche
+de Gaetan, mot pour mot : « pas de décoration, pas de délimitations, pas
+d'animations ». C'était exact — `_draw_ground` carrelait UNE tuile d'herbe
+sur toute la surface et six bâtiments se posaient dessus en deux rangées
+droites. La réponse est celle de l'écran de titre (T11.3) : un vrai
+`CombatBoard` bâti par `from_rows` et rendu par le MÊME `terrain_view` que
+les combats, dont le royaume hérite gratuitement les rives, l'écume
+animée, les rochers d'eau, la mer et son fondu. Six choses à ne pas
+défaire :
+- **LA GRILLE EST LA TOILE.** 15 × 9 cases de 64 = 960 × 576, et c'est
+  exactement `canvas` dans `buildings.json`. `verify_kingdom` refuse que
+  les deux divergent, et refuse désormais un bâtiment posé à l'eau ou dans
+  un rocher : il se dessinerait très bien, et se lirait comme un défaut.
+- **LE PLATEAU SE CADRE, IL NE S'ÉTIRE PLUS.** Les positions s'étiraient
+  sur les deux axes — la bonne réponse tant que le fond était un aplat,
+  parce qu'une bande noire au bord se lit comme un écran cassé. Avec une
+  île, la bande n'existe plus : la mer la remplit. Un tileset ne supporte
+  pas l'étirement.
+- **LA CLÔTURE EXISTAIT DÉJÀ DANS LE PACK.** Le carnet répétait « pas de
+  sprite de mur ni de porte » ; `wooden_fence` dort dans `extra` depuis le
+  premier jour. **Septième fois que la catégorie `extra` contredit
+  l'inventaire.**
+- **MAIS ELLE N'EST PAS LE TERRAIN `palisade`.** Celui-ci n'a qu'UNE tuile
+  pour tout le jeu — la verticale — parce qu'une case de combat ne sait
+  pas si elle est un bout de ligne ou un coin : posée en rangée, elle
+  donnait des PIQUETS ISOLÉS espacés de 64 px. Le royaume, lui, SAIT où
+  sont ses coins ; il déclare ses lignes et les morceaux d'atlas à
+  employer. Changer la tuile du terrain aurait touché les cartes de
+  l'acte 4.
+- **LA PORTE EST UN TROU DANS LA LIGNE.** Le pack ne dessine pas de
+  portail ; une enceinte interrompue au milieu se lit comme une entrée, et
+  `verify_kingdom` refuse une clôture qui ferait tout le tour.
+- **LES NUAGES SONT L'ANIMATION LA MOINS CHÈRE DU JEU**, et celle qui se
+  voit le plus longtemps : un mouton et un bûcheron bougent SUR PLACE, un
+  nuage traverse. Huit dorment dans le pack et seul l'écran de titre les
+  avait employés. Une rangée droite se corrige de même, à peu de frais :
+  quelques pixels d'écart en ordonnée suffisent pour que quatre bâtiments
+  fassent un village au lieu d'une liste.
+
+**UNE TEINTE QUI MULTIPLIE DOIT ÊTRE CLAIRE, ET LA SOURCE AUSSI (T12.11).**
+Un bâtiment du pack a une luminance MÉDIANE de 0,34 pour un maximum de
+0,85 : ramener son plus clair à blanc — ce que `_desaturate` fait depuis
+les jauges de T9.2 — ne le remonte qu'à 0,40, et multiplié par une teinte
+il retombe sous 0,30. Les trois villes rendaient des **SILHOUETTES
+NOIRES** où l'on ne distinguait plus une tour d'une maison. Il a fallu
+relever les demi-tons par une puissance (`map_town_lift`) ET choisir des
+teintes claires : `stone` vaut 0,42, il noircissait tout. **Neuvième et
+dixième variantes de « une source ne se teinte que si elle est claire »,
+prises par les deux bouts qui restaient.**
 
 **L'expédition se joue, sur PC.** Écran de titre → carte du monde →
 composition de l'équipe → départ → route du § 28 (combats, évènements,
