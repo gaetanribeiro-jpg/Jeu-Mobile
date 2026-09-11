@@ -93,7 +93,20 @@ func is_master_at(worksite_id: StringName) -> bool:
 func work_a_cycle() -> void:
 	if posting.is_empty():
 		return
-	experience[posting] = experience_at(posting) + Worksite.xp_per_cycle()
+	learn(posting, Worksite.xp_per_cycle())
+
+
+## Apprendre en dehors d'un cycle, quand un conseil du royaume l'ordonne
+## (T12.10) : le puits qu'on creuse ensemble et le chantier-école font
+## progresser un métier sans qu'un cycle passe.
+##
+## LE MÉTIER S'APPREND PAR CHANTIER, pas en général. Un conseil qui
+## donnerait de l'expérience « au village » remettrait les habitants au
+## rang de bras interchangeables, ce que le § 9 refuse.
+func learn(worksite_id: StringName, amount: int) -> void:
+	if amount <= 0 or not Worksite.exists(worksite_id):
+		return
+	experience[worksite_id] = experience_at(worksite_id) + amount
 
 
 # --- Sérialisation ---------------------------------------------------------

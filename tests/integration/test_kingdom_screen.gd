@@ -312,3 +312,87 @@ func test_le_compte_rendu_du_cycle_s_affiche() -> void:
 	await wait_process_frames(1)
 	assert_string_contains(_screen._journal.text, tr(ResourceTable.name_key(&"wood")))
 	assert_string_contains(_screen._journal.text, "nourriture mangée")
+
+
+# --- Le conseil du royaume (T12.10) ----------------------------------------
+#
+# LE CONSEIL PREND LE PANNEAU, et c'est la moitié qui compte : une décision
+# posée à côté du reste se remet à plus tard, et « plus tard » n'arrive
+# pas — le joueur repart en expédition. Ces tests parcourent la chaîne
+# entière, du conseil posé jusqu'à l'issue lue, parce que c'est là que les
+# deux moitiés justes font une mécanique fausse (T11.8).
+
+func test_le_conseil_prend_le_panneau() -> void:
+	_kingdom.pending_council = &"caravan"
+	_screen.refresh()
+	await wait_process_frames(1)
+	var shown := _texts_under(_screen._panel)
+	assert_string_contains(shown, tr("COUNCIL_TITLE"))
+	assert_string_contains(shown, tr(KingdomEvent.name_key(&"caravan")))
+	# Le château est sélectionné par défaut : s'il s'affiche encore, le
+	# conseil n'a pas pris la main.
+	assert_false(shown.contains(tr(Buildings.name_key(Buildings.KEYSTONE))))
+
+
+func test_chaque_option_annonce_ses_termes() -> void:
+	_kingdom.pending_council = &"caravan"
+	_screen.refresh()
+	await wait_process_frames(1)
+	assert_eq(_panel_buttons().size(), KingdomEvent.options(&"caravan").size())
+	var shown := _texts_under(_screen._panel)
+	# Le télégraphe, appliqué au conseil : le pari dit sa chance ET ce
+	# qu'on perd en ratant. C'est la capture qui a montré que la seconde
+	# moitié se faisait couper quand elle vivait dans le bouton.
+	assert_string_contains(shown, tr(Neighbour.name_key(&"valmont")))
+	assert_string_contains(shown, tr(ResourceTable.name_key(&"wood")))
+
+
+func test_trancher_applique_et_montre_l_issue() -> void:
+	_kingdom.pending_council = &"caravan"
+	_screen.refresh()
+	await wait_process_frames(1)
+	var before := _kingdom.amount(&"food")
+	_panel_buttons()[0].pressed.emit()
+	await wait_process_frames(1)
+
+	assert_gt(_kingdom.amount(&"food"), before, "l'option n'a rien changé")
+	assert_eq(_kingdom.standing_of(&"valmont"), 1)
+	assert_gt(_changes, 0, "l'écran n'a pas demandé la sauvegarde")
+	assert_string_contains(_texts_under(_screen._panel), tr("COUNCIL_CARAVAN_0_OK"))
+
+	# L'issue se referme, et le panneau revient à ce qu'il montrait.
+	_button(tr("COUNCIL_CLOSE")).pressed.emit()
+	await wait_process_frames(1)
+	assert_string_contains(
+		_texts_under(_screen._panel), tr(Buildings.name_key(Buildings.KEYSTONE)))
+
+
+## Une option qu'on ne peut pas payer reste PROPOSÉE, grisée.
+func test_une_option_trop_chere_est_grisee_et_dit_pourquoi() -> void:
+	_company.gold = 0
+	_kingdom.pending_council = &"champion"
+	_screen.refresh()
+	await wait_process_frames(1)
+	var buttons := _panel_buttons()
+	assert_true(buttons[0].disabled, "on peut engager un champion sans or")
+	assert_string_contains(buttons[0].text, tr("COUNCIL_UNAFFORDABLE"))
+	assert_false(buttons[2].disabled, "décliner ne coûte rien et est pourtant grisé")
+
+
+## LES VOISINES SE LISENT SOUS LE CHÂTEAU, et pas sur le panneau « rien de
+## sélectionné » : celui-là ne s'affiche jamais, la vue ouvrant sur le
+## château. C'est la capture qui l'a dit.
+func test_les_voisines_se_lisent_sous_le_chateau() -> void:
+	_screen.refresh()
+	await wait_process_frames(1)
+	var shown := _texts_under(_screen._panel)
+	assert_string_contains(shown, tr("COUNCIL_NEIGHBOURS"))
+	for town_id: StringName in Neighbour.ids():
+		assert_string_contains(shown, tr(Neighbour.name_key(town_id)))
+
+
+func test_le_journal_signale_le_conseil_qui_attend() -> void:
+	var report := _kingdom.run_cycle(_company, CombatRng.new(8))
+	_screen.report_cycle(report)
+	await wait_process_frames(1)
+	assert_string_contains(_screen._journal.text, tr("COUNCIL_WAITING"))

@@ -502,7 +502,12 @@ func _close_expedition(_state: int) -> void:
 		# une sortie courte rapporte plus de cycles, une longue plus de
 		# butin. Une déroute compte aussi — les bûcherons ont travaillé
 		# pendant que les héros tombaient.
-		_last_cycle = GameState.kingdom.run_cycle(GameState.company)
+		# `rng` sert au conseil du retour (T12.10) : il n'en CONSOMME rien —
+		# `run_cycle` en dérive un, salé par le numéro de cycle — mais sans
+		# lui aucun conseil ne se tire, et le royaume perd sa décision.
+		_last_cycle = GameState.kingdom.run_cycle(
+			GameState.company, GameState.combat_rng(GameState.kingdom.cycles)
+		)
 		# Un assaut que le joueur n'est pas rentré défendre se résout tout
 		# seul : le § 37 dit que l'armée peut défendre seule, pas que
 		# l'assaut attend indéfiniment.

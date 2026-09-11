@@ -1,0 +1,32 @@
+{
+ "_readme": "LES VILLES VOISINES (T12.10). Trois bourgs autour du royaume, chacun avec un métier et un caractère.\n\nELLES N'EXISTENT QUE PAR LES ÉVÈNEMENTS, et c'est délibéré : le marchand du § 40 n'a jamais eu d'écran non plus, il arrive, il propose, il repart. Un écran de diplomatie avant d'avoir la moindre offre à y mettre serait une coquille — on écrit d'abord ce qui se décide, l'écran vient quand il y a de quoi le remplir.\n\nLE CRÉDIT EST UNE MÉMOIRE, PAS UNE MONNAIE. Il monte quand on commerce, il descend quand on refuse, et il OUVRE des offres au lieu de s'acheter : à partir d'un certain crédit, Fort-Aubin propose son champion, et aucune somme d'or ne remplace les trois échanges qu'il a fallu pour y arriver.\n\nAUCUN SPRITE N'EST DÉPENSÉ. Le pack dessine huit bâtiments en cinq couleurs, et les cinq couleurs sont un budget déjà tenu (trois rangs de héros, deux factions). Ces villes se lisent, elles ne se dessinent pas — le jour où elles doivent apparaître sur la carte du monde, il faudra rouvrir la question de la couleur, et c'est une décision de Gaetan.",
+ "standing": {
+  "_note": "Le crédit va de -3 à +3. Zéro est l'inconnu poli : on ne commence ni ami ni ennemi de personne, et c'est ce qui laisse au joueur le soin de choisir avec qui il traite. Les paliers portent un nom pour que l'écran dise « cordial » plutôt que « +1 », qui ne veut rien dire.",
+  "minimum": -3,
+  "maximum": 3,
+  "levels": [
+   { "from": -3, "name_key": "STANDING_HOSTILE" },
+   { "from": -1, "name_key": "STANDING_COLD" },
+   { "from": 0, "name_key": "STANDING_NEUTRAL" },
+   { "from": 1, "name_key": "STANDING_CORDIAL" },
+   { "from": 3, "name_key": "STANDING_ALLIED" }
+  ]
+ },
+ "towns": {
+  "valmont": {
+   "name_key": "TOWN_VALMONT",
+   "description_key": "TOWN_VALMONT_DESC",
+   "trade": "food"
+  },
+  "roche_claire": {
+   "name_key": "TOWN_ROCHE_CLAIRE",
+   "description_key": "TOWN_ROCHE_CLAIRE_DESC",
+   "trade": "stone"
+  },
+  "fort_aubin": {
+   "name_key": "TOWN_FORT_AUBIN",
+   "description_key": "TOWN_FORT_AUBIN_DESC",
+   "trade": "gold"
+  }
+ }
+}

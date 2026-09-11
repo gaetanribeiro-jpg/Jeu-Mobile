@@ -302,6 +302,10 @@ EFFECT_ITEM_FINE,%d objets de valeur
 EFFECT_SATCHEL,−%d %% de la besace
 EFFECT_COMBAT,un combat
 EFFECT_NOTHING,rien
+EFFECT_THREAT,menace %+d
+EFFECT_HANDS,%+d habitant(s)
+EFFECT_TRADE,métier de %s
+EFFECT_CHAMPION,un champion
 EVENT_OR_ELSE,%s   ·   sinon %s
 RESOURCE_WOOD,Bois
 RESOURCE_STONE,Pierre
@@ -360,6 +364,119 @@ TRAIT_QUICK,Leste
 TRAIT_STUDIOUS,Studieux
 TRAIT_LUCKY,Chanceux
 TRAIT_STEADY,Impassible
+COUNCIL_TITLE,Le conseil
+COUNCIL_WAITING,Le conseil vous attend.
+COUNCIL_NEIGHBOURS,Villes voisines
+COUNCIL_STANDING,%s — %s
+COUNCIL_UNAFFORDABLE,Réserves insuffisantes
+COUNCIL_SETTLED,%d habitant(s) s'installent.
+COUNCIL_LEFT,%s quitte le royaume.
+COUNCIL_LEARNED,%d habitant(s) progressent au métier de %s.
+COUNCIL_CREDIT,%s : %s
+COUNCIL_FLASKS,%d × %s rejoignent le sac.
+COUNCIL_JOINS,%s rejoint la compagnie.
+COUNCIL_CLOSE,Bien
+STANDING_HOSTILE,Hostile
+STANDING_COLD,Distant
+STANDING_NEUTRAL,Indifférent
+STANDING_CORDIAL,Cordial
+STANDING_ALLIED,Allié
+TOWN_VALMONT,Valmont
+TOWN_VALMONT_DESC,"Un gros bourg de greniers et de vergers, à deux jours de marche. On y mange bien et on y compte tout."
+TOWN_ROCHE_CLAIRE,Roche-Claire
+TOWN_ROCHE_CLAIRE_DESC,"Une ville taillée à même la falaise. Ses carriers passent pour les meilleurs du pays, et ils le savent."
+TOWN_FORT_AUBIN,Fort-Aubin
+TOWN_FORT_AUBIN_DESC,"Une place forte qui vit de sa garnison. On y loue des bras, des lames et des renseignements."
+COUNCIL_DISPUTE,La querelle du lopin
+COUNCIL_DISPUTE_TEXT,"Deux familles se disputent une bande de terre au bord du ruisseau. Elles attendent que vous tranchiez, et le village entier regarde."
+COUNCIL_DISPUTE_0,"Trancher, et dédommager le perdant"
+COUNCIL_DISPUTE_0_OK,"Le jugement est rendu. Le perdant repart avec de quoi tenir l'hiver, et personne ne crie."
+COUNCIL_DISPUTE_1,Les laisser s'arranger entre eux
+COUNCIL_DISPUTE_1_OK,Ils se sont arrangés. L'un des deux avait fait ses paquets avant l'aube.
+COUNCIL_DISPUTE_2,Leur faire creuser un puits ensemble
+COUNCIL_DISPUTE_2_OK,"Un puits pour deux vaut mieux qu'un ruisseau pour un. Ils ont appris le métier en s'y mettant."
+COUNCIL_SEAM,Le filon
+COUNCIL_SEAM_TEXT,"En creusant une fosse on est tombé sur une veine de belle pierre. Elle affleure à peine : personne ne sait jusqu'où elle descend."
+COUNCIL_SEAM_0,La creuser tout de suite
+COUNCIL_SEAM_0_OK,"On prend ce qui vient. La galerie s'est effondrée au bout de trois jours, mais les blocs étaient sortis."
+COUNCIL_SEAM_1,Étayer la galerie d'abord
+COUNCIL_SEAM_1_OK,"Le bois a été bien employé : la veine descendait loin, et elle a tout rendu."
+COUNCIL_SEAM_2,En faire un chantier-école
+COUNCIL_SEAM_2_OK,Les carriers du royaume y ont passé la semaine. Peu de pierre est sortie et beaucoup de métier est entré.
+COUNCIL_STORM,L'orage
+COUNCIL_STORM_TEXT,Une bourrasque a emporté la moitié des toits pendant votre absence. Les familles dorment sous des bâches.
+COUNCIL_STORM_0,Réparer avec nos réserves
+COUNCIL_STORM_0_OK,Les toits sont refaits avant la prochaine pluie.
+COUNCIL_STORM_1,Attendre la fin de l'hiver
+COUNCIL_STORM_1_OK,"Les bâches ont tenu. Les réserves, non : une bonne part des vivres a pris l'eau."
+COUNCIL_STORM_2,Faire venir les charpentiers de Roche-Claire
+COUNCIL_STORM_2_OK,"Ils sont venus, ils ont bien travaillé, et ils sont repartis contents."
+COUNCIL_DESERTER,Le partant
+COUNCIL_DESERTER_TEXT,"Un habitant demande à quitter le royaume. Il dit qu'il y a mieux à faire ailleurs, et il n'a pas tout à fait tort."
+COUNCIL_DESERTER_0,Le laisser partir
+COUNCIL_DESERTER_0_OK,Il a vendu ses outils au village avant de prendre la route.
+COUNCIL_DESERTER_1,Le retenir par une prime
+COUNCIL_DESERTER_1_OK,"L'argent a suffi. Il est resté, et les autres l'ont remarqué."
+COUNCIL_DESERTER_2,Le mettre au défi de revenir plus riche
+COUNCIL_DESERTER_2_OK,"Il est revenu au bout d'un mois, la bourse pleine et l'air content de lui."
+COUNCIL_DESERTER_2_KO,On ne l'a jamais revu.
+COUNCIL_NEWCOMERS,Les sans-terre
+COUNCIL_NEWCOMERS_TEXT,Deux familles chassées de leur vallée campent devant la porte. Elles demandent un toit et proposent leurs bras.
+COUNCIL_NEWCOMERS_0,Les accueillir
+COUNCIL_NEWCOMERS_0_OK,"Le royaume compte deux foyers de plus, et les réserves s'en ressentent."
+COUNCIL_NEWCOMERS_1,Les renvoyer sur la route
+COUNCIL_NEWCOMERS_1_OK,Elles sont reparties sans un mot. Le village en a parlé trois jours.
+COUNCIL_NEWCOMERS_2,Les recommander à Valmont
+COUNCIL_NEWCOMERS_2_OK,"Valmont les a prises, et n'a pas oublié qui les lui avait envoyées."
+COUNCIL_CARAVAN,La caravane de Valmont
+COUNCIL_CARAVAN_TEXT,Une file de chariots s'arrête devant la porte. Valmont propose ses grains contre notre bois — leurs charpentes brûlent vite ces temps-ci.
+COUNCIL_CARAVAN_0,Accepter l'échange
+COUNCIL_CARAVAN_0_OK,"Les chariots repartent chargés de bois, les greniers sont pleins."
+COUNCIL_CARAVAN_1,Refuser poliment
+COUNCIL_CARAVAN_1_OK,"Le maître de caravane a salué, tourné bride, et noté quelque chose sur sa tablette."
+COUNCIL_CARAVAN_2,Marchander
+COUNCIL_CARAVAN_2_OK,"Il a ri, puis il a cédé. On y gagne du bois et un peu d'estime."
+COUNCIL_CARAVAN_2_KO,Il a mal pris la chose. Les chariots sont repartis pleins et la nouvelle voyagera avec eux.
+COUNCIL_MASONS,Les tailleurs de Roche-Claire
+COUNCIL_MASONS_TEXT,"Une compagnie de tailleurs de pierre passe par là, entre deux chantiers. Ils veulent bien s'arrêter une saison, s'ils y trouvent leur compte."
+COUNCIL_MASONS_0,Les payer en or
+COUNCIL_MASONS_0_OK,Payés rubis sur l'ongle. Le mur d'enceinte n'a jamais été aussi droit.
+COUNCIL_MASONS_1,Les payer en vivres
+COUNCIL_MASONS_1_OK,"Ils mangent autant qu'ils taillent. Le mur est le même, la bourse est intacte."
+COUNCIL_MASONS_2,Les renvoyer chez eux
+COUNCIL_MASONS_2_OK,Ils sont repartis au matin. Roche-Claire saura qu'on n'avait pas de quoi les payer.
+COUNCIL_WARNING,L'avertissement de Fort-Aubin
+COUNCIL_WARNING_TEXT,"Un cavalier de Fort-Aubin arrive fourbu : une colonne de pillards descend vers la vallée. Ses éclaireurs peuvent la suivre, s'ils sont payés."
+COUNCIL_WARNING_0,Verser la prime aux éclaireurs
+COUNCIL_WARNING_0_OK,Les éclaireurs ont fait leur travail. La colonne a changé de route sans savoir pourquoi.
+COUNCIL_WARNING_1,Poster nos propres guetteurs
+COUNCIL_WARNING_1_OK,"Nos guetteurs valent ce qu'ils valent, mais ils voient venir."
+COUNCIL_WARNING_2,Ne rien faire
+COUNCIL_WARNING_2_OK,Le cavalier est reparti sans réponse. La vallée reste ouverte.
+COUNCIL_MERCENARIES,Le contrat de Fort-Aubin
+COUNCIL_MERCENARIES_TEXT,"Fort-Aubin arme une compagnie pour la saison et manque de tout sauf d'or. Leur intendant fait le tour des villages, sa bourse à la main."
+COUNCIL_MERCENARIES_0,Leur vendre nos vivres
+COUNCIL_MERCENARIES_0_OK,"Les chariots sont partis pleins. Les greniers sonnent creux, la bourse ne sonne plus du tout."
+COUNCIL_MERCENARIES_1,Leur vendre notre pierre
+COUNCIL_MERCENARIES_1_OK,Ils ont emporté nos blocs pour rehausser leur muraille. L'or est de bon aloi.
+COUNCIL_MERCENARIES_2,Garder nos réserves
+COUNCIL_MERCENARIES_2_OK,L'intendant a refermé sa bourse un peu sèchement et repris la route.
+COUNCIL_FEUD,La querelle du gué
+COUNCIL_FEUD_TEXT,"Valmont et Roche-Claire se disputent un gué, et chacune vous écrit le même jour pour vous demander votre appui."
+COUNCIL_FEUD_0,Soutenir Valmont
+COUNCIL_FEUD_0_OK,Une poignée de miliciens payés de notre bourse tient le gué aux couleurs de Valmont. Roche-Claire a compté les hommes.
+COUNCIL_FEUD_1,Soutenir Roche-Claire
+COUNCIL_FEUD_1_OK,"Le gué reste à Roche-Claire, et Valmont sait à qui elle le doit."
+COUNCIL_FEUD_2,Refuser de choisir
+COUNCIL_FEUD_2_OK,Personne n'a apprécié la prudence. Les deux lettres sont restées sans réponse.
+COUNCIL_CHAMPION,Le champion de Fort-Aubin
+COUNCIL_CHAMPION_TEXT,"Fort-Aubin ne prête pas ses lames à n'importe qui. Un de leurs lanciers, vétéran de trois campagnes, attend votre réponse dans la cour."
+COUNCIL_CHAMPION_0,L'engager
+COUNCIL_CHAMPION_0_OK,Il a posé sa lance contre le mur et demandé où était sa paillasse.
+COUNCIL_CHAMPION_1,Lui demander plutôt une caisse de fioles
+COUNCIL_CHAMPION_1_OK,Il a haussé les épaules et fait décharger deux caisses. Les fioles valent leur poids.
+COUNCIL_CHAMPION_2,Décliner l'offre
+COUNCIL_CHAMPION_2_OK,Il est reparti au petit trot. On n'offre pas deux fois la même chose à Fort-Aubin.
 BOOT_KINGDOM,Royaume
 OPTIONS_TITLE,Options
 OPTIONS_AUDIO,Son

@@ -243,9 +243,11 @@ dur : passer par `data/assets.json`.
 *(à tenir à jour à chaque fin de session)*
 
 - **Phase courante : 12 — la campagne entière.** T12.3 le recrutement à
-  trois candidats, T12.4 la brasserie du Monastère, T12.5 les actes 5 et 6.
+  trois candidats, T12.4 la brasserie du Monastère, T12.5 les actes 5 et 6,
+  T12.7 le Lancier, T12.8 la garde et la fonte, T12.9 les habitants,
+  T12.10 le conseil du royaume et les villes voisines.
   **La campagne se joue de bout en bout : six actes, 54 cartes.**
-  **907 tests passent, les dix vérificateurs sont verts.**
+  **991 tests passent, les dix vérificateurs sont verts.**
 - **Phase 11 — la bêta.** Les chantiers sont listés avec leur
   constat vérifié dans `docs/etat-des-lieux.md` § 5. **Faits :** T11.2 le
   son, T11.3 l'écran de titre, T11.4 le déverrouillage et la fin, T11.6
@@ -1085,6 +1087,80 @@ faire du reste. Trois choses à ne pas défaire :
   demanderait d'essayer pour savoir, sur une action IRRÉVERSIBLE — et une
   action irréversible qu'on ne peut pas évaluer avant n'est pas une
   décision, c'est un pari.
+
+**LES VOISINES N'ONT PAS D'ÉCRAN, ET C'EST LE MARCHAND QUI LE JUSTIFIE
+(T12.10).** Le § 43 veut que chaque activité influence les autres, et
+l'expédition influençait la ville — butin, menace, cycle de production —
+sans que la ville lui rende autre chose que des chiffres. Le conseil donne
+à la ville sa PROPRE étape de décision, à l'endroit de la boucle où le
+joueur rentre. Le marchand du § 40 n'a jamais eu d'écran non plus : il
+arrive, il propose, il repart. Un écran de diplomatie écrit avant d'avoir
+la moindre offre à y mettre aurait été une coquille. Sept choses à ne pas
+défaire :
+- **UN CONSEIL SE PAIE DANS LA MONNAIE DE LA VILLE.** Une étape
+  d'expédition coûte de l'or et des PV ; un conseil coûte du BOIS, de la
+  PIERRE, des VIVRES et des GENS — ce que le joueur a passé son cycle à
+  produire. Sans ça, le conseil serait une seconde étape d'expédition
+  posée au mauvais endroit de la boucle.
+- **LE CRÉDIT OUVRE DES OFFRES, IL NE S'ACHÈTE PAS.** C'est ce qui le
+  sépare de l'or : on n'achète pas un champion à Fort-Aubin, on obtient
+  qu'elle vous en confie un. Et **un conseil que le crédit ouvre exige DEUX
+  portes** — avec une seule, un joueur qui la refuse une fois attend
+  indéfiniment et l'offre gagnée redevient une loterie. `verify_kingdom`
+  le refuse.
+- **ON NE PEUT PAS ÊTRE L'AMI DE TOUT LE MONDE.** La querelle du gué est à
+  somme nulle : soutenir Valmont fâche Roche-Claire, et ne pas choisir
+  fâche les deux. Sans elle, le crédit ne serait qu'un compteur qui monte —
+  une barre de progression déguisée en diplomatie. Le vérificateur exige
+  aussi que chaque ville ait de quoi MONTER et de quoi DESCENDRE.
+- **CHAQUE VILLE EST SON PROPRE AXE DE DOMINATION, jamais une somme.**
+  +1/−1 fait zéro comme ne rien faire, et les deux ne sont pas du tout la
+  même décision : en somme, la querelle serait refusée à tort. Le reste du
+  barème est celui de `verify_world` pour l'expédition — une option
+  meilleure qu'une autre sur TOUTE la ligne n'est pas un choix.
+- **UN EFFET MAL ORTHOGRAPHIÉ NE PLANTE PAS, IL NE FAIT RIEN.** Le
+  vérificateur tient la liste du vocabulaire et refuse tout le reste :
+  sinon une option muette passerait pour un choix.
+- **LE TIRAGE EST UNE FONCTION DU CYCLE**, dérivé de son numéro : sortir de
+  l'écran et y revenir rend le même conseil, et le conseil ne décale pas le
+  hasard des combats à venir. Troisième emploi de la règle après les
+  candidats (T12.3) et les rochers (T9.10). **Et il SURVIT à la
+  sauvegarde** : sur mobile l'application peut être tuée entre le retour et
+  la décision.
+- **QUI PART EST LE MOINS EXPÉRIMENTÉ**, comme le rappel de T12.8 : le
+  geste rapide ne doit pas détruire ce que le joueur a patiemment formé. Et
+  **un champion arrive avec l'EXPÉRIENCE de son rang**, pas avec un niveau
+  posé à la main — sinon il n'aurait plus jamais progressé.
+
+**DEUX DÉFAUTS QUE SEULE LA CAPTURE A VUS, ENCORE (T12.10).**
+- **UN `Button` A `clip_text`, DONC IL MENT PAR TRONCATURE.** Il le FAUT —
+  un libellé plus large que son conteneur renégocie sa largeur et la mise
+  en page oscille (T9.6) — mais « sinon Valmont −2 » se faisait couper net
+  au bout de la ligne. Un pari dont on ne voit pas la perte est exactement
+  ce que le § 39 refuse. Les termes sont un `Label` autoreplié CENTRÉ sous
+  le bouton, jamais sa seconde ligne.
+- **LE PANNEAU « RIEN DE SÉLECTIONNÉ » NE S'AFFICHE JAMAIS.** La vue du
+  royaume ouvre sur le CHÂTEAU sélectionné : la liste des voisines posée
+  là était une mécanique branchée et invisible, sans une seule erreur. Elle
+  vit sous le château, qui est de toute façon d'où l'on traite avec ses
+  voisines.
+
+**CE QUI RESTE À JUGER À L'ŒIL SUR LE CONSEIL (T12.10) :** la CADENCE — un
+conseil par retour peut être trop, ou pas assez — et les chiffres, calés
+sur un cycle de production (40 bois ≈ une scierie pleine, 90 or ≈ une mine
+et demie) sans qu'aucun instrument ne le mesure. C'est la même réserve que
+pour un objet : l'équilibrage d'un évènement n'a pas d'instrument, seulement
+un barème.
+
+**CE QUE T12.10 NE FAIT PAS, ET QUI ATTEND UNE DÉCISION DE GAETAN :**
+- **Le PRÊT de héros.** Fort-Aubin CONFIE un champion, qui reste. Un vrai
+  prêt — il repart au bout de n sorties — demande un compteur sur le héros
+  et une règle pour l'équipe au moment où il s'en va en pleine expédition.
+  C'est une mécanique, pas une option d'évènement.
+- **Les villes sur la CARTE DU MONDE.** Elles se lisent, elles ne se
+  dessinent pas. Le pack donne huit bâtiments en cinq couleurs et les cinq
+  couleurs sont un budget déjà tenu (trois rangs de héros, deux factions) :
+  poser Valmont sur la carte rouvrirait cette décision verrouillée.
 
 **L'expédition se joue, sur PC.** Écran de titre → carte du monde →
 composition de l'équipe → départ → route du § 28 (combats, évènements,

@@ -33,6 +33,8 @@ func _init() -> void:
 	_check_recruiting()
 	_check_traits()
 	_check_invasions()
+	_check_neighbours()
+	_check_councils()
 
 	if _problems.is_empty():
 		print("\nL'économie du royaume tient debout.")
@@ -486,3 +488,284 @@ func _steps_to_invasion(kingdom: Kingdom) -> int:
 		if kingdom.raise_threat(CombatRng.new(step), 0) != null:
 			return step
 	return 999
+
+
+# --- Les villes voisines et le conseil (T12.10) -----------------------------
+#
+# LA SEULE RÈGLE DU § 40 VAUT ICI AUSSI : « les événements doivent créer
+# des décisions ». Un conseil à une option, ou dont une option est
+# meilleure qu'une autre sur TOUTE la ligne, se joue parfaitement — il ne
+# demande simplement plus rien au joueur, et rien ne plante. C'est le même
+# barème que `verify_world` applique à l'expédition, transposé aux
+# monnaies de la ville.
+
+func _check_neighbours() -> void:
+	var towns := Neighbour.ids()
+	print("\nVilles voisines (crédit de %d à %d)\n" % [Neighbour.minimum(), Neighbour.maximum()])
+	for town_id: StringName in towns:
+		_check_translation(town_id, Neighbour.name_key(town_id))
+		_check_translation(town_id, Neighbour.description_key(town_id))
+		var trade := Neighbour.trade_of(town_id)
+		print("%-14s commerce : %-6s  (%s)" % [
+			town_id, trade, TranslationServer.translate(Neighbour.name_key(town_id))])
+		if not ResourceTable.exists(trade):
+			_problems.append("%s : commerce une ressource inconnue « %s »" % [town_id, trade])
+	# UNE SEULE VILLE NE PEUT PAS SE QUERELLER AVEC ELLE-MÊME, et c'est la
+	# querelle qui empêche le crédit d'être une barre de progression : sans
+	# un second voisin à fâcher, il ne fait que monter.
+	if towns.size() < 2:
+		_problems.append("il faut au moins deux voisines pour qu'un choix en fâche une")
+
+	if Neighbour.minimum() >= 0 or Neighbour.maximum() <= 0:
+		_problems.append("le crédit doit pouvoir descendre ET monter autour de zéro")
+	var previous := Neighbour.minimum() - 1
+	for level: Variant in Neighbour.levels():
+		var step: Dictionary = level
+		var from := int(step.get("from", 0))
+		if from <= previous:
+			_problems.append("les paliers de crédit ne montent pas : %d après %d" % [from, previous])
+		previous = from
+		_check_translation(&"standing", String(step.get("name_key", "")))
+	for value in range(Neighbour.minimum(), Neighbour.maximum() + 1):
+		if Neighbour.standing_key(value).is_empty():
+			_problems.append("le crédit %+d ne tombe dans aucun palier" % value)
+
+
+func _check_councils() -> void:
+	var councils := KingdomEvent.ids()
+	print("\nLe conseil du royaume : %d évènements\n" % councils.size())
+	var open_pool := 0
+	for event_id: StringName in councils:
+		_check_council(event_id)
+		if KingdomEvent.weight_of(event_id) > 0 and KingdomEvent.required_standing(event_id).is_empty():
+			open_pool += 1
+
+	# UN VIVIER TROP MINCE SE RABÂCHE, et `draw` ne s'en plaint pas : il
+	# rouvre la table quand elle est vide. Le même raisonnement que pour
+	# les évènements d'expédition, où quatre entrées faisaient se répéter
+	# une route de sept étapes.
+	print("\n%d conseils tirables sans crédit" % open_pool)
+	if open_pool < KingdomEvent.minimum_pool():
+		_problems.append(
+			"seulement %d conseils tirables d'emblée : ils se répéteront"
+			% open_pool)
+	if KingdomEvent.recent_kept() >= open_pool:
+		_problems.append(
+			"on écarte %d conseils récents sur %d tirables : la table se rouvrira à chaque fois"
+			% [KingdomEvent.recent_kept(), open_pool])
+	_check_credit_sources()
+
+
+func _check_council(event_id: StringName) -> void:
+	_check_translation(event_id, KingdomEvent.name_key(event_id))
+	_check_translation(event_id, KingdomEvent.text_key(event_id))
+
+	var options := KingdomEvent.options(event_id)
+	print("%-14s %-34s %d options" % [
+		event_id, TranslationServer.translate(KingdomEvent.name_key(event_id)), options.size()])
+	if KingdomEvent.weight_of(event_id) <= 0:
+		_problems.append("%s : poids nul, il ne sortira jamais" % event_id)
+	if options.size() < 2:
+		_problems.append("%s : une seule option, donc aucune décision" % event_id)
+		return
+
+	var required := KingdomEvent.required_standing(event_id)
+	if not required.is_empty():
+		var town_id := StringName(required.get("town", ""))
+		if not Neighbour.exists(town_id):
+			_problems.append("%s : exige le crédit d'une ville inconnue « %s »" % [event_id, town_id])
+		elif int(required.get("minimum", 0)) > Neighbour.maximum():
+			_problems.append("%s : exige un crédit hors d'atteinte (%d)"
+				% [event_id, int(required.get("minimum", 0))])
+
+	var scored: Array[Dictionary] = []
+	for index in options.size():
+		_check_translation(event_id, KingdomEvent.option_label(event_id, index))
+		_check_branches(event_id, index)
+		var value := _council_value(event_id, index)
+		scored.append(value)
+		print("    %-40s %s" % [
+			TranslationServer.translate(KingdomEvent.option_label(event_id, index)),
+			_describe_council(value)])
+
+	for a in options.size():
+		for b in options.size():
+			if a != b and _dominates(scored[a], scored[b]):
+				_problems.append(
+					"%s : l'option %d est meilleure que la %d sur toute la ligne"
+					% [event_id, a, b])
+
+
+## Ce qu'une option peut écrire dans le royaume. Tout le reste est une
+## COQUILLE : un effet mal orthographié ne plante pas, il ne fait rien —
+## et une option qui ne fait rien passerait pour un choix.
+func _known_effects() -> Array[String]:
+	var known: Array[String] = ["threat", "population", "trade_xp", "standing",
+		"potions", "hero", "text_key"]
+	for resource_id: StringName in ResourceTable.ids():
+		known.append(String(resource_id))
+	return known
+
+
+func _check_branches(event_id: StringName, index: int) -> void:
+	var option := KingdomEvent.option(event_id, index)
+	var branches: Array[String] = ["success"]
+	if KingdomEvent.option_gambles(event_id, index):
+		branches.append("failure")
+		if not option.has("failure"):
+			_problems.append("%s option %d : parie sans dire ce qu'on perd" % [event_id, index])
+	elif option.has("failure"):
+		_problems.append("%s option %d : a un échec sans chance de rater" % [event_id, index])
+
+	var known := _known_effects()
+	for branch: String in branches:
+		var effects: Dictionary = option.get(branch, {})
+		_check_translation(event_id, String(effects.get("text_key", "")))
+		for key: Variant in effects.keys():
+			if not known.has(String(key)):
+				_problems.append("%s option %d : effet inconnu « %s »"
+					% [event_id, index, key])
+		for key: Variant in (effects.get("standing", {}) as Dictionary).keys():
+			if not Neighbour.exists(StringName(key)):
+				_problems.append("%s option %d : crédite une ville inconnue « %s »"
+					% [event_id, index, key])
+		for key: Variant in (effects.get("trade_xp", {}) as Dictionary).keys():
+			if not Worksite.exists(StringName(key)):
+				_problems.append("%s option %d : forme à un chantier inconnu « %s »"
+					% [event_id, index, key])
+		for key: Variant in (effects.get("potions", {}) as Dictionary).keys():
+			if not Consumable.exists(StringName(key)):
+				_problems.append("%s option %d : donne une fiole inconnue « %s »"
+					% [event_id, index, key])
+		var gift: Dictionary = effects.get("hero", {})
+		if not gift.is_empty() and not Unit.hero_class_ids().has(StringName(gift.get("class", ""))):
+			_problems.append("%s option %d : offre une classe inconnue « %s »"
+				% [event_id, index, gift.get("class", "")])
+
+
+## L'espérance d'une option sur chaque monnaie de l'échange. Une option qui
+## parie compte ses deux issues au prorata de sa chance : c'est ce que le
+## joueur compare, et c'est donc ce qu'il faut comparer.
+##
+## CHAQUE VILLE EST SON PROPRE AXE, jamais une somme. Soutenir Valmont
+## contre Roche-Claire fait zéro en somme, exactement comme ne rien faire —
+## et les deux ne sont pas du tout la même décision.
+func _council_value(event_id: StringName, index: int) -> Dictionary:
+	var option := KingdomEvent.option(event_id, index)
+	var chance := clampf(KingdomEvent.option_chance(event_id, index), 0.0, 1.0)
+	var value := {"threat": 0.0, "population": 0.0, "xp": 0.0, "potions": 0.0, "hero": 0.0}
+	for resource_id: StringName in ResourceTable.ids():
+		value[String(resource_id)] = 0.0
+	for town_id: StringName in Neighbour.ids():
+		value["credit:%s" % town_id] = 0.0
+
+	var branches := {"success": chance, "failure": 1.0 - chance}
+	for branch: String in branches:
+		var weight: float = branches[branch]
+		if is_zero_approx(weight):
+			continue
+		var effects: Dictionary = option.get(branch, {})
+		for resource_id: StringName in ResourceTable.ids():
+			value[String(resource_id)] += weight * float(effects.get(String(resource_id), 0))
+		# LA MENACE EST UNE MAUVAISE CHOSE : on la compte à l'envers, sinon
+		# l'option qui attire les pillards passerait pour la meilleure.
+		value["threat"] -= weight * float(effects.get("threat", 0))
+		value["population"] += weight * float(effects.get("population", 0))
+		for key: Variant in (effects.get("trade_xp", {}) as Dictionary).keys():
+			value["xp"] += weight * float((effects["trade_xp"] as Dictionary)[key])
+		for key: Variant in (effects.get("potions", {}) as Dictionary).keys():
+			value["potions"] += weight * float((effects["potions"] as Dictionary)[key])
+		for key: Variant in (effects.get("standing", {}) as Dictionary).keys():
+			var axis := "credit:%s" % key
+			if value.has(axis):
+				value[axis] += weight * float((effects["standing"] as Dictionary)[key])
+		var gift: Dictionary = effects.get("hero", {})
+		if not gift.is_empty():
+			value["hero"] += weight * float(gift.get("level", 1))
+	return value
+
+
+func _dominates(a: Dictionary, b: Dictionary) -> bool:
+	var strictly_better := false
+	for key: String in a:
+		if float(a[key]) < float(b[key]) - 0.0001:
+			return false
+		if float(a[key]) > float(b[key]) + 0.0001:
+			strictly_better = true
+	return strictly_better
+
+
+func _describe_council(value: Dictionary) -> String:
+	var pieces := PackedStringArray()
+	for resource_id: StringName in ResourceTable.ids():
+		if not is_zero_approx(float(value[String(resource_id)])):
+			pieces.append("%s %+.0f" % [resource_id, float(value[String(resource_id)])])
+	if not is_zero_approx(float(value["threat"])):
+		pieces.append("menace %+.0f" % -float(value["threat"]))
+	if not is_zero_approx(float(value["population"])):
+		pieces.append("bras %+.1f" % float(value["population"]))
+	if not is_zero_approx(float(value["xp"])):
+		pieces.append("métier %+.0f" % float(value["xp"]))
+	if not is_zero_approx(float(value["potions"])):
+		pieces.append("fioles %+.1f" % float(value["potions"]))
+	if not is_zero_approx(float(value["hero"])):
+		pieces.append("un champion")
+	for town_id: StringName in Neighbour.ids():
+		var credit := float(value["credit:%s" % town_id])
+		if not is_zero_approx(credit):
+			pieces.append("%s %+.1f" % [town_id, credit])
+	return ", ".join(pieces)
+
+
+## LE CRÉDIT DOIT POUVOIR MONTER ET DESCENDRE, pour chaque ville. Un crédit
+## qui ne ferait que monter serait une barre de progression déguisée en
+## diplomatie ; un qui ne ferait que descendre serait une punition.
+##
+## ET UN CONSEIL QUE LE CRÉDIT OUVRE EXIGE DEUX SOURCES. Avec une seule, un
+## joueur qui la refuse une fois attend indéfiniment son champion : l'offre
+## gagnée redevient une loterie, ce qui est exactement ce qu'elle n'est pas
+## censée être.
+func _check_credit_sources() -> void:
+	print("")
+	for town_id: StringName in Neighbour.ids():
+		var rises: Array[String] = []
+		var falls := 0
+		for event_id: StringName in KingdomEvent.ids():
+			var gated: Dictionary = KingdomEvent.required_standing(event_id)
+			var closed := StringName(gated.get("town", "")) == town_id
+			var up := false
+			for index in KingdomEvent.options(event_id).size():
+				for branch: String in ["success", "failure"]:
+					var shifts: Dictionary = KingdomEvent.option(event_id, index).get(branch, {}).get("standing", {})
+					var delta := int(shifts.get(String(town_id), 0))
+					if delta > 0 and not closed:
+						up = true
+					elif delta < 0:
+						falls += 1
+			if up:
+				rises.append(String(event_id))
+		print("%-14s %d conseils le font monter, %d options le font descendre"
+			% [town_id, rises.size(), falls])
+		if rises.is_empty():
+			_problems.append("%s : aucun conseil ne fait monter son crédit" % town_id)
+		if falls <= 0:
+			_problems.append("%s : rien ne fait descendre son crédit" % town_id)
+
+	for event_id: StringName in KingdomEvent.ids():
+		var gated := KingdomEvent.required_standing(event_id)
+		if gated.is_empty():
+			continue
+		var town_id := StringName(gated.get("town", ""))
+		var sources := 0
+		for other: StringName in KingdomEvent.ids():
+			if StringName(KingdomEvent.required_standing(other).get("town", "")) == town_id:
+				continue
+			for index in KingdomEvent.options(other).size():
+				var shifts: Dictionary = KingdomEvent.option(other, index).get("success", {}).get("standing", {})
+				if int(shifts.get(String(town_id), 0)) > 0:
+					sources += 1
+					break
+		if sources < 2:
+			_problems.append(
+				"%s : le crédit de %s ne se gagne que dans %d conseil — une seule porte"
+				% [event_id, town_id, sources])

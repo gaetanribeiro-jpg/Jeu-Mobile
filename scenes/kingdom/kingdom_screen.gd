@@ -30,6 +30,12 @@ var _company: Company
 ## deux parties de même graine ne nommeraient pas les mêmes héros.
 var _rng: CombatRng
 
+## Ce que le dernier conseil a produit, tant que le joueur ne l'a pas lu
+## (T12.10). Tant qu'il est là, le panneau montre l'issue plutôt que la
+## suite : une conséquence qu'on chasse d'un clic involontaire n'a pas été
+## lue, et une décision dont on ne voit pas l'effet n'en est plus une.
+var _council_outcome: Dictionary = {}
+
 @onready var _title: Label = %Title
 @onready var _stores: HBoxContainer = %Stores
 @onready var _back: Button = %Back
@@ -167,6 +173,17 @@ func _build_panel() -> void:
 	# Les noms de genre se lisent SUR LA VUE, jamais recopiés ici. Une
 	# constante recopiée qui cesse d'être vraie ne casse rien : elle rend
 	# simplement le panneau vide, sans un mot.
+	# LE CONSEIL PREND LE PANNEAU, et c'est voulu. Une décision posée à
+	# côté du reste se remet à plus tard, et « plus tard » n'arrive pas :
+	# le joueur repart en expédition. Tant qu'il n'a pas tranché, le
+	# royaume ne propose rien d'autre.
+	if not _council_outcome.is_empty():
+		_build_outcome_panel()
+		return
+	if not _kingdom.council().is_empty():
+		_build_council_panel(_kingdom.council())
+		return
+
 	match _view.selected_kind:
 		_view.KIND_BUILDING:
 			_build_building_panel(_view.selected_id)
@@ -210,6 +227,7 @@ func _build_building_panel(building_id: StringName) -> void:
 	_action(label, _upgrade.bind(building_id), reason.is_empty())
 	_recruit_buttons(building_id)
 	_ascend_buttons(building_id)
+	_build_neighbours(building_id)
 
 
 ## ÉLEVER UN HÉROS EST CE QUE LA TOUR PERMET, et c'est le premier bâtiment
@@ -423,6 +441,193 @@ func _action(text: String, handler: Callable, enabled: bool) -> Button:
 	return button
 
 
+# --- Le conseil et les voisines (T12.10) -----------------------------------
+#
+# LE ROYAUME AVAIT DEUX DÉCISIONS, ET AUCUNE NE SE REPOSAIT AU RETOUR.
+# Bâtir quoi, et qui travaille où : deux arbitrages qu'on pose une fois et
+# qu'on revoit rarement. Le conseil en ajoute un qui attend à chaque
+# retour d'expédition, dans la monnaie de la ville — bois, pierre, vivres
+# et GENS — et pas dans celle de la sortie.
+
+func _build_council_panel(event_id: StringName) -> void:
+	_line(tr("COUNCIL_TITLE"), 20)
+	_line(tr(KingdomEvent.name_key(event_id)), 26)
+	_line(tr(KingdomEvent.text_key(event_id)), 19)
+
+	# LES VILLES EN JEU SE LISENT AVANT DE TRANCHER. Le crédit décide de ce
+	# qu'on vous proposera plus tard : décider sans le voir reviendrait à
+	# choisir à l'aveugle, ce que le § 39 refuse partout ailleurs.
+	for town_id: StringName in KingdomEvent.towns_of(event_id):
+		if Neighbour.exists(town_id):
+			_line(tr("COUNCIL_CREDIT") % [
+				tr(Neighbour.name_key(town_id)), tr(_kingdom.standing_key(town_id))
+			], 18)
+
+	for index in KingdomEvent.options(event_id).size():
+		var label := tr(KingdomEvent.option_label(event_id, index))
+		# Le télégraphe, appliqué au conseil : un ennemi annonce ses dégâts
+		# avant de frapper, une option annonce sa chance avant qu'on la
+		# coure. Même formule que l'écran d'expédition.
+		if KingdomEvent.option_gambles(event_id, index):
+			label += "   %d %%" % int(round(KingdomEvent.option_chance(event_id, index) * 100.0))
+		var affordable := _kingdom.can_choose(index, _company)
+		if not affordable:
+			label += "   (%s)" % tr("COUNCIL_UNAFFORDABLE")
+		_action(label, _choose_council.bind(index), affordable)
+		# LES TERMES SONT UN LABEL, PAS LA SECONDE LIGNE DU BOUTON, et
+		# c'est la capture qui a tranché : un `Button` a `clip_text` — il le
+		# FAUT, sinon un libellé trop large renégocie sa largeur et la mise
+		# en page oscille — donc « sinon Valmont −2 » se faisait couper net.
+		# Un pari dont on ne voit pas la perte est exactement ce que le
+		# § 39 refuse. Un `Label` se replie, lui, et ne peut pas mentir par
+		# troncature.
+		_terms_line(_council_terms(event_id, index))
+
+
+## Les termes d'une option, CENTRÉS sous son bouton : alignés à gauche
+## comme le reste du panneau, ils se lisaient comme une ligne du texte
+## d'ambiance et pas comme la suite du bouton.
+func _terms_line(text: String) -> void:
+	var label := Label.new()
+	label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	label.add_theme_font_size_override("font_size", 19)
+	label.text = text
+	_panel.add_child(label)
+
+
+## Ce que l'option donne et ce qu'elle prend, écrit sous son intitulé.
+##
+## C'EST LE TÉLÉGRAPHE, APPLIQUÉ AU ROYAUME. Une option qui ne dirait pas
+## ses termes demanderait au joueur de parier sur une phrase d'ambiance.
+func _council_terms(event_id: StringName, index: int) -> String:
+	var option := KingdomEvent.option(event_id, index)
+	var line := _council_effects(option.get("success", {}))
+	if KingdomEvent.option_gambles(event_id, index):
+		line = tr("EVENT_OR_ELSE") % [line, _council_effects(option.get("failure", {}))]
+	return line
+
+
+func _council_effects(effects: Dictionary) -> String:
+	var pieces := PackedStringArray()
+	for resource_id: StringName in ResourceTable.ids():
+		var delta := int(effects.get(String(resource_id), 0))
+		if delta != 0:
+			pieces.append("%s %+d" % [tr(ResourceTable.name_key(resource_id)), delta])
+	var menace := int(effects.get("threat", 0))
+	if menace != 0:
+		pieces.append(tr("EFFECT_THREAT") % menace)
+	var hands := int(effects.get("population", 0))
+	if hands != 0:
+		pieces.append(tr("EFFECT_HANDS") % hands)
+	for key: Variant in (effects.get("trade_xp", {}) as Dictionary).keys():
+		pieces.append(tr("EFFECT_TRADE") % tr(Worksite.name_key(StringName(key))))
+	for key: Variant in (effects.get("standing", {}) as Dictionary).keys():
+		pieces.append("%s %+d" % [
+			tr(Neighbour.name_key(StringName(key))),
+			int((effects["standing"] as Dictionary)[key]),
+		])
+	for key: Variant in (effects.get("potions", {}) as Dictionary).keys():
+		pieces.append("%s %+d" % [
+			tr(Consumable.name_key(StringName(key))),
+			int((effects["potions"] as Dictionary)[key]),
+		])
+	if not (effects.get("hero", {}) as Dictionary).is_empty():
+		pieces.append(tr("EFFECT_CHAMPION"))
+	return " · ".join(pieces) if not pieces.is_empty() else tr("EFFECT_NOTHING")
+
+
+## Les voisines et ce qu'elles pensent de vous, sur le panneau au repos.
+##
+## PAS D'ÉCRAN DE DIPLOMATIE. Le marchand du § 40 n'en a jamais eu non
+## plus : il arrive, il propose, il repart. Trois lignes sur le panneau
+## qui ne sert à rien d'autre suffisent à rendre le crédit visible, et un
+## écran écrit avant d'avoir des offres à y mettre serait une coquille.
+func _build_neighbours(building_id: StringName) -> void:
+	# SOUS LE CHÂTEAU, et pas sur le panneau « rien de sélectionné » : ce
+	# panneau-là ne s'affiche JAMAIS, la vue ouvrant sur le château
+	# sélectionné. Une liste posée là aurait été une mécanique branchée et
+	# invisible — le défaut que ce projet attrape en capture depuis dix
+	# phases. Le château est d'ailleurs le bon endroit : c'est de lui qu'on
+	# traite avec les voisines, et c'est ce que la vue montre d'entrée.
+	if building_id != Buildings.KEYSTONE:
+		return
+	var towns := Neighbour.ids()
+	if towns.is_empty():
+		return
+	_line(tr("COUNCIL_NEIGHBOURS"), 22)
+	for town_id: StringName in towns:
+		_line(tr("COUNCIL_CREDIT") % [
+			tr(Neighbour.name_key(town_id)), tr(_kingdom.standing_key(town_id))
+		], 20)
+		_line(tr(Neighbour.description_key(town_id)), 17)
+
+
+## L'issue du conseil, lue avant de passer à la suite.
+func _build_outcome_panel() -> void:
+	var event_id := StringName(_council_outcome.get("event", ""))
+	if KingdomEvent.exists(event_id):
+		_line(tr(KingdomEvent.name_key(event_id)), 26)
+	_line(tr(String(_council_outcome.get("text_key", ""))), 20)
+
+	for line: String in _council_lines():
+		_line(line, 18)
+	_action(tr("COUNCIL_CLOSE"), func() -> void:
+		_council_outcome = {}
+		refresh(), true)
+
+
+## Ce que le conseil a RÉELLEMENT changé, et pas ce qu'il annonçait.
+##
+## L'ÉCART EXISTE ET IL COMPTE : un royaume au plafond de population
+## n'accueille pas les deux familles qu'il vient d'accepter, et une réserve
+## à zéro ne descend pas plus bas. Réafficher les termes annoncés ferait
+## mentir l'écran exactement là où le joueur vérifie.
+func _council_lines() -> PackedStringArray:
+	var out := PackedStringArray()
+	var moved: Dictionary = _council_outcome.get("moved", {})
+	var pieces := PackedStringArray()
+	for key: Variant in moved.keys():
+		pieces.append("%s %+d" % [
+			tr(ResourceTable.name_key(StringName(key))), int(moved[key])
+		])
+	if not pieces.is_empty():
+		out.append(" · ".join(pieces))
+	if int(_council_outcome.get("arrived", 0)) > 0:
+		out.append(tr("COUNCIL_SETTLED") % int(_council_outcome["arrived"]))
+	for name_: Variant in _council_outcome.get("left", []):
+		out.append(tr("COUNCIL_LEFT") % String(name_))
+	var learned: Dictionary = _council_outcome.get("learned", {})
+	for key: Variant in learned.keys():
+		out.append(tr("COUNCIL_LEARNED") % [
+			int(learned[key]), tr(Worksite.name_key(StringName(key)))
+		])
+	var credits: Dictionary = _council_outcome.get("credits", {})
+	for key: Variant in credits.keys():
+		var town_id := StringName(key)
+		out.append(tr("COUNCIL_CREDIT") % [
+			tr(Neighbour.name_key(town_id)), tr(Neighbour.standing_key(int(credits[key])))
+		])
+	var flasks: Dictionary = _council_outcome.get("flasks", {})
+	for key: Variant in flasks.keys():
+		out.append(tr("COUNCIL_FLASKS") % [
+			int(flasks[key]), tr(Consumable.name_key(StringName(key)))
+		])
+	var champion: Variant = _council_outcome.get("champion", null)
+	if champion is Hero:
+		out.append(tr("COUNCIL_JOINS") % (champion as Hero).display_name())
+	return out
+
+
+func _choose_council(index: int) -> void:
+	var outcome := _kingdom.resolve_council(index, _company, _rng)
+	if outcome.is_empty():
+		return
+	_council_outcome = outcome
+	changed.emit()
+	refresh()
+
+
 # --- Agir ------------------------------------------------------------------
 
 func _on_picked(kind: StringName, id: StringName) -> void:
@@ -515,6 +720,11 @@ func report_cycle(report: Dictionary) -> void:
 		pieces.append(tr("KINGDOM_ARRIVED"))
 	if bool(report.get("hungry", false)):
 		pieces.append(tr("KINGDOM_HUNGRY"))
+	# LE CONSEIL SE SIGNALE DANS LE JOURNAL AUSSI. Le panneau le montre
+	# déjà, mais le joueur qui revient regarde d'abord ce qui a changé
+	# pendant son absence : c'est là qu'il faut lui dire qu'on l'attend.
+	if not String(report.get("council", "")).is_empty():
+		pieces.append(tr("COUNCIL_WAITING"))
 	_note(" · ".join(pieces))
 
 

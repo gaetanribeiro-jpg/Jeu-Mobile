@@ -87,6 +87,25 @@ var invasion: Invasion = null
 ## pas trois candidats, il en a huit.
 var recruit_round: int = 0
 
+## Le crédit de chaque ville voisine : { ville → −3..+3 } (T12.10). Ce qui
+## n'y figure pas vaut zéro, l'inconnu poli.
+##
+## LE CRÉDIT VIT DANS LA SAUVEGARDE, comme la campagne de T11.4 : le
+## fichier dit ce que les villes SONT, la partie dit ce qui s'est passé
+## entre elles et le joueur.
+var standings: Dictionary = {}
+
+## Le conseil qui attend le joueur, ou vide. Il est tiré à la fin d'un
+## cycle et ne s'efface qu'une fois tranché.
+##
+## IL SURVIT À LA SAUVEGARDE, et il le faut : sur mobile l'application peut
+## être tuée entre le retour au royaume et la décision, et un conseil qui
+## disparaîtrait dans ce trou serait une décision volée au joueur.
+var pending_council: StringName = &""
+
+## Les derniers conseils vus, pour ne pas les reproposer tout de suite.
+var recent_councils: Array[String] = []
+
 
 static func create() -> Kingdom:
 	var kingdom := Kingdom.new()
@@ -694,7 +713,10 @@ func settle_invasion(company: Company, repelled: bool, defence: int = 0) -> Dict
 ## dernier : sinon un habitant arriverait pour manger une nourriture que
 ## personne n'a encore récoltée, et le premier cycle affamerait le royaume
 ## qu'on vient de fonder.
-func run_cycle(company: Company = null) -> Dictionary:
+## `rng` sert au conseil du retour (T12.10) et à rien d'autre. Il est
+## optionnel : un test qui mesure la production n'a pas à se soucier de la
+## diplomatie, et un cycle sans générateur ne propose simplement rien.
+func run_cycle(company: Company = null, rng: CombatRng = null) -> Dictionary:
 	cycles += 1
 	# ÊTRE CHEZ SOI PROTÈGE. La menace retombe au retour, sinon elle
 	# s'accumulerait d'une sortie à l'autre et un royaume avancé vivrait
@@ -766,6 +788,20 @@ func run_cycle(company: Company = null) -> Dictionary:
 		company.supplies[potion] = int(company.supplies.get(potion, 0)) + batch
 		brewed[potion] = batch
 
+	# LE CONSEIL SE TIRE À LA FIN DU CYCLE, et il attend. Un conseil déjà
+	# posé n'est pas remplacé : il a été tiré pour une décision que le
+	# joueur n'a pas encore prise, et l'écraser la lui volerait.
+	#
+	# LE TIRAGE EST UNE FONCTION DU CYCLE, pas un tirage : on DÉRIVE le
+	# générateur du numéro de cycle. Deux conséquences voulues — sortir de
+	# l'écran du royaume et y revenir rend le même conseil, et le conseil
+	# ne décale pas le hasard des combats à venir. Même règle que les
+	# candidats du recrutement (T12.3) et que les rochers du rivage (T9.10).
+	if rng != null and pending_council.is_empty():
+		pending_council = KingdomEvent.draw(
+			rng.derive(hash(["council", cycles])), recent_councils, standings
+		)
+
 	return {
 		"produced": produced,
 		"eaten": eaten,
@@ -773,8 +809,193 @@ func run_cycle(company: Company = null) -> Dictionary:
 		"hungry": hungry,
 		"brewed": brewed,
 		"promoted": promoted,
+		"council": String(pending_council),
 		"cycle": cycles,
 	}
+
+
+# --- Le conseil et les villes voisines (T12.10) -----------------------------
+#
+# LE ROYAUME AVAIT DEUX DÉCISIONS ET PAS UNE TROISIÈME. Bâtir quoi, et qui
+# travaille où : deux arbitrages qu'on pose une fois et qu'on revoit
+# rarement. Le conseil en ajoute une qui se REPOSE à chaque retour, et
+# c'est ce que le § 50 réclame — un tour doit contenir un choix.
+#
+# LES VILLES SONT UNE MÉMOIRE. Le crédit ne s'achète pas : il monte quand
+# on commerce, descend quand on refuse, et OUVRE des offres. C'est ce qui
+# le sépare de l'or, et ce qui empêche un royaume riche de tout obtenir
+# d'un coup au premier retour.
+
+## Le crédit d'une ville. Zéro pour celle avec qui rien ne s'est passé.
+func standing_of(town_id: StringName) -> int:
+	return Neighbour.clamp_standing(int(standings.get(town_id, 0)))
+
+
+## Le nom du palier où en est une ville, pour l'écran.
+func standing_key(town_id: StringName) -> String:
+	return Neighbour.standing_key(standing_of(town_id))
+
+
+## Fait bouger un crédit et rend sa nouvelle valeur.
+func shift_standing(town_id: StringName, delta: int) -> int:
+	if not Neighbour.exists(town_id):
+		return 0
+	standings[town_id] = Neighbour.clamp_standing(standing_of(town_id) + delta)
+	return int(standings[town_id])
+
+
+## Le conseil qui attend, ou vide.
+func council() -> StringName:
+	return pending_council if KingdomEvent.exists(pending_council) else &""
+
+
+## Une option qu'on ne peut pas payer reste PROPOSÉE, grisée : savoir ce
+## qu'on ne peut pas s'offrir fait partie de la décision. Même règle que
+## l'étal du marchand et que les évènements d'expédition.
+func can_choose(index: int, company: Company = null) -> bool:
+	if council().is_empty():
+		return false
+	# UNE OPTION QUI N'EXISTE PAS N'EST PAS CHOISISSABLE, et le dire ici
+	# évite que `resolve_council` la porte jusqu'à la table, qui pousserait
+	# une erreur pour un index qu'aucun bouton n'a jamais offert.
+	if KingdomEvent.option(council(), index).is_empty():
+		return false
+	return can_afford(KingdomEvent.option_cost(council(), index), company)
+
+
+## Tranche le conseil en cours. Renvoie de quoi le raconter au joueur, ou
+## vide si l'option n'existe pas ou n'est pas payable.
+##
+## LE CONSEIL S'EFFACE APRÈS, jamais avant : une option refusée pour cause
+## de réserves vides ne doit pas emporter la décision avec elle.
+func resolve_council(index: int, company: Company = null, rng: CombatRng = null) -> Dictionary:
+	var event_id := council()
+	if event_id.is_empty() or not can_choose(index, company):
+		return {}
+	var effects := KingdomEvent.resolve(event_id, index, rng)
+	if effects.is_empty():
+		return {}
+	var report := _apply_council(effects, company, rng)
+	pending_council = &""
+	recent_councils.append(String(event_id))
+	while recent_councils.size() > KingdomEvent.recent_kept():
+		recent_councils.pop_front()
+	return report
+
+
+## Applique ce qu'une option a produit. C'est ICI que le royaume encaisse ;
+## `KingdomEvent` n'a fait que lire la table et jeter le dé.
+func _apply_council(effects: Dictionary, company: Company, rng: CombatRng) -> Dictionary:
+	var moved := {}
+	for resource_id: StringName in ResourceTable.ids():
+		var delta := int(effects.get(String(resource_id), 0))
+		if delta != 0:
+			_add(resource_id, delta, company)
+			moved[resource_id] = delta
+
+	if effects.has("threat"):
+		threat = maxi(threat + int(effects["threat"]), 0)
+
+	# QUI PART EST LE MOINS EXPÉRIMENTÉ, et c'est la règle du rappel de
+	# T12.8 poussée d'un cran : le geste rapide ne doit pas détruire ce que
+	# le joueur a patiemment formé. Un déserteur emporte son métier avec
+	# lui ; qu'il emporte le meilleur serait une punition déguisée.
+	var arrived := 0
+	var left: Array[String] = []
+	var newcomers := int(effects.get("population", 0))
+	while newcomers < 0 and not pawns.is_empty():
+		var leaving: Pawn = null
+		for pawn: Pawn in pawns:
+			if leaving == null or _invested(pawn) < _invested(leaving):
+				leaving = pawn
+		left.append(leaving.given_name())
+		pawns.erase(leaving)
+		newcomers += 1
+	# UN ARRIVANT N'ENTRE PAS SI LE ROYAUME NE PEUT PAS LE NOURRIR. Le
+	# plafond de population est une promesse faite ailleurs dans l'écran ;
+	# un conseil qui le dépasserait la ferait mentir.
+	while newcomers > 0 and pawns.size() < population_cap():
+		pawns.append(Pawn.create(_next_pawn_id()))
+		newcomers -= 1
+		arrived += 1
+	if not left.is_empty():
+		settle_assignments()
+
+	var learned := {}
+	for key: Variant in (effects.get("trade_xp", {}) as Dictionary).keys():
+		var worksite_id := StringName(key)
+		var amount := int((effects["trade_xp"] as Dictionary)[key])
+		var taught := workers_at(worksite_id)
+		for pawn: Pawn in taught:
+			pawn.learn(worksite_id, amount)
+		if not taught.is_empty():
+			learned[worksite_id] = taught.size()
+
+	var credits := {}
+	for key: Variant in (effects.get("standing", {}) as Dictionary).keys():
+		var town_id := StringName(key)
+		credits[town_id] = shift_standing(town_id, int((effects["standing"] as Dictionary)[key]))
+
+	# LA POTION VA DANS LE SAC, PAS DANS LA RÉSERVE — règle de T10.2 : elle
+	# est buvable à la sortie suivante, sinon le fil d'obtention s'arrête
+	# juste avant de servir.
+	var flasks := {}
+	for key: Variant in (effects.get("potions", {}) as Dictionary).keys():
+		var potion := StringName(key)
+		var count := int((effects["potions"] as Dictionary)[key])
+		if company != null and count > 0 and Consumable.exists(potion):
+			company.supplies[potion] = int(company.supplies.get(potion, 0)) + count
+			flasks[potion] = count
+
+	var champion := _welcome_champion(effects.get("hero", {}), company, rng)
+
+	var report := effects.duplicate()
+	report["moved"] = moved
+	report["arrived"] = arrived
+	report["left"] = left
+	report["learned"] = learned
+	report["credits"] = credits
+	report["flasks"] = flasks
+	report["champion"] = champion
+	return report
+
+
+## Ce qu'un habitant a appris en tout, tous métiers confondus. Sert à
+## désigner celui qui part : le moins investi, pas le dernier arrivé.
+func _invested(pawn: Pawn) -> int:
+	var total := 0
+	for worksite_id: Variant in pawn.experience.keys():
+		total += int(pawn.experience[worksite_id])
+	return total
+
+
+## Le champion qu'une ville confie, s'il y en a un.
+##
+## IL ARRIVE DÉJÀ AGUERRI, et c'est tout l'intérêt : la caserne ne sait
+## former que des recrues de niveau 1, et monter quelqu'un coûte des
+## combats. Un champion est ce que le crédit achète et que l'or ne peut
+## pas.
+func _welcome_champion(raw: Variant, company: Company, rng: CombatRng) -> Hero:
+	if typeof(raw) != TYPE_DICTIONARY or (raw as Dictionary).is_empty() or company == null:
+		return null
+	var gift: Dictionary = raw
+	var hero := Hero.recruit(
+		company.next_id(), StringName(gift.get("class", "")), rng, company.heroes,
+		String(gift.get("color", "Blue")), StringName(gift.get("trait", ""))
+	)
+	if hero == null:
+		return null
+	# IL ARRIVE AVEC L'EXPÉRIENCE DE SON RANG, pas avec un niveau posé à la
+	# main : la table de progression reste la seule source, et le champion
+	# continue de monter comme n'importe qui après son arrivée. Un niveau
+	# sans son expérience aurait fait un héros qui ne progresse plus.
+	hero.experience = HeroProgression.experience_to_reach(
+		maxi(int(gift.get("level", 1)), 1)
+	)
+	hero.level_up_free()
+	if not company.take(hero):
+		return null
+	return hero
 
 
 # --- Sérialisation ---------------------------------------------------------
@@ -789,6 +1010,9 @@ func to_dictionary() -> Dictionary:
 	var saved_levels := {}
 	for building_id: StringName in levels.keys():
 		saved_levels[String(building_id)] = int(levels[building_id])
+	var saved_standings := {}
+	for town_id: StringName in standings.keys():
+		saved_standings[String(town_id)] = int(standings[town_id])
 	return {
 		"stores": saved_stores,
 		"pawns": saved_people,
@@ -796,6 +1020,9 @@ func to_dictionary() -> Dictionary:
 		"cycles": cycles,
 		"threat": threat,
 		"recruit_round": recruit_round,
+		"standings": saved_standings,
+		"council": String(pending_council),
+		"recent_councils": recent_councils.duplicate(),
 		"invasion": invasion.to_dictionary() if invasion != null else {},
 	}
 
@@ -841,6 +1068,24 @@ static func from_dictionary(data: Dictionary) -> Kingdom:
 	# Sans elle, rouvrir une partie sauvegardée reproposerait la fournée du
 	# tout premier jour — et l'étal du recrutement remonterait le temps.
 	kingdom.recruit_round = maxi(int(data.get("recruit_round", 0)), 0)
+	# UNE VILLE RETIRÉE DES DONNÉES DISPARAÎT DES CRÉDITS, sans emporter la
+	# partie avec elle — même règle que pour les ressources et les
+	# bâtiments juste au-dessus.
+	for key: Variant in (data.get("standings", {}) as Dictionary).keys():
+		var town_id := StringName(key)
+		if Neighbour.exists(town_id):
+			kingdom.standings[town_id] = Neighbour.clamp_standing(
+				int((data["standings"] as Dictionary)[key])
+			)
+	# LE CONSEIL SURVIT À LA SAUVEGARDE. Sur mobile l'application peut être
+	# tuée entre le retour au royaume et la décision, et un conseil perdu
+	# dans ce trou serait une décision volée au joueur.
+	var waiting := StringName(data.get("council", ""))
+	kingdom.pending_council = waiting if KingdomEvent.exists(waiting) else &""
+	kingdom.recent_councils.clear()
+	for raw: Variant in data.get("recent_councils", []):
+		if KingdomEvent.exists(StringName(raw)):
+			kingdom.recent_councils.append(String(raw))
 	kingdom.invasion = Invasion.from_dictionary(data.get("invasion", {}))
 	kingdom.settle_assignments()
 	return kingdom
