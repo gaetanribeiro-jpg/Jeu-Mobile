@@ -15,7 +15,7 @@ NB_CONTRATS = 6
 NB_CLAUSES = 14
 NB_BENEF = 8
 
-LIENS_SRC = "Parametres!$B$7:$B$18"
+LIENS_SRC = "AbatLien"
 
 EX_CONTRATS = [
     ("Multisupport Sérénité", "Assureur A", "Client", 520000, 520000, 330000, 0),
@@ -33,6 +33,7 @@ def construire(wb):
                   "H": 19, "I": 18, "J": 19, "K": 19, "L": 18, "M": 18, "N": 18,
                   "O": 4, "P": 55})
     mise_en_page(ws, zoom=85, freeze="A6", ncols=14)
+    col_notes(ws, "P")
 
     titre(ws, 1, "ASSURANCE-VIE — CAPITAUX DÉCÈS ET FISCALITÉ", ncols=14,
           sous_titre="Hors succession civile (art. L.132-12 C. assur.). Fiscalité propre : prélèvement de "

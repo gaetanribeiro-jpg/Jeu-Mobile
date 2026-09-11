@@ -25,6 +25,17 @@ C_LINK = "008000"    # vert : formule pointant une autre feuille
 C_WARN = "C00000"    # rouge : alerte
 C_NOTE = "808080"    # gris : commentaire
 
+# Mode « compatibilité » : aucun commentaire de cellule (donc aucune partie VML
+# héritée dans le paquet OOXML). Le texte des info-bulles est alors écrit en
+# clair dans la colonne de notes de la feuille.
+MODE_COMPAT = False
+_COL_NOTE = {}
+
+
+def col_notes(ws, col):
+    """Déclare la colonne où reporter les info-bulles en mode compatibilité."""
+    _COL_NOTE[ws.title] = col
+
 # --- Formats de nombre -------------------------------------------------------
 F_EUR = '#,##0 "€";[Red]-#,##0 "€";"-"'
 F_EUR2 = '#,##0.00 "€";[Red]-#,##0.00 "€";"-"'
@@ -73,9 +84,17 @@ def _set(ws, addr, value, font, fill=None, fmt=None, align=None, border=None,
     if border:
         c.border = border
     if comment:
-        cm = Comment(comment, "Simulateur patrimonial")
-        cm.width, cm.height = 320, 130
-        c.comment = cm
+        if MODE_COMPAT:
+            col = _COL_NOTE.get(ws.title)
+            if col:
+                cible = ws["{}{}".format(col, c.row)]
+                cible.value = ("ℹ️ " + comment) if cible.value in (None, "") \
+                    else "{}  |  ℹ️ {}".format(cible.value, comment)
+                cible.font = Font(name=POLICE, size=8, italic=True, color=C_NOTE)
+        else:
+            cm = Comment(comment, "Simulateur patrimonial")
+            cm.width, cm.height = 320, 130
+            c.comment = cm
     return c
 
 
@@ -153,6 +172,11 @@ def resultat(ws, addr, formule, fmt=None, align=None):
 
 
 def note(ws, addr, texte, ncols=1):
+    # En mode compatibilité, une info-bulle a pu être reportée ici avant :
+    # on concatène au lieu d'écraser.
+    existant = ws[addr].value
+    if isinstance(existant, str) and existant.strip():
+        texte = "{}  |  {}".format(texte, existant)
     c = _set(ws, addr, texte, Font(name=POLICE, size=8, italic=True, color=C_NOTE),
              wrap=False)
     return c

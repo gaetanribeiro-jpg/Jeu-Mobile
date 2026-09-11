@@ -101,8 +101,28 @@ soient immédiatement lisibles. Toutes les cellules bleues sur fond crème sont 
 
 ```bash
 pip install openpyxl
-python3 build.py                      # écrit Simulateur_Patrimonial.xlsx
+python3 build.py                      # Simulateur_Patrimonial.xlsx
+python3 build.py --compatibilite      # Simulateur_Patrimonial_compatibilite.xlsx
+python3 build.py --les-deux           # les deux
 ```
+
+Deux fichiers sont produits, au contenu et aux résultats **identiques** :
+
+| Fichier | Différence |
+|---|---|
+| `Simulateur_Patrimonial.xlsx` | Les explications sont des **commentaires de cellule** (info-bulles au survol). Paquet OOXML de 34 parties, dont des dessins VML hérités. |
+| `Simulateur_Patrimonial_compatibilite.xlsx` | **Aucun commentaire de cellule** : les explications sont écrites en clair dans la colonne de notes de chaque feuille. Paquet réduit à 19 parties, sans VML. |
+
+La variante « compatibilité » existe parce que les parties VML héritées des
+commentaires sont ce qu'un poste verrouillé, un antivirus de messagerie ou une
+passerelle DLP est le plus susceptible de réécrire ou de rejeter. Les deux
+fichiers sont écrits directement par openpyxl (sans passage par un autre
+tableur) et portent `fullCalcOnLoad`, de sorte qu'Excel recalcule tout à
+l'ouverture sans dépendre d'un cache de valeurs externe.
+
+Les listes déroulantes s'appuient sur des **plages nommées** plutôt que sur des
+références inter-feuilles littérales : c'est la forme acceptée par toutes les
+versions d'Excel.
 
 Vérification des formules (nécessite LibreOffice Calc) :
 

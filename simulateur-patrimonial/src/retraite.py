@@ -23,6 +23,7 @@ def construire_carriere(wb):
     ws = wb.create_sheet(SH_CAR)
     largeurs(ws, {"A": 2, "B": 52, "C": 18, "D": 18, "E": 4, "F": 78})
     mise_en_page(ws, zoom=100, freeze="A5", paysage=False, ncols=6)
+    col_notes(ws, "F")
 
     titre(ws, 1, "RETRAITE — PERSONNE ÉTUDIÉE, PARAMÈTRES LÉGAUX ET CARRIÈRE", ncols=6,
           sous_titre="Modèle calibré pour un salarié du privé : régime général (CNAV) + complémentaire "
@@ -309,6 +310,7 @@ def construire_objectif(wb):
     largeurs(ws, {"A": 2, "B": 56, "C": 18, "D": 16, "E": 16, "F": 16, "G": 16,
                   "H": 16, "I": 16, "J": 4, "K": 62})
     mise_en_page(ws, zoom=95, freeze="A5", ncols=9)
+    col_notes(ws, "K")
 
     titre(ws, 1, "RETRAITE — OBJECTIF DE REVENU ET EFFORT D'ÉPARGNE", ncols=9,
           sous_titre="Raisonnement en euros constants : les taux de rendement sont convertis en taux RÉELS "

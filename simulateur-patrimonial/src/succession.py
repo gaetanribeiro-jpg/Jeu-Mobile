@@ -24,7 +24,7 @@ NB_FRE = 4
 NB_LEG = 4
 NB_HER = 1 + NB_ENF + NB_PAR + NB_FRE + NB_LEG + 1   # 20 lignes
 
-LIENS_SRC = "Parametres!$B$7:$B$18"
+LIENS_SRC = "AbatLien"
 
 
 # ===========================================================================
@@ -35,6 +35,7 @@ def construire_devolution(wb):
     largeurs(ws, {"A": 2, "B": 40, "C": 30, "D": 13, "E": 13, "F": 13, "G": 13,
                   "H": 17, "I": 17, "J": 17, "K": 19, "L": 12, "M": 4, "N": 60})
     mise_en_page(ws, zoom=90, freeze="A5", ncols=12)
+    col_notes(ws, "N")
 
     titre(ws, 1, "DÉVOLUTION SUCCESSORALE — QUI HÉRITE, ET DE COMBIEN ?", ncols=12,
           sous_titre="Application des règles de dévolution légale du Code civil à la situation familiale "
@@ -311,6 +312,7 @@ def construire_droits(wb):
                   "H": 15, "I": 13, "J": 15, "K": 15, "L": 16, "M": 22, "N": 16,
                   "O": 11, "P": 16, "Q": 4, "R": 55})
     mise_en_page(ws, zoom=85, freeze="C8", ncols=16)
+    col_notes(ws, "R")
 
     titre(ws, 1, "DROITS DE SUCCESSION — LIQUIDATION PAR HÉRITIER", ncols=16,
           sous_titre="Abattements personnels (art. 779 et 788 CGI), rappel fiscal des donations de moins de "

@@ -40,6 +40,7 @@ def construire(wb):
     largeurs(ws, {"A": 2, "B": 46, "C": 38, "D": 16, "E": 24, "F": 12, "G": 16,
                   "H": 17, "I": 13, "J": 18, "K": 4, "L": 62})
     mise_en_page(ws, zoom=90, freeze="A5", ncols=10)
+    col_notes(ws, "L")
 
     titre(ws, 1, "PATRIMOINE DU FOYER ET MASSE SUCCESSORALE", ncols=10,
           sous_titre="Inventaire des biens, liquidation du régime matrimonial et détermination de l'actif "
@@ -234,7 +235,7 @@ def construire(wb):
         r += 1
     re_ = r - 1
     dv_liste(ws, "C{}:C{}".format(rd, re_), ["Client", "Conjoint"])
-    dv_liste(ws, "D{}:D{}".format(rd, re_), source="Parametres!$B$7:$B$18")
+    dv_liste(ws, "D{}:D{}".format(rd, re_), source="AbatLien")
     dn(wb, "DonNom", SHEET, "$B${}:$B${}".format(rd, re_))
     dn(wb, "DonMontant", SHEET, "$F${}:$F${}".format(rd, re_))
     dn(wb, "DonAbatConso", SHEET, "$H${}:$H${}".format(rd, re_))

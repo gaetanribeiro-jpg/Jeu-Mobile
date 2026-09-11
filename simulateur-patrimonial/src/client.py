@@ -26,6 +26,7 @@ def construire(wb):
     ws = wb.create_sheet("Client")
     largeurs(ws, {"A": 2, "B": 44, "C": 26, "D": 26, "E": 26, "F": 14, "G": 20, "H": 4, "I": 60})
     mise_en_page(ws, zoom=100, freeze="A6", paysage=False, ncols=7)
+    col_notes(ws, "I")
 
     titre(ws, 1, "FICHE CLIENT — FOYER, FAMILLE ET REVENUS", ncols=7,
           sous_titre="Renseignez uniquement les cellules bleues sur fond crème. "
