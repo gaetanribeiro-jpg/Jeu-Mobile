@@ -964,6 +964,17 @@ s'annonçait « Mage » sur sa carte pendant qu'il se dessinait en Pawn.
 `sprite`, `sprite_variant`, `sprite_color` et `name_key` se déclarent dans
 l'entrée d'un allié ou d'un ennemi, à part de sa classe.
 
+**CE QUE LE ROYAUME ENVOIE SE LIT AU MOMENT DE PARTIR (§ 43, T12.9).**
+« Le joueur n'est jamais uniquement un gestionnaire, uniquement un héros
+RPG, uniquement un commandant — il est les trois, et CHAQUE ACTIVITÉ
+INFLUENCE LES AUTRES. » Le royaume influençait déjà l'expédition — soin
+entre les étapes, modificateurs par classe — mais INVISIBLEMENT : les
+chiffres s'appliquaient dans le moteur sans jamais s'afficher, donc bâtir
+un monastère ne se voyait nulle part au moment où l'on en profite. **Une
+influence qu'on ne voit pas ne relie rien.** La fiche de région l'écrit,
+et seulement pour les CLASSES QUI PARTENT — lire le bonus d'un Mage resté
+au royaume donnerait un chiffre qu'on ne touchera pas.
+
 **LES HABITANTS SONT DES GENS, PAS UN COMPTEUR (§ 9, T12.9).** « Le
 royaume a une population : agriculteurs, bûcherons, mineurs… à terme
 certains habitants auront nom, niveau, métier. » Il avait

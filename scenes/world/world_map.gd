@@ -33,6 +33,9 @@ var _campaign := Campaign.new()
 var _selected: StringName = &""
 var _squad_ids: Array[int] = []
 
+## Le royaume qui accompagne l'équipe (§ 43). Peut être nul.
+var _kingdom: Kingdom = null
+
 @onready var _title: Label = %Title
 @onready var _gold: Label = %Gold
 @onready var _back: Button = %Back
@@ -58,8 +61,14 @@ func _ready() -> void:
 ## `campaign` dit ce qui est OUVERT aujourd'hui. Sans lui, l'écran lisait
 ## `regions.json`, qui ne dit que l'état d'une partie neuve : battre le
 ## boss de l'acte 1 n'ouvrait rien.
-func configure(company: Company, campaign: Campaign = null) -> void:
+## `kingdom` est OPTIONNEL : l'écran reste lisible sans royaume — en test,
+## et le jour où on l'ouvre d'ailleurs. Sans lui, il ne montre simplement
+## pas ce que le royaume envoie.
+func configure(
+	company: Company, campaign: Campaign = null, kingdom: Kingdom = null
+) -> void:
 	_company = company
+	_kingdom = kingdom
 	if campaign != null:
 		_campaign = campaign
 	_reset_squad()
@@ -217,6 +226,59 @@ func _build_brief() -> void:
 	], 20)
 	_line(tr("WORLD_ENDS_ON_BOSS"), 20)
 	_line(tr("WORLD_NO_HEALING"), 20)
+	_build_kingdom_gifts()
+
+
+## CE QUE LE ROYAUME ENVOIE AVEC L'ÉQUIPE, écrit au moment où l'on part.
+##
+## LE § 43 EST LA RAISON : « le joueur n'est jamais uniquement un
+## gestionnaire, uniquement un héros RPG, uniquement un commandant — il
+## est les trois, et CHAQUE ACTIVITÉ INFLUENCE LES AUTRES ». Le royaume
+## influençait déjà l'expédition — soin entre les étapes, modificateurs
+## par classe, fioles brassées — mais INVISIBLEMENT : ces chiffres
+## s'appliquaient dans le moteur sans jamais s'afficher, donc bâtir un
+## monastère ne se voyait nulle part au moment où l'on en profite.
+##
+## Une influence qu'on ne voit pas ne relie rien. C'est la même règle que
+## partout ailleurs : la défense du royaume se lit avant de partir, le
+## caractère d'un candidat se lit avant de l'engager, le télégraphe se lit
+## avant de valider.
+func _build_kingdom_gifts() -> void:
+	if _kingdom == null:
+		return
+	var gifts := PackedStringArray()
+
+	var healing := _kingdom.healing_between_steps()
+	if healing > 0.0:
+		gifts.append(tr("WORLD_GIFT_HEALING") % (healing * 100.0))
+
+	# Les modificateurs sont PAR CLASSE, et on ne montre que ceux des
+	# classes qui PARTENT : lire le bonus d'un Mage resté au royaume
+	# donnerait un chiffre qu'on ne touchera pas.
+	var classes := {}
+	for hero_id: Variant in _squad_ids:
+		var hero := _company.hero_by_id(int(hero_id))
+		if hero != null:
+			classes[hero.class_id] = true
+	for class_id: StringName in classes.keys():
+		var bonuses := _kingdom.hero_bonuses(class_id)
+		if bonuses.is_empty():
+			continue
+		var pieces := PackedStringArray()
+		for key: Variant in bonuses.keys():
+			pieces.append("%s %+d" % [
+				tr("STAT_%s" % String(key).to_upper()), int(bonuses[key])
+			])
+		gifts.append("%s : %s" % [
+			tr("CLASS_%s" % String(class_id).to_upper()), ", ".join(pieces)
+		])
+
+	if gifts.is_empty():
+		_line(tr("WORLD_GIFT_NONE"), 19)
+		return
+	_line(tr("WORLD_GIFTS"), 20)
+	for gift: String in gifts:
+		_line("  " + gift, 19)
 
 
 func _line(text: String, size: int) -> void:

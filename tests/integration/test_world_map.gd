@@ -147,3 +147,60 @@ func test_un_emplacement_fait_defiler_les_heros_sans_doublon() -> void:
 	for hero_id: int in after:
 		assert_false(seen.has(hero_id), "un héros est dans deux emplacements")
 		seen[hero_id] = true
+
+
+## CE QUE LE ROYAUME ENVOIE SE LIT AU MOMENT DE PARTIR (§ 43, T12.9).
+##
+## « Le joueur n'est jamais uniquement un gestionnaire, uniquement un
+## héros RPG, uniquement un commandant — il est les trois, et CHAQUE
+## ACTIVITÉ INFLUENCE LES AUTRES. » Le royaume influençait déjà
+## l'expédition — soin entre les étapes, modificateurs par classe — mais
+## INVISIBLEMENT : les chiffres s'appliquaient dans le moteur sans jamais
+## s'afficher. Une influence qu'on ne voit pas ne relie rien.
+func test_la_fiche_dit_ce_que_le_royaume_envoie() -> void:
+	var kingdom := Kingdom.create()
+	kingdom.levels[&"monastery"] = Buildings.max_level(&"monastery")
+	kingdom.levels[&"barracks"] = Buildings.max_level(&"barracks")
+	_screen.configure(_company, null, kingdom)
+	_screen.refresh()
+	await wait_process_frames(1)
+
+	var seen := " | ".join(_texts_of(_screen._brief))
+	assert_string_contains(seen, tr("WORLD_GIFTS"))
+	assert_string_contains(
+		seen, tr("WORLD_GIFT_HEALING") % (kingdom.healing_between_steps() * 100.0),
+		"le soin entre les étapes n'est pas annoncé"
+	)
+
+
+## ON NE MONTRE QUE LES CLASSES QUI PARTENT : lire le bonus d'un Mage
+## resté au royaume donnerait un chiffre qu'on ne touchera pas.
+func test_seules_les_classes_de_l_equipe_sont_annoncees() -> void:
+	var kingdom := Kingdom.create()
+	kingdom.levels[&"barracks"] = Buildings.max_level(&"barracks")
+	kingdom.levels[&"archery"] = Buildings.max_level(&"archery")
+	_screen.configure(_company, null, kingdom)
+	# Une équipe de Guerriers seulement.
+	_screen._squad_ids.clear()
+	for hero: Hero in _company.heroes:
+		if hero.class_id == &"warrior":
+			_screen._squad_ids.append(hero.id)
+	assert_gt(_screen._squad_ids.size(), 0, "aucun Guerrier dans la compagnie de test")
+	_screen.refresh()
+	await wait_process_frames(1)
+
+	var seen := " | ".join(_texts_of(_screen._brief))
+	assert_string_contains(seen, tr("CLASS_WARRIOR"))
+	assert_false(
+		seen.contains(tr("CLASS_ARCHER")),
+		"le camp d'archers est annoncé alors qu'aucun Archer ne part"
+	)
+
+
+## Sans royaume bâti, l'écran le DIT plutôt que de laisser un blanc : un
+## panneau vide se lit comme un bogue.
+func test_un_royaume_nu_le_dit() -> void:
+	_screen.configure(_company, null, Kingdom.create())
+	_screen.refresh()
+	await wait_process_frames(1)
+	assert_string_contains(" | ".join(_texts_of(_screen._brief)), tr("WORLD_GIFT_NONE"))

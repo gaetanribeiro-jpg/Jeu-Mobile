@@ -676,3 +676,6 @@ KINGDOM_TRADE_RANK,"Métier %d / %d"
 KINGDOM_TRADE_MASTER,Maître du métier
 KINGDOM_PROMOTED,"%s progresse — %s, rang %d"
 KINGDOM_MASTERED,"%s est maître — %s, rang %d"
+WORLD_GIFTS,Votre royaume accompagne l'équipe :
+WORLD_GIFT_HEALING,"Soin entre les étapes : +%.0f %%"
+WORLD_GIFT_NONE,Votre royaume n'envoie rien encore — bâtissez.

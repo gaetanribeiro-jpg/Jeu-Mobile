@@ -431,7 +431,7 @@ func _close_kingdom() -> void:
 
 func _open_world() -> void:
 	_world_screen = _open(WORLD_SCENE, func(screen: Node) -> void:
-		screen.configure(GameState.company, GameState.campaign)
+		screen.configure(GameState.company, GameState.campaign, GameState.kingdom)
 		screen.closed.connect(_close_world)
 		screen.departed.connect(_depart))
 
