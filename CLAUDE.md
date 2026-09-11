@@ -927,6 +927,13 @@ Quatre choses à ne pas défaire :
 - **LA CLASSE DES CANDIDATS TOURNE, ELLE NE SE TIRE PAS.** Un tirage
   pourrait rendre trois fois la même et l'étal n'offrirait alors que le
   choix qu'il offrait avant.
+- **IL NE DOMINE PAS ET NE PÈSE PAS, ET C'EST MESURÉ.** 35 compositions ×
+  54 cartes × 6 graines = 11 340 combats : « 3 Guerriers + Lancier » à
+  74 % de victoires (à égalité avec la meilleure), « 4 Lanciers » à 69 %
+  (au milieu), les quatre classes panachées à 67 %. L'écart entre la
+  meilleure et la pire composition reste de **20 points**, et **aucune ne
+  gagne presque toujours** — la réponse n'a pas bougé en passant de quinze
+  compositions à trente-cinq.
 - **LES CINQ GLYPHES VIENNENT DE game-icons.net**, comme les dix-huit
   autres, et par Lorc et Delapouite, qui sont déjà nommés dans
   `CREDITS.md`. Le fond noir est retiré à l'import : chaque SVG est un

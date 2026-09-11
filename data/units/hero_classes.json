@@ -86,6 +86,7 @@
   ],
   "primary_stat": "strength",
   "_mvp_note": "QUATRIÈME CLASSE, ET LE MVP EN DÉCLARAIT TROIS. La décision verrouillée dit « Trois classes dans le MVP : Guerrier, Archer, Mage. Les autres (Lancier, Assassin, Paladin…) viendront APRÈS ». Le MVP est fini — six actes, la boucle entière — et le Lancier était nommé premier candidat dans `plus-tard.md` : classe entièrement construite sous l'ancienne conception, et la seule unité DIRECTIONNELLE du pack, cinq directions miroitables. C'est donc « après », pas une entorse.",
-  "accent": "frost"
+  "accent": "frost",
+  "_balance_note": "MESURÉ À L'ARRIVÉE : 35 compositions × 54 cartes × 6 graines = 11 340 combats (`tools/compare_squads.gd`). Le Lancier ne domine pas et ne pèse pas : « 3 Guerriers + Lancier » est à 74 % de victoires, à égalité avec la meilleure composition ; « 4 Lanciers » est à 69 %, au milieu du tableau ; l'équipe panachée des quatre classes est à 67 %. L'écart entre la meilleure et la pire composition reste de 20 points et AUCUNE ne gagne presque toujours — c'est la question que l'outil pose, et la réponse n'a pas bougé en passant de quinze compositions à trente-cinq."
  }
 }
