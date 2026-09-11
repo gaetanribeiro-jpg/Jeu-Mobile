@@ -81,15 +81,44 @@ func _build_stores() -> void:
 			str(_kingdom.amount(resource_id, _company))
 		))
 	# Les bras libres sont une ressource comme les autres, et la plus
-	# facile à oublier : un habitant au repos mange sans rien rendre.
+	# facile à oublier — sauf qu'ils ne sont plus OISIFS : ceux qu'on ne
+	# met pas sur un chantier montent la garde, et valent quatre fois un
+	# ouvrier contre un assaut.
 	_stores.add_child(_store_entry(
 		"",
 		tr("KINGDOM_PEOPLE"),
 		"%d / %d  (%d %s)" % [
 			_kingdom.population, _kingdom.population_cap(),
-			_kingdom.idle_pawns(), tr("KINGDOM_IDLE")
+			_kingdom.garrison(), tr("KINGDOM_ON_WATCH")
 		]
 	))
+	# LA DÉFENSE SE LIT AVANT DE PARTIR, sinon retirer un bras d'un
+	# chantier est un pari. Le § 39 veut l'information parfaite au combat ;
+	# le royaume la doit aussi, puisqu'on lui demande un arbitrage chiffré
+	# entre produire et tenir.
+	# ELLE ROUGIT QUAND ELLE NE SUFFIT PAS. Deux chiffres côte à côte se
+	# comparent, mais pas d'un coup d'œil — et c'est un coup d'œil qu'on
+	# donne à une barre d'en-tête. Le rouge est le rôle `danger` de la
+	# palette, celui des boutons qui refusent.
+	_stores.add_child(_store_entry(
+		"", tr("KINGDOM_DEFENCE"), _defence_text(),
+		&"" if _kingdom.holds_alone() else &"rust"
+	))
+
+
+## La défense du royaume, et l'assaut qu'elle affronterait s'il est
+## déclaré. Deux chiffres côte à côte : un seul ne dirait pas s'il suffit.
+func _defence_text() -> String:
+	var defence := _kingdom.defence_strength()
+	# L'assaut DÉCLARÉ s'il y en a un, celui que le royaume ATTIRE sinon.
+	# La menace retombe au retour : il n'y a donc presque jamais
+	# d'invasion en cours au moment où l'on compose la garde, et n'afficher
+	# que celle-là laisserait le joueur décider à l'aveugle.
+	var assault := (
+		_kingdom.invasion.strength if _kingdom.invasion != null
+		else _kingdom.expected_assault()
+	)
+	return tr("KINGDOM_DEFENCE_VS") % [defence, assault]
 
 
 ## Une réserve : son icône, puis son compte.
@@ -102,7 +131,9 @@ func _build_stores() -> void:
 ## une).
 ##
 ## Sans référence — les habitants n'en ont pas —, on rend le texte seul.
-func _store_entry(reference: String, name_: String, value: String) -> Control:
+func _store_entry(
+	reference: String, name_: String, value: String, tint: StringName = &""
+) -> Control:
 	var row := HBoxContainer.new()
 	row.add_theme_constant_override("separation", 6)
 	row.alignment = BoxContainer.ALIGNMENT_CENTER
@@ -122,6 +153,8 @@ func _store_entry(reference: String, name_: String, value: String) -> Control:
 	label.add_theme_font_size_override("font_size", 20)
 	label.text = "%s %s" % [name_, value]
 	label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	if not tint.is_empty() and UiTheme.has_color(tint):
+		label.add_theme_color_override("font_color", UiTheme.color(tint))
 	row.add_child(label)
 	return row
 
@@ -276,6 +309,16 @@ func _build_worksite_panel(worksite_id: StringName) -> void:
 		Worksite.per_cycle(worksite_id) * hands,
 		tr(ResourceTable.name_key(Worksite.resource_of(worksite_id))),
 		Worksite.per_cycle(worksite_id),
+	], 19)
+
+	# CE QU'UN BRAS VAUT DES DEUX CÔTÉS, écrit là où on le déplace. Retirer
+	# un ouvrier coûte une production et rend une sentinelle ; sans les
+	# deux chiffres, l'arbitrage se fait au doigt mouillé.
+	_line(tr("KINGDOM_HAND_WORTH") % [
+		Worksite.per_cycle(worksite_id),
+		tr(ResourceTable.name_key(Worksite.resource_of(worksite_id))),
+		Invasion.number(&"defence", &"per_garrison", 0.0)
+			- Invasion.number(&"defence", &"per_worker", 0.0),
 	], 19)
 
 	_action(tr("KINGDOM_ASSIGN"), _assign.bind(worksite_id), _kingdom.can_assign(worksite_id))

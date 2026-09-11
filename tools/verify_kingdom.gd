@@ -350,18 +350,51 @@ func _check_invasions() -> void:
 		_problems.append("un royaume bâti attire moins qu'un hameau")
 
 	var assault := Invasion.declare(null, grown.building_levels(), 0)
-	var alone := grown.defence_strength(0)
-	print("royaume au maximum : défense %d contre un assaut de %d"
-		% [alone, assault.strength])
-	if alone < assault.strength:
+
+	# LA GARDE DOIT DÉCIDER DE L'ISSUE, et c'est le seul moyen de le
+	# vérifier : on mesure le MÊME royaume les bras au travail, puis les
+	# bras à la garde. Si les deux chiffres repoussent l'assaut, monter la
+	# garde ne sert à rien ; si aucun ne le repousse, elle ne suffit jamais.
+	# Dans les deux cas se protéger cesse d'être une décision — c'était
+	# exactement l'état d'avant, où la défense comptait des niveaux de
+	# bâtiment et une population.
+	grown.settle_assignments()
+	var working := grown
+	while working.idle_pawns() > 0 and _fill_one(working):
+		pass
+	var busy := working.defence_strength(0)
+	var watching := Invasion.defence_of(
+		working.ward_strength(), 0, working.population, 0
+	)
+	print("royaume au maximum : assaut %d" % assault.strength)
+	print("  tous aux chantiers : défense %d (%d de rempart, %d ouvriers)"
+		% [busy, working.ward_strength(), working.assigned_total()])
+	print("  tous à la garde    : défense %d (%d sentinelles)"
+		% [watching, working.population])
+	if busy >= assault.strength:
 		_problems.append(
-			"un royaume au maximum ne repousse pas un assaut seul (%d contre %d)"
-			% [alone, assault.strength])
+			"un royaume au maximum repousse l'assaut SANS retirer un seul bras "
+			+ "des chantiers (%d contre %d) : monter la garde ne sert à rien."
+			% [busy, assault.strength])
+	if watching < assault.strength:
+		_problems.append(
+			"un royaume au maximum ne repousse pas l'assaut MÊME tous à la garde "
+			+ "(%d contre %d) : la garde ne suffit jamais."
+			% [watching, assault.strength])
 
 	var bare := Kingdom.create()
 	var bare_assault := Invasion.declare(null, bare.building_levels(), 0)
 	print("royaume de départ : défense %d contre un assaut de %d"
 		% [bare.defence_strength(0), bare_assault.strength])
+
+
+## Pose un bras sur le premier chantier qui a de la place. Renvoie faux
+## quand il n'y en a plus.
+func _fill_one(kingdom: Kingdom) -> bool:
+	for worksite_id: StringName in Worksite.ids():
+		if kingdom.assign(worksite_id):
+			return true
+	return false
 
 
 ## Étapes d'expédition avant qu'une invasion ne se déclare.

@@ -499,8 +499,57 @@ func raise_threat(rng: CombatRng, depth: int) -> Invasion:
 	return invasion
 
 
+## Ce que les bâtiments bâtis opposent à un assaut. Vient de leurs gains
+## déclarés, pas de leurs NIVEAUX : la tour de guet en donne trois par
+## niveau, la maison aucun.
+func ward_strength() -> int:
+	return maxi(int(_grants().get(&"ward", 0)), 0)
+
+
+## Les bras montés à la garde : ceux qu'on n'a PAS mis sur un chantier.
+##
+## C'EST LA DÉCISION QUI MANQUAIT AU ROYAUME, et elle se prend à chaque
+## retour : un bras à la garde vaut quatre fois un bras au travail pour la
+## défense, et ne produit rien. Se protéger se paie donc en production,
+## contre une menace qu'on voit monter.
+##
+## LES BRAS EN TROP CESSENT D'ÊTRE PERDUS. À population maximale le royaume
+## a quatorze habitants pour douze places : deux étaient OISIFS pour
+## toujours, et le carnet affirmait pourtant « il y a toujours moins de
+## bras que de places ». Ce n'était plus vrai au sommet, et la tension du
+## système s'y évaporait.
+func garrison() -> int:
+	return idle_pawns()
+
+
+## L'assaut que ce royaume ATTIRE, sans le tirage. C'est ce qu'il faut
+## afficher au joueur pour qu'il décide combien de bras il met à la garde :
+## la menace monte pendant l'expédition et retombe au retour, donc il n'y a
+## presque jamais d'invasion DÉCLARÉE au moment où l'on compose la garde.
+##
+## SANS LA VARIANCE, ET C'EST VOLONTAIRE. Le vrai assaut tire à ±20 % ; on
+## annonce le socle, pas le pire cas. Annoncer le pire ferait garnison
+## pleine à chaque sortie, annoncer une moyenne mentirait une fois sur
+## deux. Le socle se compare, et le joueur apprend vite qu'il faut de la
+## marge — ce qui est la bonne leçon.
+func expected_assault() -> int:
+	return Invasion.declare(null, building_levels(), 0).strength
+
+
+## Le royaume tiendrait-il SEUL l'assaut qu'il attire aujourd'hui ?
+##
+## C'est la question que la garde pose, réduite à un oui ou un non — et
+## c'est ce qu'il faut pour un coup d'œil. Le § 37 veut que rentrer soit
+## meilleur, jamais obligatoire : ce booléen dit donc si l'on PEUT partir
+## tranquille, pas si l'on doit rentrer.
+func holds_alone() -> bool:
+	return defence_strength() >= expected_assault()
+
+
 func defence_strength(hero_levels: int = 0) -> int:
-	return Invasion.defence_of(building_levels(), population, hero_levels)
+	return Invasion.defence_of(
+		ward_strength(), assigned_total(), garrison(), hero_levels
+	)
 
 
 ## Résout l'assaut. `hero_levels` est la somme des niveaux des héros

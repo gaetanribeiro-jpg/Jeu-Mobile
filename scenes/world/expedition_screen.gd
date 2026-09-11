@@ -145,7 +145,19 @@ func _build_alarm() -> void:
 		return
 	_alarm.visible = true
 	var steps := _kingdom.invasion.steps_left
-	_alarm_label.text = tr("INVASION_ALARM") if steps <= 0 else tr("INVASION_ALARM_IN") % steps
+	# LA GARNISON TIENDRA-T-ELLE ? C'est la seule chose qui décide entre
+	# « rentrer défendre » et « continuer », depuis que la garde est un
+	# choix qu'on a fait AVANT de partir. Sans ce chiffre, l'alarme dit
+	# qu'il se passe quelque chose sans dire si ça mérite d'abandonner une
+	# sortie — et le § 29 se poserait à l'aveugle.
+	var verdict := (
+		tr("INVASION_HOLDS") if _kingdom.invasion.is_repelled_by(_kingdom.defence_strength())
+		else tr("INVASION_FALLS")
+	) % [_kingdom.defence_strength(), _kingdom.invasion.strength]
+	_alarm_label.text = "%s\n%s" % [
+		tr("INVASION_ALARM") if steps <= 0 else tr("INVASION_ALARM_IN") % steps,
+		verdict,
+	]
 	_alarm_defend.text = tr("INVASION_DEFEND")
 	_alarm_defend.disabled = not _run.can_retreat()
 

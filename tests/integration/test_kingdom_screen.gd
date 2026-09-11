@@ -80,9 +80,10 @@ func _select(kind: StringName, id: StringName) -> void:
 
 # --- Ce que l'écran montre -------------------------------------------------
 
-func test_les_quatre_ressources_et_les_bras_sont_en_haut() -> void:
-	# Un habitant au repos mange sans rien rendre : c'est la ressource la
-	# plus facile à oublier, donc elle est à côté des autres.
+func test_les_quatre_ressources_les_bras_et_la_defense_sont_en_haut() -> void:
+	# Un bras qu'on ne met pas sur un chantier MONTE LA GARDE — il ne se
+	# repose plus — et la défense se lit à côté, parce qu'on lui demande
+	# maintenant un arbitrage chiffré : produire, ou tenir.
 	# ON CHERCHE LE TEXTE DANS L'ARBRE, pas à une profondeur fixée. Ce
 	# test lisait `get_child()` en attendant un `Label` ; le jour où chaque
 	# réserve a reçu son icône, elle est devenue une ligne à deux enfants
@@ -90,7 +91,12 @@ func test_les_quatre_ressources_et_les_bras_sont_en_haut() -> void:
 	var seen := _texts_under(_screen._stores)
 	for resource_id: StringName in ResourceTable.ids():
 		assert_string_contains(seen, tr(ResourceTable.name_key(resource_id)))
-	assert_string_contains(seen, tr("KINGDOM_IDLE"))
+	assert_string_contains(seen, tr("KINGDOM_ON_WATCH"))
+	# LA DÉFENSE ET L'ASSAUT, les deux : un seul chiffre ne dirait pas
+	# s'il suffit, et l'arbitrage se ferait à l'aveugle.
+	assert_string_contains(seen, tr("KINGDOM_DEFENCE"))
+	assert_string_contains(seen, str(_kingdom.defence_strength()))
+	assert_string_contains(seen, str(_kingdom.expected_assault()))
 
 
 func test_le_chateau_est_designe_d_entree() -> void:

@@ -177,3 +177,88 @@ func test_l_assaut_survit_a_un_rechargement() -> void:
 
 func test_un_royaume_sans_assaut_se_recharge_sans_assaut() -> void:
 	assert_null(Kingdom.from_dictionary(_kingdom().to_dictionary()).invasion)
+
+
+# --- La garnison (T12.8) ---------------------------------------------------
+#
+# SE PROTÉGER N'ÉTAIT PAS UNE DÉCISION, C'ÉTAIT UNE CONSÉQUENCE. La défense
+# valait `building_levels × 7 + population × 4` : une MAISON défendait
+# autant qu'une tour de guet, un bûcheron autant qu'une sentinelle. Tout ce
+# qu'on bâtissait et tout le monde qu'on avait défendait tout seul, donc le
+# joueur n'avait aucun levier.
+#
+# ET LES BRAS EN TROP NE FAISAIENT RIEN. À population maximale le royaume a
+# quatorze habitants pour douze places : deux étaient oisifs pour toujours,
+# alors que le carnet affirmait « il y a toujours moins de bras que de
+# places ». Ce n'était plus vrai au sommet.
+
+func _max_kingdom() -> Kingdom:
+	var kingdom := Kingdom.create()
+	for building_id: StringName in Buildings.ids():
+		kingdom.levels[building_id] = Buildings.max_level(building_id)
+	kingdom.population = kingdom.population_cap()
+	return kingdom
+
+
+## LE CŒUR : retirer un bras d'un chantier doit CHANGER l'issue. Si les
+## deux états repoussent l'assaut, monter la garde ne sert à rien ; si
+## aucun ne le repousse, elle ne suffit jamais. Dans les deux cas se
+## protéger cesse d'être une décision.
+func test_monter_la_garde_change_l_issue() -> void:
+	var kingdom := _max_kingdom()
+	while kingdom.idle_pawns() > 0:
+		var placed := false
+		for worksite_id: StringName in Worksite.ids():
+			if kingdom.assign(worksite_id):
+				placed = true
+				break
+		if not placed:
+			break
+	var busy := kingdom.defence_strength()
+	var assault := kingdom.expected_assault()
+	assert_lt(busy, assault, "tous aux chantiers, le royaume tient déjà : aucun arbitrage")
+
+	# Les mêmes bras, à la garde.
+	for worksite_id: StringName in Worksite.ids():
+		while kingdom.unassign(worksite_id):
+			pass
+	assert_gt(
+		kingdom.defence_strength(), assault,
+		"tous à la garde, le royaume ne tient toujours pas : la garde ne sert à rien"
+	)
+
+
+func test_une_sentinelle_vaut_plus_qu_un_ouvrier() -> void:
+	var kingdom := _max_kingdom()
+	var watching := kingdom.defence_strength()
+	kingdom.assign(Worksite.ids()[0])
+	assert_lt(
+		kingdom.defence_strength(), watching,
+		"mettre un bras au travail devrait coûter de la défense"
+	)
+
+
+## UNE MAISON NE DÉFEND PAS COMME UNE TOUR DE GUET, et c'est le second
+## levier : bâtir devient un arbitrage entre produire plus et tenir mieux.
+func test_le_rempart_vient_des_batiments_qui_le_declarent() -> void:
+	# ON MESURE L'ÉCART, PAS LE TOTAL : le château est bâti d'entrée et
+	# donne déjà du rempart, donc un royaume « avec des maisons » n'est
+	# jamais à zéro. Le premier jet du test l'avait oublié et accusait le
+	# code d'un chiffre qui était juste.
+	var base := Kingdom.create().ward_strength()
+	var housed := Kingdom.create()
+	housed.levels[&"houses"] = Buildings.max_level(&"houses")
+	var towered := Kingdom.create()
+	towered.levels[&"tower"] = Buildings.max_level(&"tower")
+	assert_eq(housed.ward_strength(), base, "une maison ne devrait rien défendre")
+	assert_gt(towered.ward_strength(), base, "la tour de guet devrait défendre")
+	assert_gt(
+		towered.defence_strength(), housed.defence_strength(),
+		"la tour de guet défend comme une maison : elle n'a plus de rôle"
+	)
+
+
+## Le § 37 veut que rentrer soit MEILLEUR, jamais obligatoire.
+func test_rentrer_defendre_ajoute_toujours() -> void:
+	var kingdom := _max_kingdom()
+	assert_gt(kingdom.defence_strength(20), kingdom.defence_strength(0))

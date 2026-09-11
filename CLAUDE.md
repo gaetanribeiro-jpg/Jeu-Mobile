@@ -964,6 +964,38 @@ s'annonçait « Mage » sur sa carte pendant qu'il se dessinait en Pawn.
 `sprite`, `sprite_variant`, `sprite_color` et `name_key` se déclarent dans
 l'entrée d'un allié ou d'un ennemi, à part de sa classe.
 
+**SE PROTÉGER N'ÉTAIT PAS UNE DÉCISION, C'ÉTAIT UNE CONSÉQUENCE (T12.8).**
+La défense du royaume valait `building_levels × 7 + population × 4` : une
+MAISON défendait autant qu'une tour de guet, un bûcheron autant qu'une
+sentinelle. Tout ce qu'on bâtissait et tout le monde qu'on avait défendait
+tout seul — le joueur n'avait aucun levier, donc aucun choix. C'était le
+point le plus faible de la ville. Quatre choses à ne pas défaire :
+- **LA GARNISON, C'EST LES BRAS QU'ON NE MET PAS AU TRAVAIL.** Une
+  sentinelle vaut quatre fois un ouvrier contre un assaut et ne produit
+  rien : la protection se paie en PRODUCTION, à chaque retour. Mesuré au
+  royaume maximum — assaut 200, **180 tous aux chantiers, 252 tous à la
+  garde** : il faut en poster six sur quatorze, soit la moitié de la
+  production. `verify_kingdom` refuse les deux dégénérescences, celle où
+  travailler suffit et celle où la garde ne suffit jamais.
+- **LES BRAS EN TROP CESSENT D'ÊTRE PERDUS.** À population maximale le
+  royaume a quatorze habitants pour DOUZE places : deux étaient oisifs
+  pour toujours, et le carnet affirmait pourtant « il y a toujours moins
+  de bras que de places ». Ce n'était plus vrai au sommet, et la tension
+  du système s'y évaporait. Le surplus est devenu la garnison.
+- **`ward` DIT CE QU'UN BÂTIMENT DÉFEND**, et c'est un gain de royaume
+  (donc dans `kingdom_grants`, comme `brew`). Tour 3 par niveau, château 2,
+  caserne et camp d'archers 1, maisons et monastère 0. Bâtir devient un
+  arbitrage entre produire plus et tenir mieux, et la tour de guet a enfin
+  le rôle que son nom annonce.
+- **LE CHIFFRE SE LIT AVANT DE PARTIR, ET PENDANT.** L'en-tête du royaume
+  montre « Défense X contre Y » — l'assaut DÉCLARÉ s'il y en a un, celui
+  que le royaume ATTIRE sinon, puisque la menace retombe au retour et
+  qu'il n'y a donc presque jamais d'invasion en cours au moment où l'on
+  compose la garde. Il ROUGIT quand il ne suffit pas. Le panneau d'un
+  chantier dit ce qu'un bras vaut des deux côtés, et l'alarme d'expédition
+  dit si la garnison tiendra : sans elle, « rentrer ou continuer » se
+  poserait à l'aveugle.
+
 **L'expédition se joue, sur PC.** Écran de titre → carte du monde →
 composition de l'équipe → départ → route du § 28 (combats, évènements,
 marchand, mini-boss, boss) → rentrer ou continuer.

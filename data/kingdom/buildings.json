@@ -5,7 +5,8 @@
  "kingdom_grants": [
   "population_cap",
   "heal_between_steps",
-  "brew"
+  "brew",
+  "ward"
  ],
  "_kingdom_grants_note": "LES GAINS QUI NE SONT PAS DES STATISTIQUES DE COMBAT. Tout le reste part dans `Hero.effective_stats` puis dans `Unit.from_stats` ; ces clés-là s'arrêtent au royaume.\n\nPOURQUOI DANS LES DONNÉES : la liste était écrite EN DUR dans `hero_bonuses`, à deux entrées. Une troisième clé de royaume oubliée là aurait filé jusqu'à `Unit.from_stats`, qui l'IGNORE EN SILENCE — et un gain qu'on croit acquis sans qu'il le soit est pire qu'un gain absent. La liste vit donc à côté des gains qu'elle trie.",
  "cost_growth": 1.6,
@@ -23,19 +24,24 @@
    },
    "grants": [
     {
-     "population_cap": 1
+     "population_cap": 1,
+     "ward": 2
     },
     {
-     "population_cap": 1
+     "population_cap": 1,
+     "ward": 2
     },
     {
-     "population_cap": 1
+     "population_cap": 1,
+     "ward": 2
     },
     {
-     "population_cap": 1
+     "population_cap": 1,
+     "ward": 2
     },
     {
-     "population_cap": 1
+     "population_cap": 1,
+     "ward": 2
     }
    ],
    "_grants_note": "Le vrai pouvoir du château n'est pas dans cette colonne : c'est lui qui PLAFONNE le niveau de tous les autres bâtiments. Un habitant de plus par niveau est la prime, pas la fonction.",
@@ -95,20 +101,25 @@
    },
    "grants": [
     {
-     "hit_points": 6
+     "hit_points": 6,
+     "ward": 1
     },
     {
-     "strength": 1
+     "strength": 1,
+     "ward": 1
     },
     {
-     "hit_points": 8
+     "hit_points": 8,
+     "ward": 1
     },
     {
-     "defence": 1
+     "defence": 1,
+     "ward": 1
     },
     {
      "hit_points": 10,
-     "strength": 1
+     "strength": 1,
+     "ward": 1
     }
    ],
    "spot": [
@@ -138,20 +149,25 @@
    },
    "grants": [
     {
-     "hit_points": 5
-    },
-    {
-     "agility": 1
-    },
-    {
-     "critical": 3
-    },
-    {
-     "hit_points": 7
+     "hit_points": 5,
+     "ward": 1
     },
     {
      "agility": 1,
-     "critical": 4
+     "ward": 1
+    },
+    {
+     "critical": 3,
+     "ward": 1
+    },
+    {
+     "hit_points": 7,
+     "ward": 1
+    },
+    {
+     "agility": 1,
+     "critical": 4,
+     "ward": 1
     }
    ],
    "spot": [
@@ -220,19 +236,24 @@
    },
    "grants": [
     {
-     "defence": 1
+     "defence": 1,
+     "ward": 3
     },
     {
-     "hit_points": 5
+     "hit_points": 5,
+     "ward": 3
     },
     {
-     "defence": 1
+     "defence": 1,
+     "ward": 3
     },
     {
-     "hit_points": 6
+     "hit_points": 6,
+     "ward": 3
     },
     {
-     "critical": 1
+     "critical": 1,
+     "ward": 3
     }
    ],
    "spot": [
@@ -242,5 +263,6 @@
   }
  },
  "_layout_note": "`spot` est le pied du bâtiment sur le terrain du royaume, en pixels d'une toile de 900 x 560. C'est de la MISE EN SCÈNE, et elle vit ici plutôt que dans le code parce que le § 5 fait de l'évolution visuelle du royaume une exigence : déplacer une caserne doit se faire en changeant deux nombres, pas en recompilant.",
- "_recruit_note": "Le § 45 met le recrutement dans la Phase 4, et c'est le bâtiment qui l'autorise : sans caserne, pas de Guerrier. Le coût est en OR et en NOURRITURE — l'or parce qu'un héros s'équipe, la nourriture parce qu'il mange. Payer en bois pour un homme n'aurait rien voulu dire, et une seule monnaie aurait fait du recrutement un robinet plutôt qu'un arbitrage contre les bâtiments."
+ "_recruit_note": "Le § 45 met le recrutement dans la Phase 4, et c'est le bâtiment qui l'autorise : sans caserne, pas de Guerrier. Le coût est en OR et en NOURRITURE — l'or parce qu'un héros s'équipe, la nourriture parce qu'il mange. Payer en bois pour un homme n'aurait rien voulu dire, et une seule monnaie aurait fait du recrutement un robinet plutôt qu'un arbitrage contre les bâtiments.",
+ "_ward_note": "CE QU'UN BÂTIMENT DÉFEND, `ward`, et tous n'en font pas autant. Une MAISON défendait exactement comme une tour de guet tant que la défense comptait des NIVEAUX de bâtiment : le seul bâtiment dont le rôle soit la défense n'avait donc aucun rôle. La tour en donne trois par niveau, le château deux — il a des murs —, la caserne et le camp d'archers un chacun, parce qu'on y forme des gens d'armes. Les maisons et le monastère n'en donnent aucun : ils servent à autre chose, et c'est ce qui fait de bâtir un arbitrage entre produire plus et tenir mieux."
 }

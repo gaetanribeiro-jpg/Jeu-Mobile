@@ -122,12 +122,26 @@ func is_imminent() -> bool:
 
 # --- La défense ------------------------------------------------------------
 
-## Ce que le royaume oppose. `hero_levels` est la somme des niveaux des
-## héros rentrés défendre — zéro si l'armée est seule.
-static func defence_of(building_levels: int, population: int, hero_levels: int = 0) -> int:
+## Ce que le royaume oppose. `ward` est ce que les bâtiments DÉCLARENT
+## défendre, `garrison` les bras
+## retirés des chantiers pour monter la garde, `workers` ceux restés au
+## travail.
+##
+## LES TROIS SONT SÉPARÉS PARCE QUE DEUX SONT DES CHOIX. La défense
+## comptait des NIVEAUX de bâtiment et une POPULATION : une maison
+## défendait autant qu'une tour de guet, un bûcheron autant qu'une
+## sentinelle, et le joueur n'avait donc aucun levier — se protéger n'était
+## pas une décision, c'était une conséquence de tout le reste.
+##
+## `hero_levels` est la somme des niveaux des héros rentrés défendre —
+## zéro si l'armée est seule.
+static func defence_of(
+	ward: int, workers: int, garrison: int, hero_levels: int = 0
+) -> int:
 	return int(round(
-		number(&"defence", &"per_building_level", 0.0) * float(maxi(building_levels, 0))
-		+ number(&"defence", &"per_pawn", 0.0) * float(maxi(population, 0))
+		number(&"defence", &"per_ward", 0.0) * float(maxi(ward, 0))
+		+ number(&"defence", &"per_worker", 0.0) * float(maxi(workers, 0))
+		+ number(&"defence", &"per_garrison", 0.0) * float(maxi(garrison, 0))
 		+ number(&"defence", &"hero_bonus_per_level", 0.0) * float(maxi(hero_levels, 0))
 	))
 
