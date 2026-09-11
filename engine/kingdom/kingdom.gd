@@ -27,10 +27,36 @@ extends RefCounted
 ## Réserves du royaume : { ressource → quantité }. L'or n'y figure jamais.
 var stores: Dictionary = {}
 
-var population: int = 0
+## LES HABITANTS SONT DES GENS (§ 9), et c'est la liste qui fait foi.
+##
+## `population` et `assignments` étaient un COMPTEUR et des comptes :
+## douze bras interchangeables, répartis une fois et jamais revus. Un
+## nombre n'est pas une décision — et c'est ce qui rendait la ville
+## expédiable en trente secondes entre deux sorties.
+##
+## Les deux anciens noms survivent en PROPRIÉTÉS CALCULÉES juste en
+## dessous : une trentaine d'appels et une dizaine de tests les lisent, et
+## les réécrire tous n'aurait rien prouvé de plus que de les dériver.
+var pawns: Array[Pawn] = []
 
-## Bras posés sur chaque chantier : { chantier → nombre }.
-var assignments: Dictionary = {}
+## Nombre d'habitants. Écrire dedans ajoute ou retire des gens — c'est ce
+## qui garde `kingdom.population = N` valable dans les tests et dans la
+## relecture d'une sauvegarde ancienne.
+var population: int:
+	get:
+		return pawns.size()
+	set(value):
+		_resize_population(value)
+
+## Bras posés sur chaque chantier : { chantier → nombre }. DÉRIVÉ des
+## postes des habitants, en lecture seule.
+var assignments: Dictionary:
+	get:
+		var out := {}
+		for pawn: Pawn in pawns:
+			if not pawn.posting.is_empty():
+				out[pawn.posting] = int(out.get(pawn.posting, 0)) + 1
+		return out
 
 ## Cycles de production écoulés. Sert au journal et aux tests, jamais à un
 ## calcul de production — un royaume ne produit pas plus parce qu'il est
@@ -410,21 +436,43 @@ func cannot_recruit_because(building_id: StringName, company: Company = null) ->
 	return &""
 
 
+## Les habitants postés sur un chantier, dans l'ordre de la liste.
+func workers_at(worksite_id: StringName) -> Array[Pawn]:
+	var out: Array[Pawn] = []
+	for pawn: Pawn in pawns:
+		if pawn.posting == worksite_id:
+			out.append(pawn)
+	return out
+
+
+## Les habitants qui montent la garde — ceux qu'on n'a posés nulle part.
+func watch() -> Array[Pawn]:
+	return workers_at(&"")
+
+
+func pawn_by_id(pawn_id: int) -> Pawn:
+	for pawn: Pawn in pawns:
+		if pawn.id == pawn_id:
+			return pawn
+	return null
+
+
 func assigned_to(worksite_id: StringName) -> int:
-	return int(assignments.get(worksite_id, 0))
+	return workers_at(worksite_id).size()
 
 
 func assigned_total() -> int:
 	var total := 0
-	for key: Variant in assignments.keys():
-		total += int(assignments[key])
+	for pawn: Pawn in pawns:
+		if not pawn.posting.is_empty():
+			total += 1
 	return total
 
 
-## Habitants qui ne font rien. Ils mangent quand même — c'est ce qui rend
-## une affectation oubliée coûteuse plutôt que neutre.
+## Habitants qui ne tiennent aucun chantier. Ils mangent quand même — et
+## depuis T12.8 ils montent la garde, donc ils ne sont plus perdus.
 func idle_pawns() -> int:
-	return maxi(population - assigned_total(), 0)
+	return watch().size()
 
 
 func can_assign(worksite_id: StringName) -> bool:
@@ -433,35 +481,85 @@ func can_assign(worksite_id: StringName) -> bool:
 	return idle_pawns() > 0 and assigned_to(worksite_id) < Worksite.slots_of(worksite_id)
 
 
-func assign(worksite_id: StringName) -> bool:
+## Poste QUELQU'UN sur un chantier. Sans nom, c'est le plus EXPÉRIMENTÉ du
+## métier qui y va.
+##
+## LE DÉFAUT EST LE MEILLEUR, et ce n'est pas un détail : un royaume qu'on
+## remplit sans réfléchir doit rester jouable, et le geste rapide ne doit
+## pas être le mauvais. Le joueur qui veut arbitrer désigne quelqu'un ;
+## celui qui veut aller vite prend le bon par défaut.
+func assign(worksite_id: StringName, pawn_id: int = -1) -> bool:
 	if not can_assign(worksite_id):
 		return false
-	assignments[worksite_id] = assigned_to(worksite_id) + 1
-	return true
-
-
-func unassign(worksite_id: StringName) -> bool:
-	if assigned_to(worksite_id) <= 0:
+	var chosen: Pawn = null
+	if pawn_id >= 0:
+		chosen = pawn_by_id(pawn_id)
+		if chosen == null or not chosen.posting.is_empty():
+			return false
+	else:
+		for pawn: Pawn in watch():
+			if chosen == null or pawn.level_at(worksite_id) > chosen.level_at(worksite_id):
+				chosen = pawn
+	if chosen == null:
 		return false
-	assignments[worksite_id] = assigned_to(worksite_id) - 1
+	chosen.posting = worksite_id
 	return true
 
 
-## Renvoie les bras en trop au repos. À appeler quand la population baisse
-## ou qu'un chantier rétrécit : un chantier tenu par des gens qui n'existent
-## plus produirait du bois avec des fantômes.
+## Rappelle quelqu'un d'un chantier vers la garde. Sans nom, c'est le
+## MOINS expérimenté qui part : le geste rapide garde les spécialistes.
+func unassign(worksite_id: StringName, pawn_id: int = -1) -> bool:
+	var posted := workers_at(worksite_id)
+	if posted.is_empty():
+		return false
+	var chosen: Pawn = null
+	if pawn_id >= 0:
+		chosen = pawn_by_id(pawn_id)
+		if chosen == null or chosen.posting != worksite_id:
+			return false
+	else:
+		for pawn: Pawn in posted:
+			if chosen == null or pawn.level_at(worksite_id) < chosen.level_at(worksite_id):
+				chosen = pawn
+	if chosen == null:
+		return false
+	chosen.posting = &""
+	return true
+
+
+## Renvoie à la garde les bras qu'un chantier rétréci ne peut plus tenir.
+## À appeler quand la population baisse ou qu'un chantier change de taille :
+## un chantier tenu par des gens qui n'existent plus produirait du bois
+## avec des fantômes.
+##
+## LES DERNIERS ARRIVÉS PARTENT LES PREMIERS, ce qui revient à garder les
+## plus anciens — donc les plus expérimentés, puisque l'expérience se
+## gagne en restant.
 func settle_assignments() -> void:
-	for worksite_id: StringName in assignments.keys():
+	for worksite_id: StringName in Worksite.ids():
 		var limit := Worksite.slots_of(worksite_id)
-		assignments[worksite_id] = clampi(assigned_to(worksite_id), 0, limit)
-	while assigned_total() > population:
-		var busiest := &""
-		for worksite_id: StringName in assignments.keys():
-			if assigned_to(worksite_id) > assigned_to(busiest):
-				busiest = worksite_id
-		if busiest.is_empty():
-			break
-		unassign(busiest)
+		var posted := workers_at(worksite_id)
+		for i in range(limit, posted.size()):
+			posted[i].posting = &""
+
+
+## Ajuste la population à un nombre donné. Les arrivants reçoivent un
+## identifiant neuf, les partants sont pris parmi les derniers venus.
+func _resize_population(wanted: int) -> void:
+	var target := maxi(wanted, 0)
+	while pawns.size() > target:
+		pawns.pop_back()
+	while pawns.size() < target:
+		pawns.append(Pawn.create(_next_pawn_id()))
+
+
+## Prochain identifiant d'habitant. Il ne redescend jamais : deux
+## habitants qui le partageraient s'écraseraient à la sauvegarde.
+func _next_pawn_id() -> int:
+	var highest := -1
+	for pawn: Pawn in pawns:
+		highest = maxi(highest, pawn.id)
+	return highest + 1
 
 
 # --- La menace (§ 37) ------------------------------------------------------
@@ -604,15 +702,40 @@ func run_cycle(company: Company = null) -> Dictionary:
 	threat = 0
 	settle_assignments()
 
+	# CHACUN REND CE QUE SON MÉTIER VAUT (§ 9). Ce n'est plus « la base du
+	# chantier × le nombre de bras » : un bûcheron de rang 4 rapporte
+	# presque le double d'un débutant, et c'est la seconde piste de
+	# progression du royaume — celle qui ne s'achète pas.
 	var produced := {}
-	for worksite_id: StringName in assignments.keys():
-		var hands := assigned_to(worksite_id)
-		if hands <= 0:
+	for pawn: Pawn in pawns:
+		if pawn.posting.is_empty():
 			continue
-		var resource_id := Worksite.resource_of(worksite_id)
-		var gained := Worksite.per_cycle(worksite_id) * hands
-		produced[resource_id] = int(produced.get(resource_id, 0)) + gained
+		var resource_id := Worksite.resource_of(pawn.posting)
+		produced[resource_id] = int(produced.get(resource_id, 0)) + pawn.yield_at(pawn.posting)
 	grant(produced, company)
+
+	# LE MÉTIER S'APPREND APRÈS AVOIR PRODUIT, jamais avant : sinon le
+	# premier cycle d'un nouveau venu paierait déjà son premier rang, et
+	# le compte rendu annoncerait une récolte qu'il n'a pas faite.
+	#
+	# QUI MONTE D'UN RANG EST RELEVÉ ICI. Sans ça, la progression des
+	# métiers est invisible jusqu'à ce qu'on rouvre un panneau — et une
+	# récompense qu'on ne voit pas ne récompense rien. C'est le retour qui
+	# manquait à la décision « qui je laisse où ».
+	var promoted: Array[Dictionary] = []
+	for pawn: Pawn in pawns:
+		if pawn.posting.is_empty():
+			continue
+		var before := pawn.level_at(pawn.posting)
+		var worksite_id := pawn.posting
+		pawn.work_a_cycle()
+		if pawn.level_at(worksite_id) > before:
+			promoted.append({
+				"name": pawn.given_name(),
+				"worksite": worksite_id,
+				"level": pawn.level_at(worksite_id),
+				"master": pawn.is_master_at(worksite_id),
+			})
 
 	var eaten := Worksite.food_per_pawn() * population
 	var larder := amount(&"food")
@@ -626,7 +749,11 @@ func run_cycle(company: Company = null) -> Dictionary:
 	var arrived := false
 	if not hungry and population < population_cap() and amount(&"food") >= Worksite.arrival_food():
 		_add(&"food", -Worksite.arrival_food(), company)
-		population += 1
+		# UN ARRIVANT EST QUELQU'UN, et il arrive À LA GARDE : il ne prend
+		# pas tout seul la place d'un spécialiste sur un chantier, c'est au
+		# joueur de le placer. Un habitant qui s'affecterait seul serait un
+		# bras de plus, pas une personne de plus.
+		pawns.append(Pawn.create(_next_pawn_id()))
 		arrived = true
 
 	# LA POTION VA DANS LE SAC, PAS DANS LA RÉSERVE — même raisonnement
@@ -645,6 +772,7 @@ func run_cycle(company: Company = null) -> Dictionary:
 		"arrived": arrived,
 		"hungry": hungry,
 		"brewed": brewed,
+		"promoted": promoted,
 		"cycle": cycles,
 	}
 
@@ -655,16 +783,15 @@ func to_dictionary() -> Dictionary:
 	var saved_stores := {}
 	for resource_id: StringName in stores.keys():
 		saved_stores[String(resource_id)] = int(stores[resource_id])
-	var saved_work := {}
-	for worksite_id: StringName in assignments.keys():
-		saved_work[String(worksite_id)] = int(assignments[worksite_id])
+	var saved_people: Array = []
+	for pawn: Pawn in pawns:
+		saved_people.append(pawn.to_dictionary())
 	var saved_levels := {}
 	for building_id: StringName in levels.keys():
 		saved_levels[String(building_id)] = int(levels[building_id])
 	return {
 		"stores": saved_stores,
-		"population": population,
-		"assignments": saved_work,
+		"pawns": saved_people,
 		"levels": saved_levels,
 		"cycles": cycles,
 		"threat": threat,
@@ -684,12 +811,22 @@ static func from_dictionary(data: Dictionary) -> Kingdom:
 		# des réserves, sans emporter la partie avec elle.
 		if ResourceTable.exists(resource_id) and ResourceTable.lives_in_kingdom(resource_id):
 			kingdom.stores[resource_id] = int((data["stores"] as Dictionary)[key])
-	kingdom.population = int(data.get("population", kingdom.population))
+	# LES HABITANTS D'ABORD : `population` et `assignments` ne sont plus
+	# que des vues sur la liste, et une sauvegarde ANCIENNE n'a que ces
+	# deux-là. On lit donc les gens s'ils sont écrits, et on retombe sur le
+	# compteur sinon — une partie d'avant le § 9 garde ses habitants, elle
+	# perd seulement leurs métiers, qui n'existaient pas.
+	kingdom.pawns.clear()
+	for raw: Variant in data.get("pawns", []):
+		kingdom.pawns.append(Pawn.from_dictionary(raw))
+	if kingdom.pawns.is_empty():
+		kingdom.population = int(data.get("population", 0))
+		for key: Variant in (data.get("assignments", {}) as Dictionary).keys():
+			if not Worksite.exists(StringName(key)):
+				continue
+			for i in int((data["assignments"] as Dictionary)[key]):
+				kingdom.assign(StringName(key))
 	kingdom.cycles = int(data.get("cycles", 0))
-	for key: Variant in (data.get("assignments", {}) as Dictionary).keys():
-		var worksite_id := StringName(key)
-		if Worksite.exists(worksite_id):
-			kingdom.assignments[worksite_id] = int((data["assignments"] as Dictionary)[key])
 	for key: Variant in (data.get("levels", {}) as Dictionary).keys():
 		var building_id := StringName(key)
 		# Un bâtiment retiré des données depuis la sauvegarde disparaît du

@@ -173,18 +173,52 @@ func _check_food_balance() -> void:
 				.get("population_cap", 0)
 		)
 	var need := Worksite.food_per_pawn() * largest
-	var can_make := 0
+	# DEUX CHIFFRES DEPUIS QUE LES HABITANTS ONT UN MÉTIER (§ 9) : ce que
+	# produisent des DÉBUTANTS, et ce que produisent des maîtres. Le
+	# premier est la contrainte du début de partie, le second dit à quel
+	# point elle se desserre — et n'imprimer que l'un des deux cacherait
+	# soit la difficulté initiale, soit le fait qu'elle disparaît.
+	var raw := 0
+	var mastered := 0
+	var expert := Pawn.create(0)
 	for worksite_id: StringName in Worksite.ids():
-		if Worksite.resource_of(worksite_id) == &"food":
-			can_make += Worksite.per_cycle(worksite_id) * Worksite.slots_of(worksite_id)
-	print("nourriture : %d produite au mieux, %d mangée par %d habitants"
-		% [can_make, need, largest])
-	if can_make <= need:
+		if Worksite.resource_of(worksite_id) != &"food":
+			continue
+		expert.experience[worksite_id] = Worksite.xp_per_level() * Worksite.max_trade_level()
+		raw += Worksite.per_cycle(worksite_id) * Worksite.slots_of(worksite_id)
+		mastered += expert.yield_at(worksite_id) * Worksite.slots_of(worksite_id)
+	print("nourriture : %d produite par des débutants, %d par des maîtres, %d mangée par %d habitants"
+		% [raw, mastered, need, largest])
+	if mastered <= need:
 		# Sinon le royaume ne peut pas se nourrir, quoi que le joueur
 		# fasse, et le plafond de population est un mensonge.
 		_problems.append(
 			"un royaume plein ne peut pas se nourrir : %d produite pour %d mangée"
-			% [can_make, need])
+			% [mastered, need])
+	# CE QUE LA NOURRITURE DOIT COÛTER, C'EST DES BRAS. Elle ne contraint
+	# pas par la famine — le royaume plein doit pouvoir se nourrir — mais
+	# par le NOMBRE DE PLACES qu'elle immobilise : trois pâtures sur douze
+	# places, c'est un quart de la main-d'œuvre qui ne fait ni bois, ni
+	# pierre, ni or.
+	#
+	# LE PREMIER JET DE CE TEST DEMANDAIT L'INVERSE — que des débutants NE
+	# suffisent PAS — et c'était une erreur de raisonnement : si des
+	# débutants ne nourrissaient pas un royaume plein, le plafond de
+	# population serait un mensonge, ce que le test d'au-dessus refuse
+	# déjà. Les deux conditions se seraient contredites.
+	var slots := 0
+	var per_farmer := 0
+	for worksite_id: StringName in Worksite.ids():
+		if Worksite.resource_of(worksite_id) == &"food":
+			slots += Worksite.slots_of(worksite_id)
+			per_farmer = maxi(per_farmer, Worksite.per_cycle(worksite_id))
+	var farmers_needed := 0 if per_farmer <= 0 else int(ceil(float(need) / float(per_farmer)))
+	print("  il faut %d éleveurs débutants sur %d places pour tenir" % [farmers_needed, slots])
+	if farmers_needed * 2 < slots:
+		_problems.append(
+			"nourrir un royaume plein n'occupe que %d places sur %d : "
+			% [farmers_needed, slots]
+			+ "la nourriture ne coûte pas assez de bras pour peser")
 
 	for building_id: StringName in Buildings.ids():
 		if Buildings.starts_at(building_id) > 0:
@@ -206,6 +240,7 @@ func _check_recruiting() -> void:
 	for class_id: StringName in Unit.hero_class_ids():
 		if not served.has(class_id):
 			_problems.append("aucun bâtiment ne recrute un %s" % class_id)
+	_check_trades()
 	_check_spots()
 	_check_brewing()
 	if Buildings.candidate_count() < 2:
@@ -213,6 +248,31 @@ func _check_recruiting() -> void:
 		# reproche exact auquel les traits répondent.
 		_problems.append("le recrutement ne propose que %d candidat"
 			% Buildings.candidate_count())
+
+
+## LE MÉTIER EST LA SECONDE PISTE DE PROGRESSION DU ROYAUME (§ 9), celle
+## qui ne s'achète pas. Il doit donc PESER — un rang qui ne change rien
+## ferait de la spécialisation une décoration — sans pour autant rendre un
+## débutant inutile.
+func _check_trades() -> void:
+	print("\nmétiers : %d rangs, %d cycles par rang, +%.0f %% par rang"
+		% [
+			Worksite.max_trade_level(), Worksite.xp_per_level(),
+			Worksite.yield_per_level() * 100.0,
+		])
+	print("%-12s %8s %8s" % ["chantier", "débutant", "maître"])
+	var expert := Pawn.create(0)
+	for worksite_id: StringName in Worksite.ids():
+		expert.experience[worksite_id] = Worksite.xp_per_level() * Worksite.max_trade_level()
+		var raw := Worksite.per_cycle(worksite_id)
+		var best := expert.yield_at(worksite_id)
+		print("%-12s %8d %8d" % [worksite_id, raw, best])
+		if best <= raw:
+			_problems.append(
+				"%s : un maître y produit autant qu'un débutant — le métier ne sert à rien"
+				% worksite_id)
+	if Worksite.max_trade_level() <= 0:
+		_problems.append("aucun rang de métier : la spécialisation n'existe pas")
 
 
 ## UN BÂTIMENT POSÉ HORS DE LA TOILE NE SE DESSINE PAS, et ne se plaint

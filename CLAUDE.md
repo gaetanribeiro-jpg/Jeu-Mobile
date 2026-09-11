@@ -964,6 +964,48 @@ s'annonçait « Mage » sur sa carte pendant qu'il se dessinait en Pawn.
 `sprite`, `sprite_variant`, `sprite_color` et `name_key` se déclarent dans
 l'entrée d'un allié ou d'un ennemi, à part de sa classe.
 
+**LES HABITANTS SONT DES GENS, PAS UN COMPTEUR (§ 9, T12.9).** « Le
+royaume a une population : agriculteurs, bûcherons, mineurs… à terme
+certains habitants auront nom, niveau, métier. » Il avait
+`population: int` et `assignments: { chantier → nombre }` : douze bras
+interchangeables, répartis une fois et jamais revus. **Un nombre n'est pas
+une décision**, et c'est ce qui rendait la ville expédiable en trente
+secondes entre deux sorties — le reproche de Gaetan, mot pour mot. Six
+choses à ne pas défaire :
+- **LE MÉTIER S'APPREND SÉPARÉMENT PAR CHANTIER.** Un bûcheron de rang 4
+  est un carrier de rang 0 : déplacer quelqu'un coûte donc quelque chose
+  de PRÉCIS, et ce coût est la décision. Les chantiers et la garde se
+  disputent enfin les mêmes PERSONNES, et plus seulement le même nombre
+  de bras.
+- **RIEN NE S'APPREND À LA GARDE**, ce qui rend le choix coûteux des DEUX
+  côtés : poster un spécialiste le prive de sa progression en plus de sa
+  production.
+- **LE GAIN EST UNE FRACTION DE LA BASE** (+20 % par rang, cinq rangs) :
+  un seul réglage vaut pour les quatre chantiers, et une scierie à 12
+  comme une mine à 20 doublent au même rang. `verify_kingdom` refuse un
+  métier qui ne changerait rien.
+- **`population` ET `assignments` SURVIVENT EN PROPRIÉTÉS CALCULÉES.** Une
+  trentaine d'appels et une dizaine de tests les lisent ; les dériver de
+  la liste a fait passer les 929 tests d'un coup, là où les réécrire
+  n'aurait rien prouvé de plus. Écrire dans `population` ajoute ou retire
+  des gens — c'est ce qui garde `kingdom.population = N` valable.
+- **LE DÉFAUT EST LE MEILLEUR, LE RAPPEL EST LE MOINDRE.** `assign()` sans
+  nom prend le plus expérimenté du métier, `unassign()` sans nom rend le
+  moins expérimenté : un royaume qu'on remplit sans réfléchir doit rester
+  jouable, et le geste rapide ne doit pas être le mauvais.
+- **LE NOM EST UNE FONCTION DE L'IDENTIFIANT**, à pas PREMIER avec la
+  taille de la liste. `pool[id]` sortait le village dans l'ordre
+  alphabétique — Aldric, Anselme, Arnaud… — ce qui se lit comme une liste
+  et pas comme des gens ; un pas premier disperse sans jamais répéter un
+  nom avant d'avoir épuisé les cent vingt. Aucun tirage : le décor ne
+  consomme pas la graine de la partie (règle des rochers, T9.10).
+
+**UNE RÉCOMPENSE QU'ON NE VOIT PAS NE RÉCOMPENSE RIEN (T12.9).** Le cycle
+NOMME ceux qui ont monté d'un rang, et signale la maîtrise à part —
+au sommet, laisser quelqu'un là n'apprend plus rien. Sans ce retour, la
+progression des métiers restait invisible jusqu'à ce qu'on rouvre un
+panneau : on prend la décision au départ, on en lit le fruit au retour.
+
 **SE PROTÉGER N'ÉTAIT PAS UNE DÉCISION, C'ÉTAIT UNE CONSÉQUENCE (T12.8).**
 La défense du royaume valait `building_levels × 7 + population × 4` : une
 MAISON défendait autant qu'une tour de guet, un bûcheron autant qu'une

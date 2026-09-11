@@ -301,28 +301,89 @@ func _recruit_buttons(building_id: StringName) -> void:
 func _build_worksite_panel(worksite_id: StringName) -> void:
 	if not Worksite.exists(worksite_id):
 		return
-	var hands := _kingdom.assigned_to(worksite_id)
+	var posted := _kingdom.workers_at(worksite_id)
 	var slots := Worksite.slots_of(worksite_id)
+	var resource := tr(ResourceTable.name_key(Worksite.resource_of(worksite_id)))
 	_line(tr(Worksite.name_key(worksite_id)), 26)
-	_line(tr("KINGDOM_HANDS") % [hands, slots], 20)
+	_line(tr("KINGDOM_HANDS") % [posted.size(), slots], 20)
+
+	# CE QUE LE CHANTIER REND VRAIMENT, pas « la base × le nombre » : depuis
+	# le § 9 chacun rend ce que son métier vaut, et deux chantiers à trois
+	# bras ne se valent plus.
+	var total := 0
+	for pawn: Pawn in posted:
+		total += pawn.yield_at(worksite_id)
 	_line(tr("KINGDOM_YIELD") % [
-		Worksite.per_cycle(worksite_id) * hands,
-		tr(ResourceTable.name_key(Worksite.resource_of(worksite_id))),
-		Worksite.per_cycle(worksite_id),
+		total, resource, Worksite.per_cycle(worksite_id)
 	], 19)
 
 	# CE QU'UN BRAS VAUT DES DEUX CÔTÉS, écrit là où on le déplace. Retirer
 	# un ouvrier coûte une production et rend une sentinelle ; sans les
 	# deux chiffres, l'arbitrage se fait au doigt mouillé.
 	_line(tr("KINGDOM_HAND_WORTH") % [
-		Worksite.per_cycle(worksite_id),
-		tr(ResourceTable.name_key(Worksite.resource_of(worksite_id))),
+		Worksite.per_cycle(worksite_id), resource,
 		Invasion.number(&"defence", &"per_garrison", 0.0)
 			- Invasion.number(&"defence", &"per_worker", 0.0),
 	], 19)
 
-	_action(tr("KINGDOM_ASSIGN"), _assign.bind(worksite_id), _kingdom.can_assign(worksite_id))
-	_action(tr("KINGDOM_UNASSIGN"), _unassign.bind(worksite_id), hands > 0)
+	_build_crew(worksite_id, posted, resource)
+
+
+## QUI TRAVAILLE ICI, ET QUI POURRAIT (§ 9).
+##
+## C'EST LA MOITIÉ QUI MANQUAIT À LA VILLE. « Envoyer un habitant » et
+## « Rappeler un habitant » déplaçaient un BRAS : deux boutons, aucune
+## lecture, trente secondes entre deux sorties. On déplace maintenant
+## QUELQU'UN, dont on lit le nom et le rang au métier — et un bûcheron de
+## rang 4 qu'on envoie à la carrière y repart de zéro.
+##
+## LES DEUX LISTES SONT L'UNE SOUS L'AUTRE, et c'est ce qui rend l'échange
+## lisible : en haut ceux qui y sont, en bas ceux qu'on pourrait y mettre,
+## avec le rang que CHACUN a À CE CHANTIER. Sans le rang des candidats, le
+## joueur ne saurait pas lequel de ses gardes est déjà carrier.
+func _build_crew(
+	worksite_id: StringName, posted: Array[Pawn], resource: String
+) -> void:
+	if posted.is_empty():
+		_line(tr("KINGDOM_NOBODY_HERE"), 19)
+	for pawn: Pawn in posted:
+		_action(
+			_pawn_label(pawn, worksite_id, resource, tr("KINGDOM_RECALL")),
+			_unassign.bind(worksite_id, pawn.id), true
+		)
+
+	var available := _kingdom.watch()
+	if available.is_empty() or posted.size() >= Worksite.slots_of(worksite_id):
+		return
+	_line(tr("KINGDOM_FROM_WATCH"), 19)
+	# LES PLUS EXPÉRIMENTÉS EN TÊTE : sur quatorze habitants, une liste
+	# dans l'ordre d'arrivée obligerait à la lire en entier pour trouver le
+	# carrier. Trier, c'est répondre à la question qu'on se pose.
+	var sorted := available.duplicate()
+	sorted.sort_custom(func(a: Pawn, b: Pawn) -> bool:
+		return a.level_at(worksite_id) > b.level_at(worksite_id))
+	for pawn: Pawn in sorted:
+		_action(
+			_pawn_label(pawn, worksite_id, resource, tr("KINGDOM_POST")),
+			_assign.bind(worksite_id, pawn.id), true
+		)
+
+
+## Le nom de quelqu'un, son rang au métier, et ce qu'il rendrait ici.
+##
+## LE RANG ET LE RENDEMENT ENSEMBLE : le rang seul est un chiffre abstrait,
+## le rendement seul cache pourquoi celui-ci vaut mieux que celui-là.
+func _pawn_label(
+	pawn: Pawn, worksite_id: StringName, resource: String, action: String
+) -> String:
+	var rank := tr("KINGDOM_TRADE_RANK") % [
+		pawn.level_at(worksite_id), Worksite.max_trade_level()
+	]
+	if pawn.is_master_at(worksite_id):
+		rank = tr("KINGDOM_TRADE_MASTER")
+	return "%s — %s\n%s · %d %s" % [
+		action, pawn.given_name(), rank, pawn.yield_at(worksite_id), resource
+	]
 
 
 func _line(text: String, size: int) -> void:
@@ -404,15 +465,15 @@ func _hire(building_id: StringName, index: int) -> void:
 	refresh()
 
 
-func _assign(worksite_id: StringName) -> void:
-	if not _kingdom.assign(worksite_id):
+func _assign(worksite_id: StringName, pawn_id: int = -1) -> void:
+	if not _kingdom.assign(worksite_id, pawn_id):
 		return
 	changed.emit()
 	refresh()
 
 
-func _unassign(worksite_id: StringName) -> void:
-	if not _kingdom.unassign(worksite_id):
+func _unassign(worksite_id: StringName, pawn_id: int = -1) -> void:
+	if not _kingdom.unassign(worksite_id, pawn_id):
 		return
 	changed.emit()
 	refresh()
@@ -437,6 +498,19 @@ func report_cycle(report: Dictionary) -> void:
 			int((report["brewed"] as Dictionary)[key]),
 		])
 	pieces.append(tr("KINGDOM_EATEN") % int(report.get("eaten", 0)))
+	# QUI A MONTÉ D'UN RANG, NOMMÉMENT. La progression d'un métier est
+	# invisible tant qu'on ne rouvre pas le panneau du chantier — et une
+	# récompense qu'on ne voit pas ne récompense rien. C'est le retour qui
+	# manquait à la décision « qui je laisse où » : on la prend au départ,
+	# on en lit le fruit au retour.
+	for entry: Variant in report.get("promoted", []):
+		var line: Dictionary = entry
+		var key := "KINGDOM_MASTERED" if bool(line.get("master", false)) else "KINGDOM_PROMOTED"
+		pieces.append(tr(key) % [
+			String(line.get("name", "")),
+			tr(Worksite.name_key(StringName(line.get("worksite", &"")))),
+			int(line.get("level", 0)),
+		])
 	if bool(report.get("arrived", false)):
 		pieces.append(tr("KINGDOM_ARRIVED"))
 	if bool(report.get("hungry", false)):

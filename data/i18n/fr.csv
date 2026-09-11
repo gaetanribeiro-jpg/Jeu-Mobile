@@ -337,8 +337,6 @@ KINGDOM_NEEDS_RESOURCES,Ressources insuffisantes
 KINGDOM_BUILT,%s passe au niveau %d.
 KINGDOM_HANDS,%d bras sur %d places
 KINGDOM_YIELD,Rend %d %s par cycle (%d par bras).
-KINGDOM_ASSIGN,Envoyer un habitant
-KINGDOM_UNASSIGN,Rappeler un habitant
 KINGDOM_EATEN,%d nourriture mangée
 KINGDOM_ARRIVED,Un habitant s'installe.
 KINGDOM_HUNGRY,Les réserves de nourriture sont vides.
@@ -670,3 +668,11 @@ INVASION_HOLDS,"La garnison tiendrait seule : %d contre %d."
 INVASION_FALLS,"La garnison ne tiendra pas : %d contre %d."
 COMPANY_MELT,"Fondre — %s"
 GRANT_WARD,Rempart
+KINGDOM_NOBODY_HERE,Personne n'y travaille.
+KINGDOM_FROM_WATCH,Depuis la garde :
+KINGDOM_POST,Poster
+KINGDOM_RECALL,Rappeler
+KINGDOM_TRADE_RANK,"Métier %d / %d"
+KINGDOM_TRADE_MASTER,Maître du métier
+KINGDOM_PROMOTED,"%s progresse — %s, rang %d"
+KINGDOM_MASTERED,"%s est maître — %s, rang %d"

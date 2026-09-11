@@ -1,70 +1,77 @@
 {
-  "_readme": "Les chantiers : un gisement, un Pawn assigné, et son animation d'interaction.\n\nPOURQUOI DES CHANTIERS ET PAS DES BÂTIMENTS. Le pack ne dessine ni ferme, ni scierie, ni mine — mais il dessine des arbres qu'on abat, un gisement d'or, des rochers, des moutons, et un Pawn avec quatre outils et une animation d'interaction pour chacun. C'est exactement la production du royaume, déjà dessinée. Un bâtiment « Scierie » demanderait un sprite qui n'existe pas ; un bûcheron devant un arbre montre en plus la POPULATION AU TRAVAIL, ce que le § 9 réclame et qu'un bâtiment fermé ne montre jamais.\n\nUN CHANTIER SANS PERSONNE NE PRODUIT RIEN. C'est ce qui fait de l'affectation une décision : il y a toujours moins de bras que de gisements, et le § 50 veut que chaque tour contienne un choix.\n\nLE CYCLE EST UNE EXPÉDITION, PAS UNE MINUTE. Aucun timer, aucune énergie — c'est une décision verrouillée. Le royaume produit une fois par sortie conclue, quelle qu'en soit la longueur. Conséquence voulue : une sortie courte rapporte plus de CYCLES, une longue rapporte plus de BUTIN. Les deux moitiés de la boucle du § 3 se disputent le même temps, et c'est ce qui les relie.",
-  "cycle": {
-    "_note": "Ce qu'un cycle de production coûte et rapporte, hors chantiers. Un Pawn mange, qu'il travaille ou non — sinon la population serait gratuite et son plafond ne voudrait rien dire. `arrival_food` est la réserve qu'il faut avoir accumulée pour qu'un nouvel habitant s'installe : la nourriture achète des bras, et les bras remplissent les chantiers.",
-    "food_per_pawn": 3,
-    "arrival_food": 25
+ "_readme": "Les chantiers : un gisement, un Pawn assigné, et son animation d'interaction.\n\nPOURQUOI DES CHANTIERS ET PAS DES BÂTIMENTS. Le pack ne dessine ni ferme, ni scierie, ni mine — mais il dessine des arbres qu'on abat, un gisement d'or, des rochers, des moutons, et un Pawn avec quatre outils et une animation d'interaction pour chacun. C'est exactement la production du royaume, déjà dessinée. Un bâtiment « Scierie » demanderait un sprite qui n'existe pas ; un bûcheron devant un arbre montre en plus la POPULATION AU TRAVAIL, ce que le § 9 réclame et qu'un bâtiment fermé ne montre jamais.\n\nUN CHANTIER SANS PERSONNE NE PRODUIT RIEN. C'est ce qui fait de l'affectation une décision : il y a toujours moins de bras que de gisements, et le § 50 veut que chaque tour contienne un choix.\n\nLE CYCLE EST UNE EXPÉDITION, PAS UNE MINUTE. Aucun timer, aucune énergie — c'est une décision verrouillée. Le royaume produit une fois par sortie conclue, quelle qu'en soit la longueur. Conséquence voulue : une sortie courte rapporte plus de CYCLES, une longue rapporte plus de BUTIN. Les deux moitiés de la boucle du § 3 se disputent le même temps, et c'est ce qui les relie.",
+ "cycle": {
+  "_note": "Ce qu'un cycle de production coûte et rapporte, hors chantiers. Un Pawn mange, qu'il travaille ou non — sinon la population serait gratuite et son plafond ne voudrait rien dire. `arrival_food` est la réserve qu'il faut avoir accumulée pour qu'un nouvel habitant s'installe : la nourriture achète des bras, et les bras remplissent les chantiers.",
+  "food_per_pawn": 3,
+  "arrival_food": 25
+ },
+ "population": {
+  "_note": "Le § 5 veut qu'on commence petit : deux habitants, un seul chantier tenu. `base_cap` est ce que le royaume nourrit sans rien bâtir ; les maisons et le château l'augmentent, dans buildings.json.",
+  "start": 2,
+  "base_cap": 3
+ },
+ "worksites": {
+  "lumber_camp": {
+   "name_key": "WORKSITE_LUMBER",
+   "resource": "wood",
+   "per_cycle": 12,
+   "tool": "axe",
+   "asset": "resources/tree1",
+   "slots": 3,
+   "spot": [
+    330,
+    545
+   ],
+   "scale": 0.5
   },
-  "population": {
-    "_note": "Le § 5 veut qu'on commence petit : deux habitants, un seul chantier tenu. `base_cap` est ce que le royaume nourrit sans rien bâtir ; les maisons et le château l'augmentent, dans buildings.json.",
-    "start": 2,
-    "base_cap": 3
+  "quarry": {
+   "name_key": "WORKSITE_QUARRY",
+   "resource": "stone",
+   "per_cycle": 8,
+   "tool": "pickaxe",
+   "asset": "decorations/rock3",
+   "slots": 3,
+   "spot": [
+    500,
+    545
+   ],
+   "scale": 1.8
   },
-  "worksites": {
-    "lumber_camp": {
-      "name_key": "WORKSITE_LUMBER",
-      "resource": "wood",
-      "per_cycle": 12,
-      "tool": "axe",
-      "asset": "resources/tree1",
-      "slots": 3,
-      "spot": [
-        330,
-        545
-      ],
-      "scale": 0.5
-    },
-    "quarry": {
-      "name_key": "WORKSITE_QUARRY",
-      "resource": "stone",
-      "per_cycle": 8,
-      "tool": "pickaxe",
-      "asset": "decorations/rock3",
-      "slots": 3,
-      "spot": [
-        500,
-        545
-      ],
-      "scale": 1.8
-    },
-    "gold_mine": {
-      "name_key": "WORKSITE_MINE",
-      "resource": "gold",
-      "per_cycle": 20,
-      "tool": "pickaxe",
-      "asset": "resources/gold_stone_4",
-      "slots": 3,
-      "spot": [
-        650,
-        545
-      ],
-      "scale": 1.2,
-      "_asset_note": "PAS `gold_resource` : c'est la pépite que le Pawn PORTE, vingt-quatre pixels de contenu perdus dans une toile de 128. À l'écran, la mine d'or était un point jaune illisible. `gold_stone_4` est le rocher aurifère, soixante-trois pixels de contenu — c'est le gisement, et il se voit. Trouvé en capture d'écran, comme le feu invisible de T1.12."
-    },
-    "pasture": {
-      "name_key": "WORKSITE_PASTURE",
-      "resource": "food",
-      "per_cycle": 16,
-      "tool": "knife",
-      "asset": "resources/sheep_idle",
-      "slots": 3,
-      "spot": [
-        810,
-        545
-      ],
-      "scale": 1.0
-    },
-    "_note": "`slots` est le nombre de bras qu'un gisement accepte. Douze places pour quatre chantiers, contre un plafond de quatorze habitants : il reste toujours un ou deux bras libres, donc affecter est un ARBITRAGE entre les ressources et jamais un simple remplissage. Le rapport compte : beaucoup plus de places que de bras rendrait le choix indolore, moins de places que de bras ferait des habitants excédentaires de pures bouches.",
-    "_scale_note": "Les gisements du pack n'ont pas la même taille : un rocher fait 64 pixels, un arbre 256. `scale` les ramène tous autour de 128 à l'écran. Sans lui, la carrière est un caillou perdu au milieu du pré et le joueur ne la voit pas."
-  }
+  "gold_mine": {
+   "name_key": "WORKSITE_MINE",
+   "resource": "gold",
+   "per_cycle": 20,
+   "tool": "pickaxe",
+   "asset": "resources/gold_stone_4",
+   "slots": 3,
+   "spot": [
+    650,
+    545
+   ],
+   "scale": 1.2,
+   "_asset_note": "PAS `gold_resource` : c'est la pépite que le Pawn PORTE, vingt-quatre pixels de contenu perdus dans une toile de 128. À l'écran, la mine d'or était un point jaune illisible. `gold_stone_4` est le rocher aurifère, soixante-trois pixels de contenu — c'est le gisement, et il se voit. Trouvé en capture d'écran, comme le feu invisible de T1.12."
+  },
+  "pasture": {
+   "name_key": "WORKSITE_PASTURE",
+   "resource": "food",
+   "per_cycle": 16,
+   "tool": "knife",
+   "asset": "resources/sheep_idle",
+   "slots": 3,
+   "spot": [
+    810,
+    545
+   ],
+   "scale": 1.0
+  },
+  "_note": "`slots` est le nombre de bras qu'un gisement accepte. Douze places pour quatre chantiers, contre un plafond de quatorze habitants : il reste toujours un ou deux bras libres, donc affecter est un ARBITRAGE entre les ressources et jamais un simple remplissage. Le rapport compte : beaucoup plus de places que de bras rendrait le choix indolore, moins de places que de bras ferait des habitants excédentaires de pures bouches.",
+  "_scale_note": "Les gisements du pack n'ont pas la même taille : un rocher fait 64 pixels, un arbre 256. `scale` les ramène tous autour de 128 à l'écran. Sans lui, la carrière est un caillou perdu au milieu du pré et le joueur ne la voit pas."
+ },
+ "trades": {
+  "_note": "LES HABITANTS SONT DES GENS, PAS UN COMPTEUR (§ 9). « Le royaume a une population : agriculteurs, bûcherons, mineurs, forgerons... à terme certains habitants auront nom, niveau, métier. » Douze bras identiques sont un NOMBRE, pas une décision : on les répartissait une fois et on n'y repensait plus.\n\nUN MÉTIER S'APPREND OÙ L'ON TRAVAILLE. Chaque habitant accumule de l'expérience au chantier où il passe le cycle, et SÉPARÉMENT par métier : un bûcheron de rang 4 est un carrier de rang 0. Le déplacer coûte donc quelque chose de précis, et ce coût est la décision — garder son meilleur bûcheron sur le bois, ou l'envoyer à la garde parce que l'assaut arrive.\n\nLE GAIN EST UNE FRACTION DE LA BASE, pas un nombre : un seul réglage vaut pour les quatre chantiers, et une scierie à 12 comme une mine à 20 doublent au même rang. À 20 % par rang et cinq rangs, un habitant chevronné produit DEUX FOIS un débutant — c'est la seconde piste de progression du royaume, celle qui ne s'achète pas.\n\nTROIS CYCLES PAR RANG, quinze pour le maximum : une campagne en compte vingt à trente, donc on n'atteint le sommet qu'en s'y tenant, et jamais partout à la fois.",
+  "xp_per_cycle": 1,
+  "xp_per_level": 3,
+  "max_level": 5,
+  "yield_per_level": 0.2
+ }
 }

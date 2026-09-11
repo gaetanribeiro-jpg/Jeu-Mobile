@@ -155,24 +155,81 @@ func test_le_chateau_bloque_et_l_ecran_le_dit() -> void:
 
 # --- Affecter --------------------------------------------------------------
 
-func test_envoyer_et_rappeler_un_habitant() -> void:
+## ON DÉPLACE QUELQU'UN, PAS UN BRAS (§ 9). Les deux boutons « Envoyer »
+## et « Rappeler » sont devenus une LISTE de gens : chacun porte son nom,
+## son rang au métier et ce qu'il rendrait ici. C'est la moitié qui
+## manquait à la ville — deux boutons ne se lisent pas, quatorze personnes
+## si.
+func test_poster_et_rappeler_quelqu_un_par_son_nom() -> void:
 	_select(_screen._view.KIND_WORKSITE, &"lumber_camp")
 	await wait_process_frames(1)
-	_button(tr("KINGDOM_ASSIGN")).pressed.emit()
+
+	var candidate: Pawn = _kingdom.watch()[0]
+	var post := _button("%s — %s" % [tr("KINGDOM_POST"), candidate.given_name()])
+	assert_not_null(post, "personne n'est proposé au chantier")
+	post.pressed.emit()
 	await wait_process_frames(1)
 	assert_eq(_kingdom.assigned_to(&"lumber_camp"), 1)
+	assert_eq(_kingdom.workers_at(&"lumber_camp")[0].id, candidate.id,
+		"c'est quelqu'un d'autre qui est parti travailler")
 
-	_button(tr("KINGDOM_UNASSIGN")).pressed.emit()
+	var recall := _button("%s — %s" % [tr("KINGDOM_RECALL"), candidate.given_name()])
+	assert_not_null(recall, "l'ouvrier posté n'a pas de bouton de rappel")
+	recall.pressed.emit()
 	await wait_process_frames(1)
 	assert_eq(_kingdom.assigned_to(&"lumber_camp"), 0)
 
 
-func test_on_ne_peut_pas_envoyer_un_habitant_qu_on_n_a_pas() -> void:
-	for i in _kingdom.population:
-		_kingdom.assign(&"lumber_camp")
+## Le panneau dit le RANG et le RENDEMENT de chacun : le rang seul est un
+## chiffre abstrait, le rendement seul cache pourquoi celui-ci vaut mieux
+## que celui-là.
+func test_le_panneau_dit_le_metier_et_le_rendement_de_chacun() -> void:
+	var veteran: Pawn = _kingdom.watch()[0]
+	veteran.experience[&"lumber_camp"] = Worksite.xp_per_level() * 2
+	_select(_screen._view.KIND_WORKSITE, &"lumber_camp")
+	await wait_process_frames(1)
+
+	var post := _button("%s — %s" % [tr("KINGDOM_POST"), veteran.given_name()])
+	assert_not_null(post)
+	assert_string_contains(post.text, tr("KINGDOM_TRADE_RANK") % [2, Worksite.max_trade_level()])
+	assert_string_contains(post.text, str(veteran.yield_at(&"lumber_camp")))
+
+
+## LES PLUS EXPÉRIMENTÉS EN TÊTE : sur quatorze habitants, une liste dans
+## l'ordre d'arrivée obligerait à la lire en entier pour trouver le carrier.
+func test_les_candidats_sortent_du_plus_expérimenté_au_moins() -> void:
+	_kingdom.population = 4
+	_kingdom.pawns[2].experience[&"quarry"] = Worksite.xp_per_level() * 3
 	_select(_screen._view.KIND_WORKSITE, &"quarry")
 	await wait_process_frames(1)
-	assert_true(_button(tr("KINGDOM_ASSIGN")).disabled)
+
+	var first := ""
+	for button: Button in _panel_buttons():
+		if button.text.begins_with(tr("KINGDOM_POST")):
+			first = button.text
+			break
+	assert_string_contains(first, _kingdom.pawns[2].given_name())
+
+
+func test_on_ne_propose_personne_quand_tout_le_monde_travaille() -> void:
+	# ON REMPLIT TOUS LES CHANTIERS, pas un seul : le royaume peut avoir
+	# plus d'habitants qu'une scierie n'a de places, et le premier jet de
+	# ce test l'a supposé. Ce qu'on vérifie est « plus personne à la
+	# garde », pas « la scierie est pleine ».
+	var placed := true
+	while placed and _kingdom.idle_pawns() > 0:
+		placed = false
+		for worksite_id: StringName in Worksite.ids():
+			if _kingdom.assign(worksite_id):
+				placed = true
+	assert_eq(_kingdom.idle_pawns(), 0, "le royaume a plus de bras que de places")
+	_select(_screen._view.KIND_WORKSITE, &"quarry")
+	await wait_process_frames(1)
+	for button: Button in _panel_buttons():
+		assert_false(
+			button.text.begins_with(tr("KINGDOM_POST")),
+			"la carrière propose quelqu'un que le royaume n'a pas"
+		)
 
 
 # --- Recruter --------------------------------------------------------------

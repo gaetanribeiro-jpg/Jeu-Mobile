@@ -139,6 +139,31 @@ static func food_per_pawn() -> int:
 
 ## Réserve de nourriture à accumuler pour qu'un habitant s'installe : la
 ## nourriture achète des bras, et les bras remplissent les chantiers.
+# --- Les métiers (§ 9) -----------------------------------------------------
+#
+# Un habitant apprend le métier du chantier où il passe le cycle, et
+# SÉPARÉMENT par chantier : un bûcheron chevronné est un carrier débutant.
+# C'est ce qui donne un prix au déplacement, donc une décision à l'écran.
+
+static func xp_per_cycle() -> int:
+	return maxi(int(number(&"trades", &"xp_per_cycle", 1)), 0)
+
+
+static func xp_per_level() -> int:
+	return maxi(int(number(&"trades", &"xp_per_level", 1)), 1)
+
+
+static func max_trade_level() -> int:
+	return maxi(int(number(&"trades", &"max_level", 0)), 0)
+
+
+## Ce qu'un rang ajoute, en FRACTION de la production de base. Un seul
+## réglage pour les quatre chantiers : une scierie à 12 et une mine à 20
+## doublent au même rang.
+static func yield_per_level() -> float:
+	return maxf(number(&"trades", &"yield_per_level", 0.0), 0.0)
+
+
 static func arrival_food() -> int:
 	return int(number(&"cycle", &"arrival_food", 0))
 
