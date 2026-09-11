@@ -206,12 +206,35 @@ func _check_recruiting() -> void:
 	for class_id: StringName in Unit.hero_class_ids():
 		if not served.has(class_id):
 			_problems.append("aucun bâtiment ne recrute un %s" % class_id)
+	_check_spots()
 	_check_brewing()
 	if Buildings.candidate_count() < 2:
 		# Un seul candidat n'est pas un choix, c'est un bouton — le
 		# reproche exact auquel les traits répondent.
 		_problems.append("le recrutement ne propose que %d candidat"
 			% Buildings.candidate_count())
+
+
+## UN BÂTIMENT POSÉ HORS DE LA TOILE NE SE DESSINE PAS, et ne se plaint
+## pas. La tour de guet était en 930 sur une toile de 900 depuis sa
+## création : un joueur qui la bâtissait — et il le faut pour l'ascension —
+## ne voyait rien apparaître. Aucun test ne pouvait le dire, puisque la
+## toile était une constante de la VUE que rien d'autre ne lisait.
+func _check_spots() -> void:
+	var canvas := Buildings.canvas()
+	print("\ntoile du royaume : %d × %d" % [canvas.x, canvas.y])
+	for building_id: StringName in Buildings.ids():
+		_check_spot(building_id, Buildings.spot_of(building_id), canvas)
+	for worksite_id: StringName in Worksite.ids():
+		_check_spot(worksite_id, Worksite.spot_of(worksite_id), canvas)
+
+
+func _check_spot(owner_id: StringName, spot: Vector2, canvas: Vector2) -> void:
+	if spot.x < 0.0 or spot.y < 0.0 or spot.x > canvas.x or spot.y > canvas.y:
+		_problems.append(
+			"%s : emplacement %s hors de la toile %s — il ne se dessinera pas"
+			% [owner_id, spot, canvas]
+		)
 
 
 ## DEUX MOITIÉS QUI NE SE PARLENT PAS NE FONT PAS UNE MÉCANIQUE — c'est

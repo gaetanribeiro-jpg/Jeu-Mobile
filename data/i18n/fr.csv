@@ -669,3 +669,4 @@ KINGDOM_HAND_WORTH,"Un bras : %d %s par cycle au travail, ou +%.0f de défense �
 INVASION_HOLDS,"La garnison tiendrait seule : %d contre %d."
 INVASION_FALLS,"La garnison ne tiendra pas : %d contre %d."
 COMPANY_MELT,"Fondre — %s"
+GRANT_WARD,Rempart

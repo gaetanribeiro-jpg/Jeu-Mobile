@@ -996,6 +996,23 @@ point le plus faible de la ville. Quatre choses à ne pas défaire :
   dit si la garnison tiendra : sans elle, « rentrer ou continuer » se
   poserait à l'aveugle.
 
+**LA TOUR DE GUET ÉTAIT DESSINÉE HORS DU TERRAIN (T12.8).** En 930 sur
+une toile de 900, depuis sa création : un joueur qui la bâtissait — et il
+le FAUT pour l'ascension — ne voyait rien apparaître. Aucun test ne
+pouvait le dire, parce que la toile était une CONSTANTE DE LA VUE que rien
+d'autre ne lisait. Elle vit dans les données maintenant, et
+`verify_kingdom` refuse un emplacement qui en sort. **Seule la capture
+l'a vu**, encore une fois — et il a fallu y poser une garnison pour le
+remarquer.
+
+**LA GARDE SE VOIT SUR LE TERRAIN (T12.8).** Le § 5 l'exige — « cette
+évolution visuelle est extrêmement importante » — et une décision dont le
+résultat ne se voit nulle part est une case à cocher. Les sentinelles se
+postent en rangs de quatre sous la TOUR si elle est bâtie, sous le château
+sinon : on ne poste pas des gardes devant une maison. Hache en main et
+DEBOUT, pas en animation d'interaction : c'est ce qui les distingue d'un
+bûcheron, le pack ne dessinant pas de garde.
+
 **FONDRE UN OBJET, C'EST LE § 32 (T12.8).** « Un même objet peut être
 vendu, améliorer une arme, améliorer un bâtiment ou débloquer une
 technologie — **cela crée des choix stratégiques**. » La réserve n'avait

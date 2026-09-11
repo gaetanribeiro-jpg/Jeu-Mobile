@@ -257,12 +257,18 @@
     }
    ],
    "spot": [
-    930,
-    300
-   ]
+    700,
+    425
+   ],
+   "_spot_note": "ELLE ÉTAIT EN 930 SUR UNE TOILE DE 900, donc DESSINÉE HORS DU TERRAIN depuis qu'elle existe : un joueur qui bâtissait la tour — et il le faut pour l'ascension — ne voyait rien apparaître. Aucun test ne le disait, seule la capture. `verify_kingdom` refuse désormais un emplacement qui sort de la toile."
   }
  },
  "_layout_note": "`spot` est le pied du bâtiment sur le terrain du royaume, en pixels d'une toile de 900 x 560. C'est de la MISE EN SCÈNE, et elle vit ici plutôt que dans le code parce que le § 5 fait de l'évolution visuelle du royaume une exigence : déplacer une caserne doit se faire en changeant deux nombres, pas en recompilant.",
  "_recruit_note": "Le § 45 met le recrutement dans la Phase 4, et c'est le bâtiment qui l'autorise : sans caserne, pas de Guerrier. Le coût est en OR et en NOURRITURE — l'or parce qu'un héros s'équipe, la nourriture parce qu'il mange. Payer en bois pour un homme n'aurait rien voulu dire, et une seule monnaie aurait fait du recrutement un robinet plutôt qu'un arbitrage contre les bâtiments.",
- "_ward_note": "CE QU'UN BÂTIMENT DÉFEND, `ward`, et tous n'en font pas autant. Une MAISON défendait exactement comme une tour de guet tant que la défense comptait des NIVEAUX de bâtiment : le seul bâtiment dont le rôle soit la défense n'avait donc aucun rôle. La tour en donne trois par niveau, le château deux — il a des murs —, la caserne et le camp d'archers un chacun, parce qu'on y forme des gens d'armes. Les maisons et le monastère n'en donnent aucun : ils servent à autre chose, et c'est ce qui fait de bâtir un arbitrage entre produire plus et tenir mieux."
+ "_ward_note": "CE QU'UN BÂTIMENT DÉFEND, `ward`, et tous n'en font pas autant. Une MAISON défendait exactement comme une tour de guet tant que la défense comptait des NIVEAUX de bâtiment : le seul bâtiment dont le rôle soit la défense n'avait donc aucun rôle. La tour en donne trois par niveau, le château deux — il a des murs —, la caserne et le camp d'archers un chacun, parce qu'on y forme des gens d'armes. Les maisons et le monastère n'en donnent aucun : ils servent à autre chose, et c'est ce qui fait de bâtir un arbitrage entre produire plus et tenir mieux.",
+ "canvas": [
+  900,
+  560
+ ],
+ "_canvas_note": "LA TOILE DE RÉFÉRENCE du terrain du royaume, en pixels. Les emplacements des bâtiments et des chantiers s'y expriment, et la vue la met à l'échelle du contrôle.\n\nELLE VIT ICI POUR POUVOIR ÊTRE VÉRIFIÉE. Déclarée en constante dans `kingdom_view.gd`, aucun outil ne pouvait comparer un emplacement à ses bornes — et la tour est restée hors du terrain sans que rien ne s'en plaigne."
 }

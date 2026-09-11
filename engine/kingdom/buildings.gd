@@ -183,6 +183,20 @@ static func recruit_cost(building_id: StringName) -> Dictionary:
 	return out
 
 
+## La toile de référence du terrain du royaume, en pixels. Les
+## emplacements s'y expriment ; la vue la met à l'échelle du contrôle.
+##
+## ELLE VIT DANS LES DONNÉES POUR POUVOIR ÊTRE VÉRIFIÉE. Déclarée en
+## constante dans la vue, aucun outil ne pouvait comparer un emplacement à
+## ses bornes — et la tour de guet est restée DESSINÉE HORS DU TERRAIN
+## depuis sa création, en 930 sur une toile de 900.
+static func canvas() -> Vector2:
+	var raw: Array = data().get("canvas", [900, 560])
+	if raw.size() < 2:
+		return Vector2(900, 560)
+	return Vector2(float(raw[0]), float(raw[1]))
+
+
 ## Combien de candidats un bâtiment propose à la fois. Trois : deux ne
 ## feraient pas un choix mais une comparaison, quatre demanderaient de lire
 ## quatre fiches pour une décision qui tient en une phrase.

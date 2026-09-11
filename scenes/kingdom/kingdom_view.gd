@@ -37,12 +37,21 @@ const KIND_WORKSITE := &"worksite"
 
 ## Toile de référence. Les positions des données sont en pixels de
 ## celle-ci ; la vue la met à l'échelle de ce qu'on lui donne.
-const CANVAS := Vector2(900.0, 560.0)
+## La toile vient des DONNÉES (`Buildings.canvas`) : une constante ici ne
+## pouvait être comparée par aucun outil, et la tour de guet est restée
+## hors du terrain depuis sa création sans que rien ne s'en plaigne.
 
 const BUILDING_SCALE := 0.55
 const PAWN_SCALE := 0.5
 const TILE := 64
 const COLOR := "Blue"
+
+## La garde, dessinée en rangs de quatre sous son poste. Constantes de
+## MISE EN PAGE, comme `PAWN_SCALE` : elles disent où poser une image, pas
+## ce que vaut une mécanique.
+const WATCH_PER_ROW := 4
+const WATCH_SPACING := Vector2(30.0, 24.0)
+const WATCH_OFFSET := Vector2(0.0, 34.0)
 
 var kingdom: Kingdom
 ## Ce que le joueur a désigné. Le château au départ, jamais rien : un
@@ -101,7 +110,7 @@ func refresh() -> void:
 func _spread() -> Vector2:
 	if size.x <= 0.0 or size.y <= 0.0:
 		return Vector2.ONE
-	return Vector2(size.x / CANVAS.x, size.y / CANVAS.y)
+	return Vector2(size.x / Buildings.canvas().x, size.y / Buildings.canvas().y)
 
 
 func _scale() -> float:
@@ -132,6 +141,11 @@ func _draw() -> void:
 	for piece: Dictionary in pieces:
 		if StringName(piece["kind"]) == KIND_BUILDING:
 			_draw_building(StringName(piece["id"]), factor)
+			# La garde se dessine AVEC son poste, pour rester dans le tri
+			# par profondeur : posée après tout le monde, elle passerait
+			# devant un chantier situé plus bas qu'elle.
+			if StringName(piece["id"]) == _watch_post():
+				_draw_watch(factor)
 		else:
 			_draw_worksite(StringName(piece["id"]), factor)
 
@@ -264,6 +278,50 @@ func _texture(reference: String) -> Texture2D:
 	return _animated(reference, SpriteFrameFactory.for_sprite(
 		StringName(parts[0]), StringName(parts[1])
 	))
+
+
+## Où se tient la garde : à la tour de guet si elle est bâtie, au château
+## sinon. On ne poste pas des sentinelles devant une maison.
+func _watch_post() -> StringName:
+	if kingdom.level_of(&"tower") > 0:
+		return &"tower"
+	return Buildings.KEYSTONE
+
+
+## LA GARDE SE VOIT SUR LE TERRAIN, et le § 5 l'exige : « cette évolution
+## visuelle est extrêmement importante ». Depuis que les bras qu'on ne met
+## pas sur un chantier montent la garde, retirer un ouvrier est une
+## décision — et une décision dont le résultat ne se voit nulle part est
+## une case à cocher.
+##
+## HACHE EN MAIN, PAS D'OUTIL DE TRAVAIL. Le pack ne dessine pas de garde ;
+## un Pawn à la hache, DEBOUT plutôt qu'en train de frapper, est ce qui
+## s'en approche le plus — et il se distingue d'un coup d'œil du bûcheron,
+## qui lui est en pleine animation d'interaction.
+func _draw_watch(factor: float) -> void:
+	var posted := kingdom.garrison()
+	if posted <= 0:
+		return
+	var pawn := _watch_texture()
+	if pawn == null:
+		return
+	var spot := Buildings.spot_of(_watch_post()) + WATCH_OFFSET
+	for i in posted:
+		var column := float(i % WATCH_PER_ROW)
+		var row := float(i / WATCH_PER_ROW)
+		var offset := Vector2(
+			(column - float(WATCH_PER_ROW - 1) * 0.5) * WATCH_SPACING.x,
+			row * WATCH_SPACING.y
+		)
+		draw_texture_rect(
+			pawn, _place(spot + offset, pawn.get_size(), PAWN_SCALE * factor), false
+		)
+
+
+func _watch_texture() -> Texture2D:
+	if not AssetTable.has_unit_animation(&"pawn", &"idle_axe"):
+		return null
+	return _animated("watch", SpriteFrameFactory.for_unit(&"pawn", &"idle_axe", COLOR))
 
 
 func _pawn_texture(tool_id: StringName) -> Texture2D:
