@@ -343,7 +343,7 @@ func _close_credits() -> void:
 
 func _open_company() -> void:
 	_company_screen = _open(COMPANY_SCENE, func(screen: Node) -> void:
-		screen.configure(GameState.company)
+		screen.configure(GameState.company, GameState.kingdom)
 		screen.closed.connect(_close_company)
 		screen.changed.connect(GameState.save))
 

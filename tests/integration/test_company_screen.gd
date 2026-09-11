@@ -177,8 +177,20 @@ func test_apprendre_un_noeud_l_applique() -> void:
 
 # --- La réserve ------------------------------------------------------------
 
+## CHAQUE OBJET A DEUX BOUTONS depuis le § 32 : l'équiper, ou le FONDRE.
+## Le test comptait les boutons ; il compte maintenant les OBJETS, ce qui
+## est ce qu'il voulait dire — un compte de boutons retombe à chaque
+## action ajoutée sans que rien ne soit faux.
 func test_la_reserve_montre_tout_ce_qu_on_possede() -> void:
-	assert_eq(_stash_buttons().size(), _company.stash.size())
+	for item_id: StringName in _company.stash:
+		assert_not_null(
+			_stash_button(item_id), "objet absent de la réserve : %s" % item_id
+		)
+	var melts := 0
+	for button: Button in _stash_buttons():
+		if button.text.begins_with(tr("COMPANY_MELT") % ""):
+			melts += 1
+	assert_eq(melts, _company.stash.size(), "un objet sans son bouton de fonte")
 
 
 func test_toucher_un_objet_l_equipe_sur_le_heros_choisi() -> void:
@@ -248,3 +260,37 @@ func test_une_compagnie_vide_ne_plante_pas() -> void:
 	await wait_process_frames(2)
 	assert_null(screen.selected_hero())
 	assert_eq(screen._roster.get_child_count(), 0)
+
+
+## FONDRE, DE BOUT EN BOUT (§ 32, T12.8). Deux moitiés qui doivent se
+## parler : l'écran retire l'objet, le royaume encaisse le bois. Chacune
+## est juste séparément — c'est la faute de T11.8, et elle se vérifie en
+## PARCOURANT la chaîne.
+func test_fondre_un_objet_verse_au_royaume() -> void:
+	var kingdom := Kingdom.create()
+	_screen.configure(_company, kingdom)
+	_screen.refresh()
+	await wait_process_frames(1)
+
+	var wood := kingdom.amount(&"wood")
+	var kept := _company.stash.size()
+	var melted := false
+	for button: Button in _stash_buttons():
+		if button.text.begins_with(tr("COMPANY_MELT") % "") and not button.disabled:
+			button.pressed.emit()
+			melted = true
+			break
+	assert_true(melted, "aucun bouton de fonte actif")
+	await wait_process_frames(1)
+	assert_eq(_company.stash.size(), kept - 1, "l'objet n'a pas quitté la réserve")
+	assert_gt(kingdom.amount(&"wood"), wood, "le royaume n'a rien reçu")
+	assert_gt(_changes, 0, "rien n'a demandé la sauvegarde")
+
+
+## SANS ROYAUME, LA RÉSERVE SE LIT ET S'ÉQUIPE COMME AVANT. L'écran reste
+## autonome : c'est ce qui permet aux autres tests de ne pas bâtir un
+## royaume pour vérifier l'équipement.
+func test_sans_royaume_on_ne_fond_rien() -> void:
+	for button: Button in _stash_buttons():
+		if button.text.begins_with(tr("COMPANY_MELT") % ""):
+			assert_true(button.disabled, "on peut fondre sans royaume où verser")

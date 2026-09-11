@@ -238,6 +238,24 @@ func equip_from_stash(hero_id: int, item_id: StringName) -> bool:
 	return true
 
 
+## Fond un objet de la réserve et verse ses matériaux au royaume. Renvoie
+## ce qui a été rendu, vide si l'objet n'y était pas.
+##
+## LE ROYAUME EST UN PARAMÈTRE, PAS UNE DÉPENDANCE. La compagnie ne sait
+## pas ce qu'est un royaume — elle reçoit celui qui encaisse, comme
+## `bonuses_by_class` reçoit ce qu'il accorde. C'est ce qui permet de
+## fondre un objet en test sans bâtir un royaume autour.
+func melt(item_id: StringName, kingdom) -> Dictionary:
+	if kingdom == null or not stash.has(item_id):
+		return {}
+	var gained := Equipment.salvage_of(item_id)
+	if gained.is_empty():
+		return {}
+	stash.erase(item_id)
+	kingdom.grant(gained, self)
+	return gained
+
+
 ## Retire un objet d'un héros et le rend à la réserve.
 func unequip_to_stash(hero_id: int, slot: StringName) -> bool:
 	var hero := hero_by_id(hero_id)

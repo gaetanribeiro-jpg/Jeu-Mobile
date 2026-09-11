@@ -34,6 +34,9 @@ const PORTRAIT_PX := 92
 var _company: Company
 var _selected_id: int = -1
 
+## Le royaume qui encaisse les objets fondus (§ 32). Peut être nul.
+var _kingdom: Kingdom = null
+
 @onready var _gold: Label = %Gold
 @onready var _roster: VBoxContainer = %Roster
 @onready var _sheet: VBoxContainer = %Sheet
@@ -53,8 +56,14 @@ func _ready() -> void:
 
 
 ## Affiche une compagnie. À appeler avant d'ajouter la scène à l'arbre.
-func configure(company: Company) -> void:
+## LE ROYAUME EST OPTIONNEL, et c'est ce qui garde l'écran autonome : sans
+## lui, la réserve se lit et s'équipe comme avant, elle ne se fond pas.
+## Les tests d'écran n'ont donc pas à bâtir un royaume pour vérifier
+## l'équipement, et le jour où l'écran s'ouvre depuis un endroit qui n'en a
+## pas, il ne tombe pas.
+func configure(company: Company, kingdom: Kingdom = null) -> void:
 	_company = company
+	_kingdom = kingdom
 
 
 func selected_hero() -> Hero:
@@ -422,6 +431,36 @@ func _build_stash() -> void:
 				_company.equip_from_stash(hero.id, item_id)
 				_touched())
 		_stash.add_child(button)
+		_stash.add_child(_melt_button(item_id))
+
+
+## FONDRE UN OBJET (§ 32) : « un même objet peut être vendu, améliorer une
+## arme, améliorer un bâtiment ou débloquer une technologie — cela crée des
+## choix stratégiques ». La réserve n'avait aucun débouché : trente objets
+## pour vingt-cinq cases portées, et rien à faire du reste.
+##
+## LE BOUTON DIT CE QU'IL REND, chiffres compris. « Fondre » seul
+## demanderait d'essayer pour savoir, sur une action IRRÉVERSIBLE — et une
+## action irréversible qu'on ne peut pas évaluer avant n'est pas une
+## décision, c'est un pari.
+##
+## IL RESTE SOUS L'OBJET, en `muted` : équiper est l'action principale de
+## la réserve, fondre est l'aveu qu'on n'en a pas l'usage. Le rôle de
+## couleur le dit sans une ligne de texte.
+func _melt_button(item_id: StringName) -> Button:
+	var gained := Equipment.salvage_of(item_id)
+	var pieces := PackedStringArray()
+	for key: Variant in gained.keys():
+		pieces.append("%d %s" % [
+			int(gained[key]), tr(ResourceTable.name_key(StringName(key)))
+		])
+	var button := _button(tr("COMPANY_MELT") % ", ".join(pieces), &"muted")
+	button.disabled = _kingdom == null or gained.is_empty()
+	if not button.disabled:
+		button.pressed.connect(func() -> void:
+			_company.melt(item_id, _kingdom)
+			_touched())
+	return button
 
 
 ## Quelque chose a changé : on redessine, et on prévient l'appelant pour

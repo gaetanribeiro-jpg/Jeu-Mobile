@@ -71,9 +71,11 @@ n'est à réécrire le jour où on les ressort.
   existe (6 bâtiments × 5 niveaux, 4 chantiers, invasions, défense) et
   deux reproches sur quatre sont levés : la Tour OUVRE l'ascension au lieu
   de monter un chiffre, et le recrutement propose trois candidats aux
-  caractères échangés au lieu d'un héros générique. **Restent :** les
-  quatre autres bâtiments ne font toujours que monter des chiffres, et 30
-  objets pour 25 cases de tableau.
+  caractères échangés au lieu d'un héros générique. **Levés le
+  2026-09-11 :** se protéger est devenu une DÉCISION (la garnison, et la
+  tour de guet défend enfin plus qu'une maison), et la réserve a un
+  débouché — fondre un objet en bois et en pierre, § 32. **Reste :** la
+  caserne et le camp d'archers ne font toujours que monter des chiffres.
   **« 2 des 8 bâtiments du pack dorment » était FAUX** (vérifié le
   2026-09-10) : les trois maisons servent DÉJÀ, une par palier de niveau
   du bâtiment `houses` — c'est le seul dont le pack sait montrer

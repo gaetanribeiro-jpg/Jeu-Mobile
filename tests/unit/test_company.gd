@@ -331,3 +331,70 @@ func test_l_equipe_choisie_rend_les_heros_dans_l_ordre() -> void:
 	assert_eq(picked.size(), company.squad_ids.size())
 	for i in picked.size():
 		assert_eq(picked[i].id, company.squad_ids[i])
+
+
+# --- Fondre un objet (§ 32, T12.8) -----------------------------------------
+#
+# « UN MÊME OBJET PEUT ÊTRE VENDU, AMÉLIORER UNE ARME, AMÉLIORER UN
+# BÂTIMENT OU DÉBLOQUER UNE TECHNOLOGIE — CELA CRÉE DES CHOIX
+# STRATÉGIQUES. » La réserve n'avait aucun débouché : trente objets pour
+# vingt-cinq cases portées, et rien à faire du reste.
+
+func _with_stash(item_id: StringName) -> Company:
+	var company := Company.new()
+	company.stash.append(item_id)
+	return company
+
+
+func test_fondre_retire_l_objet_et_verse_au_royaume() -> void:
+	var kingdom := Kingdom.create()
+	var item_id: StringName = Equipment.ids()[0]
+	var company := _with_stash(item_id)
+	var wood := kingdom.amount(&"wood")
+	var gained := company.melt(item_id, kingdom)
+	assert_false(gained.is_empty(), "fondre devrait rendre quelque chose")
+	assert_false(company.stash.has(item_id), "l'objet est resté dans la réserve")
+	assert_gt(kingdom.amount(&"wood"), wood)
+
+
+## PAS D'OR, ET C'EST CE QUI SÉPARE FONDRE DE VENDRE. Le marchand rend de
+## l'or pendant une expédition ; la fonderie rend des matériaux au
+## royaume. Si elle rendait aussi de l'or, elle dominerait le marchand et
+## il n'y aurait plus deux options mais une bonne réponse.
+func test_fondre_ne_rend_jamais_d_or() -> void:
+	var kingdom := Kingdom.create()
+	var company := _with_stash(Equipment.ids()[0])
+	company.gold = 100
+	company.melt(Equipment.ids()[0], kingdom)
+	assert_eq(company.gold, 100, "la fonderie a rendu de l'or")
+
+
+## Ce qu'un objet vaut à la fonte suit son BUDGET DE RARETÉ, le barème que
+## `verify_items` vérifie déjà : un objet ne peut donc pas valoir à la
+## fonte autre chose que ce qu'il vaut.
+func test_un_objet_rare_rend_plus_qu_un_commun() -> void:
+	var common: StringName = &""
+	var better: StringName = &""
+	for item_id: StringName in Equipment.ids():
+		if Equipment.rarity_of(item_id) == &"common" and common.is_empty():
+			common = item_id
+		elif Equipment.rarity_of(item_id) == &"epic" and better.is_empty():
+			better = item_id
+	assert_false(common.is_empty(), "aucun objet commun dans les données")
+	assert_false(better.is_empty(), "aucun objet épique dans les données")
+	assert_gt(
+		int(Equipment.salvage_of(better).get(&"wood", 0)),
+		int(Equipment.salvage_of(common).get(&"wood", 0))
+	)
+
+
+func test_on_ne_fond_pas_ce_qu_on_n_a_pas() -> void:
+	var kingdom := Kingdom.create()
+	var company := Company.new()
+	assert_true(company.melt(Equipment.ids()[0], kingdom).is_empty())
+
+
+func test_on_ne_fond_pas_sans_royaume() -> void:
+	var company := _with_stash(Equipment.ids()[0])
+	assert_true(company.melt(Equipment.ids()[0], null).is_empty())
+	assert_eq(company.stash.size(), 1, "l'objet a disparu sans rien rendre")

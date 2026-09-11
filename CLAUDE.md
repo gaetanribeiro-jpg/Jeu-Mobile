@@ -996,6 +996,26 @@ point le plus faible de la ville. Quatre choses à ne pas défaire :
   dit si la garnison tiendra : sans elle, « rentrer ou continuer » se
   poserait à l'aveugle.
 
+**FONDRE UN OBJET, C'EST LE § 32 (T12.8).** « Un même objet peut être
+vendu, améliorer une arme, améliorer un bâtiment ou débloquer une
+technologie — **cela crée des choix stratégiques**. » La réserve n'avait
+AUCUN débouché : trente objets pour vingt-cinq cases portées, et rien à
+faire du reste. Trois choses à ne pas défaire :
+- **LA FONTE NE REND JAMAIS D'OR, et c'est ce qui la sépare de vendre.**
+  Le marchand rend 35 % du prix EN OR, pendant une expédition, et l'or
+  achète de l'équipement ; la fonderie rend du BOIS et de la PIERRE, au
+  royaume, et ça bâtit. Si elle rendait aussi de l'or elle dominerait le
+  marchand et il n'y aurait plus deux options mais une bonne réponse.
+  `verify_items` le refuse.
+- **LE TAUX SE COMPTE EN POINTS DE BUDGET DE RARETÉ**, le barème que
+  `verify_items` vérifie déjà : un objet ne peut donc pas valoir à la
+  fonte autre chose que ce qu'il vaut. Un épique rend 54 bois et 45
+  pierre, soit une ronde et demie de scierie à plein.
+- **LE BOUTON DIT CE QU'IL REND, CHIFFRES COMPRIS.** « Fondre » seul
+  demanderait d'essayer pour savoir, sur une action IRRÉVERSIBLE — et une
+  action irréversible qu'on ne peut pas évaluer avant n'est pas une
+  décision, c'est un pari.
+
 **L'expédition se joue, sur PC.** Écran de titre → carte du monde →
 composition de l'équipe → départ → route du § 28 (combats, évènements,
 marchand, mini-boss, boss) → rentrer ou continuer.

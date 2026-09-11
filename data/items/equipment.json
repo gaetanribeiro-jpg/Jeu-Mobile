@@ -422,5 +422,10 @@
     "lancer"
    ]
   }
+ },
+ "salvage": {
+  "_note": "FONDRE UN OBJET, C'EST LE § 32 : « un même objet peut être vendu, améliorer une arme, améliorer un bâtiment ou débloquer une technologie — cela crée des choix stratégiques ». La réserve n'avait AUCUN débouché : trente objets pour vingt-cinq cases portées, et rien à faire du reste.\n\nPAS D'OR, ET C'EST CE QUI SÉPARE FONDRE DE VENDRE. Le marchand rend 35 % du prix EN OR, pendant une expédition, et l'or achète de l'équipement et des potions. La fonderie rend du BOIS et de la PIERRE, au royaume, et ça bâtit. Si elle rendait aussi de l'or elle dominerait le marchand et il n'y aurait plus deux options mais une bonne réponse.\n\nLE TAUX SE COMPTE EN POINTS DE BUDGET DE RARETÉ — le même barème que `verify_items` vérifie déjà, donc un objet ne peut pas valoir à la fonte autre chose que ce qu'il vaut. Un épique (9 points) rend 54 bois et 45 pierre, soit une caserne et demie de pierre ou une ronde et demie de scierie à plein. Assez pour que fondre soit tentant, pas assez pour remplacer les chantiers.",
+  "wood_per_point": 6,
+  "stone_per_point": 5
  }
 }

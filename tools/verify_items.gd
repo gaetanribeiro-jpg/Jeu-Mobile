@@ -22,6 +22,7 @@ func _init() -> void:
 	for item_id: StringName in ids:
 		_check(item_id)
 
+	_check_salvage()
 	_check_coverage()
 
 	print("-".repeat(74))
@@ -57,6 +58,43 @@ func _check(item_id: StringName) -> void:
 		pieces.append("%s %+d" % [key, int(Equipment.grants(item_id)[key])])
 	print("%-18s %-10s %6.1f %7.0f  %s"
 		% [item_id, rarity, cost, budget, ", ".join(pieces)])
+
+
+## LA FONTE EST LE DÉBOUCHÉ DE LA RÉSERVE (§ 32), et elle ne doit pas
+## écraser le marchand. Deux garde-fous :
+##  1. fondre ne rend JAMAIS d'or — sinon la fonderie dominerait la
+##     revente, et il n'y aurait plus deux options mais une bonne réponse ;
+##  2. ce qu'un objet rend doit MONTER avec sa rareté, sans quoi le butin
+##     rare cesserait d'être un butin.
+func _check_salvage() -> void:
+	print("")
+	print("%-12s %6s  %s" % ["rareté", "budget", "à la fonte"])
+	var previous := -1
+	for rarity: StringName in Equipment.rarities():
+		var sample: StringName = &""
+		for item_id: StringName in Equipment.ids():
+			if Equipment.rarity_of(item_id) == rarity:
+				sample = item_id
+				break
+		if sample.is_empty():
+			continue
+		var gained := Equipment.salvage_of(sample)
+		var pieces := PackedStringArray()
+		var total := 0
+		for key: Variant in gained.keys():
+			pieces.append("%d %s" % [int(gained[key]), key])
+			total += int(gained[key])
+			if StringName(key) == &"gold":
+				_problems.append(
+					"la fonte rend de l'or (%s) : elle écraserait la revente" % rarity
+				)
+		print("%-12s %6.0f  %s"
+			% [rarity, Equipment.rarity_budget(rarity), ", ".join(pieces)])
+		if total <= previous:
+			_problems.append(
+				"fondre un %s rend autant ou moins qu'une rareté inférieure" % rarity
+			)
+		previous = total
 
 
 ## Chaque classe doit pouvoir remplir chacun de ses emplacements, sinon

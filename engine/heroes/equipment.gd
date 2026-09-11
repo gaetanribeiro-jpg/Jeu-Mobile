@@ -189,6 +189,33 @@ static func cost_of(item_id: StringName) -> float:
 	return total
 
 
+## Ce qu'un objet rend une fois FONDU : du bois et de la pierre, jamais de
+## l'or.
+##
+## C'EST LE § 32, ET LA RÉSERVE N'AVAIT AUCUN DÉBOUCHÉ. Trente objets pour
+## vingt-cinq cases portées : le reste dormait. Fondre lui en donne un, et
+## relie le butin à la construction — « améliorer un bâtiment », mot pour
+## mot.
+##
+## PAS D'OR, ET C'EST CE QUI LE SÉPARE DE VENDRE. Le marchand rend 35 % du
+## prix en OR, pendant une expédition ; la fonderie rend des matériaux, au
+## royaume. Deux sinks différents, donc deux options — et non une bonne
+## réponse et une mauvaise.
+static func salvage_of(item_id: StringName) -> Dictionary:
+	var budget := rarity_budget(rarity_of(item_id))
+	if budget <= 0.0:
+		return {}
+	var block: Dictionary = data().get("salvage", {})
+	var out := {}
+	var wood := int(floor(budget * float(block.get("wood_per_point", 0))))
+	var stone := int(floor(budget * float(block.get("stone_per_point", 0))))
+	if wood > 0:
+		out[&"wood"] = wood
+	if stone > 0:
+		out[&"stone"] = stone
+	return out
+
+
 ## L'objet vaut-il exactement le budget de sa rareté ?
 static func is_within_budget(item_id: StringName) -> bool:
 	return is_equal_approx(cost_of(item_id), rarity_budget(rarity_of(item_id)))
