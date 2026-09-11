@@ -646,10 +646,7 @@ func _start_expedition_combat(map_id: StringName) -> void:
 	# adversaires pendant qu'il décide où poser son équipe. Un renfort qui
 	# arriverait en cours de combat serait une embuscade, et une embuscade
 	# est le contraire d'un télégraphe.
-	DayNight.reinforce(
-		map.board, run.moment(), run.night_roster(), map.deployment_cells, rng,
-		map.objective
-	)
+	DayNight.reinforce_map(map, run.moment(), run.night_roster(), rng)
 	_launch_with_map(map, units, rng, _on_expedition_combat_finished, run.moment())
 
 
@@ -697,10 +694,7 @@ func _start_test_combat(
 	if map == null:
 		return
 	var rng := GameState.combat_rng(_depth)
-	DayNight.reinforce(
-		map.board, moment, Region.night_roster(&"greenlands"),
-		map.deployment_cells, rng, map.objective
-	)
+	DayNight.reinforce_map(map, moment, Region.night_roster(&"greenlands"), rng)
 	_launch_with_map(
 		map, GameState.company.to_units(squad), rng,
 		_on_test_combat_finished, moment

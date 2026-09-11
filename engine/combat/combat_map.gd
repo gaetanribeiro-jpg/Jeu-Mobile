@@ -30,6 +30,23 @@ var objective: CombatObjective
 ## formalité. La carte propose, le joueur dispose.
 var deployment_cells: Array[Vector2i] = []
 
+## Cette carte supporte-t-elle un corps de plus la nuit ?
+##
+## VRAI PAR DÉFAUT : la nuit doit coûter quelque chose, et une carte qui
+## refuse son renfort est une nuit gratuite. On ne le met à faux que
+## lorsque la GÉOMÉTRIE ne l'absorbe pas, et `gel_04` est le cas d'école :
+## son pont d'UNE case est l'identité de la carte, on ne peut donc pas
+## l'élargir comme on a élargi les portes d'`empire_04`. Un corps de plus
+## y allongeait la file sous le feu des harponneurs — douze rondes et 40 %
+## de réussite — et un corps de moins rendait la nuit PLUS FACILE que le
+## jour. Entre une falaise et un cadeau, la carte dit simplement qu'elle
+## ne prend personne.
+##
+## `verify_world` COMPTE celles qui se dispensent : si la dispense devenait
+## courante, ce serait le cycle jour / nuit qu'il faudrait revoir, pas une
+## carte de plus.
+var takes_night_reinforcement: bool = true
+
 
 static func map_ids() -> Array[StringName]:
 	var out: Array[StringName] = []
@@ -89,6 +106,7 @@ static func from_data(
 	map.id = map_id
 	map.name_key = String(data.get("name_key", ""))
 	map.act = int(data.get("act", 1))
+	map.takes_night_reinforcement = bool(data.get("night_reinforcement", true))
 	map.board = built
 
 	for pair: Variant in data.get("deployment_cells", []):
@@ -131,6 +149,21 @@ func _spawn(entry: Variant, unit_id: int, side: int) -> Unit:
 		unit = Unit.from_hero_class(unit_id, type_id, cell)
 	if unit == null:
 		return null
+	# LE DESSIN PEUT SE DÉCLARER À PART DES STATISTIQUES. Un villageois
+	# escorté est un non-combattant : le pack dessine exactement ça — le
+	# Pawn et ses quatre outils — et les cartes le réclamaient en toutes
+	# lettres depuis la Phase 1, faute d'un moyen de le dire. C'est le
+	# même mécanisme que `sprite_id` en T11.8 : ce qu'on EST et ce qu'on
+	# MONTRE sont deux déclarations, et les confondre a déjà donné sept
+	# ombres nues.
+	if raw.has("sprite"):
+		unit.sprite_id = StringName(raw["sprite"])
+	if raw.has("sprite_variant"):
+		unit.sprite_variant = String(raw["sprite_variant"])
+	if raw.has("sprite_color"):
+		unit.sprite_color = String(raw["sprite_color"])
+	if raw.has("name_key"):
+		unit.name_key = String(raw["name_key"])
 	if not board.place_unit(unit, cell):
 		push_error("CombatMap : impossible de poser « %s » en %s" % [type_id, cell])
 		return null

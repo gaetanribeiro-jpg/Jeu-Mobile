@@ -202,10 +202,7 @@ func _run(
 	# On prend le renfort de la région où la carte se joue. Les Terres
 	# Vertes sont la seule région de l'Acte I ; le jour où il y en aura
 	# deux, ce sera à passer en argument.
-	DayNight.reinforce(
-		map.board, moment, Region.night_roster(&"greenlands"),
-		map.deployment_cells, rng, map.objective
-	)
+	DayNight.reinforce_map(map, moment, Region.night_roster(&"greenlands"), rng)
 	var engine := map.to_engine(_squad(map_id), rng)
 	engine.start()
 	# Les simulations ne choisissent pas leur placement : ce serait une

@@ -279,3 +279,61 @@ func test_le_roster_de_la_region_existe_dans_le_bestiaire() -> void:
 				Unit.enemy_stats(enemy_id).is_empty(),
 				"%s : renfort inconnu « %s »" % [region_id, enemy_id]
 			)
+
+
+## UNE NUIT DOIT COÛTER DES POINTS DE VIE, PAS UNE RÉUSSITE (T12.6).
+##
+## La règle ne couvrait que `deadline`, et c'était trop étroit : seule une
+## carte à SAISIR en porte une. Tenir et protéger comptent leurs rondes
+## dans `turns` ; escorter et protéger confient la défaite à un SUJET qui
+## peut tomber. `gel_03`, qu'il faut tenir quatre rondes autour d'un
+## bûcheron, passait de 100 % à 60 % de réussite pour une bête de plus —
+## la même falaise que `vallee_04`, sous un autre nom de champ.
+func test_une_carte_a_sujet_ne_recoit_pas_de_renfort() -> void:
+	var board := _board()
+	var before := board.active_units(Unit.Side.ENEMIES).size()
+	var escort := CombatObjective.from_dictionary({
+		"kind": "escort", "subject_ids": [100], "cells": [[7, 1]],
+	})
+	var added := DayNight.reinforce(
+		board, &"night", [&"spear_goblin"] as Array[StringName],
+		[Vector2i(0, 1)] as Array[Vector2i], CombatRng.new(4), escort
+	)
+	assert_eq(added.size(), 0, "une escorte ne se durcit pas, elle bascule")
+	assert_eq(board.active_units(Unit.Side.ENEMIES).size(), before)
+
+
+func test_une_carte_a_rondes_comptees_ne_recoit_pas_de_renfort() -> void:
+	var board := _board()
+	var hold := CombatObjective.from_dictionary({"kind": "survive", "turns": 5})
+	var added := DayNight.reinforce(
+		board, &"night", [&"spear_goblin"] as Array[StringName],
+		[Vector2i(0, 1)] as Array[Vector2i], CombatRng.new(5), hold
+	)
+	assert_eq(added.size(), 0)
+
+
+## LA CONTREPARTIE, ET ELLE A ATTRAPÉ LE PIÈGE. Le premier jet de la règle
+## lisait `turns > 0`, ce qui paraissait exact — sauf que
+## `from_dictionary` fait RETOMBER `turns` sur `survive_default_rounds`
+## quand la carte ne le déclare pas. Tout objectif en porte donc un,
+## « éliminer » compris, et plus une seule nuit n'ajoutait personne.
+##
+## UN CHAMP QUI A UNE VALEUR PAR DÉFAUT N'EST PAS UNE DÉCLARATION : il ne
+## dit pas ce que la carte a demandé, il dit ce qu'elle obtient. Le test
+## le CONSTATE au lieu de le supposer.
+func test_une_carte_ordinaire_recoit_toujours_son_renfort() -> void:
+	var board := _board()
+	var before := board.active_units(Unit.Side.ENEMIES).size()
+	var kill := CombatObjective.from_dictionary({"kind": "eliminate"})
+	assert_gt(
+		kill.turns, 0,
+		"si `turns` retombait à zéro, le piège de la règle n'existerait plus "
+		+ "et ce test cesserait de protéger quoi que ce soit"
+	)
+	var added := DayNight.reinforce(
+		board, &"night", [&"spear_goblin"] as Array[StringName],
+		[Vector2i(0, 1)] as Array[Vector2i], CombatRng.new(6), kill
+	)
+	assert_eq(added.size(), 1, "la nuit doit coûter quelque chose")
+	assert_eq(board.active_units(Unit.Side.ENEMIES).size(), before + 1)

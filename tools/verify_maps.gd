@@ -33,6 +33,7 @@ func _init() -> void:
 
 	_check_decorations()
 	_check_emplacements(ids)
+	_check_perches(ids)
 	_check_vocabulary(ids)
 	_check_reachable(ids)
 	_check_defence_map()
@@ -196,6 +197,39 @@ func _check_reachable(ids: Array[StringName]) -> void:
 ## C'EST L'INVERSE DE LA LEÇON SUR LES OBSTACLES. Pour une bête mobile, la
 ## distance n'est qu'un délai — elle finit par arriver. Pour un
 ## emplacement, la distance est une ANNULATION.
+## UNE COLLINE OCCUPÉE PAR QUI ELLE N'AIDE PAS EST DU DÉCOR AVEC UNE UNITÉ
+## DESSUS. `hill` accorde +1 de portée et +1 de dégâts, et les deux ne
+## valent que pour une compétence qui porte à PLUS D'UNE CASE — un guerrier
+## perché ne frappe pas plus fort, la règle est écrite dans `Damage` depuis
+## la Phase 1.
+##
+## Sur quatorze cartes à collines, deux seulement avaient quelqu'un dessus,
+## et deux autres y avaient posé de la MÊLÉE : le relief servait au joueur,
+## ou à personne. On ne force pas à percher — une colline libre est un
+## terrain que les deux camps peuvent prendre, et c'est très bien — on
+## refuse seulement d'y poser quelqu'un qui n'en tire rien.
+func _check_perches(ids: Array) -> void:
+	for map_id: StringName in ids:
+		var map := CombatMap.load_map(map_id)
+		if map == null:
+			continue
+		for unit: Unit in map.board.active_units(Unit.Side.ENEMIES):
+			var tile := map.board.tile_at(unit.cell)
+			if tile == null or tile.ranged_range_bonus() <= 0:
+				continue
+			var reach := 1
+			for ability_id: StringName in unit.abilities:
+				var ability := Ability.of(ability_id)
+				if ability != null and ability.is_attack():
+					reach = maxi(reach, ability.range_max)
+			if reach <= 1:
+				_problems.append(
+					"%s : « %s » est posé sur une hauteur en %s et ne porte qu'à "
+					% [map_id, unit.class_id, unit.cell]
+					+ "une case — la colline ne lui donne rien."
+				)
+
+
 func _check_emplacements(ids: Array[StringName]) -> void:
 	for id: StringName in ids:
 		var map := CombatMap.load_map(id)

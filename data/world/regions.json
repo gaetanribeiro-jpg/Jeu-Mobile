@@ -127,16 +127,16 @@
    "encounter_maps": [
     "gel_05",
     "gel_03",
-    "gel_02",
-    "gel_01",
-    "gel_04",
     "gel_07",
+    "gel_01",
+    "gel_02",
+    "gel_04",
     "gel_06"
    ],
    "miniboss_map": "gel_09",
    "boss_map": "gel_08",
    "map_window": {
-    "_note": "L'ORDRE EST MESURÉ, PAS SUPPOSÉ, comme aux deux actes précédents. Coût moyen de jour, colonne PV de `tools/simulate_combats.gd` sur cinquante graines : 05 → 7 %, 03 → 20 %, 02 → 21 %, 01 → 26 %, 04 → 30 %, 07 → 32 %, 06 → 44 %. Mini-boss (09) 28 %, boss (08) 27 %.\n\nLE BOSS MESURE MOINS CHER QUE `gel_06`, ET LA MESURE MENT ICI. Toute la menace du Jarl est POSITIONNELLE — une lance qui aligne, une épaule qui projette dans l'eau — et le pilote de la simulation n'a aucune notion de « ne pas se tenir au bord ». Il la subit sans jamais l'éviter ni la craindre. Même limite que « le pilote ne boit pas » (T10.1) : à rejuger à l'œil.\n\n`size` cartes tirables à la fois, la fenêtre avance de `slide` par rencontre passée.",
+    "_note": "L'ORDRE EST MESURÉ, comme aux cinq autres actes. Colonne PV de `tools/simulate_combats.gd` sur quarante graines : 05 → 97 %, 03 → 87 %, 07 → 80 %, 01 → 74 %, 02 → 64 %, 04 → 56 %, 06 → 53 %. Mini-boss (09) 68 %, boss (08) 28 %.\n\nL'ACTE COÛTE 32 % DES PV en moyenne.\n\nQUATRE OBJECTIFS SUR SIX, ET C'EST LE CHANGEMENT DU 2026-09-11. Les neuf cartes n'avaient qu'« éliminer » : le jeu s'était RÉTRÉCI en avançant, puisque l'acte 1 en employait six. 05 saisit, 03 protège, 07 escorte, 02 extrait ; 01, 04, 06 éliminent, comme le mini-boss et le boss. Avec « éliminer » et une IA qui vient au contact, attendre est toujours juste — c'est le reproche de Gaetan, et il valait pour tout l'acte.\n\nLES DEUX PREMIÈRES SONT DES OBJECTIFS AUTRES QU'« ÉLIMINER », et ce n'est pas un hasard : saisir et protéger se concluent VITE, donc l'usure y est faible par construction. La mesure les sous-estime aussi — le pilote n'a aucune notion d'ÉCHÉANCE. À REJUGER À L'ŒIL.\n\n`size` cartes tirables à la fois, la fenêtre avance de `slide` par rencontre passée.",
     "size": 4,
     "slide": 0.5
    },
@@ -159,8 +159,7 @@
    },
    "night_roster": [
     "ice_raider",
-    "frost_shark",
-    "raid_champion"
+    "frost_shark"
    ],
    "resources_per_encounter": {
     "wood": 4,
@@ -172,7 +171,8 @@
     "rarity_bonus": 1
    },
    "expected_hero_level": 5,
-   "expected_rarity": "rare"
+   "expected_rarity": "rare",
+   "_night_note": "LE CHAMPION ROUGEFER EN A ÉTÉ RETIRÉ le 2026-09-11 : une BRUTE de 273 PV, contre 143 pour un pillard ordinaire, et le seul renfort de brute des six actes. Mesuré : gel_02 et gel_04 tombaient à 40 % de réussite en douze rondes la nuit. On ne perdait pas plus de PV, on n'arrivait plus au bout — un renfort ajoute de la PRESSION, pas de la durée."
   },
   "broken_lands": {
    "name_key": "REGION_BROKEN_LANDS",

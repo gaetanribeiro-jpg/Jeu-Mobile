@@ -92,12 +92,17 @@ n'est à réécrire le jour où on les ressort.
   à **0,00 $** : le vampire l'a vidée, et c'est ce qui a empêché de dessiner
   un bestiaire neuf pour l'acte 5 — il a donc été bâti sur les quatre
   dernières images du pack plus le vampire. (2026-09-10)
-- **Des objectifs variés dans l'ACTE 3** — 30 cartes sur 36 n'avaient que
-  « éliminer », l'acte 4 est corrigé, l'acte 3 ne l'est pas : ses neuf
-  cartes sont toutes « éliminer ».
-- **Des ennemis PERCHÉS en hauteur** — `hill` donne déjà +1 de portée et
-  +1 de dégâts, et aucune bête n'est posée dessus exprès. Idée de Gaetan,
-  à moitié faite : l'acte 4 a des collines, personne ne les tient.
+- ~~**Des objectifs variés dans l'ACTE 3**~~ — **FAIT le 2026-09-11.**
+  Quatre objectifs sur six : `gel_05` saisit, `gel_03` protège, `gel_07`
+  escorte, `gel_02` extrait. Trois défauts trouvés en chemin, tous à la
+  mesure : une carte fermée ne peut pas porter « protéger » (on ne couvre
+  pas quelqu'un qu'on ne peut pas rejoindre), la règle « pas de renfort de
+  nuit sur une carte à horloge » ne couvrait que `deadline`, et `gel_04`
+  ne peut prendre aucun renfort du tout.
+- ~~**Des ennemis PERCHÉS en hauteur**~~ — **FAIT le 2026-09-11.** Sur
+  quatorze cartes à collines, DEUX seulement avaient quelqu'un dessus, et
+  deux autres y avaient posé de la MÊLÉE, qui n'en tire rien. `verify_maps`
+  refuse désormais une hauteur occupée par qui elle n'aide pas.
 - **Changer de composition, avoir d'autres personnages** — suppose plus de
   trois classes, ou un vivier de héros au-delà de l'équipe de quatre.
   Aujourd'hui le roster EST l'équipe.

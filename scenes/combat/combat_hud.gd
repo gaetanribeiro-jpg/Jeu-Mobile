@@ -616,10 +616,9 @@ func _refresh_active(engine: CombatEngine) -> void:
 		_action_pips.set_points(0, 0, ViewSettings.color(&"ap_pip"))
 		_movement_pips.set_points(0, 0, ViewSettings.color(&"mp_pip"))
 		return
-	_active_face.texture = UiSkin.portrait(unit.class_id, unit.sprite_color)
+	_active_face.texture = _unit_face(unit)
 	_active_name.text = tr("HUD_ACTIVE") % [
-		unit.slot, tr("CLASS_%s" % String(unit.class_id).to_upper()),
-		unit.hit_points, unit.max_hit_points,
+		unit.slot, _unit_label(unit), unit.hit_points, unit.max_hit_points,
 	]
 	_action_pips.set_points(
 		unit.action_points, unit.max_action_points, ViewSettings.color(&"ap_pip")
@@ -793,8 +792,8 @@ func _refresh_squad(engine: CombatEngine) -> void:
 ## qu'on lit vingt fois par combat.
 func _hero_card(unit: Unit, state: StringName) -> Control:
 	var card := UiSkin.hero_card(
-		UiSkin.portrait(unit.class_id, unit.sprite_color),
-		"%d  %s" % [unit.slot, tr("CLASS_%s" % String(unit.class_id).to_upper())],
+		_unit_face(unit),
+		"%d  %s" % [unit.slot, _unit_label(unit)],
 		unit.hit_points, unit.max_hit_points, state == &"active", "",
 		Unit.class_accent(unit.class_id)
 	)
@@ -814,6 +813,24 @@ func show_result(victory: bool) -> void:
 	_banner.visible = true
 
 
+## Le nom affiché d'une unité : sa clé propre si elle en a une, sa classe
+## sinon. UNE UNITÉ QUI NE SE DESSINE PAS COMME SA CLASSE NE S'APPELLE PAS
+## COMME ELLE : le villageois escorté a les statistiques d'un Mage — ce
+## qui va très bien — mais l'annoncer « Mage » sur sa carte en faisait un
+## quatrième héros aux yeux du joueur.
+func _unit_label(unit: Unit) -> String:
+	if not unit.name_key.is_empty():
+		return tr(unit.name_key)
+	return tr("CLASS_%s" % String(unit.class_id).to_upper())
+
+
+## Le portrait suit le DESSIN, pas la classe — même règle que `sprite_id`
+## en T11.8, appliquée au buste.
+func _unit_face(unit: Unit) -> Texture2D:
+	var drawn := unit.sprite_id if not unit.sprite_id.is_empty() else unit.class_id
+	return UiSkin.portrait(drawn, unit.sprite_color)
+
+
 func _objective_text(objective: CombatObjective) -> String:
 	match objective.kind:
 		CombatObjective.Kind.SURVIVE:
@@ -821,6 +838,11 @@ func _objective_text(objective: CombatObjective) -> String:
 		CombatObjective.Kind.ESCORT:
 			return tr("OBJECTIVE_ESCORT")
 		CombatObjective.Kind.PROTECT:
+			# UN SUJET N'EST PAS UNE STRUCTURE. Le moteur distingue les deux
+			# depuis la Phase 1 — `subject_ids` ou `protected_cells` — et le
+			# texte disait « la structure » dans les deux cas.
+			if not objective.subject_ids.is_empty():
+				return tr("OBJECTIVE_PROTECT_SUBJECT") % objective.turns
 			return tr("OBJECTIVE_PROTECT") % objective.turns
 		CombatObjective.Kind.SEIZE:
 			return tr("OBJECTIVE_SEIZE") % objective.deadline

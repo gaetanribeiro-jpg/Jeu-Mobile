@@ -1,5 +1,5 @@
 {
- "_note": "LES TROIS ÎLES — la carte où la poussée tue partout.\n\nTrois plaques de terre dans un lac, reliées par rien. Chaque case de bord est une case de noyade, et deux pillards ne font que ça : pousser. Le télégraphe annonce la case d'arrivée, donc ce n'est jamais une surprise — c'est une contrainte de placement à chaque activation.\n\nLA CARTE LA PLUS CHÈRE DE L'ACTE hors boss, et elle ne doit pas ses chiffres à des statistiques : les mêmes bêtes sur `gel_03` coûtent la moitié. C'est le terrain qui fait le prix.",
+ "_note": "LES ÎLOTS. Quatre îles de coin, une île centrale, et de l'eau partout ailleurs : chaque camp est enfermé chez lui et seule la portée traverse.\n\nELLE A PORTÉ « PROTÉGER » PENDANT UNE MESURE, ET C'ÉTAIT FAUX — zéro victoire, une ronde. Le villageois était sur l'île centrale, que la zone de placement ne touche pas : on ne peut pas couvrir quelqu'un qu'on ne peut pas rejoindre. Une carte fermée est le pire terrain pour un objectif d'escorte ou de protection, et c'est la mesure qui l'a dit en une ligne.",
  "act": 3,
  "name_key": "MAP_GEL_06",
  "rows": [

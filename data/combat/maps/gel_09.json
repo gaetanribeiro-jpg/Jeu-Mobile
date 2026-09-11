@@ -1,5 +1,5 @@
 {
- "_note": "LE NID DES GUÊPES — le mini-boss.\n\nLe champion pousse ET fend en ligne de deux : se serrer pour éviter la poussée met deux héros dans la même coupe, s'étaler les expose un par un. Deux compétences qui punissent chacune la réponse à l'autre.\n\nLes guêpes volent au-dessus des crevasses pendant que l'équipe les contourne : elles arrivent quoi qu'on décide, donc le seul choix qui reste porte sur le champion.",
+ "_note": "LE NID DES GUÊPES — le mini-boss.\n\nLe champion pousse ET fend en ligne de deux : se serrer pour éviter la poussée met deux héros dans la même coupe, s'étaler les expose un par un. Deux compétences qui punissent chacune la réponse à l'autre.\n\nLes guêpes volent au-dessus des crevasses pendant que l'équipe les contourne : elles arrivent quoi qu'on décide, donc le seul choix qui reste porte sur le champion.\n\nLES PILLARDS DESCENDENT DES COLLINES, ET C'EST L'AUTRE MOITIÉ DE LA MÊME RÈGLE. Ils y étaient posés sans rien y gagner : `hill` ne majore que ce qui porte à plus d'une case, et un pillard frappe au contact. Une colline occupée par quelqu'un qu'elle n'aide pas est du décor avec une unité dessus. Libérées, les quatre du milieu redeviennent ce qu'elles doivent être : un terrain que les DEUX camps peuvent prendre.",
  "act": 3,
  "name_key": "MAP_GEL_09",
  "rows": [
@@ -82,14 +82,14 @@
   {
    "type": "ice_raider",
    "cell": [
-    6,
+    7,
     2
    ]
   },
   {
    "type": "ice_raider",
    "cell": [
-    6,
+    7,
     6
    ]
   }

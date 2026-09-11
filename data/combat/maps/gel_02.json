@@ -1,5 +1,5 @@
 {
- "_note": "LE LAC NOIR : l'eau au MILIEU, et ce qui tire dedans.\n\nLe harponneur et le poisson-bombe portent à cinq cases depuis une eau où le Guerrier ne peut pas entrer. Ils sont posés au BORD, jamais au centre : une équipe sans portée doit pouvoir les atteindre depuis le rivage, sinon la carte n'est pas dure, elle est ingagnable — et c'est le § 23 qui décide de la composition, pas la carte.\n\nLe tour de lac fait huit cases : y aller coûte deux rondes, rester coûte des dégâts. C'est la question.",
+ "_note": "EXTRAIRE PAR LE TOUR DU LAC. Le lac gelé n'est pas franchissable : la carte est un ANNEAU, et la cache est en face. Les harponneurs sont DANS l'eau, au milieu — ils tirent sur les deux rives sans qu'on puisse aller les chercher autrement qu'à distance.\n\nPOURQUOI CET OBJECTIF ICI, ET PAS « ÉLIMINER ». Neuf cartes de l'acte 3 sur neuf n'avaient que « éliminer », alors que l'acte 1 employait les six : le jeu s'était RÉTRÉCI en avançant, et c'est le reproche de Gaetan. Avec « éliminer » et une IA qui vient au contact, attendre est toujours juste ; ici il faut faire le tour, choisir SA rive, et on ne peut plus revenir sur ce choix.\n\nLe harponneur et le poisson-bombe portent à cinq cases depuis une eau où le Guerrier ne peut pas entrer. Ils sont posés au BORD, jamais au centre : une équipe sans portée doit pouvoir les atteindre depuis le rivage, sinon la carte n'est pas dure, elle est ingagnable — et c'est le § 23 qui décide de la composition, pas la carte.\n\nLe tour de lac fait huit cases : y aller coûte deux rondes, rester coûte des dégâts. C'est la question.\n\nLA CACHE EST SUR LES BERGES DU HAUT ET DU BAS, PAS EN FACE. Le tour complet de l'anneau faisait un aller-retour de seize cases : de jour l'équipe le fait, de nuit une bête de plus l'intercepte et le porteur ne rentre jamais — 100 % de réussite le jour, 40 % la nuit, en douze rondes. Ce n'était pas une nuit plus dure, c'était une falaise.\n\nÀ MI-CHEMIN, LE CHOIX RESTE ENTIER : on monte ou on descend, et on ne peut pas changer d'avis. C'est ce qu'on voulait de la carte ; le tour complet n'y ajoutait que de la longueur.",
  "act": 3,
  "name_key": "MAP_GEL_02",
  "rows": [
@@ -14,7 +14,35 @@
   "............"
  ],
  "objective": {
-  "kind": "eliminate"
+  "kind": "extract",
+  "pickup_cells": [
+   [
+    6,
+    0
+   ],
+   [
+    7,
+    0
+   ],
+   [
+    6,
+    8
+   ],
+   [
+    7,
+    8
+   ]
+  ],
+  "cells": [
+   [
+    0,
+    4
+   ],
+   [
+    0,
+    5
+   ]
+  ]
  },
  "deployment_cells": [
   [

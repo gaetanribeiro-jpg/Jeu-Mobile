@@ -1,119 +1,122 @@
 {
-  "_note": "Proteger le villageois du gue pendant 4 rondes. Il se tient au pied du pont, il ne sait pas se battre, et le Torch Goblin vient droit sur lui. La zone de placement l'entoure sans le recouvrir : on choisit qui fait ecran.\n\nATTENTION : l'objectif porte sur le VILLAGEOIS, pas sur le pont. Rien dans le moteur n'endommage encore le decor (T1.12), donc une protection de structure ne pourrait pas echouer — une carte dont l'objectif ne peut pas etre perdu n'est pas une carte.",
-  "act": 1,
-  "name_key": "MAP_VALLEE_05",
-  "rows": [
-    "....~~~~....",
-    "....~~~~....",
-    "....~~~~....",
-    ".....==.....",
-    "............",
-    "............",
-    "............",
-    "............",
-    "............"
-  ],
-  "objective": {
-    "kind": "protect",
-    "turns": 4,
-    "subject_ids": [
-      100
-    ]
-  },
-  "deployment_cells": [
-    [
-      4,
-      4
-    ],
-    [
-      6,
-      4
-    ],
-    [
-      7,
-      4
-    ],
-    [
-      4,
-      5
-    ],
-    [
-      5,
-      5
-    ],
-    [
-      6,
-      5
-    ],
-    [
-      7,
-      5
-    ],
-    [
-      4,
-      6
-    ],
-    [
-      5,
-      6
-    ],
-    [
-      6,
-      6
-    ]
-  ],
-  "allies": [
-    {
-      "type": "mage",
-      "cell": [
-        5,
-        4
-      ],
-      "_note": "Le villageois. Devrait etre un Pawn — le pack fournit le sprite et le paragraphe 9 donne une population au royaume. En attendant qu'un PNJ non combattant existe, c'est un Mage."
-    }
-  ],
-  "enemies": [
-    {
-      "type": "torch_goblin",
-      "cell": [
-        10,
-        3
-      ]
-    },
-    {
-      "type": "spear_goblin",
-      "cell": [
-        10,
-        5
-      ]
-    },
-    {
-      "type": "gnoll",
-      "cell": [
-        9,
-        4
-      ]
-    },
-    {
-      "type": "gnome",
-      "cell": [
-        8,
-        7
-      ]
-    },
-    {
-      "type": "spear_goblin",
-      "cell": [
-        11,
-        4
-      ]
-    },
-    {
-      "type": "gnome",
-      "cell": [
-        8,
-        1
-      ]
-    }
+ "_note": "Proteger le villageois du gue pendant 4 rondes. Il se tient au pied du pont, il ne sait pas se battre, et le Torch Goblin vient droit sur lui. La zone de placement l'entoure sans le recouvrir : on choisit qui fait ecran.\n\nATTENTION : l'objectif porte sur le VILLAGEOIS, pas sur le pont. Rien dans le moteur n'endommage encore le decor (T1.12), donc une protection de structure ne pourrait pas echouer — une carte dont l'objectif ne peut pas etre perdu n'est pas une carte.",
+ "act": 1,
+ "name_key": "MAP_VALLEE_05",
+ "rows": [
+  "....~~~~....",
+  "....~~~~....",
+  "....~~~~....",
+  ".....==.....",
+  "............",
+  "............",
+  "............",
+  "............",
+  "............"
+ ],
+ "objective": {
+  "kind": "protect",
+  "turns": 4,
+  "subject_ids": [
+   100
   ]
+ },
+ "deployment_cells": [
+  [
+   4,
+   4
+  ],
+  [
+   6,
+   4
+  ],
+  [
+   7,
+   4
+  ],
+  [
+   4,
+   5
+  ],
+  [
+   5,
+   5
+  ],
+  [
+   6,
+   5
+  ],
+  [
+   7,
+   5
+  ],
+  [
+   4,
+   6
+  ],
+  [
+   5,
+   6
+  ],
+  [
+   6,
+   6
+  ]
+ ],
+ "allies": [
+  {
+   "type": "mage",
+   "cell": [
+    5,
+    4
+   ],
+   "sprite": "pawn",
+   "sprite_variant": "axe",
+   "_note": "LE VILLAGEOIS EST ENFIN UN PAWN. Les cartes de l'acte 1 le réclamaient en toutes lettres depuis la Phase 1 — « devrait être un Pawn, le pack fournit le sprite » — et il restait un Mage faute d'un moyen de le DIRE. Ses statistiques sont toujours celles d'un Mage, et c'est très bien : ce qu'on EST et ce qu'on MONTRE sont deux déclarations séparées depuis T11.8. L'outil le distingue d'un héros mieux que sa couleur ne le ferait — un Pawn ne change que de 7,9 % de ses pixels d'une couleur à l'autre.",
+   "name_key": "UNIT_VILLAGER"
+  }
+ ],
+ "enemies": [
+  {
+   "type": "torch_goblin",
+   "cell": [
+    10,
+    3
+   ]
+  },
+  {
+   "type": "spear_goblin",
+   "cell": [
+    10,
+    5
+   ]
+  },
+  {
+   "type": "gnoll",
+   "cell": [
+    9,
+    4
+   ]
+  },
+  {
+   "type": "gnome",
+   "cell": [
+    8,
+    7
+   ]
+  },
+  {
+   "type": "spear_goblin",
+   "cell": [
+    11,
+    4
+   ]
+  },
+  {
+   "type": "gnome",
+   "cell": [
+    8,
+    1
+   ]
+  }
+ ]
 }

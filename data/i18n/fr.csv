@@ -68,6 +68,7 @@ OBJECTIVE_ELIMINATE,Éliminer tous les ennemis
 OBJECTIVE_SURVIVE,Tenir %d rondes
 OBJECTIVE_ESCORT,Mener le protégé à l'autre bord
 OBJECTIVE_PROTECT,Protéger la structure %d rondes
+OBJECTIVE_PROTECT_SUBJECT,Protéger le villageois %d rondes
 OBJECTIVE_SEIZE,Atteindre la position avant la ronde %d
 OBJECTIVE_EXTRACT,Récupérer la cache et ressortir
 RESULT_VICTORY,Victoire
@@ -619,3 +620,6 @@ ABILITY_CENSER_FLAME,Flamme d'encensoir
 ABILITY_SAPPER_CHARGE,Coup de masse
 ABILITY_MARSHAL_SENTENCE,Sentence
 ABILITY_MARSHAL_COMMAND,Commandement
+UNIT_VILLAGER,Villageois
+UNIT_WOODCUTTER,Bûcheron
+UNIT_SMITH,Forgeron

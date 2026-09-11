@@ -1,5 +1,5 @@
 {
- "_note": "LA GUEULE DU TERTRE — MINI-BOSS. Le troll relevé garde deux cavernes : le piège de la carte 04 posé sur le décor de la 05, et cette fois les deux se défendent l'un l'autre. Ignorer le troll fait traverser les souffles ; l'abattre laisse les buveurs se remplir.\n\nC'est la carte qui vérifie que le joueur a compris que « la cible sûre » et « la bonne cible » ne sont pas la même chose.\n\nMESURÉ À QUATORZE RONDES, RAMENÉ À UNE GUEULE. Le plafond de huit rondes est une cible ÉCRITE : deux murs à deux cent vingt-quatre points de vie plus un troll ne faisaient pas un combat plus dur, ils faisaient un combat plus LONG. C'est la leçon de T11.7, prise par l'autre bout — on la corrige en retirant un corps, pas en baissant une statistique.",
+ "_note": "LA GUEULE DU TERTRE — MINI-BOSS. Le troll relevé garde deux cavernes : le piège de la carte 04 posé sur le décor de la 05, et cette fois les deux se défendent l'un l'autre. Ignorer le troll fait traverser les souffles ; l'abattre laisse les buveurs se remplir.\n\nC'est la carte qui vérifie que le joueur a compris que « la cible sûre » et « la bonne cible » ne sont pas la même chose.\n\nMESURÉ À QUATORZE RONDES, RAMENÉ À UNE GUEULE. Le plafond de huit rondes est une cible ÉCRITE : deux murs à deux cent vingt-quatre points de vie plus un troll ne faisaient pas un combat plus dur, ils faisaient un combat plus LONG. C'est la leçon de T11.7, prise par l'autre bout — on la corrige en retirant un corps, pas en baissant une statistique.\n\nLE TROLL DESCEND DE LA COLLINE : il frappe au contact, et `hill` ne majore que ce qui porte à plus d'une case. Elle reste libre, au milieu, pour qui la prend.",
  "act": 5,
  "name_key": "MAP_MAUDIT_09",
  "rows": [
@@ -55,7 +55,7 @@
    "type": "risen_troll",
    "cell": [
     6,
-    4
+    3
    ]
   },
   {

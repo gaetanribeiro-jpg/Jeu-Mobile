@@ -95,6 +95,16 @@ var sprite_color: String = ""
 ## — la leçon des sept bêtes en ombre nue de T11.8.
 var sprite_variant: String = ""
 
+## Clé de texte du nom affiché, quand l'unité n'est pas ce que sa classe
+## dit. Vide = on lit sa classe, ce qui est le cas de tous les héros.
+##
+## LE PENDANT DE `sprite_id`, ET IL MANQUAIT. T11.8 a séparé ce qu'on EST
+## de ce qu'on MONTRE côté dessin ; côté TEXTE la séparation n'existait
+## pas, et un villageois escorté s'annonçait « Mage » sur sa carte pendant
+## qu'il se dessinait en Pawn. Deux moitiés justes qui ne parlaient pas de
+## la même chose.
+var name_key: String = ""
+
 var side: int = Side.HEROES
 var cell: Vector2i = Vector2i.ZERO
 
@@ -500,6 +510,7 @@ func to_dictionary() -> Dictionary:
 		"sprite": String(sprite_id),
 		"sprite_color": sprite_color,
 		"sprite_variant": sprite_variant,
+		"name_key": name_key,
 		"side": int(side),
 		"x": cell.x,
 		"y": cell.y,
@@ -536,6 +547,7 @@ static func from_dictionary(data: Dictionary) -> Unit:
 	unit.sprite_id = StringName(data.get("sprite", data.get("class", "")))
 	unit.sprite_color = String(data.get("sprite_color", ""))
 	unit.sprite_variant = String(data.get("sprite_variant", ""))
+	unit.name_key = String(data.get("name_key", ""))
 	unit.side = int(data.get("side", Side.HEROES))
 	unit.cell = Vector2i(int(data.get("x", 0)), int(data.get("y", 0)))
 	unit.max_hit_points = int(data.get("max_hit_points", 0))

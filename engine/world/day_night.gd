@@ -149,6 +149,47 @@ static func loot_bonus(moment: StringName) -> Dictionary:
 ## nuit, et la mesure de `simulate_combats` comparerait deux échantillons
 ## différents en croyant comparer deux réglages. Deux cartes en sortaient
 ## PLUS FACILES la nuit — du bruit qu'on aurait lu comme un résultat.
+## L'échec de cet objectif est-il une falaise plutôt qu'une pente ?
+##
+## Quatre types sur six : SAISIR court après une échéance, TENIR et
+## PROTÉGER comptent leurs rondes, ESCORTER et PROTÉGER confient la
+## défaite à quelqu'un qu'on ne commande pas. Dans tous ces cas on ne perd
+## pas « un peu plus de PV » : on rate, ou on ne rate pas.
+##
+## ÉLIMINER et EXTRAIRE, eux, se paient en points de vie — c'est là que la
+## nuit doit coûter.
+##
+## LE TEST PORTE SUR LE TYPE, ET PAS SUR LES CHAMPS, ET C'EST UN PIÈGE QUI
+## S'EST REFERMÉ UNE FOIS. Le premier jet lisait `turns > 0`, ce qui
+## paraissait exact — sauf que `CombatObjective.from_dictionary` fait
+## RETOMBER `turns` sur `survive_default_rounds` de `rules.json` quand la
+## carte ne le déclare pas. Tout objectif en porte donc un, « éliminer »
+## compris, et la règle avalait toutes les cartes du jeu : plus une seule
+## nuit n'ajoutait personne. UN CHAMP QUI A UNE VALEUR PAR DÉFAUT N'EST
+## PAS UNE DÉCLARATION — il ne dit pas ce que la carte a demandé, il dit
+## ce qu'elle obtient.
+static func _is_cliff_shaped(objective: CombatObjective) -> bool:
+	return objective.kind in [
+		CombatObjective.Kind.SEIZE,
+		CombatObjective.Kind.SURVIVE,
+		CombatObjective.Kind.PROTECT,
+		CombatObjective.Kind.ESCORT,
+	]
+
+
+## Renforce une CARTE. C'est la porte que les appelants doivent prendre :
+## elle lit le drapeau de la carte, et personne n'a donc à se souvenir de
+## le vérifier. On retire le piège, on ne protège pas les appelants.
+static func reinforce_map(
+	map: CombatMap, moment: StringName, roster: Array[StringName], rng: CombatRng
+) -> Array[Unit]:
+	if map == null or not map.takes_night_reinforcement:
+		return [] as Array[Unit]
+	return reinforce(
+		map.board, moment, roster, map.deployment_cells, rng, map.objective
+	)
+
+
 static func reinforce(
 	board: CombatBoard, moment: StringName, roster: Array[StringName],
 	deployment_cells: Array[Vector2i], rng: CombatRng,
@@ -170,7 +211,20 @@ static func reinforce(
 	# La règle qui en sort se dit en une ligne : LA PRESSION EST DÉJÀ DANS
 	# L'HORLOGE. Une carte qui court n'a pas besoin qu'on lui ajoute du
 	# monde ; les autres, si.
-	if objective != null and objective.deadline > 0:
+	#
+	# ELLE NE COUVRAIT QUE `deadline`, ET C'ÉTAIT TROP ÉTROIT. Seule une
+	# carte à SAISIR porte une échéance ; tenir et protéger comptent leurs
+	# rondes dans `turns`, escorter et protéger confient la défaite à un
+	# SUJET qui peut tomber. Mesuré à l'acte 3 : `gel_03`, qu'il faut tenir
+	# quatre rondes autour d'un bûcheron, passait de 100 % à 60 % de
+	# réussite pour une bête de plus. Même falaise que `vallee_04`, sous un
+	# autre nom de champ.
+	#
+	# LA FORME GÉNÉRALE : une nuit doit coûter des POINTS DE VIE, pas une
+	# réussite. Un objectif dont l'échec est binaire — l'horloge tourne, ou
+	# quelqu'un qu'on ne contrôle pas doit rester debout — ne se durcit pas
+	# en ajoutant du monde, il bascule.
+	if objective != null and _is_cliff_shaped(objective):
 		return added
 
 	var ceiling := int(CombatRules.rule(&"sides", &"max_enemies", 7))

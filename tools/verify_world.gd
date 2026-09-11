@@ -776,6 +776,24 @@ func _check_day_night() -> void:
 	if paying == 0:
 		_problems.append("aucune heure ne paie : la nuit est une punition sèche")
 
+	# LES CARTES QUI SE DISPENSENT DE RENFORT SE COMPTENT. Une dispense est
+	# un aveu de géométrie — `gel_04` et son pont d'une case — et elle doit
+	# rester l'exception : si elle devenait courante, ce serait le cycle
+	# jour / nuit qu'il faudrait revoir, pas une carte de plus.
+	var exempt := PackedStringArray()
+	for map_id: StringName in CombatMap.map_ids():
+		var map := CombatMap.load_map(map_id)
+		if map != null and not map.takes_night_reinforcement:
+			exempt.append(String(map_id))
+	print("\ncartes sans renfort de nuit : %d — %s"
+		% [exempt.size(), ", ".join(exempt) if exempt.size() > 0 else "aucune"])
+	if exempt.size() > CombatMap.map_ids().size() / 5:
+		_problems.append(
+			"%d cartes sur %d se dispensent du renfort de nuit : ce n'est plus "
+			% [exempt.size(), CombatMap.map_ids().size()]
+			+ "une exception de géométrie, c'est le cycle jour / nuit qui ne va pas."
+		)
+
 	# Le renfort doit avoir de quoi être tiré, sinon la nuit n'ajoute rien
 	# et la vérification ci-dessus passerait sur une promesse vide.
 	for region_id: StringName in Region.ids():
@@ -783,5 +801,28 @@ func _check_day_night() -> void:
 		if roster.is_empty():
 			continue
 		for enemy_id: StringName in roster:
-			if Unit.enemy_stats(enemy_id).is_empty():
+			var stats := Unit.enemy_stats(enemy_id)
+			if stats.is_empty():
 				_problems.append("%s : renfort de nuit inconnu « %s »" % [region_id, enemy_id])
+				continue
+			# UN RENFORT AJOUTE DE LA PRESSION, PAS DE LA DURÉE, et trois
+			# rôles font exactement le contraire — chacun mesuré :
+			#  · le TIRAILLEUR recule quand on l'approche. `vallee_02`
+			#    passait de 5,0 à 9,8 rondes (T8.1).
+			#  · la BRUTE est une barre de vie. `raid_champion`, 273 PV
+			#    contre 143 pour un pillard ordinaire, faisait tomber
+			#    `gel_02` et `gel_04` à 40 % de réussite en douze rondes —
+			#    on ne perdait pas plus de PV, on n'arrivait plus au bout.
+			#  · le BLOQUEUR ne bouge jamais : posé au centre de la
+			#    formation, il ne rejoint personne et meurt sur place.
+			#  · le SOUTIEN recoud ce qu'on entame, donc rallonge aussi.
+			#
+			# Reste ce qui AVANCE et MEURT : mêlée, assassin, lanceur,
+			# tireur. C'est ce qu'une nuit doit coûter — des points de vie.
+			var role := StringName(stats.get("role", ""))
+			if role in [&"skirmisher", &"brute", &"blocker", &"support"]:
+				_problems.append(
+					"%s : « %s » est un %s et ne peut pas renforcer la nuit — "
+					% [region_id, enemy_id, role]
+					+ "il ajouterait de la DURÉE, pas de la pression."
+				)
