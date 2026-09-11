@@ -623,3 +623,42 @@ ABILITY_MARSHAL_COMMAND,Commandement
 UNIT_VILLAGER,Villageois
 UNIT_WOODCUTTER,Bûcheron
 UNIT_SMITH,Forgeron
+COMPANY_TAKE_ALONG,Emmener en expédition
+COMPANY_LEAVE_BEHIND,Laisser au royaume
+COMPANY_SQUAD_FULL,"L'équipe est au complet (%d)"
+COMPANY_SQUAD_LAST,Il ne peut pas rester seul
+COMPANY_GOING_MARK,"» "
+CLASS_LANCER,Lancier
+ABILITY_LANCE_THRUST,Estoc
+ABILITY_SKEWER,Broche
+ABILITY_REPEL,Repousse
+ABILITY_PHALANX,Phalange
+ABILITY_IMPALE,Empalement
+ITEM_ASH_SPEAR,Lance de frêne
+ITEM_IRON_PIKE,Pique de fer
+ITEM_WARDEN_LANCE,Lance du gardien
+ITEM_GATEKEEPER,Le Portier
+BRANCH_L_WALL,Le mur
+BRANCH_L_DRIVE,La percée
+NODE_L_REACH,Allonge
+NODE_L_REACH_DESC,Tenir la hampe plus bas. +15 PV.
+NODE_L_FOOTING,Appui
+NODE_L_FOOTING_DESC,Le poids du corps derrière la pointe. +1 Force.
+NODE_L_PHALANX,Phalange
+NODE_L_PHALANX_DESC,Un coup qui traverse trois rangs — mais seulement si l'on n'a pas bougé.
+NODE_L_BRACING,Calage
+NODE_L_BRACING_DESC,Le talon planté. +1 Défense.
+NODE_L_ROOT,Enracinement
+NODE_L_ROOT_DESC,On ne le déplace plus. +20 PV.
+NODE_L_BULWARK,Rempart
+NODE_L_BULWARK_DESC,La hampe en travers. +1 Défense.
+NODE_L_RAMPART,Muraille
+NODE_L_RAMPART_DESC,"Une ligne à lui tout seul. +25 PV, +1 Défense."
+NODE_L_IMPALE,Empalement
+NODE_L_IMPALE_DESC,Un coup qui blesse et repousse d'une case.
+NODE_L_DRIVE,Poussée
+NODE_L_DRIVE_DESC,Charger derrière la pointe. +1 Force.
+NODE_L_ADVANCE,Avance
+NODE_L_ADVANCE_DESC,Reprendre le pas perdu. +1 PM.
+NODE_L_SPEARHEAD,Fer de lance
+NODE_L_SPEARHEAD_DESC,"Il ouvre la ligne. +2 Force, +5 Critique."

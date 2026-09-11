@@ -233,24 +233,35 @@ func _ascend_buttons(building_id: StringName) -> void:
 ## tous, et le répéter trois fois donnerait à lire trois chiffres
 ## identiques au lieu des trois caractères qui, eux, diffèrent.
 func _recruit_buttons(building_id: StringName) -> void:
-	var class_id := Buildings.hero_class(building_id)
-	if class_id.is_empty() or _kingdom.level_of(building_id) <= 0:
+	var taught := Buildings.recruits(building_id)
+	if taught.is_empty() or _kingdom.level_of(building_id) <= 0:
 		return
 	var blocked := _kingdom.cannot_recruit_because(building_id, _company)
+	# UN BÂTIMENT PEUT EN FORMER DEUX. L'en-tête les nomme toutes, séparées
+	# par une barre : la caserne forme les gens d'armes, et le joueur doit
+	# le savoir avant de lire les trois noms.
+	var names := PackedStringArray()
+	for class_id: StringName in taught:
+		names.append(tr("CLASS_%s" % String(class_id).to_upper()))
 	_line(tr("KINGDOM_RECRUIT") % [
-		tr("CLASS_%s" % String(class_id).to_upper()),
-		_costs(Buildings.recruit_cost(building_id)),
+		" · ".join(names), _costs(Buildings.recruit_cost(building_id)),
 	], 20)
 	if blocked == &"cost":
 		_line(tr("KINGDOM_NEEDS_RESOURCES"), 19)
 	var offered := _kingdom.candidates(building_id, _company, _rng)
 	for i in offered.size():
-		# Sur deux lignes : qui c'est, puis ce que ça change. Une seule
-		# ligne dépassait la largeur du panneau, et c'est ce qui a fait
-		# boucler la mise en page.
+		# Sur trois lignes quand le bâtiment forme plusieurs classes : qui
+		# c'est, ce qu'il est, puis ce que son caractère change. La classe
+		# ne se déduit plus du bâtiment, donc elle doit être écrite.
 		var label := "%s\n%s" % [
 			offered[i].display_name(), UiSkin.trait_line(offered[i].trait_id)
 		]
+		if taught.size() > 1:
+			label = "%s — %s\n%s" % [
+				offered[i].display_name(),
+				tr("CLASS_%s" % String(offered[i].class_id).to_upper()),
+				UiSkin.trait_line(offered[i].trait_id),
+			]
 		_action(label, _hire.bind(building_id, i), blocked.is_empty())
 
 

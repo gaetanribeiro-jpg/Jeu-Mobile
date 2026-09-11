@@ -70,14 +70,19 @@ func test_la_tour_ouvre_l_ascension() -> void:
 	)
 
 
-func test_chaque_classe_du_mvp_a_son_batiment() -> void:
-	var served := {}
+## CHAQUE CLASSE DOIT POUVOIR ÊTRE RECRUTÉE QUELQUE PART, et c'est
+## `recruits` qui le dit, pas `hero_class`. Les deux champs répondent à
+## deux questions : `hero_class` dit à qui vont les GAINS du bâtiment,
+## `recruits` dit qui il sait former. La caserne forme les gens d'armes —
+## Guerriers et Lanciers — mais ne renforce que les Guerriers, sinon bâtir
+## serait un cumul au lieu d'un choix entre trois voies.
+func test_chaque_classe_se_recrute_quelque_part() -> void:
+	var taught := {}
 	for building_id: StringName in Buildings.ids():
-		var class_id := Buildings.hero_class(building_id)
-		if not class_id.is_empty():
-			served[class_id] = true
+		for class_id: StringName in Buildings.recruits(building_id):
+			taught[class_id] = true
 	for class_id: StringName in Unit.hero_class_ids():
-		assert_true(served.has(class_id), String(class_id))
+		assert_true(taught.has(class_id), String(class_id))
 
 
 func test_un_batiment_inconnu_se_signale() -> void:

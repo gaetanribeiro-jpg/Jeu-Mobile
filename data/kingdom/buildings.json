@@ -118,7 +118,12 @@
    "recruit_cost": {
     "gold": 180,
     "food": 45
-   }
+   },
+   "recruits": [
+    "warrior",
+    "lancer"
+   ],
+   "_recruits_note": "LA CASERNE FORME LES GENS D'ARMES, Guerriers ET Lanciers. `hero_class` reste « warrior » : c'est à qui vont les GAINS du bâtiment, et un bâtiment qui renforcerait deux classes ferait de bâtir un cumul au lieu d'un choix entre trois voies.\n\nPOURQUOI PAS UN BÂTIMENT À ELLE : le pack dessine huit bâtiments et les huit servent déjà. Le Lancier n'en aura donc pas, et c'est très bien — ça fait des trois candidats de la caserne une question plus riche : « lequel de ces trois Guerriers ? » devient « de quoi mon équipe manque-t-elle ? »."
   },
   "archery": {
    "name_key": "BUILDING_ARCHERY",

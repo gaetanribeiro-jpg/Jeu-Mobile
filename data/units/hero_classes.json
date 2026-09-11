@@ -1,69 +1,91 @@
 {
-  "_readme": "Les trois classes du MVP (vision § 11). L'échelle des chiffres suit le § 47 : PV autour de 100, dégâts autour de 20.\n\nLES STATISTIQUES SONT DES MODIFICATEURS, PAS DES MULTIPLICATEURS. Les dégâts du § 47 — Frappe 20, Coup puissant 45 — sont des chiffres FINAUX. Une Force à 12 ajoutée par-dessus faisait +60 % sur une frappe de base et vidait le combat de tout enjeu. Elles tiennent donc dans une fourchette de 1 à 8, ce qui laisse la compétence définir le coup et la statistique le nuancer — et rend un +2 d'équipement lisible.\n\nPA/PM : chaque personnage les retrouve intacts au début de son activation. initiative fixe la place dans la timeline (§ 16), la plus haute joue en premier. primary_stat est la statistique qui définit la classe : c'est elle que la montée en niveau nourrit, et c'est elle que la plupart des compétences de la classe prennent pour échelle. Le Mage utilise le sprite du Moine, voir docs/etat-des-lieux.md § 3.1.",
-  "warrior": {
-    "sprite": "warrior",
-    "role_note": "Tank, mêlée, contrôle. Encaisse et fixe. Sa portée de 1 est sa faiblesse : il doit traverser le plateau pour servir.",
-    "hit_points": 120,
-    "action_points": 8,
-    "movement_points": 4,
-    "initiative": 4,
-    "strength": 6,
-    "agility": 3,
-    "intelligence": 1,
-    "defence": 5,
-    "critical": 0,
-    "aquatic": false,
-    "abilities": [
-      "strike",
-      "heavy_strike",
-      "taunt"
-    ],
-    "primary_stat": "strength",
-    "accent": "rust"
-  },
-  "archer": {
-    "sprite": "archer",
-    "role_note": "DPS à distance, mobile. Le seul à pouvoir se replacer sans dépenser de PM. Fragile au contact : 72 PV et 2 de défense ne tiennent pas deux tours de mêlée — un gobelin lancier lui retire plus d'un tiers de sa vie par activation.",
-    "hit_points": 72,
-    "action_points": 8,
-    "movement_points": 5,
-    "initiative": 8,
-    "strength": 2,
-    "agility": 7,
-    "intelligence": 2,
-    "defence": 2,
-    "critical": 0,
-    "aquatic": false,
-    "abilities": [
-      "shot",
-      "power_shot",
-      "hop_back"
-    ],
-    "primary_stat": "agility",
-    "hit_points_note": "Descendu de 85 à 72 en T1.14. Tant que rien ne pouvait le toucher, ses PV ne voulaient rien dire ; une fois le bestiaire doté de deux tireurs de plus, la fragilité annoncée par sa fiche est devenue une fragilité réelle. Les deux corrections vont ensemble et l'une sans l'autre ne changeait rien.",
-    "accent": "moss"
-  },
-  "mage": {
-    "sprite": "monk",
-    "sprite_note": "Le pack n'a pas de mage. Le Moine est une figure encapuchonnée avec une animation d'incantation (Monk_Heal) et son effet séparé (Monk_HealEffect). Décision documentée dans docs/etat-des-lieux.md § 3.1, à confirmer à l'œil.",
-    "role_note": "Dégâts de zone et contrôle. Le plus fragile, et le seul qui punisse un groupe. Toute sa valeur vient de l'endroit d'où il tire.",
-    "hit_points": 70,
-    "action_points": 9,
-    "movement_points": 4,
-    "initiative": 6,
-    "strength": 1,
-    "agility": 2,
-    "intelligence": 8,
-    "defence": 1,
-    "critical": 0,
-    "aquatic": false,
-    "abilities": [
-      "bolt",
-      "fireball",
-      "frost"
-    ],
-    "primary_stat": "intelligence",
-    "accent": "plum"
-  },
-  "_accent_note": "LA COULEUR D'UNE CLASSE (T11.6). Elle teinte le liseré d'une fiche de héros, partout où il en apparaît une — compagnie, carte du monde, expédition. Quatre héros en rang dans quatre boîtes identiques ne se distinguent que par leur nom, qu'il faut lire ; teintés, ils se comptent d'un coup d'œil : deux guerriers, un archer, un mage.\n\nROUILLE, MOUSSE, PRUNE — le contact, la portée, la magie. Ce sont les rôles de bouton existants, pas de nouvelles couleurs : le jour où la palette change, aucune classe ne bouge. Et la prune est déjà celle des potions, donc celle de ce qui n'est pas une arme."
+ "_readme": "Les trois classes du MVP (vision § 11). L'échelle des chiffres suit le § 47 : PV autour de 100, dégâts autour de 20.\n\nLES STATISTIQUES SONT DES MODIFICATEURS, PAS DES MULTIPLICATEURS. Les dégâts du § 47 — Frappe 20, Coup puissant 45 — sont des chiffres FINAUX. Une Force à 12 ajoutée par-dessus faisait +60 % sur une frappe de base et vidait le combat de tout enjeu. Elles tiennent donc dans une fourchette de 1 à 8, ce qui laisse la compétence définir le coup et la statistique le nuancer — et rend un +2 d'équipement lisible.\n\nPA/PM : chaque personnage les retrouve intacts au début de son activation. initiative fixe la place dans la timeline (§ 16), la plus haute joue en premier. primary_stat est la statistique qui définit la classe : c'est elle que la montée en niveau nourrit, et c'est elle que la plupart des compétences de la classe prennent pour échelle. Le Mage utilise le sprite du Moine, voir docs/etat-des-lieux.md § 3.1.",
+ "warrior": {
+  "sprite": "warrior",
+  "role_note": "Tank, mêlée, contrôle. Encaisse et fixe. Sa portée de 1 est sa faiblesse : il doit traverser le plateau pour servir.",
+  "hit_points": 120,
+  "action_points": 8,
+  "movement_points": 4,
+  "initiative": 4,
+  "strength": 6,
+  "agility": 3,
+  "intelligence": 1,
+  "defence": 5,
+  "critical": 0,
+  "aquatic": false,
+  "abilities": [
+   "strike",
+   "heavy_strike",
+   "taunt"
+  ],
+  "primary_stat": "strength",
+  "accent": "rust"
+ },
+ "archer": {
+  "sprite": "archer",
+  "role_note": "DPS à distance, mobile. Le seul à pouvoir se replacer sans dépenser de PM. Fragile au contact : 72 PV et 2 de défense ne tiennent pas deux tours de mêlée — un gobelin lancier lui retire plus d'un tiers de sa vie par activation.",
+  "hit_points": 72,
+  "action_points": 8,
+  "movement_points": 5,
+  "initiative": 8,
+  "strength": 2,
+  "agility": 7,
+  "intelligence": 2,
+  "defence": 2,
+  "critical": 0,
+  "aquatic": false,
+  "abilities": [
+   "shot",
+   "power_shot",
+   "hop_back"
+  ],
+  "primary_stat": "agility",
+  "hit_points_note": "Descendu de 85 à 72 en T1.14. Tant que rien ne pouvait le toucher, ses PV ne voulaient rien dire ; une fois le bestiaire doté de deux tireurs de plus, la fragilité annoncée par sa fiche est devenue une fragilité réelle. Les deux corrections vont ensemble et l'une sans l'autre ne changeait rien.",
+  "accent": "moss"
+ },
+ "mage": {
+  "sprite": "monk",
+  "sprite_note": "Le pack n'a pas de mage. Le Moine est une figure encapuchonnée avec une animation d'incantation (Monk_Heal) et son effet séparé (Monk_HealEffect). Décision documentée dans docs/etat-des-lieux.md § 3.1, à confirmer à l'œil.",
+  "role_note": "Dégâts de zone et contrôle. Le plus fragile, et le seul qui punisse un groupe. Toute sa valeur vient de l'endroit d'où il tire.",
+  "hit_points": 70,
+  "action_points": 9,
+  "movement_points": 4,
+  "initiative": 6,
+  "strength": 1,
+  "agility": 2,
+  "intelligence": 8,
+  "defence": 1,
+  "critical": 0,
+  "aquatic": false,
+  "abilities": [
+   "bolt",
+   "fireball",
+   "frost"
+  ],
+  "primary_stat": "intelligence",
+  "accent": "plum"
+ },
+ "_accent_note": "LA COULEUR D'UNE CLASSE (T11.6). Elle teinte le liseré d'une fiche de héros, partout où il en apparaît une — compagnie, carte du monde, expédition. Quatre héros en rang dans quatre boîtes identiques ne se distinguent que par leur nom, qu'il faut lire ; teintés, ils se comptent d'un coup d'œil : deux guerriers, un archer, un mage.\n\nROUILLE, MOUSSE, PRUNE — le contact, la portée, la magie. Ce sont les rôles de bouton existants, pas de nouvelles couleurs : le jour où la palette change, aucune classe ne bouge. Et la prune est déjà celle des potions, donc celle de ce qui n'est pas une arme.",
+ "lancer": {
+  "sprite": "lancer",
+  "role_note": "MÊLÉE À ALLONGE. Il frappe à DEUX cases — la seule classe qui le fasse au contact — donc il touche depuis une case où le Guerrier ne le rejoint pas d'un pas. Il paie cette allonge en PEAU : 96 PV et 3 de défense contre 120 et 5 pour le Guerrier. La portée se paie (T1.14), mais pas forcément sur le même axe — l'Archer la paie en dégâts parce qu'il tire à cinq, le Lancier la paie en encaissement parce qu'il reste dans la mêlée.\n\nIL RAMÈNE LA TROISIÈME RÉPONSE AU TÉLÉGRAPHE. Le § 4.2 en donne trois — sortir de la case, abattre l'ennemi, ou LE DÉPLACER — et la troisième n'appartenait à personne depuis que le Lancier avait quitté la conception. `KIND_PUSH` était la dernière mécanique déclarée et jamais branchée.",
+  "hit_points": 96,
+  "action_points": 8,
+  "movement_points": 5,
+  "initiative": 6,
+  "strength": 5,
+  "agility": 4,
+  "intelligence": 1,
+  "defence": 3,
+  "critical": 0,
+  "aquatic": false,
+  "abilities": [
+   "lance_thrust",
+   "skewer",
+   "repel"
+  ],
+  "primary_stat": "strength",
+  "_mvp_note": "QUATRIÈME CLASSE, ET LE MVP EN DÉCLARAIT TROIS. La décision verrouillée dit « Trois classes dans le MVP : Guerrier, Archer, Mage. Les autres (Lancier, Assassin, Paladin…) viendront APRÈS ». Le MVP est fini — six actes, la boucle entière — et le Lancier était nommé premier candidat dans `plus-tard.md` : classe entièrement construite sous l'ancienne conception, et la seule unité DIRECTIONNELLE du pack, cinq directions miroitables. C'est donc « après », pas une entorse.",
+  "accent": "frost"
+ }
 }

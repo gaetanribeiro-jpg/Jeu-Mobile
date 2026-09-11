@@ -200,8 +200,7 @@ func _check_food_balance() -> void:
 func _check_recruiting() -> void:
 	var served := {}
 	for building_id: StringName in Buildings.ids():
-		var class_id := Buildings.hero_class(building_id)
-		if not class_id.is_empty():
+		for class_id: StringName in Buildings.recruits(building_id):
 			served[class_id] = building_id
 	print("recrutement : %s" % ", ".join(PackedStringArray(served.keys())))
 	for class_id: StringName in Unit.hero_class_ids():

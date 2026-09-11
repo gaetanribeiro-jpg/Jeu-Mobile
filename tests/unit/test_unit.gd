@@ -9,9 +9,12 @@ func before_each() -> void:
 	Ability.clear_cache()
 
 
-func test_les_trois_classes_du_mvp_sont_declarees() -> void:
+## Le § 11 voulait trois classes DANS LE MVP, et disait que les autres
+## viendraient après. Le MVP est fini : le test garde donc que les trois
+## sont toujours là, pas qu'il n'y en ait jamais une quatrième.
+func test_les_classes_du_mvp_sont_toujours_declarees() -> void:
 	var ids := Unit.hero_class_ids()
-	assert_eq(ids.size(), 3, "trois classes dans le MVP (§ 11)")
+	assert_gte(ids.size(), 3, "les trois classes du MVP au minimum")
 	for wanted: StringName in [&"warrior", &"archer", &"mage"]:
 		assert_true(ids.has(wanted), "classe manquante : %s" % wanted)
 

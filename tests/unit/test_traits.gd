@@ -102,8 +102,19 @@ func test_le_batiment_propose_trois_candidats() -> void:
 	var kingdom := _rich()
 	var offered := kingdom.candidates(&"barracks", _purse(), CombatRng.new(7))
 	assert_eq(offered.size(), Buildings.candidate_count())
+	# LA CASERNE EN FORME DEUX depuis que le Lancier existe, et les trois
+	# candidats tournent entre elles : le choix porte donc aussi sur la
+	# classe, pas seulement sur le caractère.
+	var taught := Buildings.recruits(&"barracks")
+	assert_gt(taught.size(), 1, "la caserne devrait former plusieurs classes")
+	var seen_classes := {}
 	for hero: Hero in offered:
-		assert_eq(hero.class_id, &"warrior")
+		assert_true(taught.has(hero.class_id), "candidat hors programme : %s" % hero.class_id)
+		seen_classes[hero.class_id] = true
+	assert_eq(
+		seen_classes.size(), taught.size(),
+		"les trois candidats devraient couvrir les deux classes"
+	)
 
 
 ## LE CŒUR DU SYSTÈME. Sortir de l'écran du royaume et y revenir rappelle

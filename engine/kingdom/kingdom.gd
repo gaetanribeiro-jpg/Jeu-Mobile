@@ -314,14 +314,16 @@ func healing_between_steps() -> float:
 func recruitable_classes() -> Array[StringName]:
 	var out: Array[StringName] = []
 	for building_id: StringName in Buildings.ids():
-		var served := Buildings.hero_class(building_id)
-		if not served.is_empty() and level_of(building_id) > 0:
-			out.append(served)
+		if level_of(building_id) <= 0:
+			continue
+		for served: StringName in Buildings.recruits(building_id):
+			if not out.has(served):
+				out.append(served)
 	return out
 
 
-## Les candidats que ce bâtiment propose en ce moment : même classe, mais
-## trois noms et trois CARACTÈRES différents.
+## Les candidats que ce bâtiment propose en ce moment : trois noms, trois
+## CARACTÈRES, et parfois deux CLASSES.
 ##
 ## L'HABITANT N'EST PAS UN HÉROS. Recruter ne prend personne à la
 ## population : un royaume qui perdrait un bûcheron chaque fois qu'il forme
@@ -340,8 +342,8 @@ func recruitable_classes() -> Array[StringName]:
 ## combats à venir.
 func candidates(building_id: StringName, company: Company, rng: CombatRng) -> Array[Hero]:
 	var out: Array[Hero] = []
-	var class_id := Buildings.hero_class(building_id)
-	if company == null or rng == null or class_id.is_empty():
+	var taught := Buildings.recruits(building_id)
+	if company == null or rng == null or taught.is_empty():
 		return out
 	if level_of(building_id) <= 0:
 		return out
@@ -353,6 +355,11 @@ func candidates(building_id: StringName, company: Company, rng: CombatRng) -> Ar
 	var traits: Array[StringName] = []
 	for i in Buildings.candidate_count():
 		var trait_id := HeroTrait.draw(draw, traits)
+		# LA CLASSE TOURNE PLUTÔT QU'ELLE NE SE TIRE, quand le bâtiment en
+		# forme plusieurs. Un tirage pourrait rendre trois fois la même et
+		# l'étal n'offrirait alors que le choix qu'il offrait avant ; en
+		# tournant, une caserne propose toujours les deux.
+		var class_id: StringName = taught[i % taught.size()]
 		var hero := Hero.recruit(company.next_id(), class_id, draw, seen, "Blue", trait_id)
 		if hero == null:
 			continue
@@ -394,7 +401,7 @@ func hire(
 
 ## Pourquoi on ne peut pas recruter ici : vide si on peut.
 func cannot_recruit_because(building_id: StringName, company: Company = null) -> StringName:
-	if Buildings.hero_class(building_id).is_empty():
+	if Buildings.recruits(building_id).is_empty():
 		return &"not_a_trainer"
 	if level_of(building_id) <= 0:
 		return &"not_built"

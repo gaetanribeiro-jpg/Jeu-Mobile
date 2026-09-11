@@ -243,3 +243,91 @@ func test_un_objet_disparu_des_donnees_ne_bloque_pas_le_chargement() -> void:
 	var copy := Company.from_dictionary(raw)
 	assert_eq(copy.stash.size(), 1)
 	assert_true(copy.stash.has(&"plate"))
+
+
+# --- La composition de l'équipe (T12.7) ------------------------------------
+#
+# ELLE VIVAIT DANS L'ÉCRAN DE TITRE, remise à zéro chaque fois qu'on
+# fermait un écran : le joueur repartait toujours avec ses quatre PREMIERS
+# héros. Un cinquième recruté ne jouait donc JAMAIS — ce qui vidait de son
+# sens le recrutement à trois candidats de T12.3, et la demande de Gaetan
+# « changer de personnage ou de composition » avec.
+
+func _crowded(count: int) -> Company:
+	var company := Company.new()
+	var classes: Array[StringName] = [&"warrior", &"archer", &"mage"]
+	for i in count:
+		company.recruit(classes[i % classes.size()], CombatRng.new(100 + i))
+	return company
+
+
+func test_une_compagnie_neuve_a_une_equipe_complete() -> void:
+	var company := _crowded(6)
+	assert_eq(company.squad_ids.size(), CombatRules.team_size())
+	for hero_id: int in company.squad_ids:
+		assert_not_null(company.hero_by_id(hero_id))
+
+
+## LE CŒUR : un héros recruté au-delà du plafond N'ENTRE PAS tout seul.
+## S'il entrait, la composition serait encore subie — simplement dans
+## l'autre sens.
+func test_un_heros_de_trop_ne_part_pas_tout_seul() -> void:
+	var company := _crowded(CombatRules.team_size())
+	var extra := company.recruit(&"warrior", CombatRng.new(77))
+	assert_not_null(extra)
+	assert_false(company.is_in_squad(extra.id), "il s'est invité")
+	assert_eq(company.squad_ids.size(), CombatRules.team_size())
+
+
+func test_on_echange_un_heros_contre_un_autre() -> void:
+	var company := _crowded(CombatRules.team_size())
+	var extra := company.recruit(&"mage", CombatRng.new(78))
+	var benched := company.squad_ids[0]
+	assert_false(company.toggle_squad(benched), "il devrait sortir")
+	assert_true(company.toggle_squad(extra.id), "il devrait entrer")
+	assert_true(company.is_in_squad(extra.id))
+	assert_false(company.is_in_squad(benched))
+	assert_eq(company.squad_ids.size(), CombatRules.team_size())
+
+
+## LES DEUX BORNES. On ne dépasse pas le plafond — la carte ne prévoit pas
+## plus de cases de départ — et on ne descend pas sous un héros, parce
+## qu'une équipe vide n'est pas une composition, c'est une impasse.
+func test_l_equipe_ne_depasse_pas_le_plafond() -> void:
+	var company := _crowded(CombatRules.team_size() + 2)
+	var outside := company.heroes[CombatRules.team_size()]
+	assert_false(company.toggle_squad(outside.id), "l'équipe était pleine")
+	assert_eq(company.squad_ids.size(), CombatRules.team_size())
+
+
+func test_le_dernier_ne_peut_pas_sortir() -> void:
+	var company := _crowded(1)
+	var alone := company.heroes[0].id
+	assert_true(company.toggle_squad(alone), "il doit rester")
+	assert_true(company.is_in_squad(alone))
+
+
+func test_un_heros_qui_part_quitte_l_equipe() -> void:
+	var company := _crowded(CombatRules.team_size())
+	var leaving := company.squad_ids[0]
+	company.remove(leaving)
+	assert_false(company.is_in_squad(leaving))
+
+
+func test_la_composition_survit_a_la_sauvegarde() -> void:
+	var company := _crowded(CombatRules.team_size() + 2)
+	var benched := company.squad_ids[0]
+	company.toggle_squad(benched)
+	company.toggle_squad(company.heroes[CombatRules.team_size()].id)
+	var chosen := company.squad_ids.duplicate()
+	var copy := Company.from_dictionary(company.to_dictionary())
+	assert_eq(copy.squad_ids, chosen, "la composition a été refaite au chargement")
+	assert_false(copy.is_in_squad(benched))
+
+
+func test_l_equipe_choisie_rend_les_heros_dans_l_ordre() -> void:
+	var company := _crowded(CombatRules.team_size() + 1)
+	var picked := company.selected_squad()
+	assert_eq(picked.size(), company.squad_ids.size())
+	for i in picked.size():
+		assert_eq(picked[i].id, company.squad_ids[i])

@@ -30,6 +30,22 @@ var stash: Array[StringName] = []
 ## appelant à demander de quel genre est l'objet qu'il tient.
 var supplies: Dictionary = {}
 
+## Les héros que le joueur emmène, par identifiant et DANS SON ORDRE.
+##
+## ELLE VIT ICI, ET C'EST TOUT LE PROPOS. Le choix était dans l'écran de
+## titre, remis à zéro chaque fois qu'on fermait un écran : le joueur
+## repartait toujours avec ses quatre PREMIERS héros, dans l'ordre du
+## recrutement. Un cinquième héros ne jouait donc jamais — ce qui vidait de
+## son sens le recrutement à trois candidats de T12.3, et la demande de
+## Gaetan « changer de personnage ou de composition » avec.
+##
+## L'ORDRE EST CELUI DU JOUEUR : c'est lui qui donne le numéro
+## d'emplacement, et c'est ce qui distingue deux Guerriers sur le plateau.
+##
+## ELLE SE SÉRIALISE. Une composition qu'il faudrait refaire à chaque
+## lancement serait une corvée, pas une décision.
+var squad_ids: Array[int] = []
+
 ## Prochain identifiant de héros. Il ne redescend jamais, même après un
 ## départ : deux héros ne doivent jamais partager un identifiant, sinon une
 ## sauvegarde en écrase un.
@@ -47,11 +63,18 @@ func hero_by_id(hero_id: int) -> Hero:
 	return null
 
 
+## LA COMPOSITION RESTE VALIDE PAR CONSTRUCTION. Entrer ou sortir un héros
+## la remet d'aplomb ici, plutôt que de compter sur les appelants pour y
+## penser — et c'est la sauvegarde qui l'a imposé : une compagnie bâtie à
+## la main n'avait pas d'équipe, la même relue en avait une, et l'aller-
+## retour n'était donc pas stable. On retire le piège, on ne protège pas
+## les appelants.
 func add(hero: Hero) -> bool:
 	if hero == null or hero_by_id(hero.id) != null:
 		return false
 	heroes.append(hero)
 	_next_id = maxi(_next_id, hero.id + 1)
+	settle_squad()
 	return true
 
 
@@ -94,10 +117,65 @@ func remove(hero_id: int) -> Hero:
 		if not item_id.is_empty():
 			stash.append(item_id)
 	heroes.erase(hero)
+	settle_squad()
 	return hero
 
 
 # --- L'équipe qui part -----------------------------------------------------
+
+## Ce héros part-il ?
+func is_in_squad(hero_id: int) -> bool:
+	return squad_ids.has(hero_id)
+
+
+## Fait entrer ou sortir un héros de l'équipe. Renvoie son nouvel état.
+##
+## ON NE DESCEND PAS SOUS UN HÉROS et on ne dépasse pas le plafond : la
+## carte ne prévoit pas plus de cases de départ, et une équipe vide n'est
+## pas une composition, c'est une impasse.
+func toggle_squad(hero_id: int) -> bool:
+	if hero_by_id(hero_id) == null:
+		return false
+	if squad_ids.has(hero_id):
+		if squad_ids.size() <= 1:
+			return true
+		squad_ids.erase(hero_id)
+		return false
+	if squad_ids.size() >= CombatRules.team_size():
+		return false
+	squad_ids.append(hero_id)
+	return true
+
+
+## Remet la composition d'aplomb : retire ceux qui ont quitté la compagnie,
+## complète jusqu'au plafond avec ceux qui restent.
+##
+## À APPELER APRÈS CHAQUE CHANGEMENT DE COMPAGNIE, et jamais à la place du
+## choix du joueur : elle COMPLÈTE une composition, elle ne la refait pas.
+## C'est la différence exacte avec l'ancien `_reset_squad`, qui reprenait
+## les quatre premiers à chaque fermeture d'écran.
+func settle_squad() -> void:
+	var kept: Array[int] = []
+	for hero_id: int in squad_ids:
+		if hero_by_id(hero_id) != null and not kept.has(hero_id):
+			kept.append(hero_id)
+	squad_ids = kept
+	var limit := CombatRules.team_size()
+	for hero: Hero in heroes:
+		if squad_ids.size() >= limit:
+			break
+		if not squad_ids.has(hero.id):
+			squad_ids.append(hero.id)
+	if squad_ids.size() > limit:
+		squad_ids = squad_ids.slice(0, limit)
+
+
+## Les héros qui partent, dans l'ordre choisi.
+func selected_squad() -> Array[Hero]:
+	settle_squad()
+	return squad(squad_ids)
+
+
 
 ## Les héros que le joueur emmène, dans l'ordre donné. Refuse au-delà du
 ## plafond de `rules.json` : la carte ne prévoit pas plus de cases.
@@ -190,6 +268,7 @@ func to_dictionary() -> Dictionary:
 		"heroes": saved,
 		"stash": items,
 		"supplies": potions,
+		"squad": squad_ids.duplicate(),
 	}
 
 
@@ -209,4 +288,17 @@ static func from_dictionary(data: Dictionary) -> Company:
 		if Consumable.exists(StringName(item_id)):
 			company.supplies[StringName(item_id)] = int(data["supplies"][item_id])
 	company._next_id = maxi(int(data.get("next_id", 1)), company._next_id)
+	# Un héros retiré des données depuis la sauvegarde disparaît de la
+	# composition, sans emporter la partie avec lui — même règle que la
+	# réserve et le sac. `settle_squad` s'en charge et complète le reste.
+	# ON VIDE AVANT DE LIRE, et c'est `add()` qui l'impose : il remet la
+	# composition d'aplomb à chaque héros ajouté, donc elle est DÉJÀ pleine
+	# des quatre premiers quand on arrive ici. Empiler la composition
+	# sauvegardée par-dessus, puis tronquer au plafond, rendait exactement
+	# les quatre premiers — le choix du joueur disparaissait au chargement
+	# sans que rien ne s'en plaigne.
+	company.squad_ids.clear()
+	for raw: Variant in data.get("squad", []):
+		company.squad_ids.append(int(raw))
+	company.settle_squad()
 	return company

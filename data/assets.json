@@ -2833,6 +2833,36 @@
    "kind": "image",
    "w": 512,
    "h": 512
+  },
+  "lance_thrust": {
+   "file": "abilities/lance_thrust.svg",
+   "kind": "image",
+   "w": 512,
+   "h": 512
+  },
+  "skewer": {
+   "file": "abilities/skewer.svg",
+   "kind": "image",
+   "w": 512,
+   "h": 512
+  },
+  "repel": {
+   "file": "abilities/repel.svg",
+   "kind": "image",
+   "w": 512,
+   "h": 512
+  },
+  "phalanx": {
+   "file": "abilities/phalanx.svg",
+   "kind": "image",
+   "w": 512,
+   "h": 512
+  },
+  "impale": {
+   "file": "abilities/impale.svg",
+   "kind": "image",
+   "w": 512,
+   "h": 512
   }
  }
 }

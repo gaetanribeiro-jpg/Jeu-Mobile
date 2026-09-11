@@ -126,7 +126,11 @@ func _roster_row(hero: Hero) -> Button:
 		UiTheme.color(&"ink_gold") if hero.id == _selected_id else UiTheme.color(&"ink")
 	)
 	text.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	text.text = "%s\n%s · %s" % [
+	# QUI PART SE LIT DANS LE VIVIER, pas seulement sur la fiche : c'est
+	# une information de COMPARAISON — « ai-je bien composé ? » — et une
+	# comparaison qui demande de cliquer sur chacun n'en est pas une.
+	text.text = "%s%s\n%s · %s" % [
+		tr("COMPANY_GOING_MARK") if _company.is_in_squad(hero.id) else "",
 		hero.display_name(),
 		tr("CLASS_%s" % String(hero.class_id).to_upper()),
 		tr("COMPANY_LEVEL") % hero.level,
@@ -178,6 +182,7 @@ func _build_sheet() -> void:
 	], 32))
 	_sheet.add_child(_experience_line(hero))
 	_sheet.add_child(_trait_line(hero))
+	_build_squad_choice(hero)
 	_build_level_choice(hero)
 	_sheet.add_child(_stats_grid(hero))
 	_sheet.add_child(_abilities_line(hero))
@@ -199,6 +204,42 @@ func _experience_line(hero: Hero) -> Label:
 	return _label(tr("COMPANY_EXPERIENCE") % [
 		hero.level, hero.experience, HeroProgression.experience_to_reach(hero.level + 1)
 	], 22)
+
+
+## EMMENER OU LAISSER, ET C'EST LA DÉCISION QUI MANQUAIT. La composition
+## était figée sur les quatre PREMIERS héros de la compagnie, remise à
+## zéro chaque fois qu'on fermait un écran : un cinquième recruté ne
+## jouait jamais. Le recrutement à trois candidats de T12.3 ne servait donc
+## à rien, et la demande de Gaetan — « changer de personnage ou de
+## composition » — était sans objet.
+##
+## LE BOUTON DIT CE QUI VA ARRIVER, pas l'état courant : « Emmener » sur un
+## héros resté, « Laisser au royaume » sur un héros qui part. Un bouton qui
+## affiche un état se lit comme une case à cocher et se clique à l'envers.
+##
+## LE REFUS S'EXPLIQUE. L'équipe est plafonnée à `team_size` — la carte ne
+## prévoit pas plus de cases de départ — et on ne descend pas sous un
+## héros. Un bouton grisé sans raison est une impasse ; celui-ci dit
+## laquelle des deux bornes il touche.
+func _build_squad_choice(hero: Hero) -> void:
+	var going := _company.is_in_squad(hero.id)
+	var full := _company.squad_ids.size() >= CombatRules.team_size()
+	var lone := _company.squad_ids.size() <= 1
+	var label := tr("COMPANY_LEAVE_BEHIND") if going else tr("COMPANY_TAKE_ALONG")
+	var allowed := true
+	if going and lone:
+		label = tr("COMPANY_SQUAD_LAST")
+		allowed = false
+	elif not going and full:
+		label = tr("COMPANY_SQUAD_FULL") % CombatRules.team_size()
+		allowed = false
+	var button := _button(label, &"primary" if not going else &"muted")
+	button.disabled = not allowed
+	button.pressed.connect(func() -> void:
+		_company.toggle_squad(hero.id)
+		changed.emit()
+		refresh())
+	_sheet.add_child(button)
 
 
 ## La montée de niveau, puis l'arbre. Monter ne demande plus rien — le

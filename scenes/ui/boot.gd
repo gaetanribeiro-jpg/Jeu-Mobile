@@ -131,11 +131,17 @@ func _ensure_company() -> void:
 	GameState.save()
 
 
+## Relit la composition CHOISIE par le joueur, et la complète si elle est
+## courte.
+##
+## ELLE NE LA REFAIT PLUS. Cette fonction vidait `_squad_ids` et reprenait
+## les quatre PREMIERS héros de la compagnie à chaque fermeture d'écran :
+## le choix du joueur ne survivait donc pas à une visite au royaume, et un
+## cinquième recruté ne jouait jamais. La composition vit maintenant dans
+## `Company`, avec la sauvegarde ; il ne reste ici qu'à la lire.
 func _reset_squad() -> void:
-	_squad_ids.clear()
-	for hero: Hero in GameState.company.heroes:
-		if _squad_ids.size() < CombatRules.team_size():
-			_squad_ids.append(hero.id)
+	GameState.company.settle_squad()
+	_squad_ids = GameState.company.squad_ids.duplicate()
 
 
 # --- Le menu ---------------------------------------------------------------

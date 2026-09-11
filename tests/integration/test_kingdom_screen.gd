@@ -207,7 +207,10 @@ func test_recruter_ajoute_le_candidat_choisi_et_coute() -> void:
 	await wait_process_frames(1)
 
 	assert_eq(_company.size(), 1)
-	assert_eq(_company.heroes[0].class_id, &"warrior")
+	assert_true(
+		Buildings.recruits(&"barracks").has(_company.heroes[0].class_id),
+		"la caserne a formé quelqu'un qu'elle n'enseigne pas"
+	)
 	assert_eq(_company.heroes[0].display_name(), wanted.display_name())
 	assert_eq(_company.heroes[0].trait_id, wanted.trait_id)
 	assert_lt(_company.gold, gold)

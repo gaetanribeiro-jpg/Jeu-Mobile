@@ -1032,5 +1032,89 @@
    "shape": "single"
   },
   "animation": "attack1"
+ },
+ "lance_thrust": {
+  "_note": "LE COUP DE BASE DU LANCIER, ET IL PORTE À DEUX. C'est toute son identité face au Guerrier : il frappe depuis une case où l'on ne le rejoint pas d'un pas, et il ne paie pas cette allonge en dégâts — il la paie en DÉFENSE et en points de vie. La portée se paie (T1.14), mais elle ne se paie pas forcément sur le même axe : l'Archer l'a payée en dégâts parce qu'il tire à cinq, le Lancier la paie en peau parce qu'il reste au contact.",
+  "class": "lancer",
+  "kind": "attack",
+  "action_points": 3,
+  "range_min": 1,
+  "range_max": 2,
+  "needs_line_of_sight": true,
+  "area": {
+   "shape": "single"
+  },
+  "damage": 18,
+  "scaling": "strength",
+  "cooldown": 0,
+  "animation": "attack_right"
+ },
+ "skewer": {
+  "_note": "LA BROCHE : deux cases de rang, d'un seul coup. Le pendant joueur de la lance impériale de l'acte 6 — ce que l'Empire fait, le Lancier le fait aussi, et c'est voulu : la classe arrive au moment où le jeu apprend au joueur à se méfier des files.\n\n`friendly_fire` EST VRAI, comme pour la Fendante du Guerrier : une compétence en ligne qui épargnerait les alliés serait gratuite, et le placement de sa propre équipe cesserait d'être une question.",
+  "class": "lancer",
+  "kind": "attack",
+  "action_points": 5,
+  "range_min": 1,
+  "range_max": 2,
+  "needs_line_of_sight": true,
+  "area": {
+   "shape": "line",
+   "length": 2
+  },
+  "damage": 26,
+  "scaling": "strength",
+  "friendly_fire": true,
+  "cooldown": 1,
+  "animation": "attack_right"
+ },
+ "repel": {
+  "_note": "LA REPOUSSE, RENDUE AU JEU. Le § 4.2 donne TROIS réponses à une attaque télégraphiée : sortir de la case, abattre l'ennemi, ou LE DÉPLACER. La troisième existait dans le moteur depuis la Phase 1 — `push_away_from`, la noyade, leur prévisualisation — et plus personne ne savait la déclencher depuis que le Lancier avait quitté la conception. Le coup d'épaule des Rougefer (T12.1) l'a rendue aux ENNEMIS ; celle-ci la rend au joueur.\n\n`KIND_PUSH` EST ENFIN EMPLOYÉ : c'était la dernière mécanique déclarée et jamais branchée, après `KIND_HEAL`, les 70 entrées `ui` et `requires_not_moved`. Une poussée PURE, sans dégâts : ce n'est pas un coup, c'est un déplacement qu'on impose — et au bord d'un lac gelé, c'est une exécution.\n\nDEUX PA ET UNE RECHARGE DE DEUX : assez bon marché pour être une réponse dans le tour, assez cher pour ne pas être la réponse à tout.",
+  "class": "lancer",
+  "kind": "push",
+  "action_points": 2,
+  "range_min": 1,
+  "range_max": 2,
+  "needs_line_of_sight": true,
+  "area": {
+   "shape": "single"
+  },
+  "length": 1,
+  "cooldown": 2,
+  "animation": "attack_right"
+ },
+ "phalanx": {
+  "_note": "LA PHALANGE : elle ne frappe que s'il n'a pas bougé. `requires_not_moved` n'avait jamais été donné au JOUEUR — l'acte 6 l'a donné à l'Empire, et ce nœud le lui rend. C'est le seul coup du jeu qui récompense de tenir sa position, donc le seul qui contredise « avancer est toujours juste ».",
+  "class": "lancer",
+  "kind": "attack",
+  "action_points": 4,
+  "range_min": 1,
+  "range_max": 2,
+  "needs_line_of_sight": true,
+  "area": {
+   "shape": "line",
+   "length": 3
+  },
+  "damage": 30,
+  "scaling": "strength",
+  "requires_not_moved": true,
+  "cooldown": 1,
+  "animation": "attack_right"
+ },
+ "impale": {
+  "_note": "L'EMPALEMENT : il blesse ET il repousse, comme le coup d'épaule des Rougefer. La branche opposée à la Phalange : celle-ci veut qu'on bouge, l'autre qu'on tienne.",
+  "class": "lancer",
+  "kind": "attack",
+  "action_points": 4,
+  "range_min": 1,
+  "range_max": 2,
+  "needs_line_of_sight": true,
+  "area": {
+   "shape": "single"
+  },
+  "damage": 22,
+  "scaling": "strength",
+  "push": 1,
+  "cooldown": 1,
+  "animation": "attack_right"
  }
 }

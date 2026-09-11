@@ -13,9 +13,20 @@ func before_each() -> void:
 	Unit.clear_cache()
 
 
-func test_quatre_emplacements_pour_trois_classes() -> void:
+## LE PLAFOND EST FIXE, LE NOMBRE DE CLASSES NE L'EST PLUS. Le § 23 veut
+## quatre personnages au maximum et ça ne bouge pas ; le § 11 voulait trois
+## classes DANS LE MVP, et le MVP est fini. Le Lancier est arrivé en
+## quatrième le 2026-09-11, et c'est justement ce que la décision annonçait
+## — « les autres viendront après ».
+##
+## CE QUE LE TEST GARDE : plus de classes que de rien, les trois du MVP
+## toujours là, et moins de classes que d'emplacements n'aurait aucun sens.
+func test_quatre_emplacements_et_de_quoi_les_remplir() -> void:
 	assert_eq(CombatRules.team_size(), 4, "§ 23 : 4 personnages au maximum")
-	assert_eq(Unit.hero_class_ids().size(), 3, "§ 11 : 3 classes dans le MVP")
+	var ids := Unit.hero_class_ids()
+	assert_gte(ids.size(), 3, "les trois classes du MVP au minimum")
+	for wanted: StringName in [&"warrior", &"archer", &"mage"]:
+		assert_true(ids.has(wanted), "classe du MVP manquante : %s" % wanted)
 
 
 func test_le_plafond_dur_vaut_la_taille_de_l_equipe() -> void:
@@ -105,4 +116,12 @@ func test_toutes_les_compositions_sont_constructibles() -> void:
 					seen["%s|%s|%s|%s" % [
 						classes[a], classes[b], classes[c], classes[d]
 					]] = true
-	assert_eq(seen.size(), 15, "quinze compositions distinctes")
+	# LE COMPTE SE CALCULE, IL NE S'ÉCRIT PAS. C'est le nombre de
+	# combinaisons avec répétition de `team_size` parmi les classes —
+	# quinze à trois classes, trente-cinq à quatre. Un nombre écrit en dur
+	# échoue à chaque classe ajoutée sans que rien ne soit faux.
+	var classes_count := classes.size()
+	var expected := 1
+	for i in CombatRules.team_size():
+		expected = expected * (classes_count + i) / (i + 1)
+	assert_eq(seen.size(), expected, "toutes les compositions distinctes")

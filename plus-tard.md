@@ -103,9 +103,18 @@ n'est à réécrire le jour où on les ressort.
   quatorze cartes à collines, DEUX seulement avaient quelqu'un dessus, et
   deux autres y avaient posé de la MÊLÉE, qui n'en tire rien. `verify_maps`
   refuse désormais une hauteur occupée par qui elle n'aide pas.
-- **Changer de composition, avoir d'autres personnages** — suppose plus de
-  trois classes, ou un vivier de héros au-delà de l'équipe de quatre.
-  Aujourd'hui le roster EST l'équipe.
+- ~~**Changer de composition, avoir d'autres personnages**~~ — **FAIT le
+  2026-09-11**, et c'était DEUX manques, pas un. (1) La composition était
+  figée sur les quatre PREMIERS héros et remise à zéro chaque fois qu'on
+  fermait un écran : un cinquième recruté ne jouait JAMAIS, ce qui vidait
+  de son sens le recrutement à trois candidats de T12.3. Elle vit
+  maintenant dans `Company`, se choisit sur l'écran de compagnie et se
+  sauvegarde. (2) Le **Lancier** est la quatrième classe — allonge de deux
+  cases, payée en peau — et il ramène la REPOUSSE, troisième réponse au
+  télégraphe du § 4.2, qui n'appartenait à personne depuis le pivot.
+- **Les autres classes** — Assassin, Paladin, Druide, Berserker (§ 11).
+  Le Lancier était le seul dont le pack dessine le sprite ; les autres
+  demandent du dessin qui n'existe pas. (2026-09-11)
 
 ### Constats ouverts, à trancher à l'œil par Gaetan
 

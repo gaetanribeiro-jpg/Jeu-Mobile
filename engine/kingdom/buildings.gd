@@ -111,6 +111,29 @@ static func hero_class(building_id: StringName) -> StringName:
 	return StringName(entry(building_id).get("hero_class", ""))
 
 
+## Les classes que ce bâtiment sait FORMER. Par défaut, celle qu'il sert.
+##
+## SÉPARÉ DE `hero_class`, ET C'EST VOLONTAIRE. `hero_class` dit à qui vont
+## les GAINS du bâtiment — la caserne ne rend pas l'Archer plus fort, sinon
+## bâtir ne serait plus un choix entre trois voies mais un cumul. Recruter
+## est une autre question : la caserne forme les gens d'armes, Guerriers et
+## Lanciers, et le pack ne dessine pas de bâtiment de plus à leur donner.
+##
+## CE QUE ÇA CHANGE POUR LE JOUEUR : les trois candidats d'une caserne ne
+## sont plus tous de la même classe. La question passe de « lequel de ces
+## trois Guerriers ? » à « de quoi mon équipe manque-t-elle ? », ce qui est
+## la bonne question et celle que le § 23 veut poser.
+static func recruits(building_id: StringName) -> Array[StringName]:
+	var out: Array[StringName] = []
+	for raw: Variant in entry(building_id).get("recruits", []):
+		out.append(StringName(raw))
+	if out.is_empty():
+		var served := hero_class(building_id)
+		if not served.is_empty():
+			out.append(served)
+	return out
+
+
 ## L'image du bâtiment à ce niveau. Un bâtiment dont le pack sait montrer
 ## l'évolution déclare une liste ; les autres, une seule image.
 static func asset_of(building_id: StringName, level: int) -> String:

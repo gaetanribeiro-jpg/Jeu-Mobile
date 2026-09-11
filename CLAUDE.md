@@ -147,7 +147,12 @@ régions avant que le combat soit fun.
   coup au contact ; sinon la portée est un avantage gratuit et une équipe
   à distance ne se fait jamais toucher.
 - **Trois classes dans le MVP** : Guerrier, Archer, **Mage**. Les autres
-  (Lancier, Assassin, Paladin, Druide, Berserker…) viendront après.
+  (Assassin, Paladin, Druide, Berserker…) viendront après.
+  **Le MVP est fini, et le Lancier est arrivé le 2026-09-11** — quatrième
+  classe, exactement l'« après » que cette décision annonçait. Il était
+  nommé premier candidat dans `plus-tard.md` : classe entièrement
+  construite sous l'ancienne conception, et la seule unité DIRECTIONNELLE
+  du pack. Les quatre autres demandent du dessin qui n'existe pas.
 - **Le Mage utilise le sprite du Moine.** Le pack n'a pas de mage ; le
   Moine est une figure encapuchonnée avec une animation d'incantation et
   son effet séparé. Voir `etat-des-lieux.md` § 3.1.
@@ -898,6 +903,59 @@ bouché pour le combat.
 l'acte 5. Un acte se règle en dix passes, et mesurer les cinquante-quatre
 cartes à chaque fois coûte huit minutes pour neuf lignes qu'on lit. La
 moyenne d'une passe partielle ne se compare à rien, et l'outil le DIT.
+
+**LE LANCIER EST LA QUATRIÈME CLASSE, ET IL RAMÈNE LA REPOUSSE (T12.7).**
+Le § 4.2 donne TROIS réponses à une attaque télégraphiée — sortir de la
+case, abattre l'ennemi, ou **le déplacer** — et la troisième
+n'appartenait à personne depuis que le Lancier avait quitté la
+conception. `KIND_PUSH` était la dernière mécanique déclarée et jamais
+branchée, après `KIND_HEAL`, les 70 entrées `ui` et `requires_not_moved`.
+Quatre choses à ne pas défaire :
+- **L'ALLONGE SE PAIE EN PEAU, PAS EN DÉGÂTS.** Il frappe à DEUX cases —
+  seule classe de mêlée à le faire — et tient 96 PV pour 3 de défense
+  contre 120 et 5 au Guerrier. La portée se paie (T1.14), mais pas
+  forcément sur le même axe : l'Archer la paie en dégâts parce qu'il tire
+  à cinq, le Lancier la paie en encaissement parce qu'il reste au contact.
+- **LA CASERNE FORME DEUX CLASSES**, et `recruits` est séparé de
+  `hero_class` exprès : le premier dit qui le bâtiment sait former, le
+  second à qui vont ses GAINS. Un bâtiment qui renforcerait deux classes
+  ferait de bâtir un cumul au lieu d'un choix entre trois voies. Le pack
+  dessine huit bâtiments et les huit servent : le Lancier n'en aura pas,
+  et c'est ce qui fait des trois candidats une question plus riche —
+  « lequel de ces trois Guerriers ? » devient « de quoi mon équipe
+  manque-t-elle ? ».
+- **LA CLASSE DES CANDIDATS TOURNE, ELLE NE SE TIRE PAS.** Un tirage
+  pourrait rendre trois fois la même et l'étal n'offrirait alors que le
+  choix qu'il offrait avant.
+- **LES CINQ GLYPHES VIENNENT DE game-icons.net**, comme les dix-huit
+  autres, et par Lorc et Delapouite, qui sont déjà nommés dans
+  `CREDITS.md`. Le fond noir est retiré à l'import : chaque SVG est un
+  carré noir plein suivi du tracé blanc.
+
+**LA COMPOSITION EST UN CHOIX, ET ELLE NE L'ÉTAIT PAS (T12.7).** Elle
+vivait dans l'écran de titre, **remise à zéro chaque fois qu'on fermait un
+écran** : le joueur repartait toujours avec ses quatre PREMIERS héros,
+dans l'ordre du recrutement. Un cinquième recruté ne jouait donc jamais —
+ce qui vidait de son sens le recrutement à trois candidats de T12.3, et la
+demande de Gaetan avec. Trois choses à ne pas défaire :
+- **`Company.squad_ids` VIT DANS LA SAUVEGARDE.** Une composition qu'il
+  faudrait refaire à chaque lancement serait une corvée, pas une décision.
+- **ELLE RESTE VALIDE PAR CONSTRUCTION** : `add()` et `remove()` la
+  remettent d'aplomb. C'est la sauvegarde qui l'a imposé — une compagnie
+  bâtie à la main n'avait pas d'équipe, la même relue en avait une, et
+  l'aller-retour n'était donc pas stable. Corollaire : `from_dictionary`
+  doit VIDER avant de lire, sinon la composition sauvegardée s'empile sur
+  celle qu'`add()` vient de faire et la troncature rend les quatre
+  premiers — le choix du joueur disparaissait au chargement sans que rien
+  ne s'en plaigne.
+- **UN RECRUTÉ DE TROP N'ENTRE PAS TOUT SEUL.** S'il entrait, la
+  composition serait encore subie, simplement dans l'autre sens.
+
+**UNE CARTE PEUT DÉCLARER LE DESSIN ET LE NOM D'UNE UNITÉ (T12.6).** Le
+pendant TEXTUEL de `sprite_id`, qui manquait : le villageois escorté
+s'annonçait « Mage » sur sa carte pendant qu'il se dessinait en Pawn.
+`sprite`, `sprite_variant`, `sprite_color` et `name_key` se déclarent dans
+l'entrée d'un allié ou d'un ennemi, à part de sa classe.
 
 **L'expédition se joue, sur PC.** Écran de titre → carte du monde →
 composition de l'équipe → départ → route du § 28 (combats, évènements,
