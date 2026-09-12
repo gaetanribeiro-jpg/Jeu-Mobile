@@ -78,13 +78,17 @@ custom_minimum_size = Vector2(320, 56)
 clip_text = true
 theme_override_font_sizes/font_size = 22
 
-[node name="RouteScroll" type="ScrollContainer" parent="Margin/Column"]
+[node name="RouteFrame" type="PanelContainer" parent="Margin/Column"]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="RouteScroll" type="ScrollContainer" parent="Margin/Column/RouteFrame"]
 layout_mode = 2
 custom_minimum_size = Vector2(0, 92)
 horizontal_scroll_mode = 1
 vertical_scroll_mode = 0
 
-[node name="Route" type="HBoxContainer" parent="Margin/Column/RouteScroll"]
+[node name="Route" type="HBoxContainer" parent="Margin/Column/RouteFrame/RouteScroll"]
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_constants/separation = 6
@@ -94,27 +98,36 @@ layout_mode = 2
 size_flags_vertical = 3
 theme_override_constants/separation = 20
 
-[node name="StepScroll" type="ScrollContainer" parent="Margin/Column/Middle"]
+[node name="StepFrame" type="PanelContainer" parent="Margin/Column/Middle"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="StepScroll" type="ScrollContainer" parent="Margin/Column/Middle/StepFrame"]
 layout_mode = 2
 size_flags_horizontal = 3
 horizontal_scroll_mode = 0
 vertical_scroll_mode = 2
 
-[node name="StepInner" type="VBoxContainer" parent="Margin/Column/Middle/StepScroll"]
+[node name="StepInner" type="VBoxContainer" parent="Margin/Column/Middle/StepFrame/StepScroll"]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="Step" type="VBoxContainer" parent="Margin/Column/Middle/StepScroll/StepInner"]
+[node name="Step" type="VBoxContainer" parent="Margin/Column/Middle/StepFrame/StepScroll/StepInner"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/separation = 12
 
-[node name="SquadScroll" type="ScrollContainer" parent="Margin/Column/Middle"]
+[node name="SquadFrame" type="PanelContainer" parent="Margin/Column/Middle"]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="SquadScroll" type="ScrollContainer" parent="Margin/Column/Middle/SquadFrame"]
 layout_mode = 2
 custom_minimum_size = Vector2(320, 0)
 
-[node name="Squad" type="VBoxContainer" parent="Margin/Column/Middle/SquadScroll"]
+[node name="Squad" type="VBoxContainer" parent="Margin/Column/Middle/SquadFrame/SquadScroll"]
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_constants/separation = 8

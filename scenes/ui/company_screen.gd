@@ -60,9 +60,9 @@ func _ready() -> void:
 	# la réserve étaient du TEXTE POSÉ SUR LE FOND : rien ne disait où
 	# commençait l'un et où finissait l'autre, et l'écran avait l'air d'un
 	# brouillon à côté du combat, qui est habillé depuis T9.6.
-	_sheet_frame.add_theme_stylebox_override("panel", UiSkin.framed_style(&"panel"))
-	_roster_frame.add_theme_stylebox_override("panel", UiSkin.framed_style(&"panel"))
-	_stash_frame.add_theme_stylebox_override("panel", UiSkin.framed_style(&"panel"))
+	_sheet_frame.add_theme_stylebox_override("panel", UiSkin.framed_style(&"frame_panel"))
+	_roster_frame.add_theme_stylebox_override("panel", UiSkin.framed_style(&"frame_panel"))
+	_stash_frame.add_theme_stylebox_override("panel", UiSkin.framed_style(&"frame_panel"))
 
 
 ## Affiche une compagnie. À appeler avant d'ajouter la scène à l'arbre.

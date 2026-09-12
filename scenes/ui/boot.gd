@@ -28,6 +28,8 @@ const ENDING_SCENE := "res://scenes/ui/ending_screen.tscn"
 const MENU_MARGIN_PX := 72
 const MENU_WIDTH_PX := 340
 const TESTBENCH_WIDTH_PX := 230
+const TESTBENCH_COLUMNS := 3
+const TESTBENCH_HEIGHT_PX := 440
 
 ## Identifiants des héros emmenés au banc d'essai, dans l'ordre des
 ## emplacements. L'expédition tient sa propre équipe.
@@ -177,7 +179,7 @@ func _build_menu() -> void:
 	# l'écran de titre cesse d'être le seul écran non habillé du jeu.
 	var plate := PanelContainer.new()
 	plate.add_theme_stylebox_override("panel", UiSkin.framed_style(
-		&"panel", &"panel_deep", &"", UiTheme.metric(&"panel_margin")
+		&"frame_panel", &"panel_deep", &"panel_edge", UiTheme.metric(&"panel_margin")
 	))
 	column.add_child(plate)
 	var stack := VBoxContainer.new()
@@ -274,11 +276,31 @@ func _build_testbench() -> void:
 	_menu.add_child(corner)
 
 	if _testbench_open:
+		# IL SE DÉPLIE DANS UN CADRE QUI DÉFILE, pas sur tout l'écran
+		# (T12.13). Cinquante-cinq cartes en quatre colonnes font huit
+		# cents pixels de haut sur neuf cents de large : le banc recouvrait
+		# le titre, le menu et l'île, et l'écran d'accueil du jeu avait
+		# l'air cassé dès qu'on l'ouvrait. Trois colonnes tiennent à droite
+		# du menu, et la hauteur est bornée.
+		var plate := PanelContainer.new()
+		plate.add_theme_stylebox_override("panel", UiSkin.framed_style(
+			&"frame_panel", &"panel_deep", &"panel_edge", UiTheme.metric(&"card_margin")
+		))
+		corner.add_child(plate)
+		var scroll := ScrollContainer.new()
+		scroll.custom_minimum_size = Vector2(
+			TESTBENCH_WIDTH_PX * TESTBENCH_COLUMNS + 24, TESTBENCH_HEIGHT_PX
+		)
+		scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+		# TOUJOURS VISIBLE : une barre qui apparaît selon la hauteur du
+		# contenu fait osciller la mise en page et tombe en headless.
+		scroll.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_SHOW_ALWAYS
+		plate.add_child(scroll)
 		var grid := GridContainer.new()
-		grid.columns = 4
+		grid.columns = TESTBENCH_COLUMNS
 		grid.add_theme_constant_override("h_separation", 8)
 		grid.add_theme_constant_override("v_separation", 8)
-		corner.add_child(grid)
+		scroll.add_child(grid)
 		for map_id: StringName in CombatMap.map_ids():
 			var map := CombatMap.load_map(map_id)
 			grid.add_child(_testbench_button(

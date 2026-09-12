@@ -60,6 +60,9 @@ var _journal := ""
 @onready var _alarm: HBoxContainer = %Alarm
 @onready var _alarm_label: Label = %AlarmLabel
 @onready var _alarm_defend: Button = %AlarmDefend
+@onready var _step_frame: PanelContainer = %StepFrame
+@onready var _squad_frame: PanelContainer = %SquadFrame
+@onready var _route_frame: PanelContainer = %RouteFrame
 
 
 func _ready() -> void:
@@ -102,6 +105,13 @@ func refresh() -> void:
 	theme = UiSkin.theme
 	_lay_backdrop()
 	UiSkin.dress_scrolls(self)
+	# TROIS PANNEAUX, TROIS CADRES (T12.13). La route, l'étape et l'équipe
+	# étaient posées à même le fond : l'étape en cours — la seule chose
+	# qu'on vient décider — flottait au milieu d'une grande zone vide, et
+	# rien ne disait où elle commençait.
+	_route_frame.add_theme_stylebox_override("panel", UiSkin.framed_style(&"frame_panel"))
+	_step_frame.add_theme_stylebox_override("panel", UiSkin.framed_style(&"frame_panel"))
+	_squad_frame.add_theme_stylebox_override("panel", UiSkin.framed_style(&"frame_panel"))
 	_title.text = "%s · %s · %s" % [
 		tr(Region.name_key(_run.region_id)),
 		tr("EXPEDITION_STEP_OF") % [_run.depth() + 1, _run.length()],
@@ -294,6 +304,10 @@ func _heading(text: String, size: int = 28) -> void:
 func _action(text: String, handler: Callable, enabled: bool = true) -> Button:
 	var button := Button.new()
 	button.custom_minimum_size = Vector2(420, 72)
+	# À SA TAILLE, PAS À CELLE DU PANNEAU (T12.13) : étiré sur toute la
+	# largeur, « Engager le combat » se lisait comme une bannière et son
+	# libellé se perdait au milieu de huit cents pixels.
+	button.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
 	button.add_theme_font_size_override("font_size", 22)
 	# Voir `kingdom_screen._action` : un texte plus large que son conteneur
 	# renégocie sa largeur, et la mise en page peut se mettre à osciller.

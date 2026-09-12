@@ -1332,7 +1332,29 @@ corrections qui valent comme règles :
 - **UN BOUTON PLEINE LARGEUR SE LIT COMME UNE BANNIÈRE**, pas comme une
   action : il prend la place d'un titre et son libellé se perd au milieu.
   Les onze nœuds d'un arbre étirés faisaient onze dalles vides — et un
-  arbre se PARCOURT du regard, il ne se lit pas ligne à ligne.
+  arbre se PARCOURT du regard, il ne se lit pas ligne à ligne. Même défaut
+  sur « Engager le combat », étiré sur huit cents pixels.
+
+**L'ÉCRAN D'EXPÉDITION AVAIT LE MÊME MAL (T12.13) :** la route, l'étape et
+l'équipe posées à même le fond, et l'étape en cours — la seule chose qu'on
+vient décider — flottant au milieu d'une grande zone vide. Trois cadres,
+et la zone vide devient une scène.
+
+**UN CADRE SE DEMANDE PAR SON NOM D'ASSET, PAS PAR SON RÔLE (T12.13).**
+`UiSkin.framed_style()` prend en PREMIER le nom d'un cadre de la catégorie
+`widgets` — `frame_panel`, `frame_card`, `frame_slot` — et en second le
+remplissage. Écrire `framed_style(&"panel")` en pensant « je veux un
+panneau » pousse une erreur par appel et par image, et le cadre ne se
+dessine pas : quatre écrans ont été habillés en vide avant que la capture
+ne le dise. **Le paramètre qui ressemble le plus à ce qu'on veut n'est pas
+toujours le premier.**
+
+**LE BANC D'ESSAI RECOUVRAIT L'ÉCRAN DE TITRE (T12.13).** Cinquante-cinq
+cartes en quatre colonnes font huit cents pixels de haut sur neuf cents de
+large : déplié, il passait par-dessus le titre, le menu et l'île, et
+l'écran d'accueil du jeu avait l'air cassé. Il vit maintenant dans un
+cadre qui DÉFILE, borné en hauteur et posé à droite du menu. Un outil de
+développement n'a pas le droit d'être la chose la plus visible du jeu.
 
 **CINQ BOUTONS FLOTTANT SUR LA MER N'ONT PAS DE SUPPORT (T12.13).** Le
 menu de l'écran de titre était le seul endroit du jeu où des boutons se

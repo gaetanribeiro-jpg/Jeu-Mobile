@@ -65,7 +65,7 @@ func _ready() -> void:
 	_back.pressed.connect(func() -> void: closed.emit())
 	_depart.pressed.connect(_on_depart)
 	_atlas.picked.connect(_on_region_picked)
-	_atlas_frame.add_theme_stylebox_override("panel", UiSkin.framed_style(&"panel"))
+	_atlas_frame.add_theme_stylebox_override("panel", UiSkin.framed_style(&"frame_panel"))
 	refresh()
 
 
