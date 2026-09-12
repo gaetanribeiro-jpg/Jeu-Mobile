@@ -97,6 +97,97 @@ static func trade_of(town_id: StringName) -> StringName:
 	return StringName(entry(town_id).get("trade", ""))
 
 
+# --- Le renfort d'un combat (T12.12) ---------------------------------------
+#
+# UNE VILLE PRÊTE DES BRAS, PAS DES CHEVALIERS. Les trois envoient un Pawn
+# — le villageois armé d'un outil que le pack dessine déjà — et jamais une
+# classe de héros : ses cinq couleurs sont un budget tenu, et un homme
+# d'armes en Rouge se lirait comme un Rougefer de l'acte 3.
+#
+# IL NE VIOLE PAS LE § 23. L'équipe reste de QUATRE : le milicien est une
+# unité alliée posée sur le plateau, comme le villageois escorté de T12.6,
+# pas un cinquième héros. Il ne gagne pas d'expérience, ne porte pas
+# d'équipement, et repart après le combat.
+
+## Rend vide pour une ville inconnue, SANS pousser d'erreur : c'est une
+## question qu'on pose (« celle-là envoie-t-elle quelqu'un ? »), pas un
+## accès qu'on exige. Même distinction qu'entre `AssetTable.has()` et
+## `sprite()`.
+static func muster(town_id: StringName) -> Dictionary:
+	if not exists(town_id):
+		return {}
+	return entry(town_id).get("muster", {})
+
+
+static func musters(town_id: StringName) -> bool:
+	return not muster(town_id).is_empty()
+
+
+## Le crédit qu'il faut avoir pour qu'une ville accepte d'envoyer un bras.
+static func muster_standing(town_id: StringName) -> int:
+	return int(muster(town_id).get("standing", 0))
+
+
+static func muster_cost(town_id: StringName) -> Dictionary:
+	var out := {}
+	for key: Variant in (muster(town_id).get("cost", {}) as Dictionary).keys():
+		out[StringName(key)] = int((muster(town_id)["cost"] as Dictionary)[key])
+	return out
+
+
+## La déclaration de l'unité envoyée, au format d'une entrée d'allié de
+## carte : `type`, `sprite`, `sprite_variant`, `name_key`. C'est la MÊME
+## forme que `combat_map._spawn` lit déjà pour le villageois escorté —
+## rien de neuf à faire côté moteur de combat.
+static func muster_unit(town_id: StringName) -> Dictionary:
+	return muster(town_id).get("unit", {})
+
+
+# --- Le prêt d'un héros (T12.12) -------------------------------------------
+#
+# C'EST LA DÉCISION DU § 9 TRANSPOSÉE AUX HÉROS : « qui peux-tu te
+# passer ? ». Le coût est un CORPS, dans un jeu où l'équipe est de quatre :
+# prêter le cinquième est facile, prêter le troisième ne l'est pas. C'est
+# ce qui donne enfin une valeur au recruté de trop.
+
+static func _loan() -> Dictionary:
+	return data().get("loan", {})
+
+
+## Combien de cycles dure un prêt.
+static func loan_cycles() -> int:
+	return maxi(int(_loan().get("cycles", 0)), 0)
+
+
+static func loan_gold() -> int:
+	return maxi(int(_loan().get("gold_per_cycle", 0)), 0)
+
+
+## L'EXPÉRIENCE EST CALÉE SUR CE QU'UNE SORTIE RAPPORTE, donc prêter n'est
+## jamais MEILLEUR que jouer — c'est un plancher qu'on encaisse en échange
+## d'un corps. Sans ça, la bonne réponse serait de tout prêter tout le
+## temps, et l'expédition perdrait son intérêt.
+static func loan_experience() -> int:
+	return maxi(int(_loan().get("experience_per_cycle", 0)), 0)
+
+
+static func loan_standing() -> int:
+	return int(_loan().get("standing", 0))
+
+
+## Le crédit minimum pour qu'une ville accepte quelqu'un. Zéro : on ne
+## confie pas un des siens à une ville hostile.
+static func loan_minimum_standing() -> int:
+	return int(_loan().get("minimum_standing", 0))
+
+
+## Combien de héros DISPONIBLES il faut garder. Sans plancher on pourrait
+## prêter toute la compagnie et se retrouver sans expédition possible — un
+## blocage, pas une décision.
+static func loan_minimum_left() -> int:
+	return maxi(int(_loan().get("minimum_left", 0)), 0)
+
+
 # --- Le crédit -------------------------------------------------------------
 
 static func _standing() -> Dictionary:

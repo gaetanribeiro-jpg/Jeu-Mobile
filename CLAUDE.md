@@ -246,7 +246,7 @@ dur : passer par `data/assets.json`.
   trois candidats, T12.4 la brasserie du Monastère, T12.5 les actes 5 et 6,
   T12.7 le Lancier, T12.8 la garde et la fonte, T12.9 les habitants,
   T12.10 le conseil du royaume et les villes voisines, T12.11 la carte du
-  monde dessinée et le royaume qui a une tête.
+  monde dessinée et le royaume qui a une tête, T12.12 le renfort et le prêt.
   **La campagne se joue de bout en bout : six actes, 54 cartes.**
   **991 tests passent, les dix vérificateurs sont verts.**
 - **Phase 11 — la bêta.** Les chantiers sont listés avec leur
@@ -1153,15 +1153,50 @@ et demie) sans qu'aucun instrument ne le mesure. C'est la même réserve que
 pour un objet : l'équilibrage d'un évènement n'a pas d'instrument, seulement
 un barème.
 
+**LES VOISINES RENDENT DES BRAS, DANS LES DEUX SENS (T12.12).** Gaetan a
+tranché entre quatre propositions : **D** — un renfort pour un seul
+combat — et **B** — prêter un des siens. Les deux, et pas A (emprunter un
+champion), parce qu'un cinquième corps casserait quatre actes
+d'étalonnage. Six choses à ne pas défaire :
+- **LE RENFORT NE VIOLE PAS LE § 23.** L'équipe reste de QUATRE : le
+  milicien est une unité ALLIÉE posée sur le plateau, exactement comme le
+  villageois escorté de T12.6 — même forme de déclaration, rien de neuf
+  côté moteur de combat. Il ne gagne pas d'expérience, ne porte pas
+  d'équipement, et repart après le combat.
+- **IL S'ACHÈTE AU DÉPART ET SE DÉPENSE EN ROUTE**, et c'est là qu'est la
+  décision : le garder pour le boss, ou le lâcher sur la carte qui fait
+  peur. La forme du § 29 appliquée à un objet à usage unique. Le jeton vit
+  dans la SORTIE, pas dans la compagnie : gardé d'une expédition à
+  l'autre, il s'accumulerait et « quand le dépenser » cesserait d'être une
+  question.
+- **ON NE PAIE QU'AU DÉPART.** Une dépense encaissée sur un écran de
+  préparation qu'on peut quitter par « Retour » serait de l'or perdu sans
+  contrepartie. Le bouton retient une INTENTION.
+- **UNE VILLE PRÊTE DES BRAS, PAS DES CHEVALIERS.** Les trois envoient un
+  Pawn : les cinq couleurs du pack sont un budget tenu, et un homme
+  d'armes en Rouge se lirait comme un Rougefer de l'acte 3. Ce qui les
+  distingue est le PRIX et le crédit exigé, pas le dessin.
+- **LE PRÊT COÛTE UN CORPS**, et c'est la décision du § 9 transposée aux
+  héros : prêter le cinquième est facile, prêter le troisième ne l'est
+  pas. **C'est ce qui donne enfin un emploi au recruté de trop**, que
+  T12.7 avait rendu jouable sans lui donner de raison d'être. Un plancher
+  (`minimum_left`) empêche de prêter toute la compagnie : sans lui, on se
+  bloque, et un blocage n'est pas une décision.
+- **IL REVIENT PLUS FORT QU'IL N'EST PARTI**, sinon prêter serait une
+  punition qu'on n'accepterait que par obligation — mais **il ne reprend
+  pas sa place tout seul** : c'est la règle de T12.7, une composition qui
+  se refait dans le dos du joueur n'est plus la sienne.
+
+**UNE ACTION PASSE DEVANT UNE INFORMATION (T12.12).** Le renfort se
+décidait sous la ligne de flottaison du panneau de la carte du monde,
+derrière les cadeaux du royaume — qui, eux, se LISENT. Seule la capture le
+disait, encore.
+
 **CE QUE T12.10 NE FAIT PAS, ET QUI ATTEND UNE DÉCISION DE GAETAN :**
-- **Le PRÊT de héros.** Fort-Aubin CONFIE un champion, qui reste. Un vrai
-  prêt — il repart au bout de n sorties — demande un compteur sur le héros
-  et une règle pour l'équipe au moment où il s'en va en pleine expédition.
-  C'est une mécanique, pas une option d'évènement.
-- **Les villes sur la CARTE DU MONDE.** Elles se lisent, elles ne se
-  dessinent pas. Le pack donne huit bâtiments en cinq couleurs et les cinq
-  couleurs sont un budget déjà tenu (trois rangs de héros, deux factions) :
-  poser Valmont sur la carte rouvrirait cette décision verrouillée.
+- **Les villes sur la CARTE DU MONDE.** ~~Elles se lisent, elles ne se
+  dessinent pas.~~ **Fait en T12.11** : elles sont dessinées avec un
+  bâtiment DÉSATURÉ puis teint à leur crédit, ce qui ne dépense aucune des
+  cinq couleurs.
 
 **LA CARTE DU MONDE ÉTAIT UNE LISTE, ET LE NOM MENTAIT DEPUIS T3.6
 (T12.11).** Reproche de Gaetan : « pour la carte du monde, dessine-la ».

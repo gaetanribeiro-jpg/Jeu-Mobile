@@ -79,6 +79,23 @@ var satchel_resources: Dictionary = {}
 ## héros absent de cette table part avec ses PV pleins.
 var carried: Dictionary = {}
 
+## Le milicien acheté à une ville voisine avant de partir (T12.12), ou
+## vide. Il ne sert qu'UNE fois, et c'est le joueur qui dit laquelle.
+##
+## LE JETON VIT DANS LA SORTIE, PAS DANS LA COMPAGNIE. Une promesse qu'on
+## garderait d'une expédition à l'autre s'accumulerait, et « quand le
+## dépenser » cesserait d'être une question — on en aurait toujours un. Il
+## se paie au départ et se perd au retour, comme la besace.
+var ally_town: StringName = &""
+
+## L'étape où le milicien se bat, ou −1 tant qu'on ne l'a pas appelé.
+##
+## UN NUMÉRO D'ÉTAPE PLUTÔT QU'UN BOOLÉEN, parce que c'est l'écran de
+## combat qui doit savoir s'il pose le renfort : un drapeau « dépensé » ne
+## dirait pas SUR QUELLE carte, et il faudrait un second champ pour le
+## transporter. Un seul champ répond aux deux questions.
+var ally_step: int = -1
+
 
 ## Prépare une sortie. La chaîne est tirée ici, une fois pour toutes.
 ## `campaign` dit ce qui est OUVERT dans CETTE partie. Sans lui, la garde
@@ -149,6 +166,25 @@ static func _build_chain(region: StringName, rng: CombatRng) -> Array[Dictionary
 
 
 # --- Lire l'état -----------------------------------------------------------
+
+## Reste-t-il un renfort à appeler ?
+func has_ally() -> bool:
+	return ally_step < 0 and not ally_town.is_empty() and Neighbour.musters(ally_town)
+
+
+## Le milicien se bat-il sur l'étape en cours ?
+func ally_joins_now() -> bool:
+	return ally_step >= 0 and ally_step == index and not ally_town.is_empty()
+
+
+## Dépense le renfort et rend la ville qui l'envoie. Vide s'il n'y en a
+## plus — l'appelant ne doit jamais poser deux miliciens pour un jeton.
+func spend_ally() -> StringName:
+	if not has_ally():
+		return &""
+	ally_step = index
+	return ally_town
+
 
 func length() -> int:
 	return steps.size()
@@ -744,6 +780,8 @@ func to_dictionary() -> Dictionary:
 		"resources": satchel_resources.duplicate(),
 		"carried": carried.duplicate(),
 		"max_health": _max_health.duplicate(),
+		"ally_town": String(ally_town),
+		"ally_step": ally_step,
 	}
 
 
@@ -770,4 +808,9 @@ static func from_dictionary(data: Dictionary) -> Expedition:
 		run.carried[int(key)] = int((data["carried"] as Dictionary)[key])
 	for key: Variant in (data.get("max_health", {}) as Dictionary):
 		run._max_health[int(key)] = int((data["max_health"] as Dictionary)[key])
+	# UNE VILLE RETIRÉE DES DONNÉES N'EMPORTE PAS LA PARTIE — même règle
+	# que pour les ressources, les bâtiments et les crédits.
+	var promised := StringName(data.get("ally_town", ""))
+	run.ally_town = promised if Neighbour.exists(promised) else &""
+	run.ally_step = int(data.get("ally_step", -1))
 	return run

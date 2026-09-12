@@ -59,6 +59,24 @@ var trait_id: StringName = &""
 var level: int = 1
 var experience: int = 0
 
+## Cycles restants avant qu'un héros PRÊTÉ à une ville voisine ne revienne
+## (T12.12). Zéro = il est là.
+##
+## LE COÛT EST UN CORPS. L'équipe est de quatre : prêter le cinquième est
+## facile, prêter le troisième ne l'est pas. C'est ce qui donne enfin une
+## valeur au recruté de trop, et c'est la décision du § 9 — « qui peux-tu
+## te passer ? » — transposée aux héros.
+var away_cycles: int = 0
+
+## La ville qui l'a demandé. Elle sert au retour : c'est elle qui paie et
+## c'est son crédit qui monte.
+var away_town: StringName = &""
+
+
+## Est-il disponible pour partir en expédition ?
+func is_available() -> bool:
+	return away_cycles <= 0
+
 ## Choix retenus aux niveaux qui en demandent : niveau → identifiant
 ## d'option. Définitifs.
 ## Nœuds d'arbre appris, dans l'ordre où ils l'ont été.
@@ -404,6 +422,8 @@ func to_dictionary() -> Dictionary:
 		"experience": experience,
 		"learned": _learned_as_strings(),
 		"equipment": equipment.duplicate(),
+		"away_cycles": away_cycles,
+		"away_town": String(away_town),
 	}
 
 
@@ -430,6 +450,14 @@ static func from_dictionary(data: Dictionary) -> Hero:
 		hero.rank = Ascension.rank_of_color(hero.color)
 	hero.level = int(data.get("level", 1))
 	hero.experience = int(data.get("experience", 0))
+	# UN PRÊT SURVIT À LA SAUVEGARDE, et il le faut : trois cycles se
+	# passent sur plusieurs sessions, et un héros qui rentrerait au premier
+	# rechargement rendrait le coût imaginaire. Une ville retirée des
+	# données le libère plutôt que de le retenir pour toujours.
+	hero.away_town = StringName(data.get("away_town", ""))
+	if not Neighbour.exists(hero.away_town):
+		hero.away_town = &""
+	hero.away_cycles = maxi(int(data.get("away_cycles", 0)), 0) if not hero.away_town.is_empty() else 0
 	for node_id: Variant in data.get("learned", []):
 		# Un nœud retiré des données depuis la sauvegarde disparaît de
 		# l'arbre, sans emporter le héros avec lui.

@@ -313,6 +313,25 @@ func _build_combat() -> void:
 		_build_roster(map)
 	_action(tr("EXPEDITION_FIGHT"), func() -> void:
 		combat_requested.emit(_run.current_map()))
+	_build_muster()
+
+
+## LE RENFORT NE SERT QU'UNE FOIS, ET C'EST LE JOUEUR QUI DIT QUAND
+## (T12.12). Acheté au départ, il se dépense sur UNE rencontre : le garder
+## pour le boss, ou le lâcher sur la carte qui fait peur. C'est la forme du
+## § 29 — « rentrer ou continuer » — appliquée à un objet qu'on ne peut
+## employer qu'une fois.
+##
+## DEUX BOUTONS, PAS UNE CASE À COCHER. Appeler le milicien LANCE le
+## combat : une case qu'on coche puis un bouton qu'on presse laisserait
+## croire qu'on peut revenir en arrière, alors que le jeton est dépensé.
+func _build_muster() -> void:
+	if not _run.has_ally():
+		return
+	_action(tr("EXPEDITION_CALL_ALLY") % tr(Neighbour.name_key(_run.ally_town)),
+		func() -> void:
+			_run.spend_ally()
+			combat_requested.emit(_run.current_map()))
 
 
 ## CE QUI ATTEND, AVANT D'Y ALLER.

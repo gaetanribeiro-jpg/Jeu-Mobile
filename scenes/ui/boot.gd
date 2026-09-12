@@ -456,6 +456,10 @@ func _depart(region_id: StringName, hero_ids: Array) -> void:
 	)
 	if run == null:
 		return
+	# LE MILICIEN ACHETÉ SUR LA CARTE PART AVEC LA SORTIE (T12.12). L'écran
+	# a déjà encaissé l'or ; il ne reste qu'à transporter la promesse.
+	if is_instance_valid(_world_screen):
+		run.ally_town = _world_screen.ally_town()
 	GameState.expedition = run
 	GameState.save()
 	_dismiss(_world_screen)
@@ -658,6 +662,11 @@ func _start_expedition_combat(map_id: StringName) -> void:
 	# arriverait en cours de combat serait une embuscade, et une embuscade
 	# est le contraire d'un télégraphe.
 	DayNight.reinforce_map(map, run.moment(), run.night_roster(), rng)
+	# LE MILICIEN ARRIVE AVANT LE PLACEMENT LUI AUSSI (T12.12), et pour la
+	# même raison que les bêtes de la nuit : le § 39 veut que le joueur
+	# puisse compter ses forces pendant qu'il décide où poser son équipe.
+	if run.ally_joins_now():
+		Muster.join(map, run.ally_town)
 	_launch_with_map(map, units, rng, _on_expedition_combat_finished, run.moment())
 
 

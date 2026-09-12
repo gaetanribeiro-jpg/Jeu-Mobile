@@ -788,6 +788,11 @@ func run_cycle(company: Company = null, rng: CombatRng = null) -> Dictionary:
 		company.supplies[potion] = int(company.supplies.get(potion, 0)) + batch
 		brewed[potion] = batch
 
+	# LES PRÊTS SE RÈGLENT AU CYCLE, comme tout le reste du royaume. Un
+	# prêt compté en cycles et pas en minutes est la même décision verrouillée
+	# que la production : pas de timer, pas d'énergie (§ 2).
+	var returned := settle_loans(company)
+
 	# LE CONSEIL SE TIRE À LA FIN DU CYCLE, et il attend. Un conseil déjà
 	# posé n'est pas remplacé : il a été tiré pour une décision que le
 	# joueur n'a pas encore prise, et l'écraser la lui volerait.
@@ -810,6 +815,7 @@ func run_cycle(company: Company = null, rng: CombatRng = null) -> Dictionary:
 		"brewed": brewed,
 		"promoted": promoted,
 		"council": String(pending_council),
+		"returned": returned,
 		"cycle": cycles,
 	}
 
@@ -996,6 +1002,88 @@ func _welcome_champion(raw: Variant, company: Company, rng: CombatRng) -> Hero:
 	if not company.take(hero):
 		return null
 	return hero
+
+
+# --- Prêter un héros à une voisine (T12.12) --------------------------------
+#
+# C'EST LA DÉCISION DU § 9 TRANSPOSÉE AUX HÉROS : « qui peux-tu te
+# passer ? ». Le coût est un CORPS, dans un jeu où l'équipe est de quatre —
+# et c'est ce qui donne enfin une valeur au recruté de trop, que T12.7
+# avait rendu jouable sans lui donner d'emploi.
+
+## Pourquoi on ne peut pas prêter celui-là : vide si on peut.
+func cannot_lend_because(
+	hero: Hero, town_id: StringName, company: Company = null
+) -> StringName:
+	if hero == null or company == null:
+		return &"nobody"
+	if not Neighbour.exists(town_id):
+		return &"no_town"
+	if not hero.is_available():
+		return &"already_away"
+	# ON NE CONFIE PAS UN DES SIENS À UNE VILLE BROUILLÉE. Le crédit ouvre
+	# des offres (T12.10) ; il ferme aussi des portes.
+	if standing_of(town_id) < Neighbour.loan_minimum_standing():
+		return &"standing"
+	if company.available().size() <= Neighbour.loan_minimum_left():
+		return &"too_few"
+	return &""
+
+
+func can_lend(hero: Hero, town_id: StringName, company: Company = null) -> bool:
+	return cannot_lend_because(hero, town_id, company).is_empty()
+
+
+## Confie un héros à une ville pour quelques cycles. Il quitte l'équipe
+## tout de suite ; il revient au cycle dit, payé et aguerri.
+func lend(hero: Hero, town_id: StringName, company: Company = null) -> bool:
+	if not can_lend(hero, town_id, company):
+		return false
+	hero.away_town = town_id
+	hero.away_cycles = Neighbour.loan_cycles()
+	# L'ÉQUIPE SE REMET D'APLOMB TOUT DE SUITE, sinon le joueur part avec
+	# un fantôme : `squad_units` rendrait trois corps pour quatre noms.
+	company.settle_squad()
+	return true
+
+
+## Fait passer un cycle à ceux qui sont en mission, et ramène ceux dont le
+## temps est fait. Renvoie la liste de ce qu'il faut raconter.
+##
+## IL REVIENT PLUS FORT QU'IL N'EST PARTI, et c'est voulu : sans ça, prêter
+## serait une punition qu'on n'accepterait que par obligation. L'expérience
+## est calée sur ce qu'une sortie rapporte, donc prêter n'est jamais
+## MEILLEUR que jouer — c'est un plancher qu'on encaisse contre un corps.
+func settle_loans(company: Company = null) -> Array[Dictionary]:
+	var back: Array[Dictionary] = []
+	if company == null:
+		return back
+	for hero: Hero in company.heroes:
+		if hero.is_available():
+			continue
+		hero.away_cycles -= 1
+		if hero.away_cycles > 0:
+			continue
+		var town_id := hero.away_town
+		var cycles := maxi(Neighbour.loan_cycles(), 1)
+		var wages := Neighbour.loan_gold() * cycles
+		var learned := Neighbour.loan_experience() * cycles
+		hero.away_cycles = 0
+		hero.away_town = &""
+		_add(&"gold", wages, company)
+		hero.add_experience(learned)
+		hero.level_up_free()
+		shift_standing(town_id, Neighbour.loan_standing())
+		back.append({
+			"name": hero.display_name(),
+			"town": String(town_id),
+			"gold": wages,
+			"experience": learned,
+			"level": hero.level,
+		})
+	if not back.is_empty():
+		company.settle_squad()
+	return back
 
 
 # --- Sérialisation ---------------------------------------------------------

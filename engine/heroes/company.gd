@@ -154,20 +154,44 @@ func toggle_squad(hero_id: int) -> bool:
 ## choix du joueur : elle COMPLÈTE une composition, elle ne la refait pas.
 ## C'est la différence exacte avec l'ancien `_reset_squad`, qui reprenait
 ## les quatre premiers à chaque fermeture d'écran.
+## UN HÉROS PRÊTÉ SORT DE L'ÉQUIPE (T12.12). Il n'est pas là : le laisser
+## dans la composition ferait partir un fantôme, et `squad_units` rendrait
+## une équipe de trois sans que rien ne s'en plaigne.
 func settle_squad() -> void:
 	var kept: Array[int] = []
 	for hero_id: int in squad_ids:
-		if hero_by_id(hero_id) != null and not kept.has(hero_id):
+		var hero := hero_by_id(hero_id)
+		if hero != null and hero.is_available() and not kept.has(hero_id):
 			kept.append(hero_id)
 	squad_ids = kept
 	var limit := CombatRules.team_size()
 	for hero: Hero in heroes:
 		if squad_ids.size() >= limit:
 			break
+		if not hero.is_available():
+			continue
 		if not squad_ids.has(hero.id):
 			squad_ids.append(hero.id)
 	if squad_ids.size() > limit:
 		squad_ids = squad_ids.slice(0, limit)
+
+
+## Les héros qui sont là — ceux qu'aucune ville n'a empruntés.
+func available() -> Array[Hero]:
+	var out: Array[Hero] = []
+	for hero: Hero in heroes:
+		if hero.is_available():
+			out.append(hero)
+	return out
+
+
+## Les héros en mission chez une voisine, et pour combien de temps.
+func lent() -> Array[Hero]:
+	var out: Array[Hero] = []
+	for hero: Hero in heroes:
+		if not hero.is_available():
+			out.append(hero)
+	return out
 
 
 ## Les héros qui partent, dans l'ordre choisi.

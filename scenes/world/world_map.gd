@@ -41,6 +41,10 @@ var _squad_ids: Array[int] = []
 ## Le royaume qui accompagne l'équipe (§ 43). Peut être nul.
 var _kingdom: Kingdom = null
 
+## La ville à qui l'on achète un milicien pour cette sortie (T12.12), ou
+## vide. Un seul : le jeton ne sert qu'une fois et ne s'accumule pas.
+var _ally_town: StringName = &""
+
 @onready var _title: Label = %Title
 @onready var _gold: Label = %Gold
 @onready var _back: Button = %Back
@@ -166,6 +170,10 @@ func _build_brief() -> void:
 	], 20)
 	_line(tr("WORLD_ENDS_ON_BOSS"), 20)
 	_line(tr("WORLD_NO_HEALING"), 20)
+	# L'ACTION PASSE DEVANT L'INFORMATION. Les cadeaux du royaume se
+	# LISENT ; le renfort se DÉCIDE, et il se décidait sous la ligne de
+	# flottaison du panneau — seule la capture le disait.
+	_build_muster()
 	_build_kingdom_gifts()
 
 
@@ -183,6 +191,83 @@ func _build_brief() -> void:
 ## partout ailleurs : la défense du royaume se lit avant de partir, le
 ## caractère d'un candidat se lit avant de l'engager, le télégraphe se lit
 ## avant de valider.
+## LE RENFORT S'ACHÈTE AVANT DE PARTIR, ET IL SE DÉPENSE EN ROUTE (T12.12).
+##
+## Ici, c'est l'ACHAT : une ville assez cordiale accepte d'envoyer un bras
+## contre de l'or. Le choix de la rencontre où il se battra se pose plus
+## tard, sur la route — c'est là qu'est la décision, et elle ne vaut que si
+## l'on sait déjà ce qu'on a en poche au moment de partir.
+##
+## UNE VILLE QUI REFUSE RESTE AFFICHÉE, grisée, avec ce qui manque : savoir
+## ce qu'on ne peut pas s'offrir fait partie de la décision. Même règle que
+## l'étal du marchand et que les options du conseil.
+func _build_muster() -> void:
+	if _kingdom == null or _company == null:
+		return
+	var offers: Array[StringName] = []
+	for town_id: StringName in Neighbour.ids():
+		if Neighbour.musters(town_id):
+			offers.append(town_id)
+	if offers.is_empty():
+		return
+
+	_line(tr("WORLD_MUSTER"), 20)
+	for town_id: StringName in offers:
+		var cost := Neighbour.muster_cost(town_id)
+		var friendly := _kingdom.standing_of(town_id) >= Neighbour.muster_standing(town_id)
+		var affordable := _kingdom.can_afford(cost, _company)
+		var label := tr("WORLD_MUSTER_CALL") % [
+			tr(Neighbour.name_key(town_id)), _price(cost)
+		]
+		if _ally_town == town_id:
+			label = tr("WORLD_MUSTER_READY") % tr(Neighbour.name_key(town_id))
+		elif not friendly:
+			label = tr("WORLD_MUSTER_COLD") % [
+				tr(Neighbour.name_key(town_id)),
+				tr(Neighbour.standing_key(Neighbour.muster_standing(town_id))),
+			]
+		elif not affordable:
+			label = tr("WORLD_MUSTER_COST") % [tr(Neighbour.name_key(town_id)), _price(cost)]
+		var button := _action(label, _hire_militia.bind(town_id),
+			friendly and (affordable or _ally_town == town_id))
+		button.set_pressed_no_signal(_ally_town == town_id)
+
+
+## ON NE PAIE QU'AU DÉPART, et c'est ce qui rend le geste réversible. Une
+## dépense encaissée sur un écran de préparation — avant même de savoir où
+## l'on va, et qu'on peut quitter par « Retour » — serait de l'or perdu
+## sans contrepartie. Le bouton retient une INTENTION ; `_on_depart` paie.
+func _hire_militia(town_id: StringName) -> void:
+	_ally_town = &"" if _ally_town == town_id else town_id
+	refresh()
+
+
+## Un bouton d'action du panneau de droite.
+func _action(text: String, handler: Callable, enabled: bool) -> Button:
+	var button := Button.new()
+	button.custom_minimum_size = Vector2(0, 54)
+	button.add_theme_font_size_override("font_size", 19)
+	button.clip_text = true
+	button.toggle_mode = true
+	button.text = text
+	button.disabled = not enabled
+	button.pressed.connect(handler)
+	_brief.add_child(button)
+	return button
+
+
+func _price(cost: Dictionary) -> String:
+	var pieces := PackedStringArray()
+	for key: Variant in cost.keys():
+		pieces.append("%s %d" % [tr(ResourceTable.name_key(StringName(key))), int(cost[key])])
+	return ", ".join(pieces)
+
+
+## La ville dont le milicien part avec l'expédition, ou vide.
+func ally_town() -> StringName:
+	return _ally_town
+
+
 func _build_kingdom_gifts() -> void:
 	if _kingdom == null:
 		return
@@ -298,6 +383,14 @@ func _cycle(slot: int) -> void:
 func _on_depart() -> void:
 	if not _campaign.is_open(_selected) or _squad_ids.is_empty():
 		return
+	# LE MILICIEN SE PAIE ICI, pas au clic : le joueur peut changer d'avis
+	# et quitter l'écran sans avoir rien dépensé. Si la bourse ne suit
+	# plus, on part SANS lui plutôt que de refuser le départ — le renfort
+	# est un bonus, pas une condition.
+	if not _ally_town.is_empty():
+		if _kingdom == null or not _kingdom.pay(
+				Neighbour.muster_cost(_ally_town), _company):
+			_ally_town = &""
 	departed.emit(_selected, _squad_ids.duplicate())
 
 

@@ -477,6 +477,22 @@ COUNCIL_CHAMPION_1,Lui demander plutôt une caisse de fioles
 COUNCIL_CHAMPION_1_OK,Il a haussé les épaules et fait décharger deux caisses. Les fioles valent leur poids.
 COUNCIL_CHAMPION_2,Décliner l'offre
 COUNCIL_CHAMPION_2_OK,Il est reparti au petit trot. On n'offre pas deux fois la même chose à Fort-Aubin.
+KINGDOM_LEND,Prêter un héros à %s (%d cycles)
+KINGDOM_LEND_STANDING,Ils ne prendraient personne de chez nous
+KINGDOM_LEND_TOO_FEW,"Il faut garder %d héros au royaume"
+KINGDOM_LEND_TERMS,"Pour %d cycles. Il en revient avec %d or et %d d'expérience."
+KINGDOM_LEND_HERO,%s — %s
+KINGDOM_LENT,%s part pour %s. Trois cycles sans lui.
+KINGDOM_AWAY,En mission
+KINGDOM_AWAY_LINE,"%s, chez %s — encore %d cycle(s)"
+KINGDOM_RETURNED,%s rentre de chez %s avec %d or
+WORLD_MUSTER,Renfort
+WORLD_MUSTER_CALL,%s enverra un bras (%s)
+WORLD_MUSTER_READY,Un homme de %s part avec vous
+WORLD_MUSTER_COLD,"%s n'enverra personne — il faudrait être %s"
+WORLD_MUSTER_COST,"%s enverrait un bras, mais il faut %s"
+EXPEDITION_CALL_ALLY,Appeler le renfort de %s
+UNIT_MILITIA,Milicien
 BOOT_KINGDOM,Royaume
 OPTIONS_TITLE,Options
 OPTIONS_AUDIO,Son

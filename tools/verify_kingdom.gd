@@ -35,6 +35,8 @@ func _init() -> void:
 	_check_invasions()
 	_check_neighbours()
 	_check_councils()
+	_check_muster()
+	_check_loans()
 
 	if _problems.is_empty():
 		print("\nL'économie du royaume tient debout.")
@@ -839,3 +841,66 @@ func _check_credit_sources() -> void:
 			_problems.append(
 				"%s : le crédit de %s ne se gagne que dans %d conseil — une seule porte"
 				% [event_id, town_id, sources])
+
+
+# --- Le renfort et le prêt (T12.12) ----------------------------------------
+
+## UN MILICIEN QUI N'EXISTE PAS SE PAIE QUAND MÊME. L'or part, l'unité ne
+## se pose pas, et `Muster.join` rend null poliment : le joueur a acheté du
+## vide. C'est la famille de défauts que ce projet attrape depuis la
+## Phase 10 — une mécanique complète dont il manque un maillon.
+func _check_muster() -> void:
+	print("\nCe que les voisines envoient :\n")
+	var offers := 0
+	for town_id: StringName in Neighbour.ids():
+		if not Neighbour.musters(town_id):
+			continue
+		offers += 1
+		var unit := Neighbour.muster_unit(town_id)
+		var cost := Neighbour.muster_cost(town_id)
+		print("%-14s crédit %+d  %s  (%s)" % [
+			town_id, Neighbour.muster_standing(town_id), _costs(cost),
+			unit.get("type", "—"),
+		])
+		if cost.is_empty():
+			_problems.append("%s : envoie un bras gratuitement" % town_id)
+		for resource_id: StringName in cost.keys():
+			if not ResourceTable.exists(resource_id):
+				_problems.append("%s : se paie en « %s », qui n'existe pas"
+					% [town_id, resource_id])
+		if not Unit.hero_class_ids().has(StringName(unit.get("type", ""))):
+			_problems.append("%s : envoie une classe inconnue « %s »"
+				% [town_id, unit.get("type", "")])
+		_check_translation(town_id, String(unit.get("name_key", "")))
+		# UN CRÉDIT HORS D'ATTEINTE FERME L'OFFRE POUR TOUJOURS, en silence :
+		# le bouton reste grisé et rien ne dit que c'est impossible.
+		if Neighbour.muster_standing(town_id) > Neighbour.maximum():
+			_problems.append("%s : exige un crédit hors d'atteinte" % town_id)
+	if offers <= 0:
+		_problems.append("aucune voisine n'envoie de renfort : la mécanique est morte")
+
+
+## UN PRÊT QUI NE RAPPORTE RIEN EST UNE PUNITION, pas une décision — et un
+## plancher trop haut le rend impossible pour toujours.
+func _check_loans() -> void:
+	var cycles := Neighbour.loan_cycles()
+	var left := Neighbour.loan_minimum_left()
+	print("\nprêt : %d cycles, %d or et %d d'expérience au retour, %d héros gardés"
+		% [cycles, Neighbour.loan_gold() * cycles,
+			Neighbour.loan_experience() * cycles, left])
+	if cycles <= 0:
+		_problems.append("un prêt dure zéro cycle : il ne coûte rien")
+	if Neighbour.loan_gold() <= 0 and Neighbour.loan_experience() <= 0:
+		_problems.append("un prêt ne rapporte rien : c'est une punition")
+	if Neighbour.loan_standing() <= 0:
+		_problems.append("un prêt ne fait pas monter le crédit")
+	# ON GARDE TOUJOURS DE QUOI PARTIR, mais pas au point de ne jamais
+	# pouvoir prêter : à `team_size`, il faudrait un héros de plus que ce
+	# que l'équipe peut emmener, et l'offre n'existerait qu'au tout dernier
+	# recrutement.
+	if left < 1:
+		_problems.append("on peut prêter toute la compagnie : le jeu se bloque")
+	if left > CombatRules.team_size():
+		_problems.append(
+			"il faut garder %d héros pour une équipe de %d : on ne prêtera jamais"
+			% [left, CombatRules.team_size()])

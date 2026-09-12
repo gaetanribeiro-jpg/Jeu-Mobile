@@ -37,17 +37,64 @@
   "valmont": {
    "name_key": "TOWN_VALMONT",
    "description_key": "TOWN_VALMONT_DESC",
-   "trade": "food"
+   "trade": "food",
+   "muster": {
+    "standing": 1,
+    "cost": {
+     "gold": 90
+    },
+    "unit": {
+     "type": "warrior",
+     "sprite": "pawn",
+     "sprite_variant": "knife",
+     "name_key": "UNIT_MILITIA"
+    }
+   }
   },
   "roche_claire": {
    "name_key": "TOWN_ROCHE_CLAIRE",
    "description_key": "TOWN_ROCHE_CLAIRE_DESC",
-   "trade": "stone"
+   "trade": "stone",
+   "muster": {
+    "standing": 1,
+    "cost": {
+     "gold": 75
+    },
+    "unit": {
+     "type": "warrior",
+     "sprite": "pawn",
+     "sprite_variant": "hammer",
+     "name_key": "UNIT_MILITIA"
+    }
+   }
   },
   "fort_aubin": {
    "name_key": "TOWN_FORT_AUBIN",
    "description_key": "TOWN_FORT_AUBIN_DESC",
-   "trade": "gold"
+   "trade": "gold",
+   "muster": {
+    "standing": 0,
+    "cost": {
+     "gold": 60
+    },
+    "unit": {
+     "type": "warrior",
+     "sprite": "pawn",
+     "sprite_variant": "axe",
+     "name_key": "UNIT_MILITIA"
+    }
+   }
   }
+ },
+ "_muster_note": "LE RENFORT D'UN SEUL COMBAT (T12.12, option D de Gaetan).\n\nUNE VILLE PRÊTE DES BRAS, PAS DES CHEVALIERS. Les trois envoient un Pawn — le villageois armé d'un outil que le pack dessine déjà — et jamais une classe de héros : ses cinq couleurs sont un budget tenu (trois rangs, deux factions), et un homme d'armes en Rouge se lirait comme un Rougefer de l'acte 3. Ce qui distingue les trois n'est donc pas le dessin mais le PRIX et le crédit exigé : Fort-Aubin loue des bras, c'est son métier, elle est la moins chère ; Valmont vit de ses greniers et rechigne à vider ses fermes.\n\nIL NE VIOLE PAS LE § 23. L'équipe reste de quatre : le milicien est une unité ALLIÉE posée sur le plateau, comme le villageois escorté de T12.6, pas un cinquième héros. Il ne gagne pas d'expérience, ne porte pas d'équipement et repart après le combat — c'est un corps pour une rencontre, et le joueur choisit LAQUELLE. C'est la décision : le garder pour le boss, ou le dépenser sur la carte qui fait peur.",
+ "_loan_note": "LE PRÊT D'UN HÉROS (T12.12, option B de Gaetan).\n\nC'EST LA DÉCISION DU § 9 TRANSPOSÉE AUX HÉROS : « qui peux-tu te passer ? ». Un héros prêté quitte l'équipe pour un nombre de cycles, et il rapporte — de l'or, de l'expérience, et du crédit. Le coût est un CORPS, dans un jeu où l'équipe est de quatre : prêter le cinquième est facile, prêter le troisième ne l'est pas. C'est ce qui donne enfin une valeur au recruté de trop.\n\nIL REVIENT PLUS FORT QU'IL N'EST PARTI, et c'est voulu : sans ça, prêter serait une punition qu'on n'accepterait que par obligation. L'expérience gagnée est calée sur ce qu'une sortie rapporte, donc prêter n'est jamais MEILLEUR que jouer — c'est un plancher qu'on encaisse en échange d'un corps.",
+ "loan": {
+  "cycles": 3,
+  "gold_per_cycle": 45,
+  "experience_per_cycle": 60,
+  "standing": 1,
+  "minimum_standing": 0,
+  "minimum_left": 3,
+  "_left_note": "ON GARDE TOUJOURS DE QUOI PARTIR. Sans plancher, on pourrait prêter toute la compagnie et se retrouver sans expédition possible — un blocage, pas une décision. À trois, prêter ne devient possible qu’avec un QUATRIÈME héros, et il coûte alors exactement une place dans l’équipe : c’est là que la question « qui peux-tu te passer ? » se pose vraiment."
  }
 }

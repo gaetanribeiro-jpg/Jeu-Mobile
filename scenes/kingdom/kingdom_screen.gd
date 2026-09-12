@@ -36,6 +36,12 @@ var _rng: CombatRng
 ## lue, et une décision dont on ne voit pas l'effet n'en est plus une.
 var _council_outcome: Dictionary = {}
 
+## La ville à qui l'on est en train de confier quelqu'un (T12.12), ou vide.
+## Tant qu'elle est posée, le panneau montre la liste des héros : « à qui »
+## et « lequel » sont deux questions, et les poser sur un seul bouton en
+## aurait fait trois fois plus.
+var _lending_town: StringName = &""
+
 @onready var _title: Label = %Title
 @onready var _stores: HBoxContainer = %Stores
 @onready var _back: Button = %Back
@@ -182,6 +188,9 @@ func _build_panel() -> void:
 		return
 	if not _kingdom.council().is_empty():
 		_build_council_panel(_kingdom.council())
+		return
+	if not _lending_town.is_empty():
+		_build_lending_panel(_lending_town)
 		return
 
 	match _view.selected_kind:
@@ -561,6 +570,85 @@ func _build_neighbours(building_id: StringName) -> void:
 			tr(Neighbour.name_key(town_id)), tr(_kingdom.standing_key(town_id))
 		], 20)
 		_line(tr(Neighbour.description_key(town_id)), 17)
+		_lend_button(town_id)
+	_build_away()
+
+
+## PRÊTER UN HÉROS, C'EST LA DÉCISION DU § 9 TRANSPOSÉE (T12.12) : « qui
+## peux-tu te passer ? ». Le bouton ne prête personne — il pose la
+## QUESTION, et le panneau bascule sur la liste des héros.
+##
+## LE REFUS DIT POURQUOI. Un bouton grisé muet est une impasse ; celui-ci
+## dit s'il manque du crédit ou des bras.
+func _lend_button(town_id: StringName) -> void:
+	if _company == null or Neighbour.loan_cycles() <= 0:
+		return
+	var blocked := &""
+	for hero: Hero in _company.available():
+		blocked = _kingdom.cannot_lend_because(hero, town_id, _company)
+		if blocked.is_empty():
+			break
+	if _company.available().is_empty():
+		blocked = &"nobody"
+	var label := tr("KINGDOM_LEND") % [
+		tr(Neighbour.name_key(town_id)), Neighbour.loan_cycles()
+	]
+	if blocked == &"standing":
+		label = tr("KINGDOM_LEND_STANDING")
+	elif blocked == &"too_few" or blocked == &"nobody":
+		label = tr("KINGDOM_LEND_TOO_FEW") % Neighbour.loan_minimum_left()
+	_action(label, func() -> void:
+		_lending_town = town_id
+		refresh(), blocked.is_empty())
+
+
+## Ceux qui sont en mission, et pour combien de temps encore. Sans ça, un
+## héros disparu de l'écran de compagnie serait un bug, pas une décision.
+func _build_away() -> void:
+	if _company == null:
+		return
+	var away := _company.lent()
+	if away.is_empty():
+		return
+	_line(tr("KINGDOM_AWAY"), 20)
+	for hero: Hero in away:
+		_line(tr("KINGDOM_AWAY_LINE") % [
+			hero.display_name(), tr(Neighbour.name_key(hero.away_town)), hero.away_cycles
+		], 18)
+
+
+## À QUI est posé ; reste LEQUEL. Un bouton par héros disponible, avec ce
+## que le prêt rapporte écrit une fois en haut : un chiffre répété sur
+## quatre boutons se lit comme quatre chiffres différents.
+func _build_lending_panel(town_id: StringName) -> void:
+	_line(tr(Neighbour.name_key(town_id)), 26)
+	_line(tr("KINGDOM_LEND_TERMS") % [
+		Neighbour.loan_cycles(),
+		Neighbour.loan_gold() * Neighbour.loan_cycles(),
+		Neighbour.loan_experience() * Neighbour.loan_cycles(),
+	], 19)
+	for hero: Hero in _company.available():
+		var blocked := _kingdom.cannot_lend_because(hero, town_id, _company)
+		_action(
+			tr("KINGDOM_LEND_HERO") % [
+				hero.display_name(), tr("CLASS_%s" % String(hero.class_id).to_upper())
+			],
+			_lend.bind(hero, town_id), blocked.is_empty()
+		)
+	_action(tr("COUNCIL_CLOSE"), func() -> void:
+		_lending_town = &""
+		refresh(), true)
+
+
+func _lend(hero: Hero, town_id: StringName) -> void:
+	if not _kingdom.lend(hero, town_id, _company):
+		return
+	_lending_town = &""
+	_note(tr("KINGDOM_LENT") % [
+		hero.display_name(), tr(Neighbour.name_key(town_id)), Neighbour.loan_cycles()
+	])
+	changed.emit()
+	refresh()
 
 
 ## L'issue du conseil, lue avant de passer à la suite.
@@ -723,6 +811,16 @@ func report_cycle(report: Dictionary) -> void:
 	# LE CONSEIL SE SIGNALE DANS LE JOURNAL AUSSI. Le panneau le montre
 	# déjà, mais le joueur qui revient regarde d'abord ce qui a changé
 	# pendant son absence : c'est là qu'il faut lui dire qu'on l'attend.
+	# CEUX QUI RENTRENT SONT NOMMÉS. Un héros prêté trois cycles plus tôt
+	# reparaîtrait sans un mot dans l'écran de compagnie : une décision dont
+	# on ne voit pas la fin n'a pas de fin (règle de T12.9).
+	for entry: Variant in report.get("returned", []):
+		var line: Dictionary = entry
+		pieces.append(tr("KINGDOM_RETURNED") % [
+			String(line.get("name", "")),
+			tr(Neighbour.name_key(StringName(line.get("town", &"")))),
+			int(line.get("gold", 0)),
+		])
 	if not String(report.get("council", "")).is_empty():
 		pieces.append(tr("COUNCIL_WAITING"))
 	_note(" · ".join(pieces))
