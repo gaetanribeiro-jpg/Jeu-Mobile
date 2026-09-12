@@ -1,0 +1,104 @@
+{
+ "_note": "LE CHAMP DE PIERRES, ET DES PIEUX QU'ON PEUT ABATTRE.\n\nLes couloirs de rocher forcent à choisir une voie ; les pieux d'os la FERMENT, sauf qu'ils se cassent. Trente points de vie, deux coups de Guerrier : ouvrir un passage coûte une activation entière, le contourner en coûte deux de marche. C'est le premier plateau de l'acte où le décor est une cible.\n\nLe pack ne dessine ni mur ni porte ; il dessine un crâne sur un pieu, et c'est exactement ce qu'une piste de désert borde.",
+ "act": 2,
+ "name_key": "MAP_DUNES_02",
+ "rows": [
+  "...##.......",
+  "....#.......",
+  "......p.....",
+  "..#...p..#..",
+  "..#......#..",
+  "..#...p..#..",
+  "......p.....",
+  "....#.......",
+  "...##......."
+ ],
+ "objective": {
+  "kind": "eliminate"
+ },
+ "deployment_cells": [
+  [
+   0,
+   1
+  ],
+  [
+   0,
+   2
+  ],
+  [
+   0,
+   3
+  ],
+  [
+   0,
+   5
+  ],
+  [
+   0,
+   6
+  ],
+  [
+   0,
+   7
+  ],
+  [
+   1,
+   2
+  ],
+  [
+   1,
+   6
+  ]
+ ],
+ "enemies": [
+  {
+   "type": "lizard",
+   "cell": [
+    9,
+    2
+   ]
+  },
+  {
+   "type": "lizard",
+   "cell": [
+    9,
+    6
+   ]
+  },
+  {
+   "type": "dune_spider",
+   "cell": [
+    11,
+    3
+   ]
+  },
+  {
+   "type": "dune_spider",
+   "cell": [
+    11,
+    5
+   ]
+  },
+  {
+   "type": "carrion_bat",
+   "cell": [
+    8,
+    4
+   ]
+  },
+  {
+   "type": "lizard",
+   "cell": [
+    10,
+    4
+   ]
+  },
+  {
+   "type": "carrion_bat",
+   "cell": [
+    11,
+    1
+   ]
+  }
+ ]
+}

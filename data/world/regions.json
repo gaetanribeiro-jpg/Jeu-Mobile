@@ -1,0 +1,340 @@
+{
+ "_readme": "Les régions du monde (§ 26). Une seule est jouable au MVP : les Terres Vertes. Les cinq autres sont DÉCLARÉES ET VERROUILLÉES — la carte du monde a ainsi quelque chose à montrer, et le joueur voit où il ira, sans qu'on ait inventé leur contenu.\n\nL'ORDRE DE `encounter_maps` EST L'ORDRE DE DIFFICULTÉ, du plus facile au plus dur. C'est de lui que vient l'escalade du § 29 : le tirage d'une rencontre ne pioche pas dans toutes les cartes, mais dans une FENÊTRE qui glisse avec la profondeur. Plus le joueur s'enfonce, plus les cartes faciles cessent de sortir. Aucun chiffre de combat n'est touché — c'est la sélection qui monte, pas les ennemis.\n\nLa carte de mini-boss et celle de boss sont hors de la fenêtre : elles ne peuvent tomber qu'à leur place dans la chaîne.\n\nLA CHAÎNE SUIT LE § 28 : Départ → Combat → Événement → Combat → Marchand → Combat → Mini-boss → Récompense → Boss. `pattern` est le corps, répété jusqu'à la longueur tirée ; `tail` est la fin, toujours identique. Une expédition courte n'est donc pas une expédition tronquée : elle a moins de corps, mais elle a sa fin.",
+ "regions": {
+  "greenlands": {
+   "name_key": "REGION_GREENLANDS",
+   "description_key": "REGION_GREENLANDS_DESC",
+   "act": 1,
+   "unlocked": true,
+   "_maps_note": "L'ORDRE EST MESURÉ, PAS SUPPOSÉ. Il vient de la colonne PV de `tools/simulate_combats.gd`, qui est l'instrument établi en T1.11 : ce qu'une carte coûte à l'équipe, sur cinquante graines. Rangé à l'œil, il était faux.\n\nCoût moyen mesuré, de jour : 01 → 0 %, 07 → 5 %, 06 → 7 %, 05 → 15 %, 02 → 19 %, 03 → 23 %, 04 → 36 %.\n\n`vallee_07` A BONDI DE LA CINQUIÈME PLACE À LA DEUXIÈME, et ce n'est pas la carte qui a changé — c'est l'outil qui a cessé de se tromper. Son pilote visait `cells[0]` des cases d'objectif, donc il garait son propre Guerrier sur la case de sortie et bloquait son escorté à côté. Il mesurait sa propre bêtise. Corrigé, `vallee_06` passe de 89 à 93 % et `vallee_07` de 81 à 95 %.\n\n`vallee_07` est revenue dans la réserve ordinaire quand `vallee_09` a pris le rôle de mini-boss (T7.2) : une étape annoncée « mini-boss » qui servait une rencontre ordinaire était une promesse non tenue.\n\nÀ RELANCER APRÈS TOUTE MODIFICATION D'UNE CARTE, D'UN ENNEMI OU DU SIMULATEUR : cet ordre est une mesure, et une mesure périme. Il a déjà changé quatre fois.",
+   "encounter_maps": [
+    "vallee_01",
+    "vallee_07",
+    "vallee_06",
+    "vallee_05",
+    "vallee_02",
+    "vallee_03",
+    "vallee_04"
+   ],
+   "miniboss_map": "vallee_09",
+   "boss_map": "vallee_08",
+   "map_window": {
+    "_note": "`size` cartes tirables à la fois ; la fenêtre avance de `slide` carte par rencontre déjà passée. Avec six cartes, une fenêtre de trois et un pas d'une demie, la profondeur 6 ne laisse plus que les trois dernières.",
+    "size": 3,
+    "slide": 0.5
+   },
+   "chain": {
+    "pattern": [
+     "combat",
+     "event",
+     "combat",
+     "merchant"
+    ],
+    "tail": [
+     "miniboss",
+     "reward",
+     "boss"
+    ],
+    "body": {
+     "min": 3,
+     "max": 6
+    }
+   },
+   "resources_per_encounter": {
+    "wood": 9,
+    "food": 6,
+    "stone": 3
+   },
+   "_resources_note": "CE QU'UNE RENCONTRE RAPPORTE AU ROYAUME, en plus de l'or et des objets. C'est le maillon « exploration → ressources » du § 45, et sans lui l'expédition et le royaume vivaient chacun de leur côté : le royaume ne mangeait que ses propres chantiers, et une sortie ne servait qu'aux héros.\n\nLA RÉGION DICTE SA NATURE. Les Terres Vertes sont des prairies et des bosquets : beaucoup de bois, de quoi manger, peu de pierre. Une région de montagne inversera le tableau, et c'est ce qui donnera une raison d'aller ailleurs que « les ennemis y sont plus durs ».\n\nCES RESSOURCES VONT DANS LA BESACE, donc elles sont en jeu jusqu'au retour, comme le butin. Le § 29 y gagne un terme de plus : continuer, c'est aussi risquer le bois qui manquait à la caserne.",
+   "night_roster": [
+    "thief",
+    "torch_goblin"
+   ],
+   "_night_roster_note": "CE QUI SORT DU BOIS QUAND LA NUIT TOMBE (§ 36). Un renfort par rencontre de nuit, tiré là-dedans, posé au centre de la formation ennemie.\n\nPAS UN GNOME DE PLUS : le § 36 dit « plus nombreux ET spéciaux », et ajouter la bête la plus faible du bestiaire rallongerait la rencontre sans la durcir. Le voleur vise l'arrière — il oblige à se soucier de l'Archer et du Mage au moment précis où l'on voulait foncer — et le gobelin torche est une masse de 75 PV qui arrive au contact.\n\nET SURTOUT PAS UN GNOLL, qui était le premier choix. Le gnoll est un TIRAILLEUR : il recule quand on l'approche. À la mesure, `vallee_02` passait de 5,0 à 9,8 rondes les nuits où il sortait — le combat ne devenait pas plus dur, il devenait une POURSUITE, et le § 28 veut des rencontres de trois à huit rondes. Un renfort doit ajouter de la pression, pas de la durée : on ne prend donc que des bêtes qui viennent au contact.\n\nLe plafond de `rules.json` tient : une carte qui a déjà sept ennemis n'en reçoit aucun, et une carte à horloge non plus.",
+   "accent": "moss",
+   "reward": {
+    "gold_multiplier": 1.0,
+    "rarity_bonus": 0
+   },
+   "expected_hero_level": 1,
+   "expected_rarity": "common"
+  },
+  "burning_dunes": {
+   "name_key": "REGION_BURNING_DUNES",
+   "description_key": "REGION_BURNING_DUNES_DESC",
+   "act": 2,
+   "unlocked": false,
+   "accent": "sand",
+   "ground": "sand",
+   "encounter_maps": [
+    "dunes_06",
+    "dunes_07",
+    "dunes_01",
+    "dunes_02",
+    "dunes_04",
+    "dunes_05",
+    "dunes_03"
+   ],
+   "miniboss_map": "dunes_09",
+   "boss_map": "dunes_08",
+   "map_window": {
+    "_note": "L'ORDRE EST MESURÉ, PAS SUPPOSÉ, comme aux Terres Vertes. Il vient de la colonne PV de `tools/simulate_combats.gd`, l'instrument établi en T1.11 : ce qu'une carte coûte à l'équipe, sur cinquante graines.\n\nCoût moyen mesuré, de jour : 06 → 0 %, 01 → 10 %, 07 → 13 %, 02 → 18 %, 03 → 29 %, 04 → 30 %, 05 → 35 %. Mini-boss (09) 28 %, boss (08) 49 %.\n\nRANGÉES À L'INTUITION, MES CARTES ÉTAIENT TROP DOUCES : `dunes_02` et `dunes_06` coûtaient ZÉRO POUR CENT. La correction est venue en CORPS et pas en statistiques — gonfler les PV rend un combat plus long, pas plus dur (leçon du renfort de nuit, T8.1). `dunes_06` reste à zéro et c'est assumé : chaque région a besoin d'une ouverture qui ne coûte rien, et `vallee_01` joue le même rôle à l'acte 1.\n\nLE BOSS EST LA VRAIE MARCHE : 49 % contre 35 % pour celui des Terres Vertes. C'est là que l'acte 2 se durcit, et c'est le bon endroit — les cartes ordinaires se jouent avec des héros plus hauts en niveau que ceux du simulateur, qui mesure toujours une équipe de niveau 1.\n\n`size` cartes tirables à la fois, la fenêtre avance de `slide` par rencontre passée.",
+    "size": 3,
+    "slide": 0.5
+   },
+   "chain": {
+    "pattern": [
+     "combat",
+     "event",
+     "combat",
+     "merchant"
+    ],
+    "tail": [
+     "miniboss",
+     "reward",
+     "boss"
+    ],
+    "body": {
+     "min": 4,
+     "max": 7
+    }
+   },
+   "resources_per_encounter": {
+    "wood": 5,
+    "food": 5,
+    "stone": 9,
+    "gold": 2
+   },
+   "night_roster": [
+    "lizard",
+    "skull_wisp"
+   ],
+   "_night_note": "NI SERPENT NI CHAUVE-SOURIS DANS LE VIVIER DE NUIT. La leçon de T8.1 tient : un renfort doit ajouter de la PRESSION, pas de la durée, et une bête qui décroche allonge le combat au lieu de le durcir. Le gnoll avait fait passer `vallee_02` de 5,0 à 9,8 rondes ; le serpent et la chauve-souris feraient pire, l'un traversant la carte et l'autre s'enfuyant.",
+   "reward": {
+    "gold_multiplier": 1.35,
+    "rarity_bonus": 1
+   },
+   "expected_hero_level": 3,
+   "expected_rarity": "uncommon"
+  },
+  "frozen_mountains": {
+   "name_key": "REGION_FROZEN_MOUNTAINS",
+   "description_key": "REGION_FROZEN_MOUNTAINS_DESC",
+   "act": 3,
+   "unlocked": false,
+   "accent": "frost",
+   "ground": "frost",
+   "encounter_maps": [
+    "gel_05",
+    "gel_03",
+    "gel_07",
+    "gel_01",
+    "gel_02",
+    "gel_04",
+    "gel_06"
+   ],
+   "miniboss_map": "gel_09",
+   "boss_map": "gel_08",
+   "map_window": {
+    "_note": "L'ORDRE EST MESURÉ, comme aux cinq autres actes. Colonne PV de `tools/simulate_combats.gd` sur quarante graines : 05 → 97 %, 03 → 87 %, 07 → 80 %, 01 → 74 %, 02 → 64 %, 04 → 56 %, 06 → 53 %. Mini-boss (09) 68 %, boss (08) 28 %.\n\nL'ACTE COÛTE 32 % DES PV en moyenne.\n\nQUATRE OBJECTIFS SUR SIX, ET C'EST LE CHANGEMENT DU 2026-09-11. Les neuf cartes n'avaient qu'« éliminer » : le jeu s'était RÉTRÉCI en avançant, puisque l'acte 1 en employait six. 05 saisit, 03 protège, 07 escorte, 02 extrait ; 01, 04, 06 éliminent, comme le mini-boss et le boss. Avec « éliminer » et une IA qui vient au contact, attendre est toujours juste — c'est le reproche de Gaetan, et il valait pour tout l'acte.\n\nLES DEUX PREMIÈRES SONT DES OBJECTIFS AUTRES QU'« ÉLIMINER », et ce n'est pas un hasard : saisir et protéger se concluent VITE, donc l'usure y est faible par construction. La mesure les sous-estime aussi — le pilote n'a aucune notion d'ÉCHÉANCE. À REJUGER À L'ŒIL.\n\n`size` cartes tirables à la fois, la fenêtre avance de `slide` par rencontre passée.",
+    "size": 4,
+    "slide": 0.5
+   },
+   "chain": {
+    "pattern": [
+     "combat",
+     "event",
+     "combat",
+     "merchant"
+    ],
+    "tail": [
+     "miniboss",
+     "reward",
+     "boss"
+    ],
+    "body": {
+     "min": 5,
+     "max": 8
+    }
+   },
+   "night_roster": [
+    "ice_raider",
+    "frost_shark"
+   ],
+   "resources_per_encounter": {
+    "wood": 4,
+    "stone": 9,
+    "food": 5
+   },
+   "reward": {
+    "gold_multiplier": 1.7,
+    "rarity_bonus": 1
+   },
+   "expected_hero_level": 5,
+   "expected_rarity": "rare",
+   "_night_note": "LE CHAMPION ROUGEFER EN A ÉTÉ RETIRÉ le 2026-09-11 : une BRUTE de 273 PV, contre 143 pour un pillard ordinaire, et le seul renfort de brute des six actes. Mesuré : gel_02 et gel_04 tombaient à 40 % de réussite en douze rondes la nuit. On ne perdait pas plus de PV, on n'arrivait plus au bout — un renfort ajoute de la PRESSION, pas de la durée."
+  },
+  "broken_lands": {
+   "name_key": "REGION_BROKEN_LANDS",
+   "description_key": "REGION_BROKEN_LANDS_DESC",
+   "act": 4,
+   "unlocked": false,
+   "accent": "rust",
+   "ground": "rust",
+   "encounter_maps": [
+    "fer_04",
+    "fer_07",
+    "fer_02",
+    "fer_01",
+    "fer_05",
+    "fer_03",
+    "fer_06"
+   ],
+   "miniboss_map": "fer_09",
+   "boss_map": "fer_08",
+   "map_window": {
+    "_note": "L'ORDRE EST MESURÉ, comme aux trois actes précédents. Colonne PV de `tools/simulate_combats.gd` sur cinquante graines : 04 → 93 %, 07 → 88 %, 02 → 81 %, 01 → 62 %, 05 → 60 %, 03 → 41 %, 06 → 28 %. Mini-boss (09) 77 %, boss (08) 74 %.\n\nLES TROIS PREMIÈRES SONT LES OBJECTIFS AUTRES QU'« ÉLIMINER », et ce n'est pas un hasard : tenir, extraire et saisir se concluent VITE, donc l'usure y est faible par construction. La mesure les sous-estime aussi — le pilote de la simulation n'a aucune notion d'échéance, il traverse sans jamais craindre l'horloge. Même limite que « le pilote ne boit pas » (T10.1). À REJUGER À L'ŒIL.\n\nL'ACTE COÛTE 33 % DES PV en moyenne, contre 30 % à l'acte 3.\n\n`size` cartes tirables à la fois, la fenêtre avance de `slide` par rencontre passée.",
+    "size": 4,
+    "slide": 0.5
+   },
+   "chain": {
+    "pattern": [
+     "combat",
+     "event",
+     "combat",
+     "merchant"
+    ],
+    "tail": [
+     "miniboss",
+     "reward",
+     "boss"
+    ],
+    "body": {
+     "min": 5,
+     "max": 8
+    }
+   },
+   "night_roster": [
+    "boar_lancer",
+    "war_pig"
+   ],
+   "_night_note": "QUE DE LA CAVALERIE DANS LE VIVIER DE NUIT. Un EMPLACEMENT ne bouge pas : le renfort rejoint le centre de la formation ennemie, et une tour à deux cents points de vie posée là ajoute de la DURÉE, pas de la pression — c'est la leçon du gnoll et du renfort de nuit. L'atelier est écarté pour la même raison : un second soigneur allonge sans durcir.",
+   "resources_per_encounter": {
+    "wood": 6,
+    "stone": 11,
+    "food": 6
+   },
+   "reward": {
+    "gold_multiplier": 2.05,
+    "rarity_bonus": 1
+   },
+   "expected_hero_level": 7,
+   "expected_rarity": "rare"
+  },
+  "cursed_lands": {
+   "name_key": "REGION_CURSED_LANDS",
+   "description_key": "REGION_CURSED_LANDS_DESC",
+   "act": 5,
+   "unlocked": false,
+   "accent": "plum",
+   "expected_hero_level": 9,
+   "expected_rarity": "epic",
+   "ground": "plum",
+   "encounter_maps": [
+    "maudit_01",
+    "maudit_04",
+    "maudit_03",
+    "maudit_05",
+    "maudit_06",
+    "maudit_02",
+    "maudit_07"
+   ],
+   "miniboss_map": "maudit_09",
+   "boss_map": "maudit_08",
+   "map_window": {
+    "_note": "L'ORDRE EST MESURÉ, comme aux quatre actes précédents. Colonne PV de `tools/simulate_combats.gd` sur cinquante graines : 01 → 87 %, 04 → 80 %, 03 → 78 %, 05 → 73 %, 06 → 73 %, 02 → 72 %, 07 → 38 %. Mini-boss (09) 54 %, boss (08) 36 %.\n\nL'ACTE COÛTE 34 % DES PV en moyenne, contre 33 % à l'acte 4.\n\nLA CARTE QUI ENSEIGNE DOIT SORTIR EN PREMIER, et c'est ce qui a décidé de son réglage : `maudit_01` n'a que DEUX corps, le minimum pour que la faute « frapper deux cibles » soit possible. À trois elle tombait sixième dans l'ordre du coût, et le joueur rencontrait la tour et le troll avant d'avoir compris la morsure.\n\nLA MESURE SOUS-ESTIME CET ACTE PLUS QUE LES AUTRES, et il faut le savoir : `simulate_combats` ne CONCENTRE jamais ses coups, et concentrer est précisément la réponse que l'acte demande. Le pilote joue donc le contraire de ce qu'il faut, et gagne quand même — un joueur qui a compris trouvera l'acte plus facile que ces chiffres. Même famille de réserve que « le pilote ne boit pas ». À REJUGER À L'ŒIL.\n\n`size` cartes tirables à la fois, la fenêtre avance de `slide` par rencontre passée.",
+    "size": 4,
+    "slide": 0.5
+   },
+   "chain": {
+    "pattern": [
+     "combat",
+     "event",
+     "combat",
+     "merchant"
+    ],
+    "tail": [
+     "miniboss",
+     "reward",
+     "boss"
+    ],
+    "body": {
+     "min": 5,
+     "max": 8
+    }
+   },
+   "night_roster": [
+    "vampire_spawn"
+   ],
+   "_night_note": "PAS DE TIRAILLEUR DANS LE VIVIER DE NUIT — règle de T8.1 : le décrocheur allonge le combat au lieu d'ajouter de la pression, et `blood_thrall` en est un. PAS D'EMPLACEMENT NON PLUS : un renfort qui ne bouge pas, posé au centre de la formation, ne rejoint jamais personne. Reste le rejeton, qui avance et qui mord.",
+   "reward": {
+    "gold_multiplier": 2.4,
+    "rarity_bonus": 1
+   }
+  },
+  "black_empire": {
+   "name_key": "REGION_BLACK_EMPIRE",
+   "description_key": "REGION_BLACK_EMPIRE_DESC",
+   "act": 6,
+   "unlocked": false,
+   "accent": "ash",
+   "expected_hero_level": 10,
+   "expected_rarity": "legendary",
+   "ground": "ash",
+   "encounter_maps": [
+    "empire_07",
+    "empire_01",
+    "empire_02",
+    "empire_03",
+    "empire_05",
+    "empire_04",
+    "empire_06"
+   ],
+   "miniboss_map": "empire_09",
+   "boss_map": "empire_08",
+   "map_window": {
+    "_note": "L'ORDRE EST MESURÉ, comme aux cinq actes précédents. Colonne PV de `tools/simulate_combats.gd` sur cinquante graines : 07 → 78 %, 01 → 74 %, 02 → 73 %, 03 → 66 %, 05 → 66 %, 04 → 64 %, 06 → 60 %. Mini-boss (09) 51 %, boss (08) 48 %.\n\nL'ACTE COÛTE 36 % DES PV en moyenne, contre 34 % à l'acte 5 et 33 % à l'acte 4. La courbe monte enfin dans le bon sens sur les trois derniers actes — c'est la correction de l'inversion mesurée à l'acte 4, tenue jusqu'au bout.\n\n`empire_07` EN TÊTE EST UN ARTEFACT CONNU, pas un jugement : le pilote de la simulation n'a aucune notion d'ÉCHÉANCE, il traverse sans jamais craindre l'horloge. Une carte à saisir en cinq tours lui coûte donc peu et coûtera plus à un joueur. Même réserve qu'à l'acte 4 pour `fer_04`. À REJUGER À L'ŒIL.\n\n`size` cartes tirables à la fois, la fenêtre avance de `slide` par rencontre passée.",
+    "size": 4,
+    "slide": 0.5
+   },
+   "chain": {
+    "pattern": [
+     "combat",
+     "event",
+     "combat",
+     "merchant"
+    ],
+    "tail": [
+     "miniboss",
+     "reward",
+     "boss"
+    ],
+    "body": {
+     "min": 5,
+     "max": 8
+    }
+   },
+   "reward": {
+    "gold_multiplier": 2.8,
+    "rarity_bonus": 1
+   },
+   "night_roster": [
+    "black_sapper"
+   ],
+   "_night_note": "PAS D'ARCHER DANS LE VIVIER DE NUIT : le tirailleur décroche, et un décrocheur allonge le combat au lieu d'ajouter de la pression (T8.1, mesuré sur `vallee_02` : 5,0 → 9,8 rondes). PAS DE BOUCHER NON PLUS — un `blocker` posé au centre de la formation ne bouge jamais et ne rejoint personne. Reste le sapeur, qui court à six et qui arrive."
+  },
+  "_accent_note": "LA COULEUR D'UNE RÉGION (T11.6). Elle teinte son carré de terre sur la carte du monde et le liseré de sa fiche. Six régions qui se ressemblent ne font pas une carte, elles font une liste : le joueur doit pouvoir reconnaître les Dunes Ardentes sans lire leur nom.\n\nLA CLÉ EST CELLE D'UNE COULEUR DE `theme.json`, jamais un code hexadécimal : le jour où la palette change, aucune région ne bouge.",
+  "_reward_note": "CE QU'UNE RÉGION PAIE, ET POURQUOI ELLE DOIT PAYER PLUS (T11.8).\n\nÀ PROFONDEUR ÉGALE, L'ACTE 2 RENDAIT EXACTEMENT LE MÊME BUTIN QUE L'ACTE 1. Rien ne le disait — `Loot` ne connaît que la profondeur et l'heure — et rien ne cassait : une région plus dure qui paie pareil se joue parfaitement, elle n'a simplement aucune raison d'être choisie. Le § 29 fait de « je rentre ou je continue » une question ; aller dans les Dunes doit être la même question, à l'échelle de la campagne.\n\nLES DUNES COÛTENT 49 % DES PV À LEUR BOSS CONTRE 35 % AUX TERRES VERTES, mesuré. Elles paient donc 35 % d'or de plus et relèvent la rareté d'un cran — le même levier que la nuit du § 36, qui ajoute un ennemi et paie 20 % de plus.\n\nCE BONUS SE CUMULE AVEC CELUI DE L'HEURE, et c'est voulu : une sortie de nuit au fond des Dunes est le sommet de la courbe de risque, donc le sommet de la courbe de récompense.",
+  "_expected_note": "CE QUE LE JOUEUR A PLAUSIBLEMENT EN ARRIVANT ICI, et c'est l'instrument d'équilibrage qui en avait besoin.\n\n`simulate_combats` jouait avec `Unit.from_hero_class` : des héros de NIVEAU UN, sans équipement, sans arbre de compétences et sans les bonus du royaume. Mesuré, un Guerrier au niveau maximum a 1,60 × ses points de vie et 1,83 × sa force — avant même le premier objet. Les quatre actes ont donc été réglés contre l'équipe la plus faible possible, et un joueur qui arrive à l'acte 4 monté et équipé trouve bien plus facile que les chiffres annoncés.\n\nTUNER LA DIFFICULTÉ SANS ÇA rendrait les premiers actes brutaux et les derniers triviaux : c'est le même écart, appliqué à l'envers. Ces deux champs disent au simulateur quelle équipe opposer à quelle région.\n\nCE QUI N'EST TOUJOURS PAS MODÉLISÉ : l'arbre de compétences (neuf points) et les `grants` du royaume. Les chiffres restent donc un PLANCHER — mais un plancher plausible, au lieu d'un plancher absurde."
+ }
+}

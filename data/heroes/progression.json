@@ -1,0 +1,30 @@
+{
+  "_readme": "Montée en niveau des héros (vision § 33 et § 34).\n\nLES SEUILS SONT CALÉS SUR LES COMBATS, pas tirés au hasard. Une rencontre compte 4 à 6 ennemis : elle rapporte donc 40 à 60 d'expérience de mise à terre, plus 25 pour la victoire, soit environ 75. Le niveau 2 tombe pendant le premier combat, le 3 au deuxième, le 5 vers le quatrième, et le 10 vers le seizième — trois expéditions environ. C'est ce rythme-là qu'il faut juger, pas les nombres eux-mêmes : si une expédition change de longueur, ce sont les seuils qui suivent.\n\nCE QU'UN NIVEAU DONNE. Chaque niveau ajoute des PV — c'est le gain qui se VOIT, sur la barre de vie, à chaque combat (§ 50, « le joueur doit sentir sa progression »). Un niveau sur deux ajoute un point à la statistique qui définit la classe. Et trois niveaux posent un CHOIX définitif : c'est l'amorce de l'arbre de compétences du § 34, et le seul endroit où deux Guerriers de même niveau cessent d'être interchangeables.\n\nLes gains nomment des champs du bloc de statistiques que lit Unit.from_stats. `primary` désigne la statistique de la classe, quelle qu'elle soit.",
+  "max_level": 10,
+  "experience_to_reach": {
+    "2": 30,
+    "3": 80,
+    "4": 160,
+    "5": 260,
+    "6": 390,
+    "7": 550,
+    "8": 730,
+    "9": 940,
+    "10": 1170
+  },
+  "experience_awards": {
+    "_note": "Par ennemi mis à terre, par combat gagné, par objectif de carte rempli.",
+    "enemy_downed": 10,
+    "combat_won": 25,
+    "objective_completed": 15
+  },
+  "per_level": {
+    "_note": "Accordé à CHAQUE montée, sans choix ni condition.",
+    "hit_points": 8
+  },
+  "every_other_level": {
+    "_note": "Accordé aux niveaux pairs, en plus de per_level.",
+    "primary": 1
+  },
+  "_choices_note": "LES CHOIX DE NIVEAU ONT ÉTÉ RETIRÉS et remplacés par l'arbre de compétences (`data/heroes/skill_trees.json`, § 34). Les six options d'alors — Endurant, Affûté, Vif, Concentré, Mortel, Cuirassé — sont devenues des nœuds : rien n'a été perdu, et le joueur choisit maintenant dans quel ORDRE il les prend. Deux monnaies de progression pour le même acte auraient été la complexité que le § 31 refuse."
+}

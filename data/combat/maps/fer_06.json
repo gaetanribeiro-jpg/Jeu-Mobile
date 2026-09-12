@@ -1,0 +1,104 @@
+{
+ "_note": "LA CHARGE : rien que de la cavalerie, sur un terrain nu. Aucun emplacement, donc aucune raison d'avancer — et c'est voulu : cette carte est la preuve par l'absurde. Six montures à six et sept PM arrivent toutes ensemble à la deuxième ronde, et l'équipe qui a attendu les prend toutes en même temps.\n\nLES DEUX COLLINES SONT LA SEULE DÉCISION : un point de dégâts et une case de portée pour qui les tient, et il faut y monter AVANT qu'ils n'arrivent.",
+ "act": 4,
+ "name_key": "MAP_FER_06",
+ "rows": [
+  "............",
+  "............",
+  "...^^.......",
+  "...^^.......",
+  "............",
+  "...^^.......",
+  "...^^.......",
+  "............",
+  "............"
+ ],
+ "objective": {
+  "kind": "eliminate"
+ },
+ "deployment_cells": [
+  [
+   0,
+   2
+  ],
+  [
+   0,
+   3
+  ],
+  [
+   0,
+   4
+  ],
+  [
+   0,
+   5
+  ],
+  [
+   0,
+   6
+  ],
+  [
+   1,
+   3
+  ],
+  [
+   1,
+   4
+  ],
+  [
+   1,
+   5
+  ]
+ ],
+ "enemies": [
+  {
+   "type": "boar_lancer",
+   "cell": [
+    9,
+    2
+   ]
+  },
+  {
+   "type": "boar_lancer",
+   "cell": [
+    9,
+    6
+   ]
+  },
+  {
+   "type": "boar_lancer",
+   "cell": [
+    10,
+    4
+   ]
+  },
+  {
+   "type": "war_pig",
+   "cell": [
+    8,
+    3
+   ]
+  },
+  {
+   "type": "war_pig",
+   "cell": [
+    8,
+    5
+   ]
+  },
+  {
+   "type": "war_pig",
+   "cell": [
+    10,
+    1
+   ]
+  },
+  {
+   "type": "war_pig",
+   "cell": [
+    10,
+    7
+   ]
+  }
+ ]
+}

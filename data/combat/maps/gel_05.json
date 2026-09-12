@@ -1,0 +1,112 @@
+{
+ "_note": "SAISIR DERRIÈRE LA CONGÈRE, EN SIX TOURS. C'est la carte qui rend enfin payante la neige profonde : une bande de deux PM la case sur TOUTE la hauteur, et une échéance de l'autre côté.\n\nCOROLLAIRE MESURÉ DE L'ACTE 4 : un terrain qui ralentit ne coûte RIEN à un joueur qui n'a pas de raison d'avancer. `gel_05` l'avait prouvé trois fois en « éliminer » — congère au milieu 94 % de PV, en bordure 100 %, côté archers 100 %. Le terrain n'était pas le problème, l'OBJECTIF l'était. On ne déplace pas la congère : on donne au joueur une raison de la traverser.\n\nÉCHÉANCE À QUATRE, ET UN CORPS SUR LA CASE À SAISIR. À six tours l'équipe traversait la congère sans se presser : 94 % des PV. On ne saisit pas une case OCCUPÉE — même correction qu'à `maudit_03` et `empire_07`.\n\nET C'EST UN PILLARD QUI TIENT LA CASE, PAS L'ARCHER. Un tirailleur DÉCROCHE : posé sur l'objectif, il en descend au premier héros qui approche et la case se prend toute seule. Ce qui bloque une case, c'est ce qui ne recule pas.\n\nLES CORPS SONT POSÉS SUR LA BANDE, PAS DERRIÈRE. À dix et onze cases ils n'entraient jamais dans le combat : 96 % des PV, parce qu'une équipe qui traverse en trois rondes et saisit ne rencontre personne. Les guêpes sont du côté du joueur — six PM, elles plongent — et les poissons-bombes couvrent la sortie de la congère.\n\nLA MESURE NE SAIT PAS LIRE UNE CARTE À SAISIR, et il faut le savoir avant de lire son chiffre : `simulate_combats` n'a AUCUNE notion d'échéance, il traverse sans jamais craindre l'horloge. `fer_02` rend 81 %, `empire_07` 78 %, celle-ci autant — l'écart ne dit pas laquelle est la plus dure, il dit laquelle se conclut le plus vite. Même famille de réserve que « le pilote ne boit pas ». À REJUGER À L'ŒIL.\n\nÉCHÉANCE À CINQ, PAS À QUATRE. Le pilote conclut en QUATRE rondes pile : à quatre il n'y a aucune marge, et un joueur qui s'arrête pour rendre un coup échoue. Une échéance doit laisser le choix entre foncer et se battre, pas imposer de foncer.",
+ "act": 3,
+ "name_key": "MAP_GEL_05",
+ "rows": [
+  "......bbb...",
+  "......bbb...",
+  "......bbb.~~",
+  "......bbb.~~",
+  "......bbb...",
+  "......bbb.~~",
+  "......bbb.~~",
+  "......bbb...",
+  "......bbb..."
+ ],
+ "objective": {
+  "kind": "seize",
+  "cells": [
+   [
+    11,
+    3
+   ],
+   [
+    11,
+    4
+   ],
+   [
+    11,
+    5
+   ]
+  ],
+  "deadline": 5
+ },
+ "deployment_cells": [
+  [
+   0,
+   2
+  ],
+  [
+   0,
+   3
+  ],
+  [
+   0,
+   4
+  ],
+  [
+   0,
+   5
+  ],
+  [
+   0,
+   6
+  ],
+  [
+   1,
+   3
+  ],
+  [
+   1,
+   4
+  ],
+  [
+   1,
+   5
+  ]
+ ],
+ "enemies": [
+  {
+   "type": "ice_mine",
+   "cell": [
+    9,
+    3
+   ]
+  },
+  {
+   "type": "ice_mine",
+   "cell": [
+    9,
+    5
+   ]
+  },
+  {
+   "type": "raid_archer",
+   "cell": [
+    9,
+    4
+   ]
+  },
+  {
+   "type": "frost_wasp",
+   "cell": [
+    5,
+    2
+   ]
+  },
+  {
+   "type": "frost_wasp",
+   "cell": [
+    5,
+    6
+   ]
+  },
+  {
+   "type": "ice_raider",
+   "cell": [
+    10,
+    4
+   ]
+  }
+ ]
+}

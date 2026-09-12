@@ -1,0 +1,97 @@
+{
+ "_note": "LE CHEF DE GUERRE — le boss. Sa lance exige de n'avoir pas bougé, et il monte une bête à six PM : à chaque activation il choisit entre courir et frapper fort, jamais les deux. La réponse du joueur est de ne jamais rester à sa portée, c'est-à-dire de bouger tout le temps.\n\nET LES CANONS INTERDISENT DE RECULER À L'INFINI : fuir la lance ramène dans leur ligne de tir. La carte est un étau entre ce qui ne bouge pas et ce qui va trop vite — les deux moitiés de l'acte, en même temps.\n\nLES EMPLACEMENTS SONT À PORTÉE DE LA ZONE DE PLACEMENT, et ça a failli ne pas être le cas. Treize sur dix-huit avaient été posés au bord du plateau par réflexe — un canon à onze cases d'une équipe qu'il atteint à neuf ne tire jamais. Pour une bête MOBILE la distance est un délai ; pour un emplacement, c'est une annulation, et `fer_04` rendait 100 % des PV pour cette seule raison. `verify_maps` le refuse désormais.",
+ "act": 4,
+ "name_key": "MAP_FER_08",
+ "rows": [
+  "............",
+  "..f.....#...",
+  "............",
+  "......f.....",
+  "............",
+  "......f.....",
+  "............",
+  "..f.....#...",
+  "............"
+ ],
+ "objective": {
+  "kind": "eliminate"
+ },
+ "deployment_cells": [
+  [
+   0,
+   2
+  ],
+  [
+   0,
+   3
+  ],
+  [
+   0,
+   4
+  ],
+  [
+   0,
+   5
+  ],
+  [
+   0,
+   6
+  ],
+  [
+   1,
+   3
+  ],
+  [
+   1,
+   4
+  ],
+  [
+   1,
+   5
+  ]
+ ],
+ "enemies": [
+  {
+   "type": "the_boar_chief",
+   "cell": [
+    8,
+    4
+   ]
+  },
+  {
+   "type": "boar_lancer",
+   "cell": [
+    7,
+    2
+   ]
+  },
+  {
+   "type": "boar_lancer",
+   "cell": [
+    7,
+    6
+   ]
+  },
+  {
+   "type": "siege_cannon",
+   "cell": [
+    9,
+    2
+   ]
+  },
+  {
+   "type": "siege_cannon",
+   "cell": [
+    9,
+    6
+   ]
+  },
+  {
+   "type": "war_pig",
+   "cell": [
+    9,
+    4
+   ]
+  }
+ ]
+}

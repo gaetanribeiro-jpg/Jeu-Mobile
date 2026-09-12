@@ -1,0 +1,104 @@
+{
+ "_note": "CINQ BÊTES RAPIDES ET AUCUNE QUI ENCAISSE. C'est l'inverse exact de la tortue : tout meurt en un coup, mais tout arrive en même temps et repart hors de portée. La carte demande de choisir QUI tuer d'abord, ce qu'aucune rencontre de l'acte 1 ne demandait vraiment.\n\nELLES SONT POSÉES PRÈS, ET C'EST LA MESURE QUI L'A IMPOSÉ. À dix cases du placement, la carte coûtait ZÉRO POUR CENT des PV : l'essaim passait sa première ronde à courir et mourait à la seconde sans avoir frappé. Ce n'était pas un problème de nombre — en ajouter n'y changeait rien — mais de DISTANCE.\n\nELLE RESTE NUE, ET C'EST VOULU (T11.9). Toutes les autres cartes de l'acte ont reçu du relief ; celle-ci n'a qu'un charnier au centre. Une couverture rendrait l'essaim évitable, et « qui tuer d'abord » n'est une question que si l'on ne peut se cacher de personne.",
+ "act": 2,
+ "name_key": "MAP_DUNES_06",
+ "rows": [
+  "............",
+  "............",
+  "..#.....#...",
+  "............",
+  ".....r......",
+  "............",
+  "..#.....#...",
+  "............",
+  "............"
+ ],
+ "objective": {
+  "kind": "eliminate"
+ },
+ "deployment_cells": [
+  [
+   0,
+   2
+  ],
+  [
+   0,
+   3
+  ],
+  [
+   0,
+   4
+  ],
+  [
+   0,
+   5
+  ],
+  [
+   0,
+   6
+  ],
+  [
+   1,
+   3
+  ],
+  [
+   1,
+   4
+  ],
+  [
+   1,
+   5
+  ]
+ ],
+ "enemies": [
+  {
+   "type": "carrion_bat",
+   "cell": [
+    7,
+    1
+   ]
+  },
+  {
+   "type": "carrion_bat",
+   "cell": [
+    7,
+    7
+   ]
+  },
+  {
+   "type": "carrion_bat",
+   "cell": [
+    9,
+    4
+   ]
+  },
+  {
+   "type": "sand_serpent",
+   "cell": [
+    6,
+    3
+   ]
+  },
+  {
+   "type": "sand_serpent",
+   "cell": [
+    6,
+    5
+   ]
+  },
+  {
+   "type": "carrion_bat",
+   "cell": [
+    8,
+    1
+   ]
+  },
+  {
+   "type": "sand_serpent",
+   "cell": [
+    8,
+    5
+   ]
+  }
+ ]
+}

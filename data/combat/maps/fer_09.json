@@ -1,0 +1,97 @@
+{
+ "_note": "LA GRANDE BOMBARDE — le mini-boss, et il punit la réponse de l'acte. On traverse à couvert, donc on se serre derrière les mêmes rochers ; son obus éclate en croix à dix cases. Rester groupé pour rester à l'abri, ou s'étaler pour éviter l'éclatement et sortir de la couverture : les deux réponses de l'acte se contredisent enfin.\n\nLES EMPLACEMENTS SONT À PORTÉE DE LA ZONE DE PLACEMENT, et ça a failli ne pas être le cas. Treize sur dix-huit avaient été posés au bord du plateau par réflexe — un canon à onze cases d'une équipe qu'il atteint à neuf ne tire jamais. Pour une bête MOBILE la distance est un délai ; pour un emplacement, c'est une annulation, et `fer_04` rendait 100 % des PV pour cette seule raison. `verify_maps` le refuse désormais.",
+ "act": 4,
+ "name_key": "MAP_FER_09",
+ "rows": [
+  "..#.....#...",
+  "............",
+  "..f.....f...",
+  "............",
+  "......##....",
+  "............",
+  "..f.....f...",
+  "............",
+  "..#.....#..."
+ ],
+ "objective": {
+  "kind": "eliminate"
+ },
+ "deployment_cells": [
+  [
+   0,
+   2
+  ],
+  [
+   0,
+   3
+  ],
+  [
+   0,
+   4
+  ],
+  [
+   0,
+   5
+  ],
+  [
+   0,
+   6
+  ],
+  [
+   1,
+   3
+  ],
+  [
+   1,
+   4
+  ],
+  [
+   1,
+   5
+  ]
+ ],
+ "enemies": [
+  {
+   "type": "great_bombard",
+   "cell": [
+    10,
+    4
+   ]
+  },
+  {
+   "type": "watch_tower",
+   "cell": [
+    7,
+    2
+   ]
+  },
+  {
+   "type": "watch_tower",
+   "cell": [
+    7,
+    6
+   ]
+  },
+  {
+   "type": "boar_lancer",
+   "cell": [
+    6,
+    3
+   ]
+  },
+  {
+   "type": "boar_lancer",
+   "cell": [
+    6,
+    5
+   ]
+  },
+  {
+   "type": "repair_shed",
+   "cell": [
+    11,
+    4
+   ]
+  }
+ ]
+}

@@ -1,0 +1,308 @@
+{
+ "_readme": "LE CONSEIL DU ROYAUME (T12.10) — les évènements qui attendent le joueur à son RETOUR.\n\nPOURQUOI AU RETOUR. Le § 43 veut que chaque activité influence les autres, et l'expédition influençait déjà la ville (le butin, la menace, le cycle de production) sans que la ville lui rende autre chose que des chiffres. Un conseil qui attend au retour donne à la ville sa propre étape de décision, au même endroit de la boucle que « rentrer ou continuer » : on rentre, et quelque chose s'est passé pendant qu'on n'était pas là.\n\nLA SEULE RÈGLE DU § 40 VAUT ICI AUSSI : « les événements doivent créer des décisions ». Un évènement qui donne trente pierres n'est pas un évènement, c'est une récompense déguisée en texte. Chacun offre donc au moins deux options qui s'excluent, et `verify_kingdom` refuse celui dont une option dominerait une autre sur TOUTE la ligne — le même barème que `verify_world` pour l'expédition.\n\nCE QU'UN CONSEIL DÉPENSE N'EST PAS CE QU'UNE ÉTAPE DÉPENSE. Une étape d'expédition se paie en or et en points de vie ; un conseil se paie en BOIS, en PIERRE, en VIVRES et en GENS — c'est-à-dire dans la monnaie de la ville, celle que le joueur a passé son cycle à produire. C'est ce qui empêche le conseil d'être une seconde étape d'expédition posée au mauvais endroit.\n\nLE TIRAGE EST UNE FONCTION DU CYCLE, pas un tirage. `Kingdom.run_cycle` DÉRIVE son générateur du numéro de cycle : sortir de l'écran du royaume et y revenir rend donc le même conseil, et le conseil ne décale pas le hasard des combats à venir. Même règle que les candidats du recrutement et que les rochers du rivage.",
+
+ "pool": {
+  "_note": "`recent` est le nombre de conseils qu'on refuse de reproposer. Trois sur neuf évènements : assez pour qu'un joueur ne voie pas deux fois de suite la même querelle, pas assez pour épuiser la table et forcer `draw` à la rouvrir.",
+  "recent": 3,
+  "minimum_pool": 6
+ },
+
+ "events": {
+
+  "dispute": {
+   "name_key": "COUNCIL_DISPUTE",
+   "text_key": "COUNCIL_DISPUTE_TEXT",
+   "weight": 10,
+   "options": [
+    {
+     "label_key": "COUNCIL_DISPUTE_0",
+     "success": { "food": -25, "text_key": "COUNCIL_DISPUTE_0_OK" }
+    },
+    {
+     "label_key": "COUNCIL_DISPUTE_1",
+     "success": { "population": -1, "text_key": "COUNCIL_DISPUTE_1_OK" }
+    },
+    {
+     "label_key": "COUNCIL_DISPUTE_2",
+     "success": {
+      "wood": -20,
+      "trade_xp": { "pasture": 6 },
+      "text_key": "COUNCIL_DISPUTE_2_OK"
+     }
+    }
+   ]
+  },
+
+  "good_seam": {
+   "name_key": "COUNCIL_SEAM",
+   "text_key": "COUNCIL_SEAM_TEXT",
+   "weight": 9,
+   "options": [
+    {
+     "label_key": "COUNCIL_SEAM_0",
+     "success": { "stone": 40, "text_key": "COUNCIL_SEAM_0_OK" }
+    },
+    {
+     "label_key": "COUNCIL_SEAM_1",
+     "success": { "wood": -25, "stone": 80, "text_key": "COUNCIL_SEAM_1_OK" }
+    },
+    {
+     "label_key": "COUNCIL_SEAM_2",
+     "success": {
+      "stone": 15,
+      "trade_xp": { "quarry": 9 },
+      "text_key": "COUNCIL_SEAM_2_OK"
+     }
+    }
+   ]
+  },
+
+  "storm": {
+   "name_key": "COUNCIL_STORM",
+   "text_key": "COUNCIL_STORM_TEXT",
+   "weight": 9,
+   "options": [
+    {
+     "label_key": "COUNCIL_STORM_0",
+     "success": { "wood": -30, "text_key": "COUNCIL_STORM_0_OK" }
+    },
+    {
+     "label_key": "COUNCIL_STORM_1",
+     "success": { "food": -35, "text_key": "COUNCIL_STORM_1_OK" }
+    },
+    {
+     "label_key": "COUNCIL_STORM_2",
+     "success": {
+      "gold": -40,
+      "standing": { "roche_claire": 1 },
+      "text_key": "COUNCIL_STORM_2_OK"
+     }
+    }
+   ]
+  },
+
+  "deserter": {
+   "name_key": "COUNCIL_DESERTER",
+   "text_key": "COUNCIL_DESERTER_TEXT",
+   "weight": 8,
+   "options": [
+    {
+     "label_key": "COUNCIL_DESERTER_0",
+     "success": { "population": -1, "gold": 25, "text_key": "COUNCIL_DESERTER_0_OK" }
+    },
+    {
+     "label_key": "COUNCIL_DESERTER_1",
+     "success": { "gold": -45, "text_key": "COUNCIL_DESERTER_1_OK" }
+    },
+    {
+     "label_key": "COUNCIL_DESERTER_2",
+     "chance": 0.4,
+     "success": { "gold": 55, "text_key": "COUNCIL_DESERTER_2_OK" },
+     "failure": { "population": -1, "text_key": "COUNCIL_DESERTER_2_KO" }
+    }
+   ]
+  },
+
+  "newcomers": {
+   "name_key": "COUNCIL_NEWCOMERS",
+   "text_key": "COUNCIL_NEWCOMERS_TEXT",
+   "weight": 8,
+   "options": [
+    {
+     "label_key": "COUNCIL_NEWCOMERS_0",
+     "success": { "population": 2, "food": -40, "text_key": "COUNCIL_NEWCOMERS_0_OK" }
+    },
+    {
+     "label_key": "COUNCIL_NEWCOMERS_1",
+     "success": { "text_key": "COUNCIL_NEWCOMERS_1_OK" }
+    },
+    {
+     "label_key": "COUNCIL_NEWCOMERS_2",
+     "success": {
+      "food": -20,
+      "standing": { "valmont": 1 },
+      "text_key": "COUNCIL_NEWCOMERS_2_OK"
+     }
+    }
+   ]
+  },
+
+  "caravan": {
+   "name_key": "COUNCIL_CARAVAN",
+   "text_key": "COUNCIL_CARAVAN_TEXT",
+   "weight": 10,
+   "options": [
+    {
+     "label_key": "COUNCIL_CARAVAN_0",
+     "success": {
+      "wood": -40, "food": 55,
+      "standing": { "valmont": 1 },
+      "text_key": "COUNCIL_CARAVAN_0_OK"
+     }
+    },
+    {
+     "label_key": "COUNCIL_CARAVAN_1",
+     "success": { "standing": { "valmont": -1 }, "text_key": "COUNCIL_CARAVAN_1_OK" }
+    },
+    {
+     "label_key": "COUNCIL_CARAVAN_2",
+     "chance": 0.5,
+     "success": {
+      "wood": -30, "food": 60,
+      "standing": { "valmont": 1 },
+      "text_key": "COUNCIL_CARAVAN_2_OK"
+     },
+     "failure": { "standing": { "valmont": -2 }, "text_key": "COUNCIL_CARAVAN_2_KO" }
+    }
+   ]
+  },
+
+  "masons": {
+   "name_key": "COUNCIL_MASONS",
+   "text_key": "COUNCIL_MASONS_TEXT",
+   "weight": 9,
+   "options": [
+    {
+     "label_key": "COUNCIL_MASONS_0",
+     "success": {
+      "gold": -60, "stone": 90,
+      "standing": { "roche_claire": 1 },
+      "text_key": "COUNCIL_MASONS_0_OK"
+     }
+    },
+    {
+     "label_key": "COUNCIL_MASONS_1",
+     "success": {
+      "food": -70, "stone": 90,
+      "standing": { "roche_claire": 1 },
+      "text_key": "COUNCIL_MASONS_1_OK"
+     }
+    },
+    {
+     "label_key": "COUNCIL_MASONS_2",
+     "success": { "standing": { "roche_claire": -1 }, "text_key": "COUNCIL_MASONS_2_OK" }
+    }
+   ]
+  },
+
+  "raid_warning": {
+   "name_key": "COUNCIL_WARNING",
+   "text_key": "COUNCIL_WARNING_TEXT",
+   "weight": 8,
+   "options": [
+    {
+     "label_key": "COUNCIL_WARNING_0",
+     "success": {
+      "gold": -50, "threat": -15,
+      "standing": { "fort_aubin": 1 },
+      "text_key": "COUNCIL_WARNING_0_OK"
+     }
+    },
+    {
+     "label_key": "COUNCIL_WARNING_1",
+     "success": { "food": -25, "threat": -8, "text_key": "COUNCIL_WARNING_1_OK" }
+    },
+    {
+     "label_key": "COUNCIL_WARNING_2",
+     "success": {
+      "threat": 10,
+      "standing": { "fort_aubin": -1 },
+      "text_key": "COUNCIL_WARNING_2_OK"
+     }
+    }
+   ]
+  },
+
+  "mercenaries": {
+   "_note": "LA SECONDE PORTE DE FORT-AUBIN, et elle est là pour une raison précise : un conseil que le crédit OUVRE ne doit pas dépendre d'un seul évènement. Avec la seule prime aux éclaireurs, un joueur qui la refuse une fois attend indéfiniment son champion, et l'offre gated devient une loterie au lieu d'une récompense. Deux sources, deux façons de payer.",
+   "name_key": "COUNCIL_MERCENARIES",
+   "text_key": "COUNCIL_MERCENARIES_TEXT",
+   "weight": 8,
+   "options": [
+    {
+     "label_key": "COUNCIL_MERCENARIES_0",
+     "success": {
+      "food": -50, "gold": 90,
+      "standing": { "fort_aubin": 1 },
+      "text_key": "COUNCIL_MERCENARIES_0_OK"
+     }
+    },
+    {
+     "label_key": "COUNCIL_MERCENARIES_1",
+     "success": {
+      "stone": -60, "gold": 90,
+      "standing": { "fort_aubin": 1 },
+      "text_key": "COUNCIL_MERCENARIES_1_OK"
+     }
+    },
+    {
+     "label_key": "COUNCIL_MERCENARIES_2",
+     "success": { "standing": { "fort_aubin": -1 }, "text_key": "COUNCIL_MERCENARIES_2_OK" }
+    }
+   ]
+  },
+
+  "feud": {
+   "_note": "L'ÉVÈNEMENT QUI EMPÊCHE D'ÊTRE L'AMI DE TOUT LE MONDE. Sans lui, le crédit ne serait qu'un compteur qui monte — une barre de progression déguisée en diplomatie. Ici il est à somme nulle : ce qu'on gagne d'un côté se perd de l'autre, et refuser de choisir fâche les deux. C'est le seul endroit du jeu où une décision ne coûte QUE du crédit.",
+   "name_key": "COUNCIL_FEUD",
+   "text_key": "COUNCIL_FEUD_TEXT",
+   "weight": 7,
+   "options": [
+    {
+     "label_key": "COUNCIL_FEUD_0",
+     "success": {
+      "gold": -30,
+      "standing": { "valmont": 1, "roche_claire": -1 },
+      "text_key": "COUNCIL_FEUD_0_OK"
+     }
+    },
+    {
+     "label_key": "COUNCIL_FEUD_1",
+     "success": {
+      "gold": -30,
+      "standing": { "roche_claire": 1, "valmont": -1 },
+      "text_key": "COUNCIL_FEUD_1_OK"
+     }
+    },
+    {
+     "label_key": "COUNCIL_FEUD_2",
+     "success": {
+      "standing": { "valmont": -1, "roche_claire": -1 },
+      "text_key": "COUNCIL_FEUD_2_OK"
+     }
+    }
+   ]
+  },
+
+  "champion": {
+   "_note": "CE QUE LE CRÉDIT OUVRE, ET QU'AUCUNE SOMME N'ACHÈTE. L'évènement ne se tire pas en dessous de deux crédits chez Fort-Aubin : il faut avoir commercé pour qu'on vous confie un champion. C'est la différence entre acheter un objet et en trouver un — et c'est aussi la seule façon d'obtenir un héros DÉJÀ AGUERRI, que la caserne ne sait pas faire, ses trois candidats sortant toujours au niveau 1.",
+   "name_key": "COUNCIL_CHAMPION",
+   "text_key": "COUNCIL_CHAMPION_TEXT",
+   "weight": 6,
+   "requires_standing": { "town": "fort_aubin", "minimum": 2 },
+   "options": [
+    {
+     "label_key": "COUNCIL_CHAMPION_0",
+     "success": {
+      "gold": -120, "food": -40,
+      "hero": { "class": "lancer", "level": 3 },
+      "text_key": "COUNCIL_CHAMPION_0_OK"
+     }
+    },
+    {
+     "label_key": "COUNCIL_CHAMPION_1",
+     "success": {
+      "gold": -50,
+      "potions": { "firebomb": 2 },
+      "text_key": "COUNCIL_CHAMPION_1_OK"
+     }
+    },
+    {
+     "label_key": "COUNCIL_CHAMPION_2",
+     "success": { "standing": { "fort_aubin": -1 }, "text_key": "COUNCIL_CHAMPION_2_OK" }
+    }
+   ]
+  }
+
+ }
+}

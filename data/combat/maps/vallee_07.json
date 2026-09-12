@@ -1,0 +1,121 @@
+{
+  "_note": "Extraire. La cache est au fond des ruines, a l'oppose de la sortie : il faut traverser la carte, ramasser en passant — le ramassage ne coute pas de PA, seulement le detour — et refaire le chemin en sens inverse avec tout le monde reveille dans le dos. Les ruines ajoutent un degat a qui s'y tient : la cache est un mauvais endroit ou trainer.",
+  "act": 1,
+  "name_key": "MAP_VALLEE_07",
+  "rows": [
+    "............",
+    ".#.......rr.",
+    ".........rr.",
+    "............",
+    "............",
+    "....#.......",
+    "...^........",
+    "............",
+    "............"
+  ],
+  "objective": {
+    "kind": "extract",
+    "pickup_cells": [
+      [
+        9,
+        1
+      ],
+      [
+        10,
+        1
+      ],
+      [
+        9,
+        2
+      ],
+      [
+        10,
+        2
+      ]
+    ],
+    "cells": [
+      [
+        0,
+        4
+      ],
+      [
+        0,
+        5
+      ]
+    ]
+  },
+  "deployment_cells": [
+    [
+      0,
+      3
+    ],
+    [
+      0,
+      4
+    ],
+    [
+      0,
+      5
+    ],
+    [
+      1,
+      3
+    ],
+    [
+      1,
+      4
+    ],
+    [
+      1,
+      5
+    ],
+    [
+      2,
+      4
+    ]
+  ],
+  "enemies": [
+    {
+      "type": "hex_shaman",
+      "cell": [
+        9,
+        1
+      ]
+    },
+    {
+      "type": "spear_goblin",
+      "cell": [
+        10,
+        2
+      ]
+    },
+    {
+      "type": "slingshot_gnome",
+      "cell": [
+        5,
+        7
+      ]
+    },
+    {
+      "type": "thief",
+      "cell": [
+        7,
+        5
+      ]
+    },
+    {
+      "type": "spear_goblin",
+      "cell": [
+        6,
+        3
+      ]
+    },
+    {
+      "type": "gnome",
+      "cell": [
+        6,
+        5
+      ]
+    }
+  ]
+}

@@ -1,0 +1,120 @@
+{
+ "_note": "Escorter un villageois jusqu'au bord oppose. Onze cases a traverser, quatre PM par ronde : c'est trois rondes de marche sans un seul detour. Le Voleur joue avant tout le monde et vise l'arriere. La zone de placement entoure le villageois sans le recouvrir : on choisit qui marche devant et qui ferme la file.",
+ "act": 1,
+ "name_key": "MAP_VALLEE_06",
+ "rows": [
+  "............",
+  "............",
+  "...f....f...",
+  "............",
+  "............",
+  "............",
+  "...f....f...",
+  "............",
+  "............"
+ ],
+ "objective": {
+  "kind": "escort",
+  "subject_ids": [
+   100
+  ],
+  "cells": [
+   [
+    11,
+    3
+   ],
+   [
+    11,
+    4
+   ],
+   [
+    11,
+    5
+   ]
+  ]
+ },
+ "deployment_cells": [
+  [
+   0,
+   3
+  ],
+  [
+   0,
+   5
+  ],
+  [
+   1,
+   3
+  ],
+  [
+   1,
+   4
+  ],
+  [
+   1,
+   5
+  ],
+  [
+   2,
+   3
+  ],
+  [
+   2,
+   4
+  ],
+  [
+   2,
+   5
+  ]
+ ],
+ "allies": [
+  {
+   "type": "mage",
+   "cell": [
+    0,
+    4
+   ],
+   "sprite": "pawn",
+   "sprite_variant": "hammer",
+   "_note": "LE VILLAGEOIS EST ENFIN UN PAWN. Les cartes de l'acte 1 le réclamaient en toutes lettres depuis la Phase 1 — « devrait être un Pawn, le pack fournit le sprite » — et il restait un Mage faute d'un moyen de le DIRE. Ses statistiques sont toujours celles d'un Mage, et c'est très bien : ce qu'on EST et ce qu'on MONTRE sont deux déclarations séparées depuis T11.8. L'outil le distingue d'un héros mieux que sa couleur ne le ferait — un Pawn ne change que de 7,9 % de ses pixels d'une couleur à l'autre.",
+   "name_key": "UNIT_VILLAGER"
+  }
+ ],
+ "enemies": [
+  {
+   "type": "thief",
+   "cell": [
+    9,
+    2
+   ]
+  },
+  {
+   "type": "spear_goblin",
+   "cell": [
+    8,
+    4
+   ]
+  },
+  {
+   "type": "hex_shaman",
+   "cell": [
+    9,
+    6
+   ]
+  },
+  {
+   "type": "gnome",
+   "cell": [
+    7,
+    2
+   ]
+  },
+  {
+   "type": "spear_goblin",
+   "cell": [
+    10,
+    5
+   ]
+  }
+ ]
+}

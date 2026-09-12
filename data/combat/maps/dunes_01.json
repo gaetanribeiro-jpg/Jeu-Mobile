@@ -1,0 +1,101 @@
+{
+ "_note": "LA PISTE OUVERTE, ET LA PREMIÈRE LEÇON DE L'ACTE : LA HAUTEUR EST À EUX.\n\nLa crête de dunes court le long du bord droit, donc c'est l'ennemi qui l'occupe au départ. Un tireur posté dessus porte une case plus loin et frappe un point plus fort : la carte apprend le relief en le faisant SUBIR, ce qui se retient mieux que de l'offrir.\n\nDeux arbres morts pour toute couverture, et un tas d'ossements au milieu du chemin — la case coûte un point de dégâts de plus à qui s'y arrête. L'acte 1 n'avait rien qui punisse un mauvais arrêt.\n\nLA HAUTEUR EST TENUE, ET C'EST LE 2026-09-11. `hill` accorde +1 de PORTÉE et +1 de DÉGÂTS depuis la Phase 1, et sur quatorze cartes à collines, deux seulement avaient quelqu'un dessus — par accident. Le relief servait au joueur, ou à personne. Un tireur perché dépasse l'Archer d'une case : attendre coûte, donc monter le déloger devient la question.",
+ "act": 2,
+ "name_key": "MAP_DUNES_01",
+ "rows": [
+  "............",
+  "............",
+  "...f......^.",
+  "..........^.",
+  "....r.......",
+  "..........^.",
+  "...f......^.",
+  "............",
+  "............"
+ ],
+ "objective": {
+  "kind": "eliminate"
+ },
+ "deployment_cells": [
+  [
+   0,
+   2
+  ],
+  [
+   0,
+   3
+  ],
+  [
+   0,
+   4
+  ],
+  [
+   0,
+   5
+  ],
+  [
+   0,
+   6
+  ],
+  [
+   1,
+   3
+  ],
+  [
+   1,
+   4
+  ],
+  [
+   1,
+   5
+  ],
+  [
+   2,
+   4
+  ]
+ ],
+ "enemies": [
+  {
+   "type": "lizard",
+   "cell": [
+    9,
+    3
+   ]
+  },
+  {
+   "type": "lizard",
+   "cell": [
+    9,
+    5
+   ]
+  },
+  {
+   "type": "sand_serpent",
+   "cell": [
+    10,
+    4
+   ]
+  },
+  {
+   "type": "dune_spider",
+   "cell": [
+    10,
+    3
+   ]
+  },
+  {
+   "type": "lizard",
+   "cell": [
+    11,
+    2
+   ]
+  },
+  {
+   "type": "lizard",
+   "cell": [
+    11,
+    6
+   ]
+  }
+ ]
+}

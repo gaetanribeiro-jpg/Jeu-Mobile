@@ -1,0 +1,170 @@
+{
+ "_readme": "LE SOL DU ROYAUME (T12.11) — une ÎLE, pas un aplat d'herbe.\n\nLE REPROCHE DE GAETAN, MOT POUR MOT : « c'est juste des bâtiments posés sur l'herbe ! Pas de décoration, pas de délimitations, pas d'animations ». C'était exact : `_draw_ground` carrelait UNE tuile d'herbe sur toute la surface, et six bâtiments se posaient dessus en deux rangées droites. Aucun rivage, aucun relief, aucune clôture, rien qui bouge.\n\nCE FICHIER EST LA MÊME CHOSE QUE `data/ui/title.json`, et c'est délibéré : l'écran de titre a résolu ce problème en T11.3 en bâtissant un vrai `CombatBoard` rendu par le MÊME `terrain_view` que les combats. Le royaume en hérite gratuitement les rives du tileset, l'écume animée, les rochers d'eau, la mer et son fondu — et il ne pourra jamais diverger du jeu, puisque c'est le même code qui le dessine.\n\nLA GRILLE EST LA TOILE. 15 × 9 cases de 64 px = 960 × 576, et c'est exactement `canvas` dans `buildings.json` : les emplacements des bâtiments sont donc des pixels de CETTE grille, et `verify_kingdom` peut vérifier qu'aucun ne tombe à l'eau ou dans un rocher.\n\nLA CLÔTURE EXISTAIT DÉJÀ. Le carnet répétait « pas de sprite de mur ni de porte » ; `wooden_fence` dort dans la catégorie `extra` depuis le premier jour et le terrain `palisade` la dessine depuis l'acte 4. La délimitation demandée était donc à écrire, pas à dessiner. Septième fois que la catégorie `extra` contredit l'inventaire.\n\nLA PORTE EST UN TROU DANS LA LIGNE. Une enceinte fermée aurait demandé un sprite de portail que le pack n'a pas ; une palissade interrompue au milieu se lit comme une entrée, et c'est ce que le pack sait dessiner.",
+ "tile": 64,
+ "_rows_note": "La légende est celle des cartes de combat (`terrain.json`) : « . » herbe, « ~ » eau, « f » bosquet, « ^ » colline, « # » rocher, « p » palissade.\n\nCE QUI EST LAISSÉ LIBRE EST AUSSI IMPORTANT QUE CE QUI EST POSÉ. La rangée 3 porte les bâtiments et la rangée 7 les gisements : elles sont vides de tout relief, et les rangées 1 à 2 le sont dans les colonnes des bâtiments, parce qu'un château fait 176 px de haut une fois réduit, soit près de trois cases — un arbre posé là lui pousserait dans le toit.",
+ "rows": [
+  "~~~.#.###..~~~~",
+  "~.............~",
+  "~.............~",
+  "...............",
+  "...............",
+  "ff..........~~.",
+  "f..........~~~.",
+  "...............",
+  "~~..f.....f..~~"
+ ],
+ "_props_note": "Ce que le terrain ne dit pas et qui fait le village : les souches du bûcheron, les outils posés, les buissons. Tout vient du pack, rien n'est dessiné.\n\nUNE SOUCHE DIT CE QUI S'EST PASSÉ ICI. Trois arbres coupés à côté du chantier de bois racontent le travail mieux qu'un arbre de plus — et le pack en dessine quatre, inemployées jusqu'ici.",
+ "props": [
+  {
+   "cell": [
+    3,
+    6
+   ],
+   "category": "resources",
+   "key": "stump_1",
+   "scale": 0.45
+  },
+  {
+   "cell": [
+    4,
+    6
+   ],
+   "category": "resources",
+   "key": "stump_3",
+   "scale": 0.45
+  },
+  {
+   "cell": [
+    3,
+    5
+   ],
+   "category": "resources",
+   "key": "stump_2",
+   "scale": 0.4
+  },
+  {
+   "cell": [
+    5,
+    6
+   ],
+   "category": "resources",
+   "key": "tool_01",
+   "scale": 0.35
+  },
+  {
+   "cell": [
+    8,
+    6
+   ],
+   "category": "decorations",
+   "key": "bushe1",
+   "scale": 0.5
+  },
+  {
+   "cell": [
+    13,
+    2
+   ],
+   "category": "decorations",
+   "key": "bushe3",
+   "scale": 0.5
+  },
+  {
+   "cell": [
+    0,
+    4
+   ],
+   "category": "decorations",
+   "key": "bushe2",
+   "scale": 0.5
+  },
+  {
+   "cell": [
+    12,
+    8
+   ],
+   "category": "decorations",
+   "key": "rock1",
+   "scale": 0.6
+  },
+  {
+   "cell": [
+    14,
+    3
+   ],
+   "category": "decorations",
+   "key": "rock2",
+   "scale": 0.6
+  },
+  {
+   "cell": [
+    9,
+    6
+   ],
+   "category": "resources",
+   "key": "gold_stone_2",
+   "scale": 0.5
+  }
+ ],
+ "_clouds_note": "HUIT NUAGES DORMAIENT DANS LE PACK, et l'écran de titre est le seul à les avoir employés. Une ombre qui traverse lentement suffit à faire qu'un décor respire — c'est l'animation la moins chère du jeu, et celle qui se voit le plus longtemps : les moutons et les bûcherons bougent sur place, un nuage traverse.\n\nLA VITESSE EST EN CASES PAR SECONDE, et `y` en cases. Elles sont lentes exprès : un nuage rapide attire l'œil sur le décor au lieu du royaume.",
+ "clouds": [
+  {
+   "key": "clouds_02",
+   "y": 0.3,
+   "speed": 0.35,
+   "start": 1.0,
+   "alpha": 0.28,
+   "scale": 0.7
+  },
+  {
+   "key": "clouds_05",
+   "y": 4.4,
+   "speed": 0.2,
+   "start": 9.0,
+   "alpha": 0.2,
+   "scale": 0.85
+  },
+  {
+   "key": "clouds_07",
+   "y": 7.6,
+   "speed": 0.26,
+   "start": 5.0,
+   "alpha": 0.24,
+   "scale": 0.75
+  }
+ ],
+ "_fence_note": "LA CLÔTURE EST DESSINÉE ICI, PAS DANS LE TERRAIN, et c'est la capture qui l'a imposé. Le terrain `palisade` n'a qu'UNE tuile pour tout le jeu — la verticale — parce qu'une case de combat ne sait pas si elle est un bout de ligne ou un coin. Posée en rangée, elle donnait des PIQUETS ISOLÉS espacés de 64 px, pas une enceinte. Le pack dessine pourtant la clôture entière : un atlas de 4 × 3 avec ses coins, ses montants et ses traverses.\n\nLe royaume, lui, SAIT où sont ses coins : sa clôture ne bouge jamais. Il déclare donc ses lignes et les morceaux à employer, et la rangée devient une vraie palissade. Changer la tuile du terrain `palisade` aurait touché les cartes de l'acte 4, qui l'emploient à la verticale.\n\nLA PORTE EST UN TROU DANS LA LIGNE : le pack ne dessine pas de portail, mais une enceinte interrompue au milieu se lit comme une entrée.",
+ "fence": {
+  "atlas": "wooden_fence_wooden_fence_64x64_tile",
+  "parts": {
+   "start": [
+    0,
+    0
+   ],
+   "run": [
+    1,
+    0
+   ],
+   "run_alt": [
+    2,
+    0
+   ],
+   "end": [
+    3,
+    0
+   ]
+  },
+  "lines": [
+   {
+    "row": 1,
+    "from": 1,
+    "to": 6
+   },
+   {
+    "row": 1,
+    "from": 9,
+    "to": 13
+   }
+  ]
+ }
+}

@@ -1,0 +1,112 @@
+{
+ "_note": "SAISIR LE POSTE, EN CINQ TOURS. L'échéance interdit l'usure, et l'usure est justement ce que la ligne impériale sait tenir. Les deux moitiés se contredisent enfin — c'est ce qu'on demande à une carte d'acte tardif.\n\nLA BOUE EST DU CÔTÉ DU JOUEUR ET ELLE COÛTE : avec une échéance il DOIT avancer, donc deux PM la case se paient pour de bon. Corollaire mesuré de l'acte 4.\n\nMESURÉE À 94 % DES PV, PUIS POSÉE SUR L'OBJECTIF. On ne saisit pas une case OCCUPÉE : le boucher tient l'une des trois, un sapeur une autre, et l'échéance court pendant qu'on les abat. Même correction que `maudit_03`.",
+ "act": 6,
+ "name_key": "MAP_EMPIRE_07",
+ "rows": [
+  "............",
+  "............",
+  "...bb.......",
+  "...bb.......",
+  "..bbb.......",
+  "...bb.......",
+  "...bb.......",
+  "............",
+  "............"
+ ],
+ "objective": {
+  "kind": "seize",
+  "cells": [
+   [
+    11,
+    3
+   ],
+   [
+    11,
+    4
+   ],
+   [
+    11,
+    5
+   ]
+  ],
+  "deadline": 5
+ },
+ "deployment_cells": [
+  [
+   0,
+   2
+  ],
+  [
+   0,
+   3
+  ],
+  [
+   0,
+   4
+  ],
+  [
+   0,
+   5
+  ],
+  [
+   0,
+   6
+  ],
+  [
+   1,
+   3
+  ],
+  [
+   1,
+   4
+  ],
+  [
+   1,
+   5
+  ]
+ ],
+ "enemies": [
+  {
+   "type": "black_lancer",
+   "cell": [
+    8,
+    3
+   ]
+  },
+  {
+   "type": "black_lancer",
+   "cell": [
+    8,
+    5
+   ]
+  },
+  {
+   "type": "black_archer",
+   "cell": [
+    10,
+    3
+   ]
+  },
+  {
+   "type": "black_shieldman",
+   "cell": [
+    11,
+    4
+   ]
+  },
+  {
+   "type": "black_sapper",
+   "cell": [
+    6,
+    4
+   ]
+  },
+  {
+   "type": "black_sapper",
+   "cell": [
+    11,
+    5
+   ]
+  }
+ ]
+}

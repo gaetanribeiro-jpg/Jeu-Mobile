@@ -1,0 +1,90 @@
+{
+  "_note": "LE MINI-BOSS DES TERRES VERTES (T7.2). Jusqu'ici `vallee_07` tenait le rôle par défaut, et une étape annoncée « mini-boss » qui servait une rencontre ordinaire était une promesse non tenue.\n\nLA CARTE EST FAITE POUR L'ENCORNADE. Quatre éperons de rocher réduisent le passage à une bande centrale de trois rangées, plus deux couloirs d'UNE case le long des bords. L'Encornade du Minotaure traverse deux cases en ligne : se ranger derrière son Guerrier — la bonne réponse partout ailleurs — devient ici la mauvaise, et c'est la seule chose que cette carte a à enseigner. Les couloirs de bord sont la sortie de secours : longs, exposés, mais ils existent.\n\nLES BOSQUETS ne bloquent pas le passage, ils bloquent la VUE : les deux gnolls tirent depuis le fond de la bande centrale, et il faut décider si l'on s'abrite en avançant lentement ou si l'on fonce sur le Minotaure. Sans eux, le goulet ne serait qu'un couloir.\n\nLES GNOLLS SONT EN (11,3) ET (11,5), PAS DERRIÈRE LES ÉPERONS. Ils y avaient d'abord été posés — dans le rocher même, où ils étaient aveugles et d'où ils ne pouvaient pas revenir. `verify_maps` contrôle désormais l'assise des ennemis comme celle des héros.\n\nPAS DE LIMITE DE RONDES : c'est un mini-boss, pas une course. Le § 22 veut qu'on ait le temps d'enchaîner — provoquer, ralentir, frapper — et une horloge l'interdirait.",
+  "act": 1,
+  "name_key": "MAP_VALLEE_09",
+  "objective": {
+    "kind": "eliminate"
+  },
+  "deployment_cells": [
+    [
+      0,
+      2
+    ],
+    [
+      0,
+      3
+    ],
+    [
+      0,
+      4
+    ],
+    [
+      0,
+      5
+    ],
+    [
+      0,
+      6
+    ],
+    [
+      1,
+      3
+    ],
+    [
+      1,
+      4
+    ],
+    [
+      1,
+      5
+    ]
+  ],
+  "enemies": [
+    {
+      "type": "minotaur",
+      "cell": [
+        9,
+        4
+      ]
+    },
+    {
+      "type": "gnoll",
+      "cell": [
+        11,
+        3
+      ]
+    },
+    {
+      "type": "gnoll",
+      "cell": [
+        11,
+        5
+      ]
+    },
+    {
+      "type": "spear_goblin",
+      "cell": [
+        7,
+        3
+      ]
+    },
+    {
+      "type": "spear_goblin",
+      "cell": [
+        7,
+        5
+      ]
+    }
+  ],
+  "rows": [
+    "............",
+    ".##......##.",
+    ".##.f..f.##.",
+    "....f..f....",
+    "............",
+    "....f..f....",
+    ".##.f..f.##.",
+    ".##......##.",
+    "............"
+  ]
+}

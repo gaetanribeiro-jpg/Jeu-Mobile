@@ -1,0 +1,98 @@
+{
+ "_note": "TENIR PENDANT QUE TOUT BOIT. Cinq rondes, et c'est la seule carte de l'acte où ne pas bouger est la bonne réponse — si toutes obligeaient à avancer, avancer cesserait d'être une décision.\n\nLE COUVERT EST LA CONDITION : la floraison exige la ligne de vue, les rochers et les bosquets la coupent. Elle est du côté du joueur pour une fois, et c'est le seul cas où c'est juste — il ne cherche pas à traverser.\n\nLES DEUX FLORAISONS SONT À SEPT CASES PILE de la zone de placement, mesuré en distance de Manhattan : à huit elles ne tiraient jamais et la carte devenait un décor qui attend. `verify_maps` l'a refusé deux fois de suite pendant l'écriture.",
+ "act": 5,
+ "name_key": "MAP_MAUDIT_07",
+ "rows": [
+  "..#.........",
+  "............",
+  "..f....#....",
+  "............",
+  "..#.........",
+  "............",
+  "..f....#....",
+  "............",
+  "..#........."
+ ],
+ "objective": {
+  "kind": "survive",
+  "turns": 5
+ },
+ "deployment_cells": [
+  [
+   0,
+   2
+  ],
+  [
+   0,
+   3
+  ],
+  [
+   0,
+   4
+  ],
+  [
+   0,
+   5
+  ],
+  [
+   0,
+   6
+  ],
+  [
+   1,
+   3
+  ],
+  [
+   1,
+   4
+  ],
+  [
+   1,
+   5
+  ]
+ ],
+ "enemies": [
+  {
+   "type": "pale_bloom",
+   "cell": [
+    6,
+    1
+   ]
+  },
+  {
+   "type": "pale_bloom",
+   "cell": [
+    6,
+    7
+   ]
+  },
+  {
+   "type": "barrow_mouth",
+   "cell": [
+    4,
+    4
+   ]
+  },
+  {
+   "type": "vampire_spawn",
+   "cell": [
+    7,
+    3
+   ]
+  },
+  {
+   "type": "vampire_spawn",
+   "cell": [
+    7,
+    5
+   ]
+  },
+  {
+   "type": "blood_thrall",
+   "cell": [
+    9,
+    4
+   ]
+  }
+ ]
+}

@@ -1,0 +1,106 @@
+{
+ "_note": "PROTÉGER LE BÛCHERON, CINQ RONDES, SOUS LE FEU D'EN HAUT.\n\nLES DEUX ARCHERS ROUGEFER SONT SUR LES COLLINES, et c'est la première fois du jeu qu'une bête tient la hauteur exprès. `hill` accorde +1 de portée ET +1 de dégâts depuis la Phase 1, et aucune carte ne l'avait jamais employé du côté ennemi — le relief servait au joueur, ou à personne. Perchés, ils portent à SIX cases au lieu de cinq : ils dépassent l'Archer, donc attendre coûte, donc il faut monter les déloger. C'est l'idée de Gaetan, prise à l'endroit.\n\nPROTÉGER PLUTÔT QU'ÉLIMINER : c'est le seul objectif du jeu qui puisse être perdu SANS qu'un héros tombe. Tenir demande de survivre, protéger demande de couvrir quelqu'un d'autre que soi — et on ne peut pas à la fois couvrir le bûcheron et monter sur la colline.\n\nMesurée à 95 % des PV en « éliminer » : la carte était molle parce que son relief ne servait à personne et que son objectif ne demandait rien.\n\nLE BÛCHERON RECULE D'UNE CASE, ET C'EST LA MESURE QUI L'A EXIGÉ. À (1,4) il était à SIX cases pile des deux archers perchés — donc dans leur portée dès la première ronde, et un villageois aux statistiques de Mage tombe en trois rondes sous deux tirs majorés. Zéro victoire. À (0,4) il est à sept : ils doivent descendre ou avancer pour l'atteindre, ce qui est exactement la décision qu'on veut leur coûter.",
+ "act": 3,
+ "name_key": "MAP_GEL_03",
+ "rows": [
+  "..#.....#...",
+  "............",
+  "....^^......",
+  "..#.^^....#.",
+  "............",
+  "..#.^^....#.",
+  "....^^......",
+  "............",
+  "..#.....#..."
+ ],
+ "objective": {
+  "kind": "protect",
+  "turns": 4,
+  "subject_ids": [
+   100
+  ]
+ },
+ "deployment_cells": [
+  [
+   0,
+   2
+  ],
+  [
+   0,
+   3
+  ],
+  [
+   0,
+   5
+  ],
+  [
+   0,
+   6
+  ],
+  [
+   1,
+   3
+  ],
+  [
+   1,
+   5
+  ]
+ ],
+ "enemies": [
+  {
+   "type": "ice_raider",
+   "cell": [
+    6,
+    2
+   ]
+  },
+  {
+   "type": "ice_raider",
+   "cell": [
+    6,
+    6
+   ]
+  },
+  {
+   "type": "ice_raider",
+   "cell": [
+    7,
+    4
+   ]
+  },
+  {
+   "type": "raid_archer",
+   "cell": [
+    5,
+    2
+   ]
+  },
+  {
+   "type": "raid_archer",
+   "cell": [
+    5,
+    6
+   ]
+  },
+  {
+   "type": "frost_wasp",
+   "cell": [
+    8,
+    4
+   ]
+  }
+ ],
+ "allies": [
+  {
+   "type": "mage",
+   "cell": [
+    0,
+    4
+   ],
+   "sprite": "pawn",
+   "sprite_variant": "axe",
+   "_note": "LE BÛCHERON. Un Pawn, enfin — voir `vallee_05`.",
+   "name_key": "UNIT_WOODCUTTER"
+  }
+ ]
+}

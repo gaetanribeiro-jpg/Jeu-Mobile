@@ -1,0 +1,221 @@
+extends Node
+
+## Capture d'écran du JEU RÉEL, pilotée par la ligne de commande.
+##
+##     xvfb-run -a godot --path . --resolution 1280x720 -- --capture /tmp/x.png
+##     xvfb-run -a godot --path . -- --capture /tmp/x.png --frames 90
+##     xvfb-run -a godot --path . -- --capture /tmp/x.png --press "Partir|Partir pour"
+##     xvfb-run -a godot --path . -- --capture /tmp/x.png --press "La brèche|@0,3|@0,4|@1,3|@1,4|Commencer"
+##     xvfb-run -a godot --path . -- --capture /tmp/x.png --press "Royaume|!430,300"
+##
+## `--press` presse des boutons par leur TEXTE, dans l'ordre, en laissant
+## respirer entre chacun. C'est ce qui permet de photographier un écran
+## qu'on n'atteint qu'en naviguant — et de le photographier tel que le
+## joueur l'atteint, pas monté à la main dans un banc d'essai. Un préfixe
+## suffit ; un bouton désactivé ou absent arrête la séquence et le dit,
+## plutôt que de capturer un écran qu'on croira être le bon.
+##
+## UNE ÉTAPE « @x,y » TOUCHE UNE CASE au lieu de presser un bouton. Sans
+## elle, le combat était le seul écran du jeu inatteignable en capture :
+## « Commencer » reste désactivé tant que l'équipe n'est pas posée, et
+## poser un héros demande de toucher la grille. La séquence passe par
+## `handle_tap()`, exactement la porte qu'emprunte le doigt — rien n'est
+## monté à la main, on clique pour de vrai.
+##
+## POURQUOI CET AUTOLOAD EXISTE. `tools/dev/screenshot.gd` monte une scène
+## dans un script lancé par `-s`, et un tel script ne reçoit AUCUN
+## autoload. Pire : l'identifiant `GameState` est résolu à la COMPILATION,
+## donc tout écran qui lit la partie sauvegardée ne compile même pas — il
+## reste sur son texte de secours, et la capture ne montre rien.
+##
+## Installer les singletons à la main ne répare rien, puisque l'échec est
+## antérieur. La seule façon de photographier un écran qui touche à la
+## campagne est donc de lancer le JEU, pas une simulation de jeu. C'est ce
+## que fait cette classe.
+##
+## Elle est INERTE sans son argument : aucun coût pour une version livrée,
+## et `--capture` n'existe sur aucun téléphone.
+
+const ARG_PATH := "--capture"
+const ARG_FRAMES := "--frames"
+const ARG_PRESS := "--press"
+## Préfixe d'une étape qui touche une case de la grille : « @x,y ».
+const TAP_PREFIX := "@"
+## Préfixe d'une étape qui touche un PIXEL de la fenêtre : « !x,y ».
+const CLICK_PREFIX := "!"
+const DEFAULT_FRAMES := 45
+
+## Images laissées passer après chaque pression.
+##
+## DOUZE NE SUFFISAIENT PAS. Un écran qui se construit en `_ready` n'est
+## pas mis en page à l'image suivante, et une pression qui CHARGE UNE SCÈNE
+## — passer au combat, par exemple — en demande bien davantage. La séquence
+## échouait alors sur le bouton suivant, et la capture montrait l'écran
+## d'avant : le pire des résultats, puisqu'il ressemble à un vrai.
+const SETTLE_FRAMES := 40
+
+var _path := ""
+var _frames := DEFAULT_FRAMES
+var _press: PackedStringArray = []
+
+
+func _ready() -> void:
+	var arguments := OS.get_cmdline_user_args()
+	var at := arguments.find(ARG_PATH)
+	if at < 0 or at + 1 >= arguments.size():
+		return
+	_path = arguments[at + 1]
+
+	var frames_at := arguments.find(ARG_FRAMES)
+	if frames_at >= 0 and frames_at + 1 < arguments.size():
+		_frames = maxi(arguments[frames_at + 1].to_int(), 1)
+
+	var press_at := arguments.find(ARG_PRESS)
+	if press_at >= 0 and press_at + 1 < arguments.size():
+		_press = arguments[press_at + 1].split("|", false)
+	set_process(true)
+
+
+func _process(_delta: float) -> void:
+	if _path.is_empty():
+		set_process(false)
+		return
+	# On laisse passer quelques images : une scène construite en `_ready`
+	# n'a pas encore été mise en page à la première, et la capture montrerait
+	# un écran vide dont on conclurait à tort qu'il est cassé.
+	_frames -= 1
+	if _frames > 0:
+		return
+	set_process(false)
+	var reached := true
+	if not _press.is_empty():
+		# `await` dans une expression booléenne composée ne se comporte pas
+		# comme on croit : on l'isole.
+		reached = await _walk()
+	if not reached:
+		# On ne photographie PAS un écran qu'on n'a pas atteint : l'image
+		# montrerait l'écran précédent, et on en conclurait que la
+		# navigation marche.
+		get_tree().quit(1)
+		return
+	var image := get_viewport().get_texture().get_image()
+	var error := image.save_png(_path)
+	if error != OK:
+		push_error("Capture : écriture impossible dans %s" % _path)
+	else:
+		print("capture : %s (%dx%d)" % [_path, image.get_width(), image.get_height()])
+	get_tree().quit(0 if error == OK else 1)
+
+
+## Presse la suite de boutons demandée, en laissant l'écran se construire
+## entre chacun.
+func _walk() -> bool:
+	for label: String in _press:
+		if label.begins_with(TAP_PREFIX):
+			if not _tap(label.substr(TAP_PREFIX.length())):
+				return false
+		elif label.begins_with(CLICK_PREFIX):
+			if not _click(label.substr(CLICK_PREFIX.length())):
+				return false
+		else:
+			var button := _find_button(get_tree().root, label)
+			if button == null:
+				var seen := PackedStringArray()
+				_collect(get_tree().root, seen)
+				push_error("Capture : aucun bouton actif « %s ». Disponibles : %s"
+					% [label, ", ".join(seen)])
+				return false
+			button.pressed.emit()
+		for i in SETTLE_FRAMES:
+			await get_tree().process_frame
+	return true
+
+
+## Touche la case « x,y » de la scène de combat en cours.
+func _tap(coordinates: String) -> bool:
+	var parts := coordinates.split(",", false)
+	if parts.size() != 2:
+		push_error("Capture : « %s%s » ne se lit pas — il faut « %sx,y »"
+			% [TAP_PREFIX, coordinates, TAP_PREFIX])
+		return false
+	var scene := _find_combat_scene(get_tree().root)
+	if scene == null:
+		push_error("Capture : « %s%s » sans combat à l'écran"
+			% [TAP_PREFIX, coordinates])
+		return false
+	scene.call("handle_tap", Vector2i(parts[0].to_int(), parts[1].to_int()))
+	return true
+
+
+## Touche un PIXEL de la fenêtre, avec un vrai évènement d'entrée.
+##
+## POURQUOI UNE TROISIÈME SORTE D'ÉTAPE. `@x,y` connaît la grille de
+## combat et rien d'autre ; le royaume, lui, se pilote en touchant un
+## BÂTIMENT sur son terrain, et sans ça l'écran du royaume bâti était
+## inatteignable en capture — exactement le trou que `@x,y` avait bouché
+## pour le combat.
+##
+## Il passe par `Input.parse_input_event`, donc par le chemin du doigt :
+## le `_gui_input` visé ne peut pas distinguer ce clic d'un vrai, et rien
+## n'est monté à la main. `emulate_touch_from_mouse` est actif, donc c'est
+## bien un toucher qui arrive au bout.
+func _click(coordinates: String) -> bool:
+	var parts := coordinates.split(",", false)
+	if parts.size() != 2:
+		push_error("Capture : « %s%s » ne se lit pas — il faut « %sx,y »"
+			% [CLICK_PREFIX, coordinates, CLICK_PREFIX])
+		return false
+	var at := Vector2(parts[0].to_float(), parts[1].to_float())
+	# L'appui ET le relâchement : un `_gui_input` peut attendre l'un ou
+	# l'autre, et n'en envoyer qu'un laisserait la moitié des écrans muets.
+	# Pas d'`await` ici — la fonction rend un booléen, et une seule
+	# expression `await` en ferait une coroutine que `_walk` lirait comme
+	# un signal. Les images de repos de `_walk` suffisent.
+	for pressed: bool in [true, false]:
+		var event := InputEventMouseButton.new()
+		event.button_index = MOUSE_BUTTON_LEFT
+		event.button_mask = MOUSE_BUTTON_MASK_LEFT if pressed else 0
+		event.pressed = pressed
+		event.position = at
+		event.global_position = at
+		Input.parse_input_event(event)
+	return true
+
+
+## La scène de combat, reconnue à sa porte d'entrée. Elle n'a pas de
+## `class_name` — le test porte donc sur la méthode que le doigt appelle,
+## ce qui revient au même et ne crée pas de dépendance.
+func _find_combat_scene(node: Node) -> Node:
+	if node.has_method("handle_tap"):
+		return node
+	for child: Node in node.get_children():
+		var found := _find_combat_scene(child)
+		if found != null:
+			return found
+	return null
+
+
+## Le premier bouton visible, actif et cliquable dont le texte commence par
+## `label`. Un bouton désactivé ne compte pas : le presser ne ferait rien,
+## et la capture montrerait l'écran précédent sans qu'on le sache.
+func _find_button(node: Node, label: String) -> Button:
+	if node is Button:
+		var button := node as Button
+		if not button.disabled and button.is_visible_in_tree() and button.text.begins_with(label):
+			return button
+	for child: Node in node.get_children():
+		var found := _find_button(child, label)
+		if found != null:
+			return found
+	return null
+
+
+## Les boutons actuellement pressables, pour que l'échec dise ce qu'il y
+## avait à l'écran plutôt que seulement ce qui manquait.
+func _collect(node: Node, into: PackedStringArray) -> void:
+	if node is Button:
+		var button := node as Button
+		if not button.disabled and button.is_visible_in_tree():
+			into.append("« %s »" % button.text)
+	for child: Node in node.get_children():
+		_collect(child, into)

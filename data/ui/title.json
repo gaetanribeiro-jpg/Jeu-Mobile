@@ -1,0 +1,74 @@
+{
+  "_readme": "L'ÉCRAN DE TITRE (T11.3). Il annonçait lui-même « écran de test provisoire — le vrai menu viendra plus tard » depuis le premier jour, sous une grille de dix boutons de carte.\n\nCE FICHIER EST LE DÉCOR, PAS LE MENU. Le menu est une liste de boutons et vit dans la scène ; ce qui est ici est ce qui BOUGE derrière lui. Il tient dans les données pour la même raison que `view.json` : c'est du ressenti, et le ressenti ne se règle pas en réécrivant du code.\n\nRIEN N'EST NEUF DANS CE QU'IL DESSINE. L'île est un `CombatBoard` bâti à partir de `rows`, exactement comme une carte de combat — donc elle hérite gratuitement des rives du tileset, de l'écume animée de T9.10, des rochers et de la mer. Le reste est posé par-dessus : des sprites que le pack anime déjà et que le jeu n'utilisait nulle part.",
+
+  "island": {
+    "_note": "MÊME ALPHABET QUE LES CARTES DE COMBAT — « ~ » l'eau, « . » l'herbe, « f » la forêt, « # » le rocher, « ^ » la colline — parce que c'est un vrai `CombatBoard` et pas une image.\n\nL'ÎLE EST BASSE ET À DROITE. Le menu tient la moitié gauche : une île centrée l'aurait eu en travers. Et basse parce que les nuages passent en haut — l'espace vide du ciel n'est pas perdu, c'est là que le mouvement se voit.\n\n20 × 11 cases de 64 px font 1280 × 704, soit exactement le cadre de référence du jeu.",
+    "rows": [
+      "~~~~~~~~~~~~~~~~~~~~",
+      "~~~~~~~~~~~~~~~~~~~~",
+      "~~~~~~~~~~~~~~~~~~~~",
+      "~~~~~~~~~~....~~~~~~",
+      "~~~~~~~~~.......~~~~",
+      "~~~~~~~~..........~~",
+      "~~~~~~~~^.........~~",
+      "~~~~~~~...........~~",
+      "~~~~~~~..#.......~~~",
+      "~~~~~~~~~......~~~~~",
+      "~~~~~~~~~~~~~~~~~~~~"
+    ]
+  },
+
+  "props": {
+    "_note": "POSÉS AU BAS DE LEUR CASE, comme les décors de terrain : un sprite du pack est dessiné les pieds sur le sol, pas centré. LES ROCHERS D'EAU SONT ICI ET PAS DANS LE TERRAIN : `terrain_view` n'en sème que dans les bandes HORS grille, et sur cette île toute l'eau est dedans. La mer serait restée vide.\n\n`scale` est un multiplicateur du sprite natif, `offset` un décalage en pixels dans la case — sans lui, tout s'aligne sur la grille et le décor a l'air d'un damier.\n\nLE CHÂTEAU EST BLEU parce que c'est la couleur du joueur partout ailleurs. Une île de titre en rouge annoncerait l'ennemi.",
+    "entries": [
+      { "category": "buildings", "key": "castle", "color": "Blue", "cell": [12, 5], "scale": 0.85, "offset": [0, 6] },
+      { "category": "resources", "key": "tree2", "cell": [9, 6], "scale": 0.6, "offset": [-8, 4] },
+      { "category": "resources", "key": "tree1", "cell": [10, 8], "scale": 0.55, "offset": [12, 0] },
+      { "category": "resources", "key": "tree3", "cell": [16, 6], "scale": 0.6, "offset": [6, 8] },
+      { "category": "resources", "key": "tree4", "cell": [15, 9], "scale": 0.5, "offset": [-6, -4] },
+      { "category": "decorations", "key": "bushe2", "cell": [11, 9], "scale": 0.8, "offset": [10, -6] },
+      { "category": "decorations", "key": "rock3", "cell": [8, 8], "scale": 0.8, "offset": [4, 2] },
+      { "category": "resources", "key": "sheep_grass", "cell": [14, 8], "scale": 0.65, "offset": [-10, 2] },
+      { "category": "resources", "key": "sheep_idle", "cell": [16, 8], "scale": 0.65, "offset": [8, -2] },
+      { "category": "extra", "key": "boat_boat_idle", "cell": [7, 10], "scale": 0.7, "offset": [-4, 0], "bob": 5.0 },
+      { "category": "extra", "key": "boat_boat_idle", "cell": [18, 5], "scale": 0.55, "offset": [4, 0], "bob": 4.0 },
+      { "category": "decorations", "key": "water_rocks_02", "cell": [3, 5], "scale": 1.0, "offset": [8, 0] },
+      { "category": "decorations", "key": "water_rocks_04", "cell": [5, 8], "scale": 1.0, "offset": [-6, 0] },
+      { "category": "decorations", "key": "water_rocks_01", "cell": [2, 8], "scale": 1.0, "offset": [4, 0] },
+      { "category": "decorations", "key": "water_rocks_03", "cell": [9, 2], "scale": 1.0, "offset": [-8, 0] },
+      { "category": "decorations", "key": "water_rocks_02", "cell": [18, 8], "scale": 1.0, "offset": [0, 0] },
+      { "category": "decorations", "key": "water_rocks_01", "cell": [14, 1], "scale": 1.0, "offset": [6, 0] }
+    ]
+  },
+
+  "actors": {
+    "_note": "LES TROIS CLASSES DU MVP, EN GARDE DEVANT LEUR CHÂTEAU. C'est la seule image du jeu où on les voit toutes les trois sans avoir à lancer un combat, et elles y sont dans l'ordre de la barre d'équipe.\n\nLE MAGE EST LE MOINE, comme partout : le pack n'a pas de mage, et cet écran est justement l'endroit où juger si ça tient à l'œil.",
+    "entries": [
+      { "unit": "warrior", "color": "Blue", "cell": [11, 7], "offset": [0, 10] },
+      { "unit": "archer", "color": "Blue", "cell": [13, 7], "offset": [-4, 2] },
+      { "unit": "monk", "color": "Blue", "cell": [15, 7], "offset": [4, 8] }
+    ]
+  },
+
+  "clouds": {
+    "_note": "LE MOUVEMENT LENT DU FOND. Ils dérivent d'un bord à l'autre et reviennent ; chacun a sa vitesse, sinon les quatre restent en formation et l'œil voit une image qui glisse au lieu d'un ciel.\n\nILS PASSENT AU-DESSUS DE TOUT, île comprise : une ombre de nuage qui s'arrêterait au rivage se verrait immédiatement. Leur alpha est bas — un nuage qu'on remarque est un nuage raté, même règle que le motif de fond.",
+    "keys": ["clouds_02", "clouds_05", "clouds_03", "clouds_07"],
+    "speeds_px": [7.0, 11.0, 5.0, 14.0],
+    "rows": [0.4, 1.6, 2.8, 0.9],
+    "scales": [0.9, 0.6, 1.1, 0.5],
+    "alpha": 0.5
+  },
+
+  "camera": {
+    "_note": "LE DÉCOR COUVRE LA FENÊTRE, quitte à déborder. On prend le plus grand des deux rapports plutôt que le plus petit : cadrer « en entier » laisserait deux bandes noires sur un écran plus large que 20 × 11, et une bande noire au bord d'un écran de titre est ce qui fait bricolage.",
+    "tile_size": 64,
+    "reference": [20, 11]
+  },
+
+  "scrim": {
+    "_note": "LE VOILE SOUS LE MENU. Le décor est clair — de l'eau turquoise et de l'herbe verte — et les panneaux sombres à liseré doré de T9.7 s'y poseraient comme des autocollants. Un dégradé vertical sombre en haut redonne au titre et aux boutons le fond qu'ils supposent, sans effacer l'île qui reste visible en bas.\n\nLA CRÊTE RESTE SOUS `panel_deep`, comme le motif de fond de T9.8 : un voile plus sombre que ce qu'on pose dessus inverserait la hiérarchie.",
+    "top_alpha": 0.82,
+    "bottom_alpha": 0.0,
+    "stop": 0.72
+  }
+}

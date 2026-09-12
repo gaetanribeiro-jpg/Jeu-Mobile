@@ -1,0 +1,105 @@
+{
+ "_note": "LE BRASIER. Quatre feux au sol, et le chemin le plus court passe entre eux : douze points par activation commencée dessus, soit un dixième du Guerrier. On ne meurt pas d'y passer, on paie de s'y arrêter.\n\nLE CHARNIER EST LE VRAI PIÈGE (T11.9). Les tas d'ossements bordent le côté ennemi, et une case d'os coûte un point de dégâts de plus à qui l'occupe. La ligne de tir la plus confortable est justement dessus : le meilleur poste est le plus cher, et c'est une décision que les statistiques seules ne donnaient pas.",
+ "act": 2,
+ "name_key": "MAP_DUNES_04",
+ "rows": [
+  "............",
+  "...!....r...",
+  "........rr..",
+  "......!.....",
+  "............",
+  "......!.....",
+  "........rr..",
+  "...!....r...",
+  "............"
+ ],
+ "objective": {
+  "kind": "eliminate"
+ },
+ "deployment_cells": [
+  [
+   0,
+   2
+  ],
+  [
+   0,
+   3
+  ],
+  [
+   0,
+   4
+  ],
+  [
+   0,
+   5
+  ],
+  [
+   0,
+   6
+  ],
+  [
+   1,
+   3
+  ],
+  [
+   1,
+   4
+  ],
+  [
+   1,
+   5
+  ],
+  [
+   2,
+   3
+  ],
+  [
+   2,
+   5
+  ]
+ ],
+ "enemies": [
+  {
+   "type": "skull_wisp",
+   "cell": [
+    10,
+    2
+   ]
+  },
+  {
+   "type": "skull_wisp",
+   "cell": [
+    10,
+    6
+   ]
+  },
+  {
+   "type": "lizard",
+   "cell": [
+    8,
+    4
+   ]
+  },
+  {
+   "type": "carrion_bat",
+   "cell": [
+    9,
+    4
+   ]
+  },
+  {
+   "type": "lizard",
+   "cell": [
+    11,
+    3
+   ]
+  },
+  {
+   "type": "lizard",
+   "cell": [
+    11,
+    5
+   ]
+  }
+ ]
+}

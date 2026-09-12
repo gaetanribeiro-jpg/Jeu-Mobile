@@ -1,0 +1,125 @@
+{
+ "_note": "L'EXTRACTION SOUS LA VOLÉE. La cache est derrière la ligne, et repartir avec coûte le même chemin dans l'autre sens — la seule carte du jeu où l'on traverse deux fois la même portée.\n\nLE FEU DU CHAPELAIN COUPE LA RETRAITE : `leaves_terrain` n'a servi qu'à l'acte 2, pour brûler. Ici il sert à FERMER une case, et c'est une autre mécanique avec la même donnée.\n\nMESURÉE À 96 % DES PV, PUIS RESSERRÉE SUR LA CACHE. Les tireurs étaient devant, donc l'équipe passait à côté, ramassait et repartait. Ils gardent maintenant la cache elle-même — et le pilote de la simulation n'a de toute façon aucune notion d'échéance, donc ce chiffre reste un PLANCHER. À rejuger à l'œil.",
+ "act": 6,
+ "name_key": "MAP_EMPIRE_05",
+ "rows": [
+  "............",
+  ".....p......",
+  "............",
+  ".....p......",
+  "............",
+  ".....p......",
+  "............",
+  ".....p......",
+  "............"
+ ],
+ "objective": {
+  "kind": "extract",
+  "pickup_cells": [
+   [
+    10,
+    3
+   ],
+   [
+    11,
+    3
+   ],
+   [
+    10,
+    5
+   ],
+   [
+    11,
+    5
+   ]
+  ],
+  "cells": [
+   [
+    0,
+    4
+   ],
+   [
+    0,
+    5
+   ]
+  ]
+ },
+ "deployment_cells": [
+  [
+   0,
+   2
+  ],
+  [
+   0,
+   3
+  ],
+  [
+   0,
+   4
+  ],
+  [
+   0,
+   5
+  ],
+  [
+   0,
+   6
+  ],
+  [
+   1,
+   3
+  ],
+  [
+   1,
+   4
+  ],
+  [
+   1,
+   5
+  ]
+ ],
+ "enemies": [
+  {
+   "type": "black_chaplain",
+   "cell": [
+    8,
+    4
+   ]
+  },
+  {
+   "type": "black_archer",
+   "cell": [
+    9,
+    3
+   ]
+  },
+  {
+   "type": "black_archer",
+   "cell": [
+    9,
+    5
+   ]
+  },
+  {
+   "type": "black_sapper",
+   "cell": [
+    6,
+    3
+   ]
+  },
+  {
+   "type": "black_sapper",
+   "cell": [
+    6,
+    5
+   ]
+  },
+  {
+   "type": "black_lancer",
+   "cell": [
+    10,
+    4
+   ]
+  }
+ ]
+}

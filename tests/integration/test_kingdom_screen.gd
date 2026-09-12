@@ -1,0 +1,398 @@
+extends GutTest
+
+## T4.3 — l'écran du royaume.
+##
+## Le § 5 fait de l'évolution visuelle une exigence, pas un bonus. Ces
+## tests ne jugent pas le rendu — je le contrôle en capture — mais la
+## mécanique des deux décisions que l'écran contient, et qui cassent aussi
+## silencieusement :
+##
+##   bâtir      dépenser maintenant, ou garder pour la prochaine sortie
+##   affecter   quelle ressource manque le plus, ce cycle-ci
+##
+## Elles se disputent la même bourse et les mêmes bras.
+
+
+var _screen: Control
+var _kingdom: Kingdom
+var _company: Company
+var _changes := 0
+
+
+func before_each() -> void:
+	CombatRules.clear_cache()
+	Unit.clear_cache()
+	Ability.clear_cache()
+	HeroProgression.clear_cache()
+	HeroNames.clear_cache()
+	Equipment.clear_cache()
+	ResourceTable.clear_cache()
+	Worksite.clear_cache()
+	Buildings.clear_cache()
+
+	_company = Company.new()
+	_company.gold = 5000
+	_kingdom = Kingdom.create()
+	for resource_id: StringName in ResourceTable.ids():
+		if ResourceTable.lives_in_kingdom(resource_id):
+			_kingdom.stores[resource_id] = 5000
+
+	_changes = 0
+	var packed: PackedScene = load("res://scenes/kingdom/kingdom_screen.tscn")
+	_screen = packed.instantiate()
+	_screen.configure(_kingdom, _company, CombatRng.new(4242))
+	add_child_autofree(_screen)
+	_screen.changed.connect(func() -> void: _changes += 1)
+	await wait_process_frames(2)
+
+
+func _panel_buttons() -> Array[Button]:
+	var out: Array[Button] = []
+	for child: Node in _screen._panel.get_children():
+		if child is Button:
+			out.append(child)
+	return out
+
+
+func _button(prefix: String) -> Button:
+	for button: Button in _panel_buttons():
+		if button.text.begins_with(prefix):
+			return button
+	return null
+
+
+## Tout le texte affiché sous un nœud, quelle que soit sa profondeur.
+func _texts_under(root: Node) -> String:
+	var seen := ""
+	if root is Label:
+		seen += (root as Label).text + " | "
+	for child: Node in root.get_children():
+		seen += _texts_under(child)
+	return seen
+
+
+## Désigne un bâtiment ou un chantier. PAS de `await` ici : une fonction
+## d'aide qui attend, appelée avec `await`, imbrique deux coroutines et
+## GUT part en boucle jusqu'au signal 11. On attend sur place, à l'appel.
+func _select(kind: StringName, id: StringName) -> void:
+	_screen._on_picked(kind, id)
+
+
+# --- Ce que l'écran montre -------------------------------------------------
+
+func test_les_quatre_ressources_les_bras_et_la_defense_sont_en_haut() -> void:
+	# Un bras qu'on ne met pas sur un chantier MONTE LA GARDE — il ne se
+	# repose plus — et la défense se lit à côté, parce qu'on lui demande
+	# maintenant un arbitrage chiffré : produire, ou tenir.
+	# ON CHERCHE LE TEXTE DANS L'ARBRE, pas à une profondeur fixée. Ce
+	# test lisait `get_child()` en attendant un `Label` ; le jour où chaque
+	# réserve a reçu son icône, elle est devenue une ligne à deux enfants
+	# et le test est tombé — alors que l'écran, lui, affichait tout.
+	var seen := _texts_under(_screen._stores)
+	for resource_id: StringName in ResourceTable.ids():
+		assert_string_contains(seen, tr(ResourceTable.name_key(resource_id)))
+	assert_string_contains(seen, tr("KINGDOM_ON_WATCH"))
+	# LA DÉFENSE ET L'ASSAUT, les deux : un seul chiffre ne dirait pas
+	# s'il suffit, et l'arbitrage se ferait à l'aveugle.
+	assert_string_contains(seen, tr("KINGDOM_DEFENCE"))
+	assert_string_contains(seen, str(_kingdom.defence_strength()))
+	assert_string_contains(seen, str(_kingdom.expected_assault()))
+
+
+func test_le_chateau_est_designe_d_entree() -> void:
+	# Un panneau vide au premier regard n'apprend pas qu'on peut toucher le
+	# terrain, il donne l'impression que l'écran ne fait rien.
+	assert_eq(_screen._view.selected_id, Buildings.KEYSTONE)
+	assert_gt(_panel_buttons().size(), 0)
+
+
+func test_le_panneau_dit_le_cout_ET_le_gain_du_niveau_suivant() -> void:
+	# Un prix sans son gain ne demande pas de décider, il demande de payer.
+	_select(_screen._view.KIND_BUILDING, &"houses")
+	await wait_process_frames(1)
+	var text := ""
+	for child: Node in _screen._panel.get_children():
+		if child is Label:
+			text += (child as Label).text + " "
+	assert_string_contains(text, tr(ResourceTable.name_key(&"wood")))
+	assert_string_contains(text, tr("GRANT_POPULATION_CAP"))
+
+
+# --- Bâtir -----------------------------------------------------------------
+
+func test_batir_depense_et_monte_le_batiment() -> void:
+	_select(_screen._view.KIND_BUILDING, &"houses")
+	await wait_process_frames(1)
+	var wood := _kingdom.amount(&"wood")
+	_button(tr("KINGDOM_FOUND")).pressed.emit()
+	await wait_process_frames(1)
+	assert_eq(_kingdom.level_of(&"houses"), 1)
+	assert_lt(_kingdom.amount(&"wood"), wood)
+	assert_gt(_changes, 0, "rien n'a demandé la sauvegarde")
+
+
+func test_un_bouton_grise_dit_pourquoi() -> void:
+	# Un bouton grisé qui ne dit pas pourquoi est une impasse.
+	var company := Company.new()
+	var poor := Kingdom.create()
+	poor.stores[&"wood"] = 0
+	_screen.configure(poor, company, CombatRng.new(1))
+	_select(_screen._view.KIND_BUILDING, &"houses")
+	await wait_process_frames(1)
+	var button := _button(tr("KINGDOM_NEEDS_RESOURCES"))
+	assert_not_null(button, "le bouton ne dit pas ce qui manque")
+	assert_true(button.disabled)
+
+
+func test_le_chateau_bloque_et_l_ecran_le_dit() -> void:
+	_kingdom.build(&"barracks", _company)
+	_select(_screen._view.KIND_BUILDING, &"barracks")
+	await wait_process_frames(1)
+	var button := _button(tr("KINGDOM_NEEDS_CASTLE"))
+	assert_not_null(button, "l'écran ne dit pas que le château bloque")
+	assert_true(button.disabled)
+
+
+# --- Affecter --------------------------------------------------------------
+
+## ON DÉPLACE QUELQU'UN, PAS UN BRAS (§ 9). Les deux boutons « Envoyer »
+## et « Rappeler » sont devenus une LISTE de gens : chacun porte son nom,
+## son rang au métier et ce qu'il rendrait ici. C'est la moitié qui
+## manquait à la ville — deux boutons ne se lisent pas, quatorze personnes
+## si.
+func test_poster_et_rappeler_quelqu_un_par_son_nom() -> void:
+	_select(_screen._view.KIND_WORKSITE, &"lumber_camp")
+	await wait_process_frames(1)
+
+	var candidate: Pawn = _kingdom.watch()[0]
+	var post := _button("%s — %s" % [tr("KINGDOM_POST"), candidate.given_name()])
+	assert_not_null(post, "personne n'est proposé au chantier")
+	post.pressed.emit()
+	await wait_process_frames(1)
+	assert_eq(_kingdom.assigned_to(&"lumber_camp"), 1)
+	assert_eq(_kingdom.workers_at(&"lumber_camp")[0].id, candidate.id,
+		"c'est quelqu'un d'autre qui est parti travailler")
+
+	var recall := _button("%s — %s" % [tr("KINGDOM_RECALL"), candidate.given_name()])
+	assert_not_null(recall, "l'ouvrier posté n'a pas de bouton de rappel")
+	recall.pressed.emit()
+	await wait_process_frames(1)
+	assert_eq(_kingdom.assigned_to(&"lumber_camp"), 0)
+
+
+## Le panneau dit le RANG et le RENDEMENT de chacun : le rang seul est un
+## chiffre abstrait, le rendement seul cache pourquoi celui-ci vaut mieux
+## que celui-là.
+func test_le_panneau_dit_le_metier_et_le_rendement_de_chacun() -> void:
+	var veteran: Pawn = _kingdom.watch()[0]
+	veteran.experience[&"lumber_camp"] = Worksite.xp_per_level() * 2
+	_select(_screen._view.KIND_WORKSITE, &"lumber_camp")
+	await wait_process_frames(1)
+
+	var post := _button("%s — %s" % [tr("KINGDOM_POST"), veteran.given_name()])
+	assert_not_null(post)
+	assert_string_contains(post.text, tr("KINGDOM_TRADE_RANK") % [2, Worksite.max_trade_level()])
+	assert_string_contains(post.text, str(veteran.yield_at(&"lumber_camp")))
+
+
+## LES PLUS EXPÉRIMENTÉS EN TÊTE : sur quatorze habitants, une liste dans
+## l'ordre d'arrivée obligerait à la lire en entier pour trouver le carrier.
+func test_les_candidats_sortent_du_plus_expérimenté_au_moins() -> void:
+	_kingdom.population = 4
+	_kingdom.pawns[2].experience[&"quarry"] = Worksite.xp_per_level() * 3
+	_select(_screen._view.KIND_WORKSITE, &"quarry")
+	await wait_process_frames(1)
+
+	var first := ""
+	for button: Button in _panel_buttons():
+		if button.text.begins_with(tr("KINGDOM_POST")):
+			first = button.text
+			break
+	assert_string_contains(first, _kingdom.pawns[2].given_name())
+
+
+func test_on_ne_propose_personne_quand_tout_le_monde_travaille() -> void:
+	# ON REMPLIT TOUS LES CHANTIERS, pas un seul : le royaume peut avoir
+	# plus d'habitants qu'une scierie n'a de places, et le premier jet de
+	# ce test l'a supposé. Ce qu'on vérifie est « plus personne à la
+	# garde », pas « la scierie est pleine ».
+	var placed := true
+	while placed and _kingdom.idle_pawns() > 0:
+		placed = false
+		for worksite_id: StringName in Worksite.ids():
+			if _kingdom.assign(worksite_id):
+				placed = true
+	assert_eq(_kingdom.idle_pawns(), 0, "le royaume a plus de bras que de places")
+	_select(_screen._view.KIND_WORKSITE, &"quarry")
+	await wait_process_frames(1)
+	for button: Button in _panel_buttons():
+		assert_false(
+			button.text.begins_with(tr("KINGDOM_POST")),
+			"la carrière propose quelqu'un que le royaume n'a pas"
+		)
+
+
+# --- Recruter --------------------------------------------------------------
+
+func test_on_ne_recrute_pas_sans_le_batiment() -> void:
+	# Sans caserne, pas de Guerrier.
+	_select(_screen._view.KIND_BUILDING, &"barracks")
+	await wait_process_frames(1)
+	assert_eq(_kingdom.candidates(&"barracks", _company, _screen._rng).size(), 0)
+	# On cherche un CARACTÈRE et pas le nom de la classe : la description
+	# de la caserne dit déjà « Guerrier », et l'assertion évidente passait
+	# donc à côté de ce qu'elle croyait vérifier.
+	for button: Button in _panel_buttons():
+		for trait_id: StringName in HeroTrait.ids():
+			assert_false(
+				button.text.contains(tr(HeroTrait.name_key(trait_id))),
+				"la caserne non bâtie propose quand même quelqu'un"
+			)
+
+
+## L'ÉCRAN MONTRE LES TROIS QUE LE MOTEUR PROPOSE, et presser le deuxième
+## engage le deuxième. Un écran qui afficherait sa propre fournée serait
+## la faute de T11.8 : deux moitiés justes qui ne parlent pas de la même
+## chose.
+func test_recruter_ajoute_le_candidat_choisi_et_coute() -> void:
+	_kingdom.build(&"barracks", _company)
+	_select(_screen._view.KIND_BUILDING, &"barracks")
+	await wait_process_frames(1)
+	var gold := _company.gold
+	var food := _kingdom.amount(&"food")
+
+	var offered := _kingdom.candidates(&"barracks", _company, _screen._rng)
+	assert_eq(offered.size(), Buildings.candidate_count())
+	var wanted := offered[1]
+	var button := _button(wanted.display_name())
+	assert_not_null(button, "le deuxième candidat n'a pas de bouton")
+	button.pressed.emit()
+	await wait_process_frames(1)
+
+	assert_eq(_company.size(), 1)
+	assert_true(
+		Buildings.recruits(&"barracks").has(_company.heroes[0].class_id),
+		"la caserne a formé quelqu'un qu'elle n'enseigne pas"
+	)
+	assert_eq(_company.heroes[0].display_name(), wanted.display_name())
+	assert_eq(_company.heroes[0].trait_id, wanted.trait_id)
+	assert_lt(_company.gold, gold)
+	assert_lt(_kingdom.amount(&"food"), food)
+
+
+## LE CARACTÈRE SE LIT SUR LE BOUTON, avec ses DEUX moitiés : n'annoncer
+## que le gain ferait passer un échange pour un bonus, et les trois
+## candidats cesseraient d'être un choix.
+func test_le_bouton_dit_le_caractere_et_son_prix() -> void:
+	_kingdom.build(&"barracks", _company)
+	_select(_screen._view.KIND_BUILDING, &"barracks")
+	await wait_process_frames(1)
+	var offered := _kingdom.candidates(&"barracks", _company, _screen._rng)
+	var button := _button(offered[0].display_name())
+	assert_not_null(button)
+	assert_string_contains(button.text, tr(HeroTrait.name_key(offered[0].trait_id)))
+	assert_string_contains(button.text, "-", "le bouton ne dit pas ce que ça coûte")
+
+
+func test_recruter_ne_prend_personne_a_la_population() -> void:
+	# Un royaume qui perdrait un bûcheron chaque fois qu'il forme un
+	# Guerrier punirait le joueur d'avoir joué.
+	_kingdom.build(&"barracks", _company)
+	var people := _kingdom.population
+	_kingdom.hire(&"barracks", 0, _company, CombatRng.new(3))
+	assert_eq(_kingdom.population, people)
+
+
+# --- Le compte rendu du cycle ---------------------------------------------
+
+func test_le_compte_rendu_du_cycle_s_affiche() -> void:
+	_kingdom.assign(&"lumber_camp")
+	var report := _kingdom.run_cycle(_company)
+	_screen.report_cycle(report)
+	await wait_process_frames(1)
+	assert_string_contains(_screen._journal.text, tr(ResourceTable.name_key(&"wood")))
+	assert_string_contains(_screen._journal.text, "nourriture mangée")
+
+
+# --- Le conseil du royaume (T12.10) ----------------------------------------
+#
+# LE CONSEIL PREND LE PANNEAU, et c'est la moitié qui compte : une décision
+# posée à côté du reste se remet à plus tard, et « plus tard » n'arrive
+# pas — le joueur repart en expédition. Ces tests parcourent la chaîne
+# entière, du conseil posé jusqu'à l'issue lue, parce que c'est là que les
+# deux moitiés justes font une mécanique fausse (T11.8).
+
+func test_le_conseil_prend_le_panneau() -> void:
+	_kingdom.pending_council = &"caravan"
+	_screen.refresh()
+	await wait_process_frames(1)
+	var shown := _texts_under(_screen._panel)
+	assert_string_contains(shown, tr("COUNCIL_TITLE"))
+	assert_string_contains(shown, tr(KingdomEvent.name_key(&"caravan")))
+	# Le château est sélectionné par défaut : s'il s'affiche encore, le
+	# conseil n'a pas pris la main.
+	assert_false(shown.contains(tr(Buildings.name_key(Buildings.KEYSTONE))))
+
+
+func test_chaque_option_annonce_ses_termes() -> void:
+	_kingdom.pending_council = &"caravan"
+	_screen.refresh()
+	await wait_process_frames(1)
+	assert_eq(_panel_buttons().size(), KingdomEvent.options(&"caravan").size())
+	var shown := _texts_under(_screen._panel)
+	# Le télégraphe, appliqué au conseil : le pari dit sa chance ET ce
+	# qu'on perd en ratant. C'est la capture qui a montré que la seconde
+	# moitié se faisait couper quand elle vivait dans le bouton.
+	assert_string_contains(shown, tr(Neighbour.name_key(&"valmont")))
+	assert_string_contains(shown, tr(ResourceTable.name_key(&"wood")))
+
+
+func test_trancher_applique_et_montre_l_issue() -> void:
+	_kingdom.pending_council = &"caravan"
+	_screen.refresh()
+	await wait_process_frames(1)
+	var before := _kingdom.amount(&"food")
+	_panel_buttons()[0].pressed.emit()
+	await wait_process_frames(1)
+
+	assert_gt(_kingdom.amount(&"food"), before, "l'option n'a rien changé")
+	assert_eq(_kingdom.standing_of(&"valmont"), 1)
+	assert_gt(_changes, 0, "l'écran n'a pas demandé la sauvegarde")
+	assert_string_contains(_texts_under(_screen._panel), tr("COUNCIL_CARAVAN_0_OK"))
+
+	# L'issue se referme, et le panneau revient à ce qu'il montrait.
+	_button(tr("COUNCIL_CLOSE")).pressed.emit()
+	await wait_process_frames(1)
+	assert_string_contains(
+		_texts_under(_screen._panel), tr(Buildings.name_key(Buildings.KEYSTONE)))
+
+
+## Une option qu'on ne peut pas payer reste PROPOSÉE, grisée.
+func test_une_option_trop_chere_est_grisee_et_dit_pourquoi() -> void:
+	_company.gold = 0
+	_kingdom.pending_council = &"champion"
+	_screen.refresh()
+	await wait_process_frames(1)
+	var buttons := _panel_buttons()
+	assert_true(buttons[0].disabled, "on peut engager un champion sans or")
+	assert_string_contains(buttons[0].text, tr("COUNCIL_UNAFFORDABLE"))
+	assert_false(buttons[2].disabled, "décliner ne coûte rien et est pourtant grisé")
+
+
+## LES VOISINES SE LISENT SOUS LE CHÂTEAU, et pas sur le panneau « rien de
+## sélectionné » : celui-là ne s'affiche jamais, la vue ouvrant sur le
+## château. C'est la capture qui l'a dit.
+func test_les_voisines_se_lisent_sous_le_chateau() -> void:
+	_screen.refresh()
+	await wait_process_frames(1)
+	var shown := _texts_under(_screen._panel)
+	assert_string_contains(shown, tr("COUNCIL_NEIGHBOURS"))
+	for town_id: StringName in Neighbour.ids():
+		assert_string_contains(shown, tr(Neighbour.name_key(town_id)))
+
+
+func test_le_journal_signale_le_conseil_qui_attend() -> void:
+	var report := _kingdom.run_cycle(_company, CombatRng.new(8))
+	_screen.report_cycle(report)
+	await wait_process_frames(1)
+	assert_string_contains(_screen._journal.text, tr("COUNCIL_WAITING"))

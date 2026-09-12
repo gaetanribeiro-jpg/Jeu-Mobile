@@ -1,0 +1,814 @@
+keys,fr
+GAME_TITLE,Tiny Kingdoms
+BOOT_SUBTITLE,Chargement…
+ACCENT_TEST_UPPER,ÀÂÄÇÉÈÊËÎÏÔÖÙÛÜŸÆŒ
+ACCENT_TEST_LOWER,àâäçéèêëîïôöùûüÿæœ
+ACCENT_TEST_PUNCT,« ­— … ’ »
+FONT_TEST_TITLE,Contrôle de la police
+FONT_TEST_SAMPLE_CARD,"Vous apercevez un puits, mais il n'y a pas d'eau au fond. Il y a en revanche des marches, qui descendent plus bas que la vallée ne devrait aller…"
+FONT_TEST_PROMPT,Que souhaitez-vous faire ?
+FONT_TEST_STATS,Aldric — Guerrier · nv 4 · PV 120 · PA 8 · PM 4 · Portée 1 · Dégâts 32
+FONT_TEST_RESOURCES,Bois 24 · Pierre 18 · Or 51 · Nourriture 12
+FONT_TEST_NO_FONT,Aucune police dans assets/fonts/ — affichage avec la police par défaut de Godot.
+FONT_TEST_HINT,Toucher l'écran pour passer à la police suivante.
+MAP_VALLEE_01,Le sentier des bergers
+MAP_VALLEE_02,Le gué de Cendre
+MAP_VALLEE_03,La crête aux corbeaux
+MAP_VALLEE_04,La brèche
+MAP_VALLEE_05,Le pont de bois
+MAP_VALLEE_06,La route basse
+MAP_DUNES_01,La piste ouverte
+MAP_DUNES_02,Le champ de pierres
+MAP_DUNES_03,Le goulet de sable
+MAP_DUNES_04,Le brasier
+MAP_DUNES_05,La crête rouge
+MAP_DUNES_06,L'essaim
+MAP_DUNES_07,La halte des caravanes
+MAP_DUNES_08,La tanière de l'ours
+MAP_DUNES_09,Le cirque du panda
+MAP_GEL_01,La rive gelée
+MAP_GEL_02,Le lac noir
+MAP_GEL_03,Les pierres levées
+MAP_GEL_04,Le pont de glace
+MAP_GEL_05,La passe du vent
+MAP_GEL_06,Les trois îles
+MAP_GEL_07,Le camp des Rougefer
+MAP_GEL_08,Le trône du Jarl
+MAP_GEL_09,Le nid des guêpes
+ENEMY_FROST_SHARK,Requin des glaces
+ENEMY_HARPOONER,Harponneur
+ENEMY_ICE_MINE,Poisson-bombe
+ENEMY_FROST_WASP,Guêpe des cimes
+ENEMY_ICE_RAIDER,Pillard Rougefer
+ENEMY_RAID_ARCHER,Archer Rougefer
+ENEMY_RAID_CHAMPION,Champion Rougefer
+ENEMY_THE_JARL,Le Jarl de fer
+ENEMY_LIZARD,Lézard des sables
+ENEMY_SAND_SERPENT,Serpent des dunes
+ENEMY_DUNE_SPIDER,Araignée des dunes
+ENEMY_CARRION_BAT,Chauve-souris charognarde
+ENEMY_BONE_TURTLE,Tortue d'os
+ENEMY_SKULL_WISP,Feu follet
+ENEMY_DUNE_PANDA,Colosse des dunes
+ENEMY_DUNE_BEAR,Ours des sables
+ABILITY_LIZARD_BITE,Morsure
+ABILITY_SERPENT_STRIKE,Frappe du serpent
+ABILITY_WEB_SPIT,Crachat de toile
+ABILITY_BAT_SWOOP,Fondre
+ABILITY_SHELL_SLAM,Coup de carapace
+ABILITY_CINDER_BOLT,Gerbe de braises
+ABILITY_HEAVY_PAW,Coup de patte
+ABILITY_RENDING_SWIPE,Lacération
+MAP_VALLEE_07,Les ruines noyées
+MAP_VALLEE_08,La tanière
+HUD_ROUND,Ronde %d
+HUD_END_TURN,Fin de tour
+HUD_UNDO,Annuler
+OBJECTIVE_ELIMINATE,Éliminer tous les ennemis
+OBJECTIVE_SURVIVE,Tenir %d rondes
+OBJECTIVE_ESCORT,Mener le protégé à l'autre bord
+OBJECTIVE_PROTECT,Protéger la structure %d rondes
+OBJECTIVE_PROTECT_SUBJECT,Protéger le villageois %d rondes
+OBJECTIVE_SEIZE,Atteindre la position avant la ronde %d
+OBJECTIVE_EXTRACT,Récupérer la cache et ressortir
+RESULT_VICTORY,Victoire
+RESULT_DEFEAT,Défaite
+CLASS_WARRIOR,Guerrier
+CLASS_ARCHER,Archer
+CLASS_MAGE,Mage
+ENEMY_SPEAR_GOBLIN,Gobelin lancier
+ENEMY_TORCH_GOBLIN,Gobelin torche
+ENEMY_GNOME,Gnome
+ENEMY_SLINGSHOT_GNOME,Gnome à fronde
+ENEMY_THIEF,Voleur
+ENEMY_GNOLL,Gnoll lanceur d'os
+ENEMY_HEX_SHAMAN,Chaman
+ENEMY_TROLL,Troll
+CLASS_LANCER,Lancier
+CLASS_MONK,Moine
+ABILITY_STRIKE,Frappe
+ABILITY_HEAVY_STRIKE,Coup puissant
+ABILITY_TAUNT,Provocation
+ABILITY_SHOT,Tir
+ABILITY_POWER_SHOT,Tir puissant
+ABILITY_HOP_BACK,Bond
+ABILITY_BOLT,Trait ardent
+ABILITY_FIREBALL,Boule de feu
+ABILITY_FROST,Gel
+ABILITY_COOLING_DOWN,En recharge
+ABILITY_NOT_ENOUGH_AP,Pas assez de PA
+ABILITY_NOT_ENOUGH_MP,Pas assez de PM
+ABILITY_ALREADY_MOVED,A déjà bougé
+ABILITY_UNKNOWN,Indisponible
+HUD_AP,PA
+HUD_MP,PM
+HUD_ACTIVE,%d  %s  %d/%d PV
+HUD_ABILITY,%s · %d PA
+HUD_ABILITY_COOLDOWN,%s · %d r.
+HUD_TIMELINE,Ordre de jeu
+CHOICE_STURDY,Endurant
+CHOICE_SHARP,Aiguisé
+CHOICE_SWIFT,Preste
+CHOICE_FOCUSED,Concentré
+CHOICE_DEADLY,Redoutable
+CHOICE_ARMOURED,Cuirassé
+BOOT_PICK_MAP,Choisir un combat
+COMBAT_BACK,Retour
+BOOT_SQUAD,Équipe — toucher pour changer de classe
+HUD_BEGIN_COMBAT,Commencer
+HUD_DEPLOY,Placez votre équipe — %d à poser
+HUD_DEPLOY_READY,Équipe en place
+ITEM_RUSTY_SWORD,Épée rouillée
+ITEM_HUNTING_BOW,Arc de chasse
+ITEM_APPRENTICE_STAFF,Bâton d'apprenti
+ITEM_IRON_SWORD,Épée de fer
+ITEM_YEW_BOW,Arc d'if
+ITEM_OAK_STAFF,Bâton de chêne
+ITEM_KNIGHT_BLADE,Lame de chevalier
+ITEM_LONGBOW,Arc long
+ITEM_RUNED_STAFF,Bâton runique
+ITEM_SUNDER,Fendoir
+ITEM_WINDPIERCER,Perce-vent
+ITEM_EMBERSTAFF,Bâton de braise
+ITEM_KINGMAKER,Faiseur de rois
+ITEM_WOODEN_SHIELD,Bouclier de bois
+ITEM_IRON_SHIELD,Bouclier de fer
+ITEM_TOWER_SHIELD,Pavois
+ITEM_BULWARK,Rempart
+ITEM_LEATHER_CAP,Coiffe de cuir
+ITEM_IRON_HELM,Heaume de fer
+ITEM_CROWNED_HELM,Heaume couronné
+ITEM_PADDED_COAT,Gambison
+ITEM_CHAINMAIL,Cotte de mailles
+ITEM_PLATE,Harnois
+ITEM_DRAGONSCALE,Écailles de dragon
+ITEM_COPPER_RING,Anneau de cuivre
+ITEM_HUNTERS_CHARM,Charme du chasseur
+ITEM_SAGES_PENDANT,Pendentif du sage
+ITEM_SWIFT_BOOTS,Bottes lestes
+ITEM_WARDING_BAND,Bague de garde
+ITEM_AMULET_OF_FOCUS,Amulette de concentration
+RARITY_COMMON,Commun
+RARITY_UNCOMMON,Peu commun
+RARITY_RARE,Rare
+RARITY_EPIC,Épique
+RARITY_LEGENDARY,Légendaire
+SLOT_WEAPON,Arme
+SLOT_SHIELD,Bouclier
+SLOT_HELMET,Casque
+SLOT_ARMOUR,Armure
+SLOT_ACCESSORY,Accessoire
+COMPANY_TITLE,Compagnie
+COMPANY_GOLD,%d or
+COMPANY_LEVEL,niveau %d
+COMPANY_EXPERIENCE,Niveau %d — %d / %d d'expérience
+COMPANY_MAX_LEVEL,Niveau %d — au sommet
+COMPANY_LEVEL_UP,Passer au niveau %d
+COMPANY_CHOOSE,Niveau %d : un choix définitif
+COMPANY_EMPTY,Aucun héros dans la compagnie.
+COMPANY_SLOT_EMPTY,—
+COMPANY_STASH,Réserve (%d)
+COMPANY_STASH_EMPTY,Rien en réserve.
+BOOT_COMPANY,Compagnie
+STAT_HIT_POINTS,PV
+STAT_ACTION_POINTS,PA
+STAT_MOVEMENT_POINTS,PM
+STAT_INITIATIVE,Init
+STAT_STRENGTH,For
+STAT_AGILITY,Agi
+STAT_INTELLIGENCE,Int
+STAT_DEFENCE,Déf
+STAT_CRITICAL,Crit
+REGION_GREENLANDS,Les Terres Vertes
+REGION_GREENLANDS_DESC,Prairies et bosquets. Gobelins et gnomes y pillent les fermes isolées.
+REGION_BURNING_DUNES,Les Dunes Ardentes
+REGION_BURNING_DUNES_DESC,Un désert sans ombre. On n'y va pas encore.
+REGION_FROZEN_MOUNTAINS,Les Montagnes Gelées
+REGION_FROZEN_MOUNTAINS_DESC,Des cols pris par la glace. On n'y va pas encore.
+REGION_BROKEN_LANDS,Les Terres Brisées
+REGION_BROKEN_LANDS_DESC,"Une vieille ligne de forts, et ce qui s'y est installé."
+REGION_CURSED_LANDS,Les Terres Maudites
+REGION_CURSED_LANDS_DESC,"Rien n'y meurt tout à fait. Ce qu'on entame se recoud, et ce qui mord se nourrit."
+REGION_BLACK_EMPIRE,L'Empire Noir
+REGION_BLACK_EMPIRE_DESC,La source de tout ceci. On n'y va pas encore.
+EVENT_OASIS,L'oasis
+EVENT_OASIS_TEXT,Quelques palmiers et de l'eau claire. Dans ce pays, cela ne reste jamais sans surveillance longtemps.
+EVENT_OASIS_LINGER,S'attarder à l'ombre
+EVENT_OASIS_DRINK,Boire et repartir
+EVENT_CREVASSE,La crevasse
+EVENT_CREVASSE_TEXT,Une fente bleue coupe le glacier. Elle est étroite — mais la glace du bord sonne creux.
+EVENT_CREVASSE_JUMP,Sauter avec le barda
+EVENT_CREVASSE_ROUND,Contourner par le haut
+EVENT_WARM_HUT,La cabane du col
+EVENT_WARM_HUT_TEXT,Une cabane de chasseur, vide depuis longtemps. Il reste du bois sec et un âtre.
+EVENT_WARM_HUT_REST,Faire du feu et dormir
+EVENT_WARM_HUT_STRIP,Démonter la cabane et l'emporter
+EVENT_FROZEN_CARAVAN,La caravane prise
+EVENT_FROZEN_CARAVAN_TEXT,Un convoi entier pris dans la glace, hommes et bêtes. Les caisses sont encore sanglées.
+EVENT_FROZEN_CARAVAN_DIG,Dégager les caisses à la hache
+EVENT_FROZEN_CARAVAN_LEAVE,Prendre ce qui dépasse et filer
+EVENT_ROUGEFER_SCOUT,L'éclaireur Rougefer
+EVENT_ROUGEFER_SCOUT_TEXT,Un homme seul vous a vus depuis la crête. Il n'a pas encore couru.
+EVENT_ROUGEFER_SCOUT_HUNT,Le prendre en chasse
+EVENT_ROUGEFER_SCOUT_LET,Le laisser partir et souffler
+EVENT_BLIZZARD,Le blizzard
+EVENT_BLIZZARD_TEXT,Le ciel tombe d'un coup et le vent efface la piste. On ne voit plus le porteur de devant.
+EVENT_BLIZZARD_PUSH,Avancer à la corde
+EVENT_BLIZZARD_SHELTER,S'abriter derrière un rocher
+EVENT_SANDSTORM,La tempête de sable
+EVENT_SANDSTORM_TEXT,Un mur ocre monte à l'horizon et avance plus vite que vous ne marchez.
+EVENT_SANDSTORM_CROSS,Traverser en force
+EVENT_SANDSTORM_GUIDE,Payer un guide pour la contourner
+EVENT_CARAVAN,La caravane ensablée
+EVENT_CARAVAN_TEXT,Des bâches déchirées dépassent d'une dune. Ce qu'elle transportait est peut-être encore dessous.
+EVENT_CARAVAN_DIG,Creuser
+EVENT_CARAVAN_WATER,Prendre les outres et filer
+EVENT_BONE_FIELD,Le champ d'os
+EVENT_BONE_FIELD_TEXT,Une expédition avant la vôtre n'est pas rentrée. Leur équipement est encore là. Ce qui les a tués aussi, peut-être.
+EVENT_BONE_FIELD_LOOT,Fouiller les dépouilles
+EVENT_BONE_FIELD_RATIONS,Prendre leurs vivres et passer
+EVENT_OBELISK,L'obélisque
+EVENT_OBELISK_TEXT,Une aiguille de basalte couverte de noms. Chacun d'eux a payé pour y figurer.
+EVENT_OBELISK_TRIBUTE,Payer le tribut
+EVENT_OBELISK_BREAK,Briser la pierre
+EVENT_ALTAR,L'autel de pierre
+EVENT_ALTAR_TEXT,Une dalle usée au milieu des herbes. Quelque chose y a été promis avant vous.
+EVENT_ALTAR_BLOOD,Offrir votre sang
+EVENT_ALTAR_GOLD,Offrir votre or
+EVENT_ALTAR_LEAVE,S'éloigner et souffler
+EVENT_VILLAGE,Un hameau
+EVENT_VILLAGE_TEXT,Une douzaine de toits. On vous reconnaît et on vous ouvre.
+EVENT_VILLAGE_REST,Passer la nuit
+EVENT_VILLAGE_SMITH,Payer le forgeron
+EVENT_RUINS,Des ruines
+EVENT_RUINS_TEXT,Un mur debout et le reste par terre. Ça tient mal.
+EVENT_RUINS_SEARCH,Fouiller les décombres
+EVENT_RUINS_STONES,Emporter les pierres taillées
+EVENT_AMBUSH,Une embuscade
+EVENT_AMBUSH_TEXT,Ils étaient là avant vous. Ils vous ont vus les premiers.
+EVENT_AMBUSH_CHARGE,Charger
+EVENT_AMBUSH_FLEE,Fuir en lâchant du lest
+EVENT_CHEST,Un coffre
+EVENT_CHEST_TEXT,Ferré et fermé. Personne alentour pour en réclamer la clé.
+EVENT_CHEST_FORCE,Le forcer à l'épaule
+EVENT_CHEST_PICK,Le crocheter
+STEP_COMBAT,Combat
+STEP_MINIBOSS,Mini-boss
+STEP_BOSS,Boss
+STEP_EVENT,Événement
+STEP_MERCHANT,Marchand
+STEP_REWARD,Récompense
+EXPEDITION_STEP_OF,étape %d sur %d
+EXPEDITION_SATCHEL,Besace : %d or · %d objets
+EXPEDITION_SUPPLIES,Sac : %d potions
+EXPEDITION_SQUAD,Votre équipe
+EXPEDITION_RETREAT,Rentrer
+EXPEDITION_FIGHT,Engager le combat
+EXPEDITION_NIGHT_EXTRA,La nuit en amènera un de plus.
+EXPEDITION_CONTINUE,Poursuivre
+EXPEDITION_TAKE,Prendre la récompense
+EXPEDITION_REWARD_TEXT,Le mini-boss ne gardait pas ces caisses pour rien.
+EXPEDITION_MERCHANT_GOLD,Il déballe son étal. Vous avez %d pièces.
+EXPEDITION_LEAVE_SHOP,Reprendre la route
+EXPEDITION_SOLD,%s — acheté
+EXPEDITION_BOUGHT,%s rejoint la réserve.
+EXPEDITION_RETREATED,Vous rentrez avec ce que vous avez.
+EXPEDITION_HOME,Rentré au royaume.
+EXPEDITION_COMPLETE,Le boss est tombé. La région est à vous.
+EXPEDITION_LOST,L'équipe est tombée. Une partie de la besace est perdue.
+EXPEDITION_LOG_GOLD,%+d or
+EXPEDITION_LOG_SUPPLY,%s rejoint le sac
+EXPEDITION_LOG_LOST,%d or perdu
+EXPEDITION_LOG_DOWNED,%s est tombé
+EXPEDITION_LOG_AMBUSHED,Ils vous coupent la route.
+WORLD_TITLE,Le monde
+WORLD_ACT,Acte %d
+WORLD_LOCKED,Verrouillée
+WORLD_LOCKED_TEXT,Vous n'avez pas encore de quoi y aller.
+WORLD_LENGTH,Une sortie de %d à %d étapes.
+WORLD_ENDS_ON_BOSS,Elle se termine sur un boss.
+WORLD_NO_HEALING,Rien ne se soigne entre deux rencontres.
+WORLD_SQUAD,Votre équipe
+WORLD_DEPART,Partir pour %s
+BOOT_EXPEDITION,Partir en expédition
+BOOT_RESUME,Reprendre l'expédition
+BOOT_TESTBENCH,Combat seul — banc d'essai
+EFFECT_GOLD,%+d or
+EFFECT_HEALTH,%+d %% PV
+EFFECT_ITEM_ONE,un objet
+EFFECT_ITEM,%d objets
+EFFECT_ITEM_FINE_ONE,un objet de valeur
+EFFECT_ITEM_FINE,%d objets de valeur
+EFFECT_SATCHEL,−%d %% de la besace
+EFFECT_COMBAT,un combat
+EFFECT_NOTHING,rien
+EFFECT_THREAT,menace %+d
+EFFECT_HANDS,%+d habitant(s)
+EFFECT_TRADE,métier de %s
+EFFECT_CHAMPION,un champion
+EVENT_OR_ELSE,%s   ·   sinon %s
+RESOURCE_WOOD,Bois
+RESOURCE_STONE,Pierre
+RESOURCE_GOLD,Or
+RESOURCE_FOOD,Nourriture
+WORKSITE_LUMBER,Coupe de bois
+WORKSITE_QUARRY,Carrière
+WORKSITE_MINE,Mine d'or
+WORKSITE_PASTURE,Pâturage
+BUILDING_CASTLE,Château
+BUILDING_CASTLE_DESC,Le cœur du royaume. Son niveau plafonne tous les autres bâtiments.
+BUILDING_HOUSES,Maisons
+BUILDING_HOUSES_DESC,Des toits pour ceux qui viendront. Plus d'habitants, plus de bras aux chantiers.
+BUILDING_BARRACKS,Caserne
+BUILDING_BARRACKS_DESC,On y forme les Guerriers. Chaque niveau les rend plus durs à abattre.
+BUILDING_ARCHERY,Camp d'archers
+BUILDING_ARCHERY_DESC,On y forme les Archers. Chaque niveau affûte leur œil.
+BUILDING_MONASTERY,Monastère
+BUILDING_MONASTERY_DESC,On y forme les Mages — et on y soigne : l'équipe récupère entre deux rencontres.
+KINGDOM_TITLE,Votre royaume
+KINGDOM_PEOPLE,Habitants
+KINGDOM_IDLE,au repos
+KINGDOM_PICK,Touchez un bâtiment ou un chantier.
+KINGDOM_LEVEL,Niveau %d sur %d
+KINGDOM_GRANTS_NOW,Accorde aujourd'hui : %s
+KINGDOM_NEXT,Niveau %d : %s
+KINGDOM_NEXT_GRANTS,Il apportera : %s
+KINGDOM_MAXED,Rien de plus à bâtir ici.
+KINGDOM_BUILD,Améliorer
+KINGDOM_FOUND,Bâtir
+KINGDOM_NEEDS_CASTLE,Il faut d'abord agrandir le château
+KINGDOM_NEEDS_RESOURCES,Ressources insuffisantes
+KINGDOM_BUILT,%s passe au niveau %d.
+KINGDOM_HANDS,%d bras sur %d places
+KINGDOM_YIELD,Rend %d %s par cycle (%d par bras).
+KINGDOM_EATEN,%d nourriture mangée
+KINGDOM_ARRIVED,Un habitant s'installe.
+KINGDOM_HUNGRY,Les réserves de nourriture sont vides.
+GRANT_POPULATION_CAP,Habitants
+GRANT_HIT_POINTS,PV
+GRANT_STRENGTH,Force
+GRANT_AGILITY,Agilité
+GRANT_INTELLIGENCE,Intelligence
+GRANT_DEFENCE,Défense
+GRANT_CRITICAL,Critique
+GRANT_HEAL_BETWEEN_STEPS,Soin entre rencontres
+GRANT_BREW,Fioles par cycle
+KINGDOM_RECRUIT,Recruter un %s\n%s
+KINGDOM_RECRUITED,%s rejoint la compagnie (%s).
+TRAIT_NONE,Sans histoire
+TRAIT_HARDY,Endurci
+TRAIT_KEEN,Vif
+TRAIT_BRUTAL,Brutal
+TRAIT_GUARDED,Sur ses gardes
+TRAIT_QUICK,Leste
+TRAIT_STUDIOUS,Studieux
+TRAIT_LUCKY,Chanceux
+TRAIT_STEADY,Impassible
+COUNCIL_TITLE,Le conseil
+COUNCIL_WAITING,Le conseil vous attend.
+COUNCIL_NEIGHBOURS,Villes voisines
+COUNCIL_STANDING,%s — %s
+COUNCIL_UNAFFORDABLE,Réserves insuffisantes
+COUNCIL_SETTLED,%d habitant(s) s'installent.
+COUNCIL_LEFT,%s quitte le royaume.
+COUNCIL_LEARNED,%d habitant(s) progressent au métier de %s.
+COUNCIL_CREDIT,%s : %s
+COUNCIL_FLASKS,%d × %s rejoignent le sac.
+COUNCIL_JOINS,%s rejoint la compagnie.
+COUNCIL_CLOSE,Bien
+STANDING_HOSTILE,Hostile
+STANDING_COLD,Distant
+STANDING_NEUTRAL,Indifférent
+STANDING_CORDIAL,Cordial
+STANDING_ALLIED,Allié
+TOWN_VALMONT,Valmont
+TOWN_VALMONT_DESC,"Un gros bourg de greniers et de vergers, à deux jours de marche. On y mange bien et on y compte tout."
+TOWN_ROCHE_CLAIRE,Roche-Claire
+TOWN_ROCHE_CLAIRE_DESC,"Une ville taillée à même la falaise. Ses carriers passent pour les meilleurs du pays, et ils le savent."
+TOWN_FORT_AUBIN,Fort-Aubin
+TOWN_FORT_AUBIN_DESC,"Une place forte qui vit de sa garnison. On y loue des bras, des lames et des renseignements."
+COUNCIL_DISPUTE,La querelle du lopin
+COUNCIL_DISPUTE_TEXT,"Deux familles se disputent une bande de terre au bord du ruisseau. Elles attendent que vous tranchiez, et le village entier regarde."
+COUNCIL_DISPUTE_0,"Trancher, et dédommager le perdant"
+COUNCIL_DISPUTE_0_OK,"Le jugement est rendu. Le perdant repart avec de quoi tenir l'hiver, et personne ne crie."
+COUNCIL_DISPUTE_1,Les laisser s'arranger entre eux
+COUNCIL_DISPUTE_1_OK,Ils se sont arrangés. L'un des deux avait fait ses paquets avant l'aube.
+COUNCIL_DISPUTE_2,Leur faire creuser un puits ensemble
+COUNCIL_DISPUTE_2_OK,"Un puits pour deux vaut mieux qu'un ruisseau pour un. Ils ont appris le métier en s'y mettant."
+COUNCIL_SEAM,Le filon
+COUNCIL_SEAM_TEXT,"En creusant une fosse on est tombé sur une veine de belle pierre. Elle affleure à peine : personne ne sait jusqu'où elle descend."
+COUNCIL_SEAM_0,La creuser tout de suite
+COUNCIL_SEAM_0_OK,"On prend ce qui vient. La galerie s'est effondrée au bout de trois jours, mais les blocs étaient sortis."
+COUNCIL_SEAM_1,Étayer la galerie d'abord
+COUNCIL_SEAM_1_OK,"Le bois a été bien employé : la veine descendait loin, et elle a tout rendu."
+COUNCIL_SEAM_2,En faire un chantier-école
+COUNCIL_SEAM_2_OK,Les carriers du royaume y ont passé la semaine. Peu de pierre est sortie et beaucoup de métier est entré.
+COUNCIL_STORM,L'orage
+COUNCIL_STORM_TEXT,Une bourrasque a emporté la moitié des toits pendant votre absence. Les familles dorment sous des bâches.
+COUNCIL_STORM_0,Réparer avec nos réserves
+COUNCIL_STORM_0_OK,Les toits sont refaits avant la prochaine pluie.
+COUNCIL_STORM_1,Attendre la fin de l'hiver
+COUNCIL_STORM_1_OK,"Les bâches ont tenu. Les réserves, non : une bonne part des vivres a pris l'eau."
+COUNCIL_STORM_2,Faire venir les charpentiers de Roche-Claire
+COUNCIL_STORM_2_OK,"Ils sont venus, ils ont bien travaillé, et ils sont repartis contents."
+COUNCIL_DESERTER,Le partant
+COUNCIL_DESERTER_TEXT,"Un habitant demande à quitter le royaume. Il dit qu'il y a mieux à faire ailleurs, et il n'a pas tout à fait tort."
+COUNCIL_DESERTER_0,Le laisser partir
+COUNCIL_DESERTER_0_OK,Il a vendu ses outils au village avant de prendre la route.
+COUNCIL_DESERTER_1,Le retenir par une prime
+COUNCIL_DESERTER_1_OK,"L'argent a suffi. Il est resté, et les autres l'ont remarqué."
+COUNCIL_DESERTER_2,Le mettre au défi de revenir plus riche
+COUNCIL_DESERTER_2_OK,"Il est revenu au bout d'un mois, la bourse pleine et l'air content de lui."
+COUNCIL_DESERTER_2_KO,On ne l'a jamais revu.
+COUNCIL_NEWCOMERS,Les sans-terre
+COUNCIL_NEWCOMERS_TEXT,Deux familles chassées de leur vallée campent devant la porte. Elles demandent un toit et proposent leurs bras.
+COUNCIL_NEWCOMERS_0,Les accueillir
+COUNCIL_NEWCOMERS_0_OK,"Le royaume compte deux foyers de plus, et les réserves s'en ressentent."
+COUNCIL_NEWCOMERS_1,Les renvoyer sur la route
+COUNCIL_NEWCOMERS_1_OK,Elles sont reparties sans un mot. Le village en a parlé trois jours.
+COUNCIL_NEWCOMERS_2,Les recommander à Valmont
+COUNCIL_NEWCOMERS_2_OK,"Valmont les a prises, et n'a pas oublié qui les lui avait envoyées."
+COUNCIL_CARAVAN,La caravane de Valmont
+COUNCIL_CARAVAN_TEXT,Une file de chariots s'arrête devant la porte. Valmont propose ses grains contre notre bois — leurs charpentes brûlent vite ces temps-ci.
+COUNCIL_CARAVAN_0,Accepter l'échange
+COUNCIL_CARAVAN_0_OK,"Les chariots repartent chargés de bois, les greniers sont pleins."
+COUNCIL_CARAVAN_1,Refuser poliment
+COUNCIL_CARAVAN_1_OK,"Le maître de caravane a salué, tourné bride, et noté quelque chose sur sa tablette."
+COUNCIL_CARAVAN_2,Marchander
+COUNCIL_CARAVAN_2_OK,"Il a ri, puis il a cédé. On y gagne du bois et un peu d'estime."
+COUNCIL_CARAVAN_2_KO,Il a mal pris la chose. Les chariots sont repartis pleins et la nouvelle voyagera avec eux.
+COUNCIL_MASONS,Les tailleurs de Roche-Claire
+COUNCIL_MASONS_TEXT,"Une compagnie de tailleurs de pierre passe par là, entre deux chantiers. Ils veulent bien s'arrêter une saison, s'ils y trouvent leur compte."
+COUNCIL_MASONS_0,Les payer en or
+COUNCIL_MASONS_0_OK,Payés rubis sur l'ongle. Le mur d'enceinte n'a jamais été aussi droit.
+COUNCIL_MASONS_1,Les payer en vivres
+COUNCIL_MASONS_1_OK,"Ils mangent autant qu'ils taillent. Le mur est le même, la bourse est intacte."
+COUNCIL_MASONS_2,Les renvoyer chez eux
+COUNCIL_MASONS_2_OK,Ils sont repartis au matin. Roche-Claire saura qu'on n'avait pas de quoi les payer.
+COUNCIL_WARNING,L'avertissement de Fort-Aubin
+COUNCIL_WARNING_TEXT,"Un cavalier de Fort-Aubin arrive fourbu : une colonne de pillards descend vers la vallée. Ses éclaireurs peuvent la suivre, s'ils sont payés."
+COUNCIL_WARNING_0,Verser la prime aux éclaireurs
+COUNCIL_WARNING_0_OK,Les éclaireurs ont fait leur travail. La colonne a changé de route sans savoir pourquoi.
+COUNCIL_WARNING_1,Poster nos propres guetteurs
+COUNCIL_WARNING_1_OK,"Nos guetteurs valent ce qu'ils valent, mais ils voient venir."
+COUNCIL_WARNING_2,Ne rien faire
+COUNCIL_WARNING_2_OK,Le cavalier est reparti sans réponse. La vallée reste ouverte.
+COUNCIL_MERCENARIES,Le contrat de Fort-Aubin
+COUNCIL_MERCENARIES_TEXT,"Fort-Aubin arme une compagnie pour la saison et manque de tout sauf d'or. Leur intendant fait le tour des villages, sa bourse à la main."
+COUNCIL_MERCENARIES_0,Leur vendre nos vivres
+COUNCIL_MERCENARIES_0_OK,"Les chariots sont partis pleins. Les greniers sonnent creux, la bourse ne sonne plus du tout."
+COUNCIL_MERCENARIES_1,Leur vendre notre pierre
+COUNCIL_MERCENARIES_1_OK,Ils ont emporté nos blocs pour rehausser leur muraille. L'or est de bon aloi.
+COUNCIL_MERCENARIES_2,Garder nos réserves
+COUNCIL_MERCENARIES_2_OK,L'intendant a refermé sa bourse un peu sèchement et repris la route.
+COUNCIL_FEUD,La querelle du gué
+COUNCIL_FEUD_TEXT,"Valmont et Roche-Claire se disputent un gué, et chacune vous écrit le même jour pour vous demander votre appui."
+COUNCIL_FEUD_0,Soutenir Valmont
+COUNCIL_FEUD_0_OK,Une poignée de miliciens payés de notre bourse tient le gué aux couleurs de Valmont. Roche-Claire a compté les hommes.
+COUNCIL_FEUD_1,Soutenir Roche-Claire
+COUNCIL_FEUD_1_OK,"Le gué reste à Roche-Claire, et Valmont sait à qui elle le doit."
+COUNCIL_FEUD_2,Refuser de choisir
+COUNCIL_FEUD_2_OK,Personne n'a apprécié la prudence. Les deux lettres sont restées sans réponse.
+COUNCIL_CHAMPION,Le champion de Fort-Aubin
+COUNCIL_CHAMPION_TEXT,"Fort-Aubin ne prête pas ses lames à n'importe qui. Un de leurs lanciers, vétéran de trois campagnes, attend votre réponse dans la cour."
+COUNCIL_CHAMPION_0,L'engager
+COUNCIL_CHAMPION_0_OK,Il a posé sa lance contre le mur et demandé où était sa paillasse.
+COUNCIL_CHAMPION_1,Lui demander plutôt une caisse de fioles
+COUNCIL_CHAMPION_1_OK,Il a haussé les épaules et fait décharger deux caisses. Les fioles valent leur poids.
+COUNCIL_CHAMPION_2,Décliner l'offre
+COUNCIL_CHAMPION_2_OK,Il est reparti au petit trot. On n'offre pas deux fois la même chose à Fort-Aubin.
+KINGDOM_LEND,Prêter un héros à %s (%d cycles)
+KINGDOM_LEND_STANDING,Ils ne prendraient personne de chez nous
+KINGDOM_LEND_TOO_FEW,"Il faut garder %d héros au royaume"
+KINGDOM_LEND_TERMS,"Pour %d cycles. Il en revient avec %d or et %d d'expérience."
+KINGDOM_LEND_HERO,%s — %s
+KINGDOM_LENT,%s part pour %s. Trois cycles sans lui.
+KINGDOM_AWAY,En mission
+KINGDOM_AWAY_LINE,"%s, chez %s — encore %d cycle(s)"
+KINGDOM_RETURNED,%s rentre de chez %s avec %d or
+WORLD_MUSTER,Renfort
+WORLD_MUSTER_CALL,%s enverra un bras (%s)
+WORLD_MUSTER_READY,Un homme de %s part avec vous
+WORLD_MUSTER_COLD,"%s n'enverra personne — il faudrait être %s"
+WORLD_MUSTER_COST,"%s enverrait un bras, mais il faut %s"
+EXPEDITION_CALL_ALLY,Appeler le renfort de %s
+UNIT_MILITIA,Milicien
+BOOT_KINGDOM,Royaume
+OPTIONS_TITLE,Options
+OPTIONS_AUDIO,Son
+OPTIONS_MASTER,Volume général
+OPTIONS_MUSIC,Musique
+OPTIONS_SFX,Effets
+OPTIONS_COMFORT,Confort
+OPTIONS_SHAKE,Tremblement d'écran
+OPTIONS_GAME,Partie
+OPTIONS_RESET_SETTINGS,Rétablir les réglages par défaut
+OPTIONS_SETTINGS_RESET,Réglages rétablis.
+OPTIONS_NEW_GAME,Nouvelle partie
+OPTIONS_NEW_GAME_CONFIRM,Confirmer — la partie en cours sera effacée
+OPTIONS_CANCEL,Annuler
+BOOT_OPTIONS,Options
+BOOT_CREDITS,Crédits
+ENDING_ONWARD,Continuer
+ENDING_UNLOCKED,Une terre s'ouvre : %s
+ENDING_COMPLETE,La campagne est finie
+ENDING_COMPLETE_BODY,Toutes les terres connues sont pacifiées. Votre royaume tient debout, vos héros ont survécu, et le monde attend la suite. Vous pouvez continuer à mener des sorties : le butin et l'expérience restent acquis.
+CREDITS_TITLE,Crédits
+CREDITS_ART,Graphismes
+CREDITS_ENGINE,Moteur et outils
+CREDITS_FONT,Police
+CREDITS_LICENCE_TINYSWORDS,Usage et modification autorisés — redistribution des fichiers interdite. C'est pourquoi le pack n'est pas dans le dépôt.
+CREDITS_LICENCE_CC0,CC0 1.0 — domaine public. Aucune attribution exigée ; celle-ci est une politesse.
+CREDITS_LICENCE_CCBY,CC BY 3.0 — attribution OBLIGATOIRE. La seule ligne de cet écran qui ne soit pas facultative.
+CREDITS_LICENCE_MIT,Licence MIT
+CREDITS_LICENCE_FONT,Police pixel — licence à confirmer auprès de l'auteur
+CREDITS_PERSONAL,Projet personnel. Le jeu n'est ni vendu ni publié : aucune licence d'asset n'est bloquante tant que ce cadre tient.
+HUD_PAUSE,II
+PAUSE_TITLE,Pause
+PAUSE_RESUME,Reprendre le combat
+PAUSE_OPTIONS,Options
+PAUSE_ABANDON,Abandonner le combat
+PAUSE_ABANDON_CONFIRM,Confirmer — le combat est perdu
+ABILITY_CLEAVE,Fendre
+ABILITY_HAMSTRING,Entaille
+ABILITY_VOLLEY,Salve
+ABILITY_PINNING_SHOT,Tir entravant
+ABILITY_ARCANE_LANCE,Trait arcanique
+ABILITY_HOARFROST,Givre
+NODE_W_VIGOUR,Vigueur
+NODE_W_VIGOUR_DESC,PV +15. Ce qu'il faut pour traverser le plateau.
+NODE_W_CLEAVE,Fendre
+NODE_W_CLEAVE_DESC,Débloque Fendre : une ligne de deux cases, pour deux ennemis alignés.
+NODE_W_GRIP,Poigne
+NODE_W_GRIP_DESC,Force +1.
+NODE_W_PLATE,Plates
+NODE_W_PLATE_DESC,Défense +1. Ce qui encaisse au lieu de frapper.
+NODE_W_ENDURANCE,Endurance
+NODE_W_ENDURANCE_DESC,PV +20.
+NODE_W_ANCHOR,Ancrage
+NODE_W_ANCHOR_DESC,Défense +1.
+NODE_W_FORTRESS,Forteresse
+NODE_W_FORTRESS_DESC,PV +25, Défense +1. Plus rien ne le fait tomber vite.
+NODE_W_HAMSTRING,Entaille
+NODE_W_HAMSTRING_DESC,Débloque Entaille : peu de dégâts, mais la cible ne décroche plus.
+NODE_W_FURY,Fureur
+NODE_W_FURY_DESC,Force +1. La voie du Berserker commence ici.
+NODE_W_STRIDE,Foulée
+NODE_W_STRIDE_DESC,PM +1. Frapper suppose d'arriver.
+NODE_W_SLAYER,Pourfendeur
+NODE_W_SLAYER_DESC,Force +2, Critique +5.
+NODE_A_EYE,Œil
+NODE_A_EYE_DESC,PV +12. Il en faut un peu pour survivre à une erreur.
+NODE_A_PINNING,Tir entravant
+NODE_A_PINNING_DESC,Débloque le Tir entravant : la cible avancera moins.
+NODE_A_DRAW,Allonge
+NODE_A_DRAW_DESC,Agilité +1.
+NODE_A_AIM,Visée
+NODE_A_AIM_DESC,Critique +5. Moins de tirs, mais qui comptent.
+NODE_A_VOLLEY,Salve
+NODE_A_VOLLEY_DESC,Débloque la Salve : une zone à six cases.
+NODE_A_FOCUS,Concentration
+NODE_A_FOCUS_DESC,PA +1. Un tir de plus par activation.
+NODE_A_DEADEYE,Œil mort
+NODE_A_DEADEYE_DESC,Agilité +2, Critique +5.
+NODE_A_LIGHT,Pas léger
+NODE_A_LIGHT_DESC,PM +1. La voie de la Mobilité commence ici.
+NODE_A_WIND,Vent
+NODE_A_WIND_DESC,Initiative +3. Jouer avant, c'est choisir la distance.
+NODE_A_HIDE,Cuir
+NODE_A_HIDE_DESC,PV +18, Défense +1.
+NODE_A_GHOST,Spectre
+NODE_A_GHOST_DESC,PM +1, Agilité +1. On ne l'attrape plus.
+NODE_M_STUDY,Étude
+NODE_M_STUDY_DESC,PV +10. Le Mage part de très bas.
+NODE_M_HOARFROST,Givre
+NODE_M_HOARFROST_DESC,Débloque le Givre : cinq cases gelées pour deux activations.
+NODE_M_WILL,Volonté
+NODE_M_WILL_DESC,Intelligence +1.
+NODE_M_LANCE,Trait arcanique
+NODE_M_LANCE_DESC,Débloque le Trait : trois cases en ligne.
+NODE_M_SPARK,Étincelle
+NODE_M_SPARK_DESC,Intelligence +1.
+NODE_M_CHANNEL,Canalisation
+NODE_M_CHANNEL_DESC,PA +1.
+NODE_M_RUIN,Ruine
+NODE_M_RUIN_DESC,Intelligence +2, Critique +5.
+NODE_M_ROBES,Robes lourdes
+NODE_M_ROBES_DESC,PV +20. La voie de la Survie commence ici.
+NODE_M_STEP,Pas de côté
+NODE_M_STEP_DESC,PM +1.
+NODE_M_GUARD,Sauvegarde
+NODE_M_GUARD_DESC,Défense +2.
+NODE_M_SAGE,Sage
+NODE_M_SAGE_DESC,PV +25, Intelligence +1.
+SKILLS_TITLE,Compétences
+SKILLS_POINTS,%d point(s) à dépenser
+SKILLS_NONE,Aucun point à dépenser.
+SKILLS_LOCKED,Il faut d'abord %s
+SKILLS_TAKEN,Acquis
+SKILLS_UNLOCK,Apprendre
+SKILLS_LEARNED,%s appris.
+BRANCH_W_PLATE,La voie du Rempart
+BRANCH_W_HAMSTRING,La voie de la Furie
+BRANCH_A_AIM,La voie du Coup mortel
+BRANCH_A_PINNING,La voie de l'Ombre
+BRANCH_M_LANCE,La voie de la Destruction
+BRANCH_M_HOARFROST,La voie du Givre
+INVASION_ALARM,Votre royaume est attaqué !
+INVASION_ALARM_IN,Votre royaume est attaqué — l'assaut tombe dans %d étape(s).
+INVASION_DEFEND,Rentrer défendre
+INVASION_RETURNING,Vous faites demi-tour vers le royaume.
+INVASION_REPELLED,L'assaut est repoussé (%d contre %d). Butin : %d or.
+INVASION_LOST,Le royaume est pillé (%d contre %d).
+INVASION_ALONE,L'armée a défendu seule.
+MAP_KINGDOM_DEFENCE,La défense du royaume
+PAUSE_SAVE_QUIT,Sauvegarder et quitter
+BOOT_RESUME_COMBAT,Reprendre le combat
+ENEMY_MINOTAUR,Minotaure
+ABILITY_GORE,Encornade
+MAP_VALLEE_09,Le goulet du minotaure
+MOMENT_DAY,Jour
+MOMENT_DUSK,Crépuscule
+MOMENT_NIGHT,Nuit
+BOOT_TESTBENCH_NIGHT,%s — de nuit
+HUD_CONSUMABLE,%s · %d PA · ×%d
+ITEM_DRAUGHT_OF_MENDING,Élixir de réparation
+ITEM_PHILTRE_OF_HASTE,Philtre de hâte
+ITEM_FIREBOMB,Bombe incendiaire
+ABILITY_DRAUGHT_OF_MENDING,Élixir de réparation
+ABILITY_PHILTRE_OF_HASTE,Philtre de hâte
+ABILITY_FIREBOMB,Bombe incendiaire
+HUD_OBJECTIVE_TITLE,Objectif
+HUD_NEXT_TITLE,Prochain
+HUD_DETAIL_DAMAGE,Dégâts
+HUD_DETAIL_HEAL,Soigne
+HUD_DETAIL_MOVEMENT,PM
+HUD_DETAIL_RANGE,Portée
+HUD_DETAIL_EFFECT,Effet
+HUD_DETAIL_NONE,Aucun
+HUD_DETAIL_CELLS,%d – %d cases
+STATUS_CHILLED,Gelé
+STATUS_TAUNTED,Provoqué
+HUD_ABILITY_COST,Coût : %d PA
+HUD_ROUND_TITLE,Ronde
+MAP_FER_01,La traversée
+MAP_FER_02,Le passage
+MAP_FER_03,Le bois brûlé
+MAP_FER_04,Sous le feu
+MAP_FER_05,La redoute
+MAP_FER_06,La charge
+MAP_FER_07,L'enlèvement
+MAP_FER_08,Le chef de guerre
+MAP_FER_09,La grande bombarde
+ABILITY_FIELD_SUTURE,Réparation
+EVENT_ABANDONED_REDOUBT,La redoute abandonnée
+EVENT_ABANDONED_REDOUBT_TEXT,"Un fort de bois, à moitié effondré. Personne ne l'a tenu depuis des années, mais les poutres sont saines."
+EVENT_ABANDONED_REDOUBT_STRIP,Démonter la charpente
+EVENT_ABANDONED_REDOUBT_CAMP,Camper à l'abri des murs
+EVENT_COMPANY_DESERTER,Le déserteur
+EVENT_COMPANY_DESERTER_TEXT,"Un homme en jaune, sans bannière et sans armes. Il dit connaître la position des prochains postes — et il a faim."
+EVENT_COMPANY_DESERTER_PAY,"L'écouter, et payer"
+EVENT_COMPANY_DESERTER_STRIP,Le dépouiller et le laisser partir
+EVENT_FIELD_HOSPITAL,L'infirmerie de campagne
+EVENT_FIELD_HOSPITAL_TEXT,"Des toiles tendues entre deux murs, des paillasses vides. La Compagnie soigne les siens ; elle est partie vite."
+EVENT_FIELD_HOSPITAL_RANSACK,Retourner les caisses une par une
+EVENT_FIELD_HOSPITAL_REST,Se reposer sur les paillasses
+EVENT_PAYMASTER_CHEST,Le coffre du payeur
+EVENT_PAYMASTER_CHEST_TEXT,"Un coffre ferré dépasse sous un pan de mur écroulé. Le reste du mur tient encore, mais pas de beaucoup."
+EVENT_PAYMASTER_CHEST_DIG,Dégager le coffre
+EVENT_PAYMASTER_CHEST_SCRAPE,Prendre ce qui traîne autour
+ENEMY_SIEGE_CANNON,Canon de siège
+ENEMY_WATCH_TOWER,Tour de guet
+ENEMY_REPAIR_SHED,Atelier de réparation
+ENEMY_BOAR_LANCER,Lancier monté
+ENEMY_WAR_PIG,Sanglier de guerre
+ENEMY_GREAT_BOMBARD,La Grande Bombarde
+ENEMY_THE_BOAR_CHIEF,Le Chef de guerre
+ABILITY_SIEGE_SHOT,Tir de siège
+ABILITY_TOWER_BOLT,Carreau de tour
+ABILITY_BOMBARD_SHELL,Obus
+ABILITY_BOAR_CHARGE,Charge
+ABILITY_TUSK_GORE,Coup de boutoir
+ABILITY_CHIEF_LANCE,Lance du Chef
+BUILDING_TOWER,Tour de guet
+BUILDING_TOWER_DESC,"Elle veille sur la place — et c'est d'elle qu'on élève un héros."
+RANK_COMMON,Commun
+RANK_RARE,Rare
+RANK_LEGENDARY,Légendaire
+ASCENSION_TITLE,Élévation
+ASCENSION_DO,"Élever — %s"
+ASCENSION_AT_TOP,Au sommet de son art
+ASCENSION_MAXED,Déjà au rang le plus haut
+ASCENSION_LEVEL,"Niveau %d requis"
+ASCENSION_TOWER,"Tour de guet de niveau %d requise"
+ASCENSION_COST,Ressources insuffisantes
+ASCENSION_RANK,"Rang : %s"
+KINGDOM_ASCENDED,"%s est élevé au rang %s."
+MAP_MAUDIT_01,Le bois exsangue
+MAP_MAUDIT_02,La floraison blême
+MAP_MAUDIT_03,Le gué de cendre
+MAP_MAUDIT_04,Le tertre du géant
+MAP_MAUDIT_05,Les deux gueules
+MAP_MAUDIT_06,Le nid de spores
+MAP_MAUDIT_07,La longue nuit
+MAP_MAUDIT_08,Le trône de la Comtesse
+MAP_MAUDIT_09,La gueule du tertre
+ENEMY_VAMPIRE_SPAWN,Rejeton de sang
+ENEMY_BLOOD_THRALL,Servant de sang
+ENEMY_RISEN_TROLL,Troll relevé
+ENEMY_PALE_BLOOM,Floraison blême
+ENEMY_BARROW_MOUTH,Gueule du tertre
+ENEMY_SPORE_HOVEL,Nid de spores
+ENEMY_THE_COUNTESS,La Comtesse
+ABILITY_BLOOD_BITE,Morsure
+ABILITY_SIPHON_BOLT,Trait siphon
+ABILITY_GRAVE_SMASH,Coup de tombe
+ABILITY_GRAVE_BREATH,Souffle du tertre
+ABILITY_GRAVE_KNIT,Recousure
+ABILITY_COUNTESS_EMBRACE,Étreinte de la Comtesse
+ABILITY_BLOOD_CALL,Appel du sang
+MAP_EMPIRE_01,La porte de fer
+MAP_EMPIRE_02,Le champ nu
+MAP_EMPIRE_03,Les ruines basses
+MAP_EMPIRE_04,Les deux portes
+MAP_EMPIRE_05,La dépêche
+MAP_EMPIRE_06,L'ordre de tenir
+MAP_EMPIRE_07,Le poste avancé
+MAP_EMPIRE_08,Le Maréchal
+MAP_EMPIRE_09,Le prétorien
+ENEMY_BLACK_SHIELDMAN,Boucher impérial
+ENEMY_BLACK_ARCHER,Archer impérial
+ENEMY_BLACK_LANCER,Lancier impérial
+ENEMY_BLACK_CHAPLAIN,Chapelain noir
+ENEMY_BLACK_SAPPER,Sapeur impérial
+ENEMY_BLACK_PRAETORIAN,Prétorien
+ENEMY_THE_BLACK_MARSHAL,Le Maréchal Noir
+ABILITY_BRACED_PIKE,Pique calée
+ABILITY_IMPERIAL_VOLLEY,Volée impériale
+ABILITY_IMPERIAL_LANCE,Lance impériale
+ABILITY_BLACK_LITANY,Litanie noire
+ABILITY_CENSER_FLAME,Flamme d'encensoir
+ABILITY_SAPPER_CHARGE,Coup de masse
+ABILITY_MARSHAL_SENTENCE,Sentence
+ABILITY_MARSHAL_COMMAND,Commandement
+UNIT_VILLAGER,Villageois
+UNIT_WOODCUTTER,Bûcheron
+UNIT_SMITH,Forgeron
+COMPANY_TAKE_ALONG,Emmener en expédition
+COMPANY_LEAVE_BEHIND,Laisser au royaume
+COMPANY_SQUAD_FULL,"L'équipe est au complet (%d)"
+COMPANY_SQUAD_LAST,Il ne peut pas rester seul
+COMPANY_GOING_MARK,"» "
+CLASS_LANCER,Lancier
+ABILITY_LANCE_THRUST,Estoc
+ABILITY_SKEWER,Broche
+ABILITY_REPEL,Repousse
+ABILITY_PHALANX,Phalange
+ABILITY_IMPALE,Empalement
+ITEM_ASH_SPEAR,Lance de frêne
+ITEM_IRON_PIKE,Pique de fer
+ITEM_WARDEN_LANCE,Lance du gardien
+ITEM_GATEKEEPER,Le Portier
+BRANCH_L_WALL,Le mur
+BRANCH_L_DRIVE,La percée
+NODE_L_REACH,Allonge
+NODE_L_REACH_DESC,Tenir la hampe plus bas. +15 PV.
+NODE_L_FOOTING,Appui
+NODE_L_FOOTING_DESC,Le poids du corps derrière la pointe. +1 Force.
+NODE_L_PHALANX,Phalange
+NODE_L_PHALANX_DESC,Un coup qui traverse trois rangs — mais seulement si l'on n'a pas bougé.
+NODE_L_BRACING,Calage
+NODE_L_BRACING_DESC,Le talon planté. +1 Défense.
+NODE_L_ROOT,Enracinement
+NODE_L_ROOT_DESC,On ne le déplace plus. +20 PV.
+NODE_L_BULWARK,Rempart
+NODE_L_BULWARK_DESC,La hampe en travers. +1 Défense.
+NODE_L_RAMPART,Muraille
+NODE_L_RAMPART_DESC,"Une ligne à lui tout seul. +25 PV, +1 Défense."
+NODE_L_IMPALE,Empalement
+NODE_L_IMPALE_DESC,Un coup qui blesse et repousse d'une case.
+NODE_L_DRIVE,Poussée
+NODE_L_DRIVE_DESC,Charger derrière la pointe. +1 Force.
+NODE_L_ADVANCE,Avance
+NODE_L_ADVANCE_DESC,Reprendre le pas perdu. +1 PM.
+NODE_L_SPEARHEAD,Fer de lance
+NODE_L_SPEARHEAD_DESC,"Il ouvre la ligne. +2 Force, +5 Critique."
+KINGDOM_ON_WATCH,à la garde
+KINGDOM_DEFENCE,Défense
+KINGDOM_DEFENCE_VS,"%d contre %d"
+KINGDOM_HAND_WORTH,"Un bras : %d %s par cycle au travail, ou +%.0f de défense à la garde"
+INVASION_HOLDS,"La garnison tiendrait seule : %d contre %d."
+INVASION_FALLS,"La garnison ne tiendra pas : %d contre %d."
+COMPANY_MELT,"Fondre — %s"
+GRANT_WARD,Rempart
+KINGDOM_NOBODY_HERE,Personne n'y travaille.
+KINGDOM_FROM_WATCH,Depuis la garde :
+KINGDOM_POST,Poster
+KINGDOM_RECALL,Rappeler
+KINGDOM_TRADE_RANK,"Métier %d / %d"
+KINGDOM_TRADE_MASTER,Maître du métier
+KINGDOM_PROMOTED,"%s progresse — %s, rang %d"
+KINGDOM_MASTERED,"%s est maître — %s, rang %d"
+WORLD_GIFTS,Votre royaume accompagne l'équipe :
+WORLD_GIFT_HEALING,"Soin entre les étapes : +%.0f %%"
+WORLD_GIFT_NONE,Votre royaume n'envoie rien encore — bâtissez.

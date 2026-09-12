@@ -1,0 +1,575 @@
+class_name Unit
+extends RefCounted
+
+## Une unité engagée dans un combat : ses statistiques du moment, sa case,
+## ses PA et ses PM.
+##
+## Une Unit est jetable — elle vit le temps d'un combat. Ce qui persiste
+## d'un combat à l'autre est le Hero (Phase 2), qui porte le nom, le
+## niveau et l'équipement, et qui fabrique une Unit au moment d'entrer sur
+## la grille. Les bonus de niveau, d'objet et d'arbre de compétences sont
+## donc déjà appliqués aux valeurs qu'on reçoit ici : Unit ne les
+## recalcule jamais.
+##
+## LE MODÈLE DE TOUR (vision § 13) : un personnage a des Points d'Action
+## et des Points de Mouvement. Il les retrouve intacts au début de son
+## activation, et c'est lui qui décide comment les dépenser — deux
+## attaques, ou une compétence puissante et un repositionnement. C'est de
+## là que vient le choix à chaque tour (§ 50).
+
+const HERO_CLASSES_PATH := "res://data/units/hero_classes.json"
+## LE BESTIAIRE EST DÉCOUPÉ PAR ACTE, et les fichiers se FONDENT (T11.7).
+##
+## Un seul fichier aurait fini à quarante bêtes mélangées ; un fichier par
+## acte se lit et se relit. La fusion se fait ici plutôt que dans chaque
+## appelant, parce qu'un ennemi n'appartient à son acte que pour être
+## ÉCRIT — une fois en jeu, c'est une carte qui décide qui apparaît, pas
+## un numéro d'acte.
+const ENEMY_PATHS: Array[String] = [
+	"res://data/enemies/act1.json",
+	"res://data/enemies/act2.json",
+	"res://data/enemies/act3.json",
+	"res://data/enemies/act4.json",
+	"res://data/enemies/act5.json",
+	"res://data/enemies/act6.json",
+]
+
+## Les deux camps et les deux états d'une unité. Stockés en `int` plutôt
+## qu'en type énuméré : GDScript refuse d'annoter un champ avec une
+## énumération déclarée dans la même classe nommée.
+enum Side { HEROES, ENEMIES }
+enum State { ACTIVE, DOWNED }
+
+## Les statistiques du § 12. Une compétence nomme celle qui met ses dégâts
+## à l'échelle ; `stat()` fait la traduction.
+const STAT_STRENGTH := &"strength"
+const STAT_AGILITY := &"agility"
+const STAT_INTELLIGENCE := &"intelligence"
+const STAT_DEFENCE := &"defence"
+const STAT_CRITICAL := &"critical"
+
+static var _hero_classes: Dictionary = {}
+static var _enemies: Dictionary = {}
+
+var id: int = -1
+var class_id: StringName = &""
+
+## LE DESSIN N'EST PAS L'IDENTITÉ. Pendant tout l'acte 1, chaque ennemi
+## portait le nom de son sprite (`troll` dessine `troll`), et les vues ont
+## pris l'habitude de demander l'image à `class_id`. L'acte 2 a rompu la
+## coïncidence — `sand_serpent` se dessine avec `snake` — et sept bêtes se
+## sont affichées en ombre nue, SANS UNE SEULE ERREUR : `has_enemy_animation`
+## répond « non » poliment, et la vue retombe sur rien. C'est la déclaration
+## `sprite` des données qui atterrit ici, et c'est elle que les vues doivent
+## demander.
+var sprite_id: StringName = &""
+
+## Couleur de faction, pour un sprite qui vient de la table des UNITÉS et
+## pas de celle des bêtes.
+##
+## LE PACK DESSINE VINGT ET UN SPRITES HUMAINS — cinq classes × cinq
+## couleurs — ET LE JEU N'EN EMPLOYAIT QUE QUATRE : le Bleu des héros.
+## Les vingt et un autres sont des ennemis tout animés, dans un style
+## rigoureusement identique, à coût nul. C'est aussi le seul moyen d'avoir
+## des ennemis HUMAINS : les actes 1 et 2 n'ont que des bêtes, et une
+## campagne de six actes qui n'oppose jamais un homme se raconte mal.
+##
+## Vide = une bête, cherchée dans la table des ennemis. C'est ce champ,
+## et pas une devinette sur le nom, qui dit dans quelle table regarder.
+var sprite_color: String = ""
+
+## Variante de dessin, quand le pack en propose plusieurs pour un même
+## sprite. Vide = la version nue.
+##
+## LE PAWN PORTE QUATRE OUTILS — hache, pioche, marteau, couteau — chacun
+## avec son attente, sa course et son animation d'interaction. C'est la
+## seule famille du pack qui se décline autrement que par la couleur, et
+## c'est ce qui la sauve : mesuré, la couleur de faction ne change que
+## **7,9 %** des pixels d'un Pawn (contre 51 % pour un Lancier et 49 % pour
+## un Archer). Un Pawn jaune et un Pawn violet sont donc le même dessin ;
+## un Pawn à la pioche et un Pawn au marteau, non.
+##
+## La règle est un SUFFIXE, pas une table : le pack nomme déjà
+## `idle_pickaxe`, `run_pickaxe`, `interact_pickaxe`. Une variante qui
+## n'existe pas retombe sur l'animation nue plutôt que de ne rien dessiner
+## — la leçon des sept bêtes en ombre nue de T11.8.
+var sprite_variant: String = ""
+
+## Clé de texte du nom affiché, quand l'unité n'est pas ce que sa classe
+## dit. Vide = on lit sa classe, ce qui est le cas de tous les héros.
+##
+## LE PENDANT DE `sprite_id`, ET IL MANQUAIT. T11.8 a séparé ce qu'on EST
+## de ce qu'on MONTRE côté dessin ; côté TEXTE la séparation n'existait
+## pas, et un villageois escorté s'annonçait « Mage » sur sa carte pendant
+## qu'il se dessinait en Pawn. Deux moitiés justes qui ne parlaient pas de
+## la même chose.
+var name_key: String = ""
+
+var side: int = Side.HEROES
+var cell: Vector2i = Vector2i.ZERO
+
+var max_hit_points: int = 0
+var hit_points: int = 0
+
+## Points d'Action et Points de Mouvement (§ 13). Les maxima viennent de
+## la classe ; les courants sont ce qu'il reste dans l'activation en cours.
+var max_action_points: int = 0
+var action_points: int = 0
+var max_movement_points: int = 0
+var movement_points: int = 0
+
+## Place dans la timeline (§ 16) : la plus haute joue en premier.
+var initiative: int = 0
+
+var strength: int = 0
+var agility: int = 0
+var intelligence: int = 0
+var defence: int = 0
+var critical: int = 0
+
+## Identifiants des compétences dont l'unité dispose, dans l'ordre de la
+## barre d'action. La première est son attaque de base.
+var abilities: Array[StringName] = []
+
+## Recharges en cours : identifiant de compétence → activations restantes.
+## Une entrée absente signifie que la compétence est prête.
+var cooldowns: Dictionary = {}
+
+## Effets de statut en cours : identifiant → activations restantes.
+var statuses: Dictionary = {}
+
+## Circule dans l'eau, et n'y meurt pas. Vrai pour les créatures
+## aquatiques du bestiaire, faux pour tous les héros.
+var aquatic: bool = false
+
+## Ignore le terrain : la chauve-souris et le bourdon passent au-dessus
+## des rochers, de l'eau et de la forêt.
+var flying: bool = false
+
+## Comportement d'IA. Vide pour un héros, que le joueur pilote.
+var role: StringName = &""
+
+## Numéro d'emplacement dans l'équipe, à partir de 1. Les doublons de
+## classe étant autorisés, c'est la seule chose qui distingue deux
+## Guerriers tant que les héros n'ont pas de nom.
+var slot: int = 0
+
+var state: int = State.ACTIVE
+
+## Vrai dès que l'unité a dépensé un PM dans l'activation en cours. Le Tir
+## puissant de l'Archer ne part que si ce drapeau est faux : c'est ce qui
+## rend l'immobilité tentante, et donc le Voleur dangereux.
+var has_moved: bool = false
+
+
+## Vide le cache de données, pour les tests et le rechargement à chaud.
+##
+## PAS `reload()` : ce nom entre en collision avec `Script.reload()` de
+## Godot, et c'est CELUI-LÀ qui était appelé — « Cannot reload script while
+## instances exist », 472 fois par exécution des tests. Le cache n'était
+## donc jamais vidé, et la table de données que le test croyait relire
+## était celle du test précédent.
+static func clear_cache() -> void:
+	_hero_classes = {}
+	_enemies = {}
+
+
+static func hero_classes() -> Dictionary:
+	if _hero_classes.is_empty():
+		_hero_classes = _read_json(HERO_CLASSES_PATH)
+	return _hero_classes
+
+
+static func _read_json(path: String) -> Dictionary:
+	if not FileAccess.file_exists(path):
+		push_error("Unit : %s introuvable" % path)
+		return {}
+	var file := FileAccess.open(path, FileAccess.READ)
+	if file == null:
+		push_error("Unit : %s illisible" % path)
+		return {}
+	var parsed: Variant = JSON.parse_string(file.get_as_text())
+	file.close()
+	if typeof(parsed) != TYPE_DICTIONARY:
+		push_error("Unit : %s n'est pas un objet JSON" % path)
+		return {}
+	return parsed
+
+
+## Identifiants des classes de héros déclarées.
+static func hero_class_ids() -> Array[StringName]:
+	var out: Array[StringName] = []
+	for key: String in hero_classes().keys():
+		if not key.begins_with("_"):
+			out.append(StringName(key))
+	return out
+
+
+## Statistiques de base d'une classe de héros, telles qu'écrites en données.
+## La couleur d'une classe, nommée dans la palette du thème.
+##
+## QUATRE HÉROS EN RANG DANS QUATRE BOÎTES IDENTIQUES ne se distinguent
+## que par leur nom, qu'il faut lire. Teintés, ils se comptent d'un coup
+## d'œil : deux guerriers, un archer, un mage. Sur un téléphone, où la
+## liste se parcourt au pouce, la différence n'est pas cosmétique.
+##
+## LA CLÉ EST CELLE D'UNE COULEUR, jamais un code hexadécimal : `Unit`
+## reste ignorant de ce qu'est une couleur.
+static func class_accent(class_to_find: StringName) -> StringName:
+	return StringName(hero_class(class_to_find).get("accent", "stone"))
+
+
+static func hero_class(class_to_find: StringName) -> Dictionary:
+	var found: Dictionary = hero_classes().get(String(class_to_find), {})
+	if found.is_empty():
+		push_error("Unit : classe de héros inconnue « %s »" % class_to_find)
+	return found
+
+
+## Fabrique une unité au niveau 1, sans aucun bonus. C'est l'unité de
+## départ et celle des tests ; en jeu, c'est le Hero qui fournira les
+## valeurs déjà modifiées, via `from_stats`.
+static func from_hero_class(
+	unit_id: int, class_to_use: StringName, at: Vector2i
+) -> Unit:
+	var stats := hero_class(class_to_use)
+	if stats.is_empty():
+		return null
+	# UN HÉROS PORTE TOUJOURS UNE COULEUR, même fabriqué sans `Hero` — le
+	# banc d'essai et `simulate_combats` passent par ici. Sans elle, les
+	# vues devraient garder une constante de repli, et c'est exactement ce
+	# qu'on est en train de retirer : un héros incolore se dessinerait en
+	# ombre nue, comme les sept bêtes de T11.8.
+	stats = stats.duplicate(true)
+	stats["sprite_color"] = Ascension.color_of(0)
+	return Unit.from_stats(unit_id, class_to_use, Side.HEROES, at, stats)
+
+
+## Équipe de combat, à partir d'une liste de classes.
+##
+## LES DOUBLONS SONT AUTORISÉS : deux Guerriers et un Mage est une
+## composition légale. Rien ici ne vérifie l'unicité des classes.
+##
+## Les identifiants vont de 1 à n, dans l'ordre donné. Cet ordre est le
+## numéro d'emplacement affiché en jeu : sans lui, deux Guerriers de la
+## même couleur sont impossibles à distinguer sur le plateau.
+static func squad_from_classes(class_ids: Array) -> Array[Unit]:
+	var out: Array[Unit] = []
+	var limit := CombatRules.max_heroes()
+	if class_ids.size() > limit:
+		push_error("Unit : équipe de %d héros, %d au plus" % [class_ids.size(), limit])
+	for i in mini(class_ids.size(), limit):
+		var unit := Unit.from_hero_class(i + 1, StringName(class_ids[i]), Vector2i.ZERO)
+		if unit == null:
+			continue
+		unit.slot = i + 1
+		out.append(unit)
+	return out
+
+
+## Fabrique une unité à partir d'un bloc de statistiques déjà calculé.
+## `unit_side` est une valeur de `Unit.Side`.
+static func from_stats(
+	unit_id: int, class_to_use: StringName, unit_side: int,
+	at: Vector2i, stats: Dictionary
+) -> Unit:
+	var unit := Unit.new()
+	unit.id = unit_id
+	unit.class_id = class_to_use
+	unit.sprite_id = StringName(stats.get("sprite", class_to_use))
+	unit.sprite_color = String(stats.get("sprite_color", ""))
+	unit.sprite_variant = String(stats.get("sprite_variant", ""))
+	unit.side = unit_side
+	unit.cell = at
+	unit.max_hit_points = int(stats.get("hit_points", 0))
+	unit.hit_points = unit.max_hit_points
+	unit.max_action_points = int(stats.get("action_points", 0))
+	unit.action_points = unit.max_action_points
+	unit.max_movement_points = int(stats.get("movement_points", 0))
+	unit.movement_points = unit.max_movement_points
+	unit.initiative = int(stats.get("initiative", 0))
+	unit.strength = int(stats.get("strength", 0))
+	unit.agility = int(stats.get("agility", 0))
+	unit.intelligence = int(stats.get("intelligence", 0))
+	unit.defence = int(stats.get("defence", 0))
+	unit.critical = int(stats.get("critical", 0))
+	unit.aquatic = bool(stats.get("aquatic", false))
+	unit.flying = bool(stats.get("flying", false))
+	unit.role = StringName(stats.get("role", ""))
+	for ability_id: Variant in stats.get("abilities", []):
+		unit.abilities.append(StringName(ability_id))
+	return unit
+
+
+static func enemies() -> Dictionary:
+	if _enemies.is_empty():
+		for path: String in ENEMY_PATHS:
+			for key: Variant in _read_json(path).keys():
+				# Deux actes qui déclarent le même identifiant serait une
+				# faute silencieuse : le second écraserait le premier et
+				# une carte de l'acte 1 changerait de bête. `verify_world`
+				# le refuse ; ici on garde le premier écrit.
+				if not _enemies.has(key):
+					_enemies[key] = _read_json(path)[key]
+	return _enemies
+
+
+## Identifiants des ennemis déclarés.
+static func enemy_ids() -> Array[StringName]:
+	var out: Array[StringName] = []
+	for key: String in enemies().keys():
+		if not key.begins_with("_"):
+			out.append(StringName(key))
+	return out
+
+
+## Statistiques de base d'un ennemi, telles qu'écrites en données.
+static func enemy_stats(enemy_id: StringName) -> Dictionary:
+	var found: Dictionary = enemies().get(String(enemy_id), {})
+	if found.is_empty():
+		push_error("Unit : ennemi inconnu « %s »" % enemy_id)
+	return found
+
+
+## Fabrique un ennemi à partir de son identifiant.
+static func from_enemy(unit_id: int, enemy_id: StringName, at: Vector2i) -> Unit:
+	var stats := enemy_stats(enemy_id)
+	if stats.is_empty():
+		return null
+	return Unit.from_stats(unit_id, enemy_id, Side.ENEMIES, at, stats)
+
+
+func is_active() -> bool:
+	return state == State.ACTIVE
+
+
+func is_downed() -> bool:
+	return state == State.DOWNED
+
+
+func is_hero() -> bool:
+	return side == Side.HEROES
+
+
+func is_enemy() -> bool:
+	return side == Side.ENEMIES
+
+
+## Valeur d'une statistique nommée (§ 12). C'est par là que passe la
+## formule de dégâts : une compétence dit « je monte à la Force », elle
+## n'a pas besoin de savoir ce qu'est un Guerrier.
+func stat(stat_name: StringName) -> int:
+	match stat_name:
+		STAT_STRENGTH: return strength
+		STAT_AGILITY: return agility
+		STAT_INTELLIGENCE: return intelligence
+		STAT_DEFENCE: return defence
+		STAT_CRITICAL: return critical
+	return 0
+
+
+## Identifiant de l'attaque de base : la première de la liste.
+func basic_ability() -> StringName:
+	return abilities[0] if not abilities.is_empty() else &""
+
+
+func has_ability(ability_id: StringName) -> bool:
+	return abilities.has(ability_id)
+
+
+## Une compétence est prête si elle n'est pas en recharge.
+func is_ready(ability_id: StringName) -> bool:
+	return int(cooldowns.get(ability_id, 0)) <= 0
+
+
+func cooldown_left(ability_id: StringName) -> int:
+	return maxi(int(cooldowns.get(ability_id, 0)), 0)
+
+
+## Met une compétence en recharge pour `turns` activations.
+func start_cooldown(ability_id: StringName, turns: int) -> void:
+	if turns > 0:
+		cooldowns[ability_id] = turns
+
+
+func has_status(status_id: StringName) -> bool:
+	return int(statuses.get(status_id, 0)) > 0
+
+
+## Pose un statut, ou prolonge celui qui est déjà là.
+func apply_status(status_id: StringName, duration: int) -> void:
+	if duration <= 0:
+		return
+	statuses[status_id] = maxi(int(statuses.get(status_id, 0)), duration)
+
+
+func clear_status(status_id: StringName) -> void:
+	statuses.erase(status_id)
+
+
+## Reste-t-il de quoi lancer cette compétence ?
+func can_spend_action_points(cost: int) -> bool:
+	return action_points >= cost
+
+
+func spend_action_points(cost: int) -> bool:
+	if cost < 0 or action_points < cost:
+		return false
+	action_points -= cost
+	return true
+
+
+func spend_movement_points(cost: int) -> bool:
+	if cost < 0 or movement_points < cost:
+		return false
+	movement_points -= cost
+	has_moved = has_moved or cost > 0
+	return true
+
+
+## Début d'activation (§ 13) : les PA et les PM reviennent au maximum, les
+## recharges descendent d'un cran, les statuts vieillissent.
+##
+## `movement_penalty` est ce que les statuts retirent de PM — le Gel du
+## Mage en enlève 2. C'est le moteur qui le calcule, parce que c'est lui
+## qui lit `rules.json` : Unit ne connaît aucun chiffre.
+func begin_activation(movement_penalty: int = 0) -> void:
+	action_points = max_action_points
+	movement_points = maxi(max_movement_points - maxi(movement_penalty, 0), 0)
+	has_moved = false
+	_tick_down(cooldowns)
+	_tick_down(statuses)
+
+
+## Fait descendre d'un cran tous les compteurs d'un dictionnaire, et
+## retire ceux qui arrivent à zéro.
+func _tick_down(counters: Dictionary) -> void:
+	for key: Variant in counters.keys():
+		var left := int(counters[key]) - 1
+		if left <= 0:
+			counters.erase(key)
+		else:
+			counters[key] = left
+
+
+## L'unité a-t-elle encore quelque chose à faire ? Le moteur s'en sert
+## pour proposer de passer, jamais pour terminer l'activation d'office :
+## rien n'est irréversible tant que le joueur n'a pas validé.
+func is_spent() -> bool:
+	return action_points <= 0 and movement_points <= 0
+
+
+## Applique des dégâts. Renvoie true si l'unité tombe hors de combat.
+## Les dégâts sont bornés à zéro : un modificateur de terrain ne soigne pas.
+func take_damage(amount: int) -> bool:
+	if is_downed():
+		return false
+	hit_points -= maxi(amount, 0)
+	if hit_points <= 0:
+		hit_points = 0
+		state = State.DOWNED
+		return true
+	return false
+
+
+## Met l'unité hors de combat quelle que soit sa vie restante.
+## C'est ce qui arrive à un héros poussé dans l'eau.
+func down() -> bool:
+	if is_downed():
+		return false
+	hit_points = 0
+	state = State.DOWNED
+	return true
+
+
+## Soigne sans dépasser le maximum. Ne relève pas une unité tombée.
+func heal(amount: int) -> int:
+	if is_downed() or amount <= 0:
+		return 0
+	var before := hit_points
+	hit_points = mini(hit_points + amount, max_hit_points)
+	return hit_points - before
+
+
+## Remet debout une unité tombée, avec le nombre de PV donné.
+func revive(with_hit_points: int) -> bool:
+	if not is_downed():
+		return false
+	state = State.ACTIVE
+	hit_points = clampi(with_hit_points, 1, max_hit_points)
+	return true
+
+
+func to_dictionary() -> Dictionary:
+	var ability_names: Array[String] = []
+	for ability_id: StringName in abilities:
+		ability_names.append(String(ability_id))
+	return {
+		"id": id,
+		"class": String(class_id),
+		"sprite": String(sprite_id),
+		"sprite_color": sprite_color,
+		"sprite_variant": sprite_variant,
+		"name_key": name_key,
+		"side": int(side),
+		"x": cell.x,
+		"y": cell.y,
+		"max_hit_points": max_hit_points,
+		"hit_points": hit_points,
+		"max_action_points": max_action_points,
+		"action_points": action_points,
+		"max_movement_points": max_movement_points,
+		"movement_points": movement_points,
+		"initiative": initiative,
+		"strength": strength,
+		"agility": agility,
+		"intelligence": intelligence,
+		"defence": defence,
+		"critical": critical,
+		"abilities": ability_names,
+		"cooldowns": cooldowns.duplicate(),
+		"statuses": statuses.duplicate(),
+		"aquatic": aquatic,
+		"flying": flying,
+		"role": String(role),
+		"slot": slot,
+		"state": int(state),
+		"has_moved": has_moved,
+	}
+
+
+static func from_dictionary(data: Dictionary) -> Unit:
+	var unit := Unit.new()
+	unit.id = int(data.get("id", -1))
+	unit.class_id = StringName(data.get("class", ""))
+	# Une sauvegarde d'avant ce champ n'a que sa classe, et c'était exactement
+	# le sprite pour tout l'acte 1 : la retombée est juste.
+	unit.sprite_id = StringName(data.get("sprite", data.get("class", "")))
+	unit.sprite_color = String(data.get("sprite_color", ""))
+	unit.sprite_variant = String(data.get("sprite_variant", ""))
+	unit.name_key = String(data.get("name_key", ""))
+	unit.side = int(data.get("side", Side.HEROES))
+	unit.cell = Vector2i(int(data.get("x", 0)), int(data.get("y", 0)))
+	unit.max_hit_points = int(data.get("max_hit_points", 0))
+	unit.hit_points = int(data.get("hit_points", 0))
+	unit.max_action_points = int(data.get("max_action_points", 0))
+	unit.action_points = int(data.get("action_points", 0))
+	unit.max_movement_points = int(data.get("max_movement_points", 0))
+	unit.movement_points = int(data.get("movement_points", 0))
+	unit.initiative = int(data.get("initiative", 0))
+	unit.strength = int(data.get("strength", 0))
+	unit.agility = int(data.get("agility", 0))
+	unit.intelligence = int(data.get("intelligence", 0))
+	unit.defence = int(data.get("defence", 0))
+	unit.critical = int(data.get("critical", 0))
+	for ability_id: Variant in data.get("abilities", []):
+		unit.abilities.append(StringName(ability_id))
+	unit.cooldowns = (data.get("cooldowns", {}) as Dictionary).duplicate()
+	unit.statuses = (data.get("statuses", {}) as Dictionary).duplicate()
+	unit.aquatic = bool(data.get("aquatic", false))
+	unit.flying = bool(data.get("flying", false))
+	unit.role = StringName(data.get("role", ""))
+	unit.slot = int(data.get("slot", 0))
+	unit.state = int(data.get("state", State.ACTIVE))
+	unit.has_moved = bool(data.get("has_moved", false))
+	return unit

@@ -1,0 +1,83 @@
+{
+ "_note": "LA TANIÈRE DE L'OURS — le boss de l'acte 2. Un antre fermé sur trois côtés, deux tortues en barrage, un feu follet derrière, et l'ours au milieu.\n\nLES PIEUX D'OS FERMENT LA GUEULE DE L'ANTRE (T11.9), et ils se cassent : les deux passages du haut et du bas sont barrés, l'entrée du milieu ne l'est pas. Prendre le chemin direct, c'est arriver sous le nez de l'ours ; ouvrir un flanc coûte une activation de Guerrier. Le boss de l'acte 1 ne posait aucune question avant le premier coup.\n\nLE SOL DE L'ANTRE EST UN CHARNIER. La colonne d'ossements est exactement là où l'on veut se tenir pour encadrer l'ours — un point de dégâts de plus par arrêt, sur la carte la plus longue de l'acte.",
+ "act": 2,
+ "name_key": "MAP_DUNES_08",
+ "rows": [
+  "####....####",
+  "###..pp..###",
+  "...........#",
+  ".......rr...",
+  ".......rr...",
+  ".......rr...",
+  "...........#",
+  "###..pp..###",
+  "####....####"
+ ],
+ "objective": {
+  "kind": "eliminate"
+ },
+ "deployment_cells": [
+  [
+   0,
+   2
+  ],
+  [
+   0,
+   3
+  ],
+  [
+   0,
+   4
+  ],
+  [
+   0,
+   5
+  ],
+  [
+   0,
+   6
+  ],
+  [
+   1,
+   3
+  ],
+  [
+   1,
+   4
+  ],
+  [
+   1,
+   5
+  ]
+ ],
+ "enemies": [
+  {
+   "type": "dune_bear",
+   "cell": [
+    9,
+    4
+   ]
+  },
+  {
+   "type": "bone_turtle",
+   "cell": [
+    6,
+    3
+   ]
+  },
+  {
+   "type": "bone_turtle",
+   "cell": [
+    6,
+    5
+   ]
+  },
+  {
+   "type": "skull_wisp",
+   "cell": [
+    11,
+    4
+   ]
+  }
+ ]
+}

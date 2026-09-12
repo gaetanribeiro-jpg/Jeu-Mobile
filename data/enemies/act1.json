@@ -1,0 +1,151 @@
+{
+  "_readme": "Les six ennemis des Terres Vertes (vision § 26). Deux contraintes gouvernent ces chiffres, et elles ne sont pas indépendantes :\n\n1. LES PV. Le télégraphe offre au joueur une ronde entière de coups gratuits — un ennemi annonce, il ne frappe qu'à son activation suivante. Si l'escouade efface tout le monde pendant cette ronde, personne ne frappe jamais et le combat n'a pas eu lieu. Les PV totaux d'une rencontre doivent donc dépasser ce qu'une escouade produit en une ronde, soit environ 220.\n\n2. LES DÉGÂTS. Ils ne frappent qu'une ou deux fois par combat : il faut que ça se sente. Un gobelin doit coûter un tiers des PV du Guerrier, et la moitié de ceux du Mage — c'est ce qui fait du positionnement une décision (§ 20).\n\nChaque ennemi doit poser une question tactique inédite, jamais « plus de dégâts ».",
+  "spear_goblin": {
+    "sprite": "spear_goblin",
+    "role": "melee",
+    "hit_points": 75,
+    "action_points": 6,
+    "movement_points": 3,
+    "initiative": 5,
+    "strength": 8,
+    "agility": 3,
+    "intelligence": 1,
+    "defence": 3,
+    "abilities": [
+      "goblin_spear"
+    ],
+    "question": "La piétaille — mais sa lance porte à deux cases. On ne s'en débarrasse pas en tenant une ligne."
+  },
+  "gnome": {
+    "sprite": "gnome",
+    "role": "melee",
+    "hit_points": 40,
+    "action_points": 6,
+    "movement_points": 4,
+    "initiative": 7,
+    "strength": 6,
+    "agility": 4,
+    "intelligence": 1,
+    "defence": 1,
+    "abilities": [
+      "gnome_claw"
+    ],
+    "question": "Rapide et fragile, en nombre. Oblige à choisir qui on ignore — et se regroupe, donc nourrit la Boule de feu."
+  },
+  "slingshot_gnome": {
+    "sprite": "slingshot_gnome",
+    "role": "skirmisher",
+    "hit_points": 45,
+    "action_points": 6,
+    "movement_points": 4,
+    "initiative": 6,
+    "strength": 2,
+    "agility": 8,
+    "intelligence": 1,
+    "defence": 1,
+    "abilities": [
+      "sling_stone"
+    ],
+    "question": "Recule si on l'approche, et tire aussi loin que l'Archer. C'est lui qui empêche une équipe entièrement à distance de gagner sans se salir : il faut aller le chercher, donc s'exposer."
+  },
+  "torch_goblin": {
+    "sprite": "torch_goblin",
+    "role": "melee",
+    "hit_points": 75,
+    "action_points": 6,
+    "movement_points": 3,
+    "initiative": 5,
+    "strength": 8,
+    "agility": 3,
+    "intelligence": 1,
+    "defence": 3,
+    "abilities": [
+      "goblin_torch"
+    ],
+    "question": "Laisse du feu sur la case. Rend le terrain gagné coûteux à tenir."
+  },
+  "thief": {
+    "sprite": "thief",
+    "role": "assassin",
+    "prefers_class": "archer",
+    "hit_points": 65,
+    "action_points": 8,
+    "movement_points": 4,
+    "initiative": 9,
+    "strength": 3,
+    "agility": 10,
+    "intelligence": 1,
+    "defence": 2,
+    "abilities": [
+      "thief_stab"
+    ],
+    "moves_after_attack": true,
+    "question": "Joue avant presque tout le monde, vise l'Archer et se replie avec ses PM restants. C'est lui qui punit un Archer resté immobile pour son Tir puissant."
+  },
+  "troll": {
+    "sprite": "troll",
+    "role": "brute",
+    "hit_points": 300,
+    "action_points": 6,
+    "movement_points": 2,
+    "initiative": 2,
+    "strength": 12,
+    "agility": 1,
+    "intelligence": 1,
+    "defence": 6,
+    "abilities": [
+      "troll_smash"
+    ],
+    "guardian": true,
+    "question": "Joue toujours en dernier, donc on sait ce qui arrive. Windup, Attack, Recovery : trois animations distinctes, un boss sur trois temps entièrement dessiné."
+  },
+  "gnoll": {
+    "sprite": "gnoll",
+    "role": "skirmisher",
+    "hit_points": 60,
+    "action_points": 6,
+    "movement_points": 3,
+    "initiative": 6,
+    "strength": 3,
+    "agility": 7,
+    "intelligence": 1,
+    "defence": 2,
+    "abilities": [
+      "bone_throw"
+    ],
+    "question": "Tire aussi loin que l'Archer et encaisse mieux que le gnome à fronde. Il faut aller le chercher, et aller le chercher, c'est sortir de sa ligne."
+  },
+  "hex_shaman": {
+    "sprite": "hex_shaman",
+    "role": "caster",
+    "hit_points": 55,
+    "action_points": 6,
+    "movement_points": 3,
+    "initiative": 4,
+    "strength": 1,
+    "agility": 2,
+    "intelligence": 7,
+    "defence": 1,
+    "abilities": [
+      "hex_bolt"
+    ],
+    "question": "Frappe une zone à six cases, soit une de plus que l'Archer. Une équipe massée hors de portée de la mêlée est exactement la cible qu'il attend : c'est lui qui rend le regroupement coûteux, et donc le déplacement obligatoire."
+  },
+  "minotaur": {
+    "sprite": "minotaur",
+    "role": "brute",
+    "hit_points": 210,
+    "action_points": 6,
+    "movement_points": 3,
+    "initiative": 3,
+    "strength": 10,
+    "agility": 2,
+    "intelligence": 1,
+    "defence": 5,
+    "abilities": [
+      "gore"
+    ],
+    "question": "Le mini-boss des Terres Vertes. Entre le gobelin lancier et le Troll : assez de PV pour qu'on ne l'efface pas en une ronde, assez lent pour qu'on puisse le contourner, et une Encornade en ligne qui interdit de se ranger en file. Il joue tôt pour un colosse — c'est ce qui empêche de l'ignorer.",
+    "_hit_points_note": "Monté de 180 à 210 après mesure. À 180, le mini-boss coûtait 29 % des PV de l'équipe, soit MOINS que `vallee_04` (36 %) et que le boss (35 %) : une étape annoncée « mini-boss » qui se joue plus facilement qu'une rencontre ordinaire ne tient pas sa promesse."
+  }
+}

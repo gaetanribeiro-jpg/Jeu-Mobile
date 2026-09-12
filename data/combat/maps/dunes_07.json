@@ -1,0 +1,105 @@
+{
+ "_note": "LA HALTE DES CARAVANES : tenir quatre rondes, pas tuer. L'échéance porte la pression, donc la carte n'a pas besoin d'en ajouter — c'est la règle de T8.1, qui refuse un renfort de nuit sur une carte à échéance.\n\nLE CHARNIER EST DANS LE DOS DU JOUEUR (T11.9). Trois tas d'ossements bordent la zone de placement : reculer devant l'assaut, ce qui est le réflexe quand on doit tenir, revient à s'arrêter sur une case qui coûte un point de dégâts de plus. Tenir veut dire tenir DEVANT, et la carte le dit sans une ligne de texte.",
+ "act": 2,
+ "name_key": "MAP_DUNES_07",
+ "rows": [
+  "...#........",
+  "..#.........",
+  "..rr........",
+  ".....##.....",
+  "..rr.##.....",
+  ".....##.....",
+  "..rr........",
+  "..#.........",
+  "...#........"
+ ],
+ "objective": {
+  "kind": "survive",
+  "turns": 4
+ },
+ "deployment_cells": [
+  [
+   0,
+   2
+  ],
+  [
+   0,
+   3
+  ],
+  [
+   0,
+   4
+  ],
+  [
+   0,
+   5
+  ],
+  [
+   0,
+   6
+  ],
+  [
+   1,
+   3
+  ],
+  [
+   1,
+   4
+  ],
+  [
+   1,
+   5
+  ]
+ ],
+ "enemies": [
+  {
+   "type": "lizard",
+   "cell": [
+    10,
+    1
+   ]
+  },
+  {
+   "type": "lizard",
+   "cell": [
+    10,
+    7
+   ]
+  },
+  {
+   "type": "bone_turtle",
+   "cell": [
+    9,
+    4
+   ]
+  },
+  {
+   "type": "dune_spider",
+   "cell": [
+    11,
+    2
+   ]
+  },
+  {
+   "type": "dune_spider",
+   "cell": [
+    11,
+    6
+   ]
+  },
+  {
+   "type": "sand_serpent",
+   "cell": [
+    11,
+    4
+   ]
+  },
+  {
+   "type": "lizard",
+   "cell": [
+    9,
+    3
+   ]
+  }
+ ]
+}

@@ -1,0 +1,90 @@
+{
+ "_note": "LA RIVE GELÉE — la carte qui apprend que l'eau tue.\n\nUn lac borde tout le flanc droit, et un requin y nage. Il SORT pour mordre — une bête au corps à corps vient toujours — donc la carte est gagnable sans un seul tireur ; ce qu'elle enseigne, c'est qu'on ne CHOISIT pas de l'attaquer, on l'attend.\n\nTrois Rougefer sur la langue de terre, dont un qui pousse. La première fois que le télégraphe annonce une case d'arrivée, elle est sur de la terre : on voit la mécanique avant de la craindre.",
+ "act": 3,
+ "name_key": "MAP_GEL_01",
+ "rows": [
+  ".........~~~",
+  ".........~~~",
+  "........~~~~",
+  "............",
+  "............",
+  "............",
+  "........~~~~",
+  ".........~~~",
+  ".........~~~"
+ ],
+ "objective": {
+  "kind": "eliminate"
+ },
+ "deployment_cells": [
+  [
+   0,
+   2
+  ],
+  [
+   0,
+   3
+  ],
+  [
+   0,
+   4
+  ],
+  [
+   0,
+   5
+  ],
+  [
+   0,
+   6
+  ],
+  [
+   1,
+   3
+  ],
+  [
+   1,
+   4
+  ],
+  [
+   1,
+   5
+  ]
+ ],
+ "enemies": [
+  {
+   "type": "ice_raider",
+   "cell": [
+    7,
+    3
+   ]
+  },
+  {
+   "type": "ice_raider",
+   "cell": [
+    7,
+    5
+   ]
+  },
+  {
+   "type": "raid_archer",
+   "cell": [
+    9,
+    4
+   ]
+  },
+  {
+   "type": "frost_shark",
+   "cell": [
+    9,
+    1
+   ]
+  },
+  {
+   "type": "frost_shark",
+   "cell": [
+    9,
+    7
+   ]
+  }
+ ]
+}
