@@ -41,7 +41,7 @@ godot --path .                                    # lancer le jeu
 godot --headless --path . --import                # (re)importer les assets
 godot --headless --path . -s addons/gut/gut_cmdln.gd \
       -gdir=res://tests -ginclude_subdirs -gexit  # lancer les tests
-godot --headless --path . --export-debug "Android" build/reconquete.apk
+godot --headless --path . --export-debug "Android" build/tiny_kingdoms.apk
 ```
 
 **Version du moteur : Godot 4.6-stable.** GUT 9.5.0 est versionné dans

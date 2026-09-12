@@ -1,12 +1,17 @@
-# Installer et faire tourner Reconquête
+# Installer et faire tourner Tiny Kingdoms
 
-Tout ce qu'il faut faire sur un poste de travail, dans l'ordre. Les tâches
-**F0.1** et **F0.9** de la conception, plus la remise en route d'un poste
-déjà configuré.
+Tout ce qu'il faut faire sur un poste de travail, dans l'ordre, plus la
+remise en route d'un poste déjà configuré.
 
-À la fin : le jeu tourne sur le téléphone, et les deux jalons sont
-constatés — **Jalon 0** (l'application s'installe et affiche le titre) et
-**Jalon 1** (un combat complet, jouable au doigt).
+À la fin : le jeu tourne — sur PC en quelques minutes, sur le téléphone
+après le § 4, qui est long et ne se fait qu'une fois.
+
+> **Ce fichier a porté le nom « Reconquête » et des chiffres d'une autre
+> époque** — 262 tests, huit cartes, trois emplacements d'escouade —
+> jusqu'à ce que quelqu'un le rouvre pour s'en servir. Les chiffres
+> ci-dessous sont ceux d'aujourd'hui : ils vieillissent, et c'est normal ;
+> ce qui compte est que la commande affiche « All tests passed! » et que
+> les dix vérificateurs finissent au vert.
 
 ---
 
@@ -82,20 +87,29 @@ WARNING: ObjectDB instances leaked at exit (run with --verbose for details).
 
 ## 3. Vérifier que tout est en place
 
-Cinq commandes. Elles doivent toutes finir au vert.
+Onze commandes. Elles doivent toutes finir au vert. Si l'une échoue, ne
+joue pas : tu chercherais un défaut de jeu là où il y a un défaut
+d'installation.
 
 ```bash
 godot --headless --path . -s addons/gut/gut_cmdln.gd \
-      -gdir=res://tests -ginclude_subdirs -gexit    # 262 tests
-godot --headless --path . -s tools/verify_assets.gd  # 535 entrées, 0 écart
-godot --headless --path . -s tools/verify_audio.gd   # 30 sons
-godot --headless --path . -s tools/verify_font.gd    # 140 glyphes
-godot --headless --path . -s tools/verify_maps.gd    # 8 cartes
+      -gdir=res://tests -ginclude_subdirs -gexit     # 1016 tests
+godot --headless --path . -s tools/verify_scripts.gd  # engine, scenes, tools, tests
+godot --headless --path . -s tools/verify_assets.gd   # 592 entrées, 0 écart
+godot --headless --path . -s tools/verify_audio.gd    # 30 sons
+godot --headless --path . -s tools/verify_font.gd     # 136 glyphes
+godot --headless --path . -s tools/verify_maps.gd     # 54 cartes
+godot --headless --path . -s tools/verify_items.gd    # 34 objets
+godot --headless --path . -s tools/verify_skills.gd   # 4 arbres, 11 nœuds chacun
+godot --headless --path . -s tools/verify_world.gd    # régions, évènements, carte
+godot --headless --path . -s tools/verify_kingdom.gd  # ressources, chantiers, voisines
+godot --headless --path . -s tools/verify_ui.gd       # thème, teintes, tranches
 ```
 
-**Si les tests annoncent 239 au lieu de 262**, avec deux scripts marqués
+**Si le compte de tests est nettement plus bas**, avec des scripts marqués
 « ignorés : Pack Tiny Swords absent », c'est que le pack n'est pas au bon
-endroit. Ce n'est pas une panne, c'est l'étape 2 qui reste à finir.
+endroit. Ce n'est pas une panne, c'est l'étape 2 qui reste à finir — et
+presque toujours le sous-dossier `Enemy Pack/` de la seconde archive.
 
 > **Des lignes rouges défilent pendant les tests, et c'est voulu.** Une
 > vingtaine, du genre `ERROR: Unit : classe de héros inconnue « paladin »`
@@ -105,10 +119,9 @@ endroit. Ce n'est pas une panne, c'est l'étape 2 qui reste à finir.
 > le résumé final :
 >
 > ```
-> Scripts              20
-> Tests               262
-> Passing Tests       262
-> Asserts            4717
+> Scripts              65
+> Tests              1016
+> Passing Tests      1016
 >
 > ---- All tests passed! ----
 > ```
@@ -222,39 +235,58 @@ Sinon, en ligne de commande :
 
 ```bash
 mkdir -p build
-godot --headless --path . --export-debug "Android" build/reconquete.apk
-adb install -r build/reconquete.apk
+godot --headless --path . --export-debug "Android" build/tiny_kingdoms.apk
+adb install -r build/tiny_kingdoms.apk
 ```
 
 ---
 
 ## 7. Ce qu'il faut regarder en jouant
 
-Les deux jalons sont atteints dès que l'application se lance : l'écran de
-titre (**Jalon 0**) donne accès aux huit cartes de l'Acte I (**Jalon 1**).
+Le jeu se joue en entier sur PC : écran de titre → carte du monde →
+composition de l'équipe → route du § 28 → rentrer ou continuer → royaume.
+`pointing/emulate_touch_from_mouse` est actif, donc la souris se comporte
+comme un doigt et le ressenti est proche de celui qu'on aura sur
+l'appareil.
 
-Le § « Méthode de travail » de `CLAUDE.md` demande de jouer le combat
-**vingt fois avant de continuer**. Voici ce que je ne peux pas voir, et
-qui décide de la suite :
+**Le banc d'essai, en bas à droite de l'écran de titre**, ouvre n'importe
+laquelle des 54 cartes en deux clics, sans traverser une expédition
+entière. C'est par lui que seize défauts ont été trouvés.
 
-1. **Les cibles tactiles.** Une case fait-elle vraiment 48 dp sous le
-   doigt ? Le § 11.3 vise une case de 64 px à l'échelle 2, mais le
-   cadrage automatique peut la rendre plus petite sur un écran étroit.
-2. **Les boutons du bas recouvrent le plateau.** Gênant, ou acceptable ?
-3. **Les durées d'animation.** Trop lentes, trop rapides ? Tout est dans
-   `data/combat/view.json`, section `durations` — un nombre à changer, pas
-   une ligne de code.
-4. **Le tour ennemi** est rejoué un évènement à la fois. Comprend-on ce
-   qui s'est passé, ou est-ce trop long ?
-5. **La fluidité.** Cible : 60 images par seconde. Je rends en logiciel
-   dans mon conteneur, je ne peux pas la mesurer.
-6. **La composition de l'escouade.** Trois emplacements, quatre classes,
-   doublons permis : les boutons de l'écran de titre les font défiler.
-   Le renoncement se sent-il ?
+Voici ce que je ne peux pas voir, et qui attend des yeux :
 
-Pour décrire un problème de ressenti, le § « Règles de travail avec Claude
-Code » demande du concret : pas « c'est mou » mais « il y a 400 ms entre
-le tap et le début de l'animation, et l'unité glisse au lieu de marcher ».
+1. **Le mouvement de l'interface** (T12.13). Les boutons réagissent au
+   survol et à l'appui, les écrans entrent en fondu. Mou, nerveux, ou
+   juste ? Tout est dans `data/ui/theme.json`, section `motion` — un
+   nombre à changer, pas une ligne de code.
+2. **La cadence du conseil du royaume** (T12.10). Un conseil à chaque
+   retour : trop, pas assez ? Et ses chiffres pèsent-ils quelque chose au
+   regard de ce que la ville produit ? Aucun instrument ne le mesure.
+3. **Le renfort d'un combat** (T12.12), de bout en bout : l'acheter au
+   départ, traverser deux ou trois rencontres sans l'employer, puis
+   l'appeler. La question qui compte : a-t-on HÉSITÉ à le dépenser ?
+4. **Le prêt d'un héros** (T12.12). Partir à trois pendant trois cycles :
+   décision douloureuse, ou simple bouton ?
+5. **La difficulté.** La courbe mesurée monte de 15 % à 36 % des points de
+   vie par combat, de l'acte 1 à l'acte 6 — mais `simulate_combats` ne boit
+   pas de potion et ne concentre jamais ses coups. Ses chiffres sont un
+   PLANCHER : le vrai jeu devrait être plus facile. De combien ?
+6. **Les trente repères sonores** (T11.2). Le câblage est fait ; les
+   affectations ont été faites au NOM DES FICHIERS et jamais écoutées. Il
+   y en a sûrement des ridicules. Tout est dans `data/audio.json`, bloc
+   `cues`.
+7. **Le Mage dessiné en Moine.** Décision prise par défaut pour ne pas
+   bloquer — le pack n'a pas de mage. À confirmer ou à rejeter maintenant
+   que le combat tourne.
+
+Deux points restent invérifiables tant qu'il n'y a pas de téléphone : la
+taille réelle des cibles tactiles, et les 60 images par seconde sur
+l'appareil. Tout le reste se juge à la souris.
+
+**Pour décrire un problème de ressenti, du concret.** Pas « c'est mou »
+mais « il y a un demi-temps entre le clic et le début du mouvement, et
+l'unité glisse au lieu de marcher ». Un nom d'écran, un geste, et ce qu'on
+attendait à la place : avec ça on trouve la ligne à changer.
 
 ---
 
