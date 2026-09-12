@@ -246,7 +246,8 @@ dur : passer par `data/assets.json`.
   trois candidats, T12.4 la brasserie du Monastère, T12.5 les actes 5 et 6,
   T12.7 le Lancier, T12.8 la garde et la fonte, T12.9 les habitants,
   T12.10 le conseil du royaume et les villes voisines, T12.11 la carte du
-  monde dessinée et le royaume qui a une tête, T12.12 le renfort et le prêt.
+  monde dessinée et le royaume qui a une tête, T12.12 le renfort et le prêt,
+  T12.13 la passe d'esthétique.
   **La campagne se joue de bout en bout : six actes, 54 cartes.**
   **991 tests passent, les dix vérificateurs sont verts.**
 - **Phase 11 — la bêta.** Les chantiers sont listés avec leur
@@ -1283,6 +1284,62 @@ relever les demi-tons par une puissance (`map_town_lift`) ET choisir des
 teintes claires : `stone` vaut 0,42, il noircissait tout. **Neuvième et
 dixième variantes de « une source ne se teinte que si elle est claire »,
 prises par les deux bouts qui restaient.**
+
+**UNE INTERFACE QUI NE RÉPOND PAS AU DOIGT PARAÎT MORTE (T12.13).**
+Demande de Gaetan : « je veux que ce soit beau et pas juste pratique, un
+effet Whaou ». Le défaut le plus coûteux n'était pas un dessin, c'était
+une ABSENCE DE RÉACTION : `dress_button` posait le MÊME style sur
+« normal », « survol » et « focus » — un bouton survolé ne changeait
+strictement pas d'aspect, et rien n'accusait jamais réception d'un clic.
+Quatre choses à ne pas défaire :
+- **TOUT PASSE PAR UN SEUL GOULET, et c'est ce qui rend la passe
+  possible.** Le mouvement des boutons vit dans `UiSkin.dress_button`, par
+  où chaque écran passe déjà (règle du clic de T11.2) ; la transition
+  d'écran vit dans `boot._open`, par où chaque écran passe aussi. Deux
+  fonctions touchées, tout le jeu habillé.
+- **L'ÉCHELLE PLUTÔT QUE LA POSITION.** Une position animée sur un enfant
+  de conteneur se fait écraser à la première mise en page ; `scale` est
+  une transformation, la mise en page ne la touche pas. Et le pivot va au
+  CENTRE, sinon un bouton qui grandit part vers le bas à droite.
+- **LES DURÉES SONT COURTES EXPRÈS.** Au-delà d'un dixième de seconde, une
+  réaction de bouton cesse d'être un retour et devient une animation qu'on
+  ATTEND — sur un téléphone, où l'on enchaîne les touchers, c'est le
+  défaut le plus vite insupportable.
+- **PAS D'ANIMATION EN HEADLESS.** Un `Tween` y tourne dans le vide et
+  ajoute du travail à une file que rien ne vide : troisième variante du
+  piège qui a déjà fait tomber le moteur (T9.2, T11.3).
+
+**ON N'ASSOMBRIT PAS CE QUI EST DÉJÀ NOIR (T12.13).** Le réflexe, pour
+poser les panneaux dans une lumière, était un VIGNETAGE — assombrir les
+bords. Mesuré : le fond de l'interface vaut **0,032 de luminance**, un
+presque-noir. Il n'y a rien de plus sombre à y mettre, et la première
+version n'a strictement rien changé à l'écran. On éclaire donc le CENTRE,
+très peu, dans un ton chaud. C'est « une source ne se teinte que si elle
+est claire » prise par un onzième bout, et **la lueur vit dans le fond,
+jamais au-dessus des panneaux** — règle de la crête du motif de T9.8.
+
+**L'ÉCRAN DE COMPAGNIE ÉTAIT LE SEUL ÉCRAN NON HABILLÉ DU JEU (T12.13).**
+La fiche du héros, la liste et la réserve étaient du TEXTE POSÉ SUR LE
+FOND : rien ne disait où commençait l'un et où finissait l'autre. Trois
+corrections qui valent comme règles :
+- **UN PORTRAIT DE 92 PX DANS LA LISTE ET RIEN DANS LA FICHE** était
+  l'inverse de ce qu'il fallait : la liste sert à RECONNAÎTRE, la fiche
+  sert à REGARDER.
+- **UNE JAUGE NE PREND PAS TOUTE LA LARGEUR.** Une auge de mille pixels
+  pour trente points d'expérience se lit comme une barre PLEINE : l'œil
+  juge un remplissage à sa proportion, et une auge trop longue rend toute
+  proportion illisible.
+- **UN BOUTON PLEINE LARGEUR SE LIT COMME UNE BANNIÈRE**, pas comme une
+  action : il prend la place d'un titre et son libellé se perd au milieu.
+  Les onze nœuds d'un arbre étirés faisaient onze dalles vides — et un
+  arbre se PARCOURT du regard, il ne se lit pas ligne à ligne.
+
+**CINQ BOUTONS FLOTTANT SUR LA MER N'ONT PAS DE SUPPORT (T12.13).** Le
+menu de l'écran de titre était le seul endroit du jeu où des boutons se
+posaient à même le décor : l'œil ne savait pas s'ils appartenaient à
+l'île, au ciel ou à l'interface. Un cadre sombre les rassemble en MENU. Et
+**le premier bouton est plus haut que les autres** — cinq boutons de même
+taille demandent de lire pour savoir par où commencer.
 
 **L'expédition se joue, sur PC.** Écran de titre → carte du monde →
 composition de l'équipe → départ → route du § 28 (combats, évènements,

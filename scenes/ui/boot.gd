@@ -170,10 +170,25 @@ func _build_menu() -> void:
 	column.add_child(_title_banner())
 	column.add_child(_gap(UiTheme.metric(&"row_spacing")))
 
+	# LES BOUTONS SE POSENT SUR UN PANNEAU (T12.13). Cinq rectangles
+	# flottant sur la mer n'ont pas de SUPPORT : l'œil ne sait pas s'ils
+	# appartiennent à l'île, au ciel ou à l'interface. Un cadre sombre les
+	# rassemble en un MENU, et c'est la même pièce que partout ailleurs —
+	# l'écran de titre cesse d'être le seul écran non habillé du jeu.
+	var plate := PanelContainer.new()
+	plate.add_theme_stylebox_override("panel", UiSkin.framed_style(
+		&"panel", &"panel_deep", &"", UiTheme.metric(&"panel_margin")
+	))
+	column.add_child(plate)
+	var stack := VBoxContainer.new()
+	stack.add_theme_constant_override("separation", UiTheme.metric(&"row_spacing"))
+	plate.add_child(stack)
+	column = stack
+
 	# UNE EXPÉDITION EN COURS PASSE AVANT TOUT LE RESTE, et un combat
 	# interrompu avant elle : c'est l'état le plus fragile de la partie et
 	# le plus coûteux à perdre — sept rondes de décisions.
-	var go := _menu_button(&"primary")
+	var go := _menu_button(&"primary", true)
 	if GameState.combat != null and not GameState.combat.is_finished():
 		go.text = tr("BOOT_RESUME_COMBAT")
 		go.pressed.connect(_resume_combat)
@@ -388,10 +403,16 @@ func _start_new_game() -> void:
 ## couleur. Six rôles sortent de la même image du pack — sans quoi le menu
 ## serait bleu et rouge, une langue « confirmer / renoncer » qui ne veut
 ## rien dire sur « Royaume » ou « Compagnie ».
-func _menu_button(role: StringName) -> Button:
+## LE PREMIER BOUTON EST PLUS HAUT QUE LES AUTRES (T12.13). Cinq boutons
+## de même taille demandent de LIRE pour savoir par où commencer ; un
+## bouton plus grand le dit sans un mot. C'est la règle de T11.6 — une
+## information se porte par la forme, pas par le texte seul — appliquée à
+## la hiérarchie d'un menu.
+func _menu_button(role: StringName, lead: bool = false) -> Button:
 	var button := Button.new()
 	button.custom_minimum_size = Vector2(
-		MENU_WIDTH_PX, UiTheme.metric(&"button_height")
+		MENU_WIDTH_PX,
+		UiTheme.metric(&"button_height") + (UiTheme.metric(&"row_spacing") if lead else 0)
 	)
 	button.add_theme_font_size_override("font_size", UiTheme.font_size(&"button_large"))
 	UiSkin.dress_button(button, role)
@@ -849,6 +870,12 @@ func _open(path: String, setup: Callable) -> Control:
 	var screen: Control = packed.instantiate()
 	setup.call(screen)
 	get_tree().root.add_child(screen)
+	# LA TRANSITION DE TOUT LE JEU TIENT ICI (T12.13). Les écrans se
+	# remplaçaient d'une image à l'autre, ce qui est exactement ce qui fait
+	# qu'un jeu a l'air d'un prototype. Passer par le seul goulet `_open`
+	# donne sa transition à chaque écran d'un coup — même raisonnement que
+	# le clic de `dress_button` en T11.2.
+	UiSkin.appear(screen)
 	visible = false
 	return screen
 

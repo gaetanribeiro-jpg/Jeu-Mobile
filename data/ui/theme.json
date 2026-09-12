@@ -315,5 +315,22 @@
   "size": 32,
   "alpha_threshold": 0.5,
   "tint": "ink_inverse"
+ },
+ "motion": {
+  "_note": "LE MOUVEMENT (T12.13). Une interface qui ne répond pas au doigt paraît morte, même bien dessinée : les boutons passaient de « normal » à « survol » sans CHANGER D'ASPECT, et rien n'accusait jamais réception d'un clic. Tout ce qui suit est du ressenti, donc des données (règle 1).\n\nLES DURÉES SONT COURTES EXPRÈS. Au-delà d'un dixième de seconde, une réaction de bouton cesse d'être un retour et devient une animation qu'on attend — et sur un téléphone, où l'on enchaîne les touchers, l'attente est le défaut le plus vite insupportable.\n\nL'ÉCHELLE PLUTÔT QUE LA POSITION : une position animée sur un enfant de conteneur se fait écraser à la première mise en page. `scale` est une transformation, la mise en page ne la touche pas.",
+  "screen_fade": 0.18,
+  "screen_scale": 1.015,
+  "hover_scale": 1.03,
+  "press_scale": 0.97,
+  "hover_time": 0.09,
+  "hover_glow": 1.22,
+  "press_time": 0.06
+ },
+ "backlight": {
+  "_note": "LA LUEUR DE FOND (T12.13) — et c'est un VIGNETAGE PRIS À L'ENVERS.\n\nLe réflexe était d'assombrir les bords. Mesuré : le fond de l'interface vaut 0,032 de luminance, c'est-à-dire un presque-noir — il n'y a RIEN de plus sombre à y mettre, et la première version n'a strictement rien changé à l'écran. Même famille que « une source ne se teinte que si elle est claire » (neuf variantes depuis T9.8) : on n'assombrit pas ce qui est déjà noir.\n\nOn ÉCLAIRE donc le centre, très peu, dans un ton chaud. Les panneaux cessent de flotter sur du vide : ils sont posés dans une lumière.\n\nELLE VIT DANS LE FOND, jamais au-dessus des panneaux — règle de la crête du motif de T9.8. Et en filtrage LINÉAIRE, seule exception du jeu à la règle Nearest : ce n'est pas du pixel art, c'est de la lumière, et un dégradé en Nearest fait des anneaux.",
+  "strength": 0.13,
+  "inner": 0.1,
+  "side_bias": 1.35,
+  "tint": "wood_light"
  }
 }

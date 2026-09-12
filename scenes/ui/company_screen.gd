@@ -43,6 +43,9 @@ var _kingdom: Kingdom = null
 @onready var _stash: HBoxContainer = %Stash
 @onready var _stash_label: Label = %StashLabel
 @onready var _back: Button = %Back
+@onready var _sheet_frame: PanelContainer = %SheetFrame
+@onready var _roster_frame: PanelContainer = %RosterFrame
+@onready var _stash_frame: PanelContainer = %StashFrame
 
 
 func _ready() -> void:
@@ -53,6 +56,13 @@ func _ready() -> void:
 	_back.text = tr("COMBAT_BACK")
 	_back.pressed.connect(func() -> void: closed.emit())
 	refresh()
+	# TROIS PANNEAUX, TROIS CADRES (T12.13). La fiche du héros, la liste et
+	# la réserve étaient du TEXTE POSÉ SUR LE FOND : rien ne disait où
+	# commençait l'un et où finissait l'autre, et l'écran avait l'air d'un
+	# brouillon à côté du combat, qui est habillé depuis T9.6.
+	_sheet_frame.add_theme_stylebox_override("panel", UiSkin.framed_style(&"panel"))
+	_roster_frame.add_theme_stylebox_override("panel", UiSkin.framed_style(&"panel"))
+	_stash_frame.add_theme_stylebox_override("panel", UiSkin.framed_style(&"panel"))
 
 
 ## Affiche une compagnie. À appeler avant d'ajouter la scène à l'arbre.
@@ -186,16 +196,63 @@ func _build_sheet() -> void:
 		_sheet.add_child(_label(tr("COMPANY_EMPTY"), 24))
 		return
 
-	_sheet.add_child(_label("%s — %s" % [
-		hero.display_name(), tr("CLASS_%s" % String(hero.class_id).to_upper())
-	], 32))
-	_sheet.add_child(_experience_line(hero))
+	_sheet.add_child(_sheet_header(hero))
 	_sheet.add_child(_trait_line(hero))
 	_build_squad_choice(hero)
 	_build_level_choice(hero)
 	_sheet.add_child(_stats_grid(hero))
 	_sheet.add_child(_abilities_line(hero))
 	_build_equipment(hero)
+
+
+## L'EN-TÊTE D'UNE FICHE : le visage, le nom, et la jauge d'expérience.
+##
+## UN PORTRAIT DE 92 PX DANS LA LISTE ET RIEN DANS LA FICHE, c'était
+## l'inverse de ce qu'il fallait : la liste sert à RECONNAÎTRE, la fiche
+## sert à REGARDER. Et une progression écrite « 0 / 30 » se compte ; une
+## jauge se voit — le jeu en dessine partout ailleurs depuis T9.2.
+func _sheet_header(hero: Hero) -> Control:
+	var row := HBoxContainer.new()
+	row.add_theme_constant_override("separation", UiTheme.metric(&"card_margin"))
+
+	var face := _portrait_of(hero)
+	face.custom_minimum_size = Vector2(
+		UiTheme.metric(&"portrait_hero"), UiTheme.metric(&"portrait_hero")
+	)
+	row.add_child(face)
+
+	var column := VBoxContainer.new()
+	column.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	column.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	column.add_theme_constant_override("separation", 2)
+	row.add_child(column)
+
+	var title := _label("%s — %s" % [
+		hero.display_name(), tr("CLASS_%s" % String(hero.class_id).to_upper())
+	], 30)
+	# LE NOM PORTE LA COULEUR DE SA CLASSE, comme sa rangée dans la liste :
+	# on retrouve du premier coup d'œil quelle fiche est ouverte.
+	title.add_theme_color_override(
+		"font_color", UiTheme.color(Unit.class_accent(hero.class_id))
+	)
+	column.add_child(title)
+	column.add_child(_experience_line(hero))
+	if hero.level < HeroProgression.max_level():
+		var floor_ := HeroProgression.experience_to_reach(hero.level)
+		var ceiling := HeroProgression.experience_to_reach(hero.level + 1)
+		var gauge := UiSkin.build_bar(
+			float(hero.experience - floor_), maxf(float(ceiling - floor_), 1.0),
+			UiTheme.color(Unit.class_accent(hero.class_id)),
+			UiTheme.metric(&"bar_height_card")
+		)
+		# ELLE NE PREND PAS TOUTE LA LARGEUR. Une auge de mille pixels pour
+		# trente points d'expérience se lit comme une barre pleine : l'œil
+		# juge un remplissage à sa PROPORTION, et une auge trop longue rend
+		# toute proportion illisible.
+		gauge.custom_minimum_size = Vector2(UiTheme.metric(&"card_width"), 0)
+		gauge.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
+		column.add_child(gauge)
+	return row
 
 
 ## LE CARACTÈRE SE RELIT APRÈS L'EMBAUCHE. Il est définitif, donc c'est
@@ -212,7 +269,7 @@ func _experience_line(hero: Hero) -> Label:
 		return _label(tr("COMPANY_MAX_LEVEL") % hero.level, 22)
 	return _label(tr("COMPANY_EXPERIENCE") % [
 		hero.level, hero.experience, HeroProgression.experience_to_reach(hero.level + 1)
-	], 22)
+	], 20)
 
 
 ## EMMENER OU LAISSER, ET C'EST LA DÉCISION QUI MANQUAIT. La composition
@@ -243,6 +300,13 @@ func _build_squad_choice(hero: Hero) -> void:
 		label = tr("COMPANY_SQUAD_FULL") % CombatRules.team_size()
 		allowed = false
 	var button := _button(label, &"primary" if not going else &"muted")
+	# UN BOUTON PLEINE LARGEUR SE LIT COMME UNE BANNIÈRE, pas comme une
+	# action : il prend la place d'un titre et son libellé se perd au
+	# milieu. Les actions d'une fiche se rangent à gauche, à leur taille.
+	button.custom_minimum_size = Vector2(
+		UiTheme.metric(&"detail_width"), UiTheme.metric(&"button_height")
+	)
+	button.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
 	button.disabled = not allowed
 	button.pressed.connect(func() -> void:
 		_company.toggle_squad(hero.id)
@@ -258,6 +322,10 @@ func _build_squad_choice(hero: Hero) -> void:
 func _build_level_choice(hero: Hero) -> void:
 	if hero.can_level_up():
 		var button := _button(tr("COMPANY_LEVEL_UP") % (hero.level + 1))
+		button.custom_minimum_size = Vector2(
+			UiTheme.metric(&"detail_width"), UiTheme.metric(&"button_height")
+		)
+		button.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
 		button.pressed.connect(func() -> void:
 			hero.level_up()
 			_touched())
@@ -334,7 +402,13 @@ func _skill_row(hero: Hero, node_id: StringName) -> Control:
 	elif blocked.is_empty():
 		role = Unit.class_accent(hero.class_id)
 	var button := _button(label, role)
-	button.custom_minimum_size = Vector2(520, 46)
+	# À SA TAILLE, PAS À CELLE DU PANNEAU. Étirés, les onze nœuds faisaient
+	# onze dalles vides dont le libellé se perdait au milieu — et un arbre
+	# de compétences doit se PARCOURIR du regard, pas se lire ligne à ligne.
+	button.custom_minimum_size = Vector2(
+		UiTheme.metric(&"ability_card_width") * 2, UiTheme.metric(&"button_height_small")
+	)
+	button.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
 	button.add_theme_font_size_override("font_size", 18)
 	button.disabled = not blocked.is_empty()
 	if blocked == &"learned":

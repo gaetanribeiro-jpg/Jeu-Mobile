@@ -133,6 +133,81 @@ func dress_button(button: Button, role: StringName = &"default") -> void:
 	# donc le silence du refus est gratuit.
 	if not button.pressed.is_connected(_click):
 		button.pressed.connect(_click)
+	animate_button(button)
+
+
+# --- Le mouvement (T12.13) -------------------------------------------------
+#
+# UNE INTERFACE QUI NE RÉPOND PAS AU DOIGT PARAÎT MORTE, même bien
+# dessinée. `dress_button` posait le MÊME style sur « normal », « survol »
+# et « focus » : un bouton survolé ne changeait strictement pas d'aspect,
+# et rien n'accusait jamais réception d'un clic.
+#
+# L'ÉCHELLE PLUTÔT QUE LA POSITION. Une position animée sur un enfant de
+# conteneur se fait écraser à la première mise en page ; `scale` est une
+# transformation, la mise en page ne la touche pas.
+#
+# PAS D'ANIMATION EN HEADLESS. Un `Tween` y tourne dans le vide et ajoute
+# du travail à une file que rien ne vide — c'est la famille de pièges qui
+# a déjà fait tomber le moteur deux fois (T9.2, T11.3).
+
+## Donne à un bouton sa réaction au survol et à l'appui.
+func animate_button(button: Button) -> void:
+	if _still():
+		return
+	if button.has_meta(&"tk_animated"):
+		return
+	button.set_meta(&"tk_animated", true)
+	# LE PIVOT AU CENTRE, sinon un bouton qui grandit part vers le bas à
+	# droite au lieu de gonfler sur place.
+	button.resized.connect(func() -> void: button.pivot_offset = button.size * 0.5)
+	button.pivot_offset = button.size * 0.5
+	button.mouse_entered.connect(_lean.bind(button, &"hover_scale", &"hover_glow"))
+	button.mouse_exited.connect(_lean.bind(button, &"", &""))
+	button.button_down.connect(_lean.bind(button, &"press_scale", &""))
+	button.button_up.connect(_lean.bind(button, &"hover_scale", &"hover_glow"))
+
+
+## Amène un bouton à une échelle et à un éclat nommés. Vide = au repos.
+func _lean(button: Button, scale_key: StringName, glow_key: StringName) -> void:
+	if not is_instance_valid(button) or button.disabled:
+		return
+	var wanted := (
+		UiTheme.number(&"motion", scale_key) if not scale_key.is_empty() else 1.0
+	)
+	var glow := UiTheme.number(&"motion", glow_key) if not glow_key.is_empty() else 1.0
+	var time := UiTheme.number(
+		&"motion", &"press_time" if scale_key == &"press_scale" else &"hover_time"
+	)
+	var tween := button.create_tween()
+	tween.set_parallel(true)
+	tween.set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_QUAD)
+	tween.tween_property(button, "scale", Vector2(wanted, wanted), time)
+	tween.tween_property(button, "modulate", Color(glow, glow, glow, 1.0), time)
+
+
+## L'ENTRÉE D'UN ÉCRAN. Un fondu court et un soupçon d'échelle : les écrans
+## se remplaçaient d'une image à l'autre, ce qui est exactement ce qui fait
+## qu'un jeu a l'air d'un prototype. Passer par `_open` de `boot` suffit à
+## donner sa transition à TOUS les écrans d'un coup.
+func appear(screen: Control) -> void:
+	if screen == null or _still():
+		return
+	var from := UiTheme.number(&"motion", &"screen_scale")
+	screen.pivot_offset = screen.size * 0.5
+	screen.modulate = Color(1.0, 1.0, 1.0, 0.0)
+	screen.scale = Vector2(from, from)
+	var tween := screen.create_tween()
+	tween.set_parallel(true)
+	tween.set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_CUBIC)
+	var time := UiTheme.number(&"motion", &"screen_fade")
+	tween.tween_property(screen, "modulate:a", 1.0, time)
+	tween.tween_property(screen, "scale", Vector2.ONE, time)
+
+
+## Vrai quand rien ne sera jamais dessiné — les tests, les outils.
+func _still() -> bool:
+	return DisplayServer.get_name() == "headless"
 
 
 func _click() -> void:
@@ -460,10 +535,79 @@ func lay_backdrop(root: Node, air: StringName = &"") -> void:
 			for child in ground.get_children():
 				if child is CanvasItem:
 					(child as CanvasItem).modulate = UiTheme.air_weave(air)
+		_lay_vignette(ground)
 		return
 	var fresh := backdrop(air)
 	root.add_child(fresh)
 	root.move_child(fresh, 0)
+	_lay_vignette(fresh)
+
+
+## LA LUEUR DE FOND (T12.13), et c'est un vignetage PRIS À L'ENVERS.
+##
+## Le réflexe était d'assombrir les bords. Mesuré : le fond de l'interface
+## vaut 0,032 de luminance — un presque-noir. Il n'y a RIEN de plus sombre
+## à y mettre, et la première version n'a strictement rien changé à
+## l'écran. Même famille que « une source ne se teinte que si elle est
+## claire » : on n'assombrit pas ce qui est déjà noir.
+##
+## On éclaire donc le CENTRE, très peu, dans un ton chaud. Les panneaux
+## cessent de flotter sur du vide : ils sont posés dans une lumière.
+##
+## ELLE VIT DANS LE FOND, jamais au-dessus des panneaux. Posée par-dessus,
+## elle voilerait un bouton de coin et l'on croirait à un défaut
+## d'affichage : c'est la règle de la crête du motif de T9.8, qui doit
+## rester SOUS le panneau le plus sombre.
+func _lay_vignette(ground: Control) -> void:
+	if ground == null or ground.get_node_or_null(^"Backlight") != null:
+		return
+	var texture := _vignette_texture()
+	if texture == null:
+		return
+	var veil := TextureRect.new()
+	veil.name = "Backlight"
+	veil.texture = texture
+	veil.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	veil.stretch_mode = TextureRect.STRETCH_SCALE
+	# FILTRAGE LINÉAIRE, seule exception du jeu à la règle Nearest : ce
+	# n'est pas du pixel art, c'est de la lumière, et un dégradé en Nearest
+	# fait des anneaux.
+	veil.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR
+	veil.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	veil.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	ground.add_child(veil)
+
+
+## Le dégradé, fabriqué une fois en mémoire. Une petite image étirée en
+## linéaire suffit : une lueur n'a pas de détail à perdre.
+func _vignette_texture() -> Texture2D:
+	if _textures.has(&"backlight"):
+		return _textures[&"backlight"]
+	var side := 64
+	var image := Image.create_empty(side, side, false, Image.FORMAT_RGBA8)
+	var glow := UiTheme.color(StringName(
+		UiTheme.section(&"backlight").get("tint", "wood_light")
+	))
+	var strength := UiTheme.number(&"backlight", &"strength")
+	var inner := UiTheme.number(&"backlight", &"inner")
+	# LES CÔTÉS COMPTENT PLUS QUE LES COINS sur un écran large : sans ce
+	# biais, la lueur d'un cadrage 16/9 est un disque au milieu, et un
+	# disque se voit comme un disque.
+	var bias := maxf(UiTheme.number(&"backlight", &"side_bias"), 0.01)
+	for y in side:
+		for x in side:
+			var to_centre := Vector2(
+				(float(x) + 0.5) / float(side) * 2.0 - 1.0,
+				((float(y) + 0.5) / float(side) * 2.0 - 1.0) / bias
+			)
+			var reach := clampf(
+				(to_centre.length() - inner) / maxf(1.0 - inner, 0.01), 0.0, 1.0
+			)
+			var lit := (1.0 - reach) * (1.0 - reach) * strength
+			image.set_pixel(x, y, Color(glow.r, glow.g, glow.b, lit))
+	var texture := ImageTexture.create_from_image(image)
+	_textures[&"backlight"] = texture
+	return texture
 
 
 ## L'AIR DE L'ÉCRAN COURANT : le nom d'une couleur de palette, en pratique
