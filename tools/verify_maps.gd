@@ -35,6 +35,7 @@ func _init() -> void:
 	_check_emplacements(ids)
 	_check_perches(ids)
 	_check_vocabulary(ids)
+	_check_shapes(ids)
 	_check_reachable(ids)
 	_check_defence_map()
 
@@ -290,6 +291,117 @@ func _check_vocabulary(ids: Array[StringName]) -> void:
 				% [act, names.size(), ", ".join(names), minimum]
 				+ "Un acte qui n'a qu'un mot se joue neuf fois pareil."
 			)
+
+
+## UN ACTE MONTRE PLUSIEURS TERRAINS ; IL DOIT AUSSI MONTRER PLUSIEURS
+## FORMES. Le vocabulaire ci-dessus compte les MOTS, pas les reliefs : un
+## acte pouvait employer six terrains et poser les six dans la même
+## disposition. Mesuré avant cette passe : 50 cartes sur 54 étaient leur
+## PROPRE MIROIR haut/bas, 86 % de toutes les cases étaient de l'herbe
+## nue, 40 cartes n'avaient pas une colline et 46 pas une goutte d'eau.
+## C'est ça, en chiffres, le « certaines restent plates » de Gaetan — et
+## aucune carte prise seule n'était fautive.
+##
+## UNE CARTE EN MIROIR N'A NI HAUT NI BAS. Le flanc nord vaut exactement
+## le flanc sud, donc choisir son côté au placement ne décide de rien, et
+## la carte se joue en couloir. Quelques-unes peuvent l'être exprès — une
+## arène de boss est un lieu, pas un terrain — d'où un tiers toléré.
+func _check_shapes(ids: Array[StringName]) -> void:
+	var flat_max := 12
+	var rough_min := 20
+	var hills_min := 3
+	var per_act := {}
+	for id: StringName in ids:
+		var map := CombatMap.load_map(id)
+		if map == null or map.board == null:
+			continue
+		var shapes: Array = per_act.get(map.act, [])
+		shapes.append(_shape_of(map))
+		per_act[map.act] = shapes
+
+	print("")
+	for act: int in per_act.keys():
+		var shapes: Array = per_act[act]
+		var flat := 0
+		var rough := 0
+		var hills := 0
+		var water := 0
+		var mirrors := 0
+		for shape: Dictionary in shapes:
+			if int(shape["relief"]) <= flat_max:
+				flat += 1
+			if int(shape["relief"]) >= rough_min:
+				rough += 1
+			if bool(shape["hill"]):
+				hills += 1
+			if bool(shape["water"]):
+				water += 1
+			if bool(shape["mirror"]):
+				mirrors += 1
+		print("acte %d : %d cartes — %d plate(s), %d accidentée(s), %d à colline, %d à eau, %d en miroir"
+			% [act, shapes.size(), flat, rough, hills, water, mirrors])
+		if flat == 0:
+			_problems.append(
+				"acte %d : aucune carte à %d %% de relief ou moins. " % [act, flat_max]
+				+ "Sans une plaine, le relief n'a rien à quoi se comparer."
+			)
+		if rough == 0:
+			_problems.append(
+				"acte %d : aucune carte à %d %% de relief ou plus. " % [act, rough_min]
+				+ "Neuf cartes également vallonnées se jouent neuf fois pareil."
+			)
+		if hills < hills_min:
+			_problems.append(
+				"acte %d : %d carte(s) à colline, %d au moins. " % [act, hills, hills_min]
+				+ "La hauteur est ce que le pack dessine le mieux."
+			)
+		if water == 0:
+			_problems.append(
+				"acte %d : pas une goutte d'eau. " % act
+				+ "Un lac, un îlot ou une rive changent la forme du plateau, "
+				+ "pas seulement sa couleur."
+			)
+		var mirror_max := shapes.size() / 3
+		if mirrors > mirror_max:
+			_problems.append(
+				"acte %d : %d cartes sont leur propre miroir haut/bas, %d au plus. "
+				% [act, mirrors, mirror_max]
+				+ "Une carte symétrique n'a ni haut ni bas : choisir son flanc "
+				+ "au placement n'y décide de rien."
+			)
+
+
+## Le profil d'une carte : ce qu'on voit d'elle avant d'y jouer.
+func _shape_of(map: CombatMap) -> Dictionary:
+	var rows := map.board.grid.height
+	var columns := map.board.grid.width
+	var relief := 0
+	var hill := false
+	var water := false
+	var lines := PackedStringArray()
+	for y: int in range(rows):
+		var line := ""
+		for x: int in range(columns):
+			var tile := map.board.tile_at(Vector2i(x, y))
+			var terrain: StringName = tile.terrain_id if tile != null else &"grass"
+			line += String(terrain)
+			if terrain == &"grass":
+				continue
+			relief += 1
+			if tile.ranged_range_bonus() > 0:
+				hill = true
+			if tile.is_swimmable() and not tile.is_walkable():
+				water = true
+		lines.append(line)
+	var mirror := true
+	for y: int in range(rows):
+		if lines[y] != lines[rows - 1 - y]:
+			mirror = false
+			break
+	return {
+		"relief": relief * 100 / maxi(1, rows * columns),
+		"hill": hill, "water": water, "mirror": mirror,
+	}
 
 
 func _check_objective(map: CombatMap, id: String) -> void:
