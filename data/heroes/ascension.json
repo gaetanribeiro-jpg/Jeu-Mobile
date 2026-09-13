@@ -1,0 +1,51 @@
+{
+ "_readme": "L'ASCENSION DES HÉROS, ET C'EST LA COULEUR QUI LA DIT.\n\nLe pack dessine cinq classes en CINQ COULEURS, et le jeu n'employait que le Bleu. `Hero.color` existait depuis la Phase 2 avec sa valeur par défaut « Blue » et n'était câblé nulle part — sixième mécanique déclarée et jamais branchée, après KIND_HEAL, KIND_PUSH, les 70 entrées `ui` et `requires_not_moved`.\n\nLES CINQ COULEURS SONT UN BUDGET. Une couleur ne peut pas être à la fois un RANG et une FACTION : un Jaune porté par les héros élevés et par des mercenaires ne se lit plus. Trois vont donc aux héros — Bleu, Violet, Or — et deux aux ennemis : le Rouge des Rougefer (acte 3) et le Noir de l'Empire (acte 6). C'est ce qui a obligé l'acte 4 à se passer d'humains.\n\nPOURQUOI LA COULEUR ET PAS UNE ICÔNE. Un héros élevé se reconnaît EN COMBAT, au milieu du plateau, sans ouvrir sa fiche. C'est la même règle que pour les régions (T11.6) : la couleur porte une information, jamais une décoration.\n\nCE QUE ÇA DONNE À LA VILLE. La règle du royaume dit « aucun bâtiment décoratif : chaque bâtiment répond à — qu'est-ce que ça permet à mes héros ? ». Les cinq bâtiments existants répondaient « +1 de force », ce qui est un chiffre, pas une permission. La Tour répond « ça permet d'élever un héros », et c'est le premier bâtiment du jeu qui ouvre quelque chose au lieu d'ajouter.",
+ "ranks": [
+  {
+   "id": "common",
+   "color": "Blue",
+   "name_key": "RANK_COMMON",
+   "requires_level": 1,
+   "requires_tower": 0,
+   "cost": {},
+   "grants": {}
+  },
+  {
+   "id": "rare",
+   "color": "Purple",
+   "name_key": "RANK_RARE",
+   "requires_level": 4,
+   "requires_tower": 1,
+   "cost": {
+    "gold": 260,
+    "stone": 45,
+    "food": 30
+   },
+   "grants": {
+    "hit_points": 14,
+    "defence": 1
+   }
+  },
+  {
+   "id": "legendary",
+   "color": "Yellow",
+   "name_key": "RANK_LEGENDARY",
+   "requires_level": 8,
+   "requires_tower": 3,
+   "cost": {
+    "gold": 720,
+    "stone": 130,
+    "wood": 70,
+    "food": 60
+   },
+   "grants": {
+    "hit_points": 22,
+    "strength": 1,
+    "agility": 1,
+    "intelligence": 1,
+    "defence": 1
+   }
+  }
+ ],
+ "_grants_note": "LES GAINS SONT MODESTES, ET C'EST VOULU. L'ascension n'est pas une source de puissance de plus : elle est ce qui REND LISIBLE la puissance déjà acquise par le niveau, l'équipement et l'arbre. Le § 47 tient les statistiques dans une fourchette de 1 à 8 ; deux rangs qui donnent chacun +1 de défense représentent déjà un quart de cette fourchette.\n\nCE QUI COÛTE VRAIMENT, C'EST LA TOUR. Le rang rare demande une tour de niveau 1, le légendaire une tour de niveau 3 — et une tour de niveau 3 est un investissement de royaume, pas une dépense de bourse. C'est là que le § 45 (« connecter le royaume au RPG ») se joue."
+}

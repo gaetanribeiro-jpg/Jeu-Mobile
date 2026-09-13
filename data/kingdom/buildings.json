@@ -1,0 +1,274 @@
+{
+ "_readme": "Les bâtiments du royaume (§ 7, § 8).\n\nLA QUESTION QUE CHAQUE BÂTIMENT DOIT SAVOIR RÉPONDRE : « qu'est-ce que ça permet à mes héros ? » Aucun bâtiment décoratif — c'est une décision verrouillée. Un bâtiment qui n'accorde rien n'entre pas dans ce fichier, même si le pack le dessine.\n\nCE QUE LE MVP NE BÂTIT PAS, ET POURQUOI. La TOUR est dessinée par le pack et reste absente d'ici : elle sert à la défense, les invasions sont la Phase 5, et une tour sans invasion ne répond à rien. La FORGE, le MARCHÉ, la TAVERNE, l'ÉCURIE, le MUR et la PORTE du § 7 n'ont AUCUN sprite dans le pack. Les inventer coûterait du dessin qu'on n'a pas ; on conçoit avec ce que le pack sait dessiner.\n\nLE CHÂTEAU PLAFONNE TOUT LE RESTE. Aucun bâtiment ne dépasse son niveau. Sans cette règle, on monterait une caserne au niveau 5 dans un hameau, et la progression du royaume n'aurait plus de colonne vertébrale.\n\nLES COÛTS SONT ENGENDRÉS, PAS ÉCRITS. `base_cost` est le prix du premier niveau, multiplié par `cost_growth` à chaque niveau suivant. Vingt-cinq prix écrits à la main auraient dérivé les uns des autres dès la première retouche ; ici on en règle deux.\n\nLES GAINS, EUX, SONT ÉCRITS : c'est la conception, et elle ne se déduit d'aucune formule. Une entrée par niveau, dans l'ordre. Ils s'ADDITIONNENT — un bâtiment de niveau 3 accorde la somme des trois premières lignes.\n\nL'ÉCHELLE DES GAINS SUIT LA LEÇON DE T1.11 : les statistiques sont des modificateurs, pas des multiplicateurs, et elles tiennent de 1 à 8. Une caserne au maximum donne +2 Force et +24 PV à ses Guerriers — sensible, gagné sur des dizaines d'expéditions, et sans commune mesure avec le +60 % qui avait vidé le combat de son enjeu.",
+ "candidate_count": 3,
+ "_candidate_note": "TROIS CANDIDATS. C'est un chiffre de ressenti, donc il vit ici (règle 1). Deux ne feraient pas un choix mais une comparaison ; quatre demanderaient de lire quatre fiches pour une décision qui se prend en une phrase — « de quoi mon équipe manque-t-elle ? ». Le panneau n'en tient que deux à l'écran : le troisième se rejoint en faisant défiler, comme le reste de la fiche d'un bâtiment. Vérifié à la capture.",
+ "kingdom_grants": [
+  "population_cap",
+  "heal_between_steps",
+  "brew",
+  "ward"
+ ],
+ "_kingdom_grants_note": "LES GAINS QUI NE SONT PAS DES STATISTIQUES DE COMBAT. Tout le reste part dans `Hero.effective_stats` puis dans `Unit.from_stats` ; ces clés-là s'arrêtent au royaume.\n\nPOURQUOI DANS LES DONNÉES : la liste était écrite EN DUR dans `hero_bonuses`, à deux entrées. Une troisième clé de royaume oubliée là aurait filé jusqu'à `Unit.from_stats`, qui l'IGNORE EN SILENCE — et un gain qu'on croit acquis sans qu'il le soit est pire qu'un gain absent. La liste vit donc à côté des gains qu'elle trie.",
+ "cost_growth": 1.6,
+ "buildings": {
+  "castle": {
+   "name_key": "BUILDING_CASTLE",
+   "description_key": "BUILDING_CASTLE_DESC",
+   "asset": "buildings/castle",
+   "starts_at": 1,
+   "max_level": 5,
+   "base_cost": {
+    "wood": 100,
+    "stone": 90,
+    "gold": 250
+   },
+   "grants": [
+    {
+     "population_cap": 1,
+     "ward": 2
+    },
+    {
+     "population_cap": 1,
+     "ward": 2
+    },
+    {
+     "population_cap": 1,
+     "ward": 2
+    },
+    {
+     "population_cap": 1,
+     "ward": 2
+    },
+    {
+     "population_cap": 1,
+     "ward": 2
+    }
+   ],
+   "_grants_note": "Le vrai pouvoir du château n'est pas dans cette colonne : c'est lui qui PLAFONNE le niveau de tous les autres bâtiments. Un habitant de plus par niveau est la prime, pas la fonction.",
+   "spot": [
+    288,
+    264
+   ]
+  },
+  "houses": {
+   "name_key": "BUILDING_HOUSES",
+   "description_key": "BUILDING_HOUSES_DESC",
+   "_asset_note": "Le seul bâtiment dont le pack sait montrer l'évolution : trois maisons de plus en plus cossues. Le § 8 la réclame « quand c'est possible » — ici ça l'est, et c'est gratuit.",
+   "assets": [
+    "buildings/house1",
+    "buildings/house1",
+    "buildings/house2",
+    "buildings/house2",
+    "buildings/house3"
+   ],
+   "max_level": 5,
+   "base_cost": {
+    "wood": 60,
+    "gold": 40
+   },
+   "grants": [
+    {
+     "population_cap": 2
+    },
+    {
+     "population_cap": 1
+    },
+    {
+     "population_cap": 1
+    },
+    {
+     "population_cap": 1
+    },
+    {
+     "population_cap": 1
+    }
+   ],
+   "spot": [
+    160,
+    444
+   ]
+  },
+  "barracks": {
+   "name_key": "BUILDING_BARRACKS",
+   "description_key": "BUILDING_BARRACKS_DESC",
+   "asset": "buildings/barracks",
+   "hero_class": "warrior",
+   "max_level": 5,
+   "base_cost": {
+    "wood": 80,
+    "stone": 30,
+    "gold": 150
+   },
+   "grants": [
+    {
+     "hit_points": 6,
+     "ward": 1
+    },
+    {
+     "strength": 1,
+     "ward": 1
+    },
+    {
+     "hit_points": 8,
+     "ward": 1
+    },
+    {
+     "defence": 1,
+     "ward": 1
+    },
+    {
+     "hit_points": 10,
+     "strength": 1,
+     "ward": 1
+    }
+   ],
+   "spot": [
+    608,
+    246
+   ],
+   "recruit_cost": {
+    "gold": 180,
+    "food": 45
+   },
+   "recruits": [
+    "warrior",
+    "lancer"
+   ],
+   "_recruits_note": "LA CASERNE FORME LES GENS D'ARMES, Guerriers ET Lanciers. `hero_class` reste « warrior » : c'est à qui vont les GAINS du bâtiment, et un bâtiment qui renforcerait deux classes ferait de bâtir un cumul au lieu d'un choix entre trois voies.\n\nPOURQUOI PAS UN BÂTIMENT À ELLE : le pack dessine huit bâtiments et les huit servent déjà. Le Lancier n'en aura donc pas, et c'est très bien — ça fait des trois candidats de la caserne une question plus riche : « lequel de ces trois Guerriers ? » devient « de quoi mon équipe manque-t-elle ? »."
+  },
+  "archery": {
+   "name_key": "BUILDING_ARCHERY",
+   "description_key": "BUILDING_ARCHERY_DESC",
+   "asset": "buildings/archery",
+   "hero_class": "archer",
+   "max_level": 5,
+   "base_cost": {
+    "wood": 70,
+    "stone": 20,
+    "gold": 150
+   },
+   "grants": [
+    {
+     "hit_points": 5,
+     "ward": 1
+    },
+    {
+     "agility": 1,
+     "ward": 1
+    },
+    {
+     "critical": 3,
+     "ward": 1
+    },
+    {
+     "hit_points": 7,
+     "ward": 1
+    },
+    {
+     "agility": 1,
+     "critical": 4,
+     "ward": 1
+    }
+   ],
+   "spot": [
+    800,
+    258
+   ],
+   "recruit_cost": {
+    "gold": 180,
+    "food": 45
+   }
+  },
+  "monastery": {
+   "name_key": "BUILDING_MONASTERY",
+   "description_key": "BUILDING_MONASTERY_DESC",
+   "asset": "buildings/monastery",
+   "hero_class": "mage",
+   "max_level": 5,
+   "base_cost": {
+    "wood": 60,
+    "stone": 60,
+    "gold": 200
+   },
+   "_heal_note": "Le monastère est le SEUL bâtiment qui touche à l'expédition elle-même : il rend une fraction des PV entre deux rencontres, et c'est donc lui qui déplace la courbe d'usure mesurée en T1.11. C'est aussi la réponse la plus directe au § 45 — « connecter le royaume au RPG » — et le levier que Gaetan cherchera si les 13 % par rencontre se révèlent trop durs.",
+   "grants": [
+    {
+     "hit_points": 4,
+     "heal_between_steps": 0.02
+    },
+    {
+     "intelligence": 1,
+     "brew": 1
+    },
+    {
+     "heal_between_steps": 0.03
+    },
+    {
+     "hit_points": 6
+    },
+    {
+     "intelligence": 1,
+     "heal_between_steps": 0.03,
+     "brew": 1
+    }
+   ],
+   "spot": [
+    96,
+    250
+   ],
+   "recruit_cost": {
+    "gold": 180,
+    "food": 45
+   },
+   "brews": "draught_of_mending",
+   "_brew_note": "LE MONASTÈRE PRÉPARE UNE FIOLE PAR CYCLE À PARTIR DU NIVEAU 2. C'est la réponse au reproche « les bâtiments ne font que monter des chiffres » : celui-ci OUVRE un troisième fil d'obtention pour les potions, à côté du butin et de l'étal — et c'est le seul des trois que l'on gagne en RENTRANT plutôt qu'en s'enfonçant. La fiole est COMMUNE exprès : le monastère assure le fond de sac, il ne prend pas la place de la trouvaille. Deux par cycle au niveau 5, contre environ trois potions par sortie tombées du butin — de quoi peser sans tarir l'envie de fouiller."
+  },
+  "tower": {
+   "name_key": "BUILDING_TOWER",
+   "description_key": "BUILDING_TOWER_DESC",
+   "asset": "buildings/tower",
+   "_note": "LE PREMIER BÂTIMENT QUI OUVRE QUELQUE CHOSE AU LIEU D'AJOUTER.\n\nLa règle du royaume dit : « aucun bâtiment décoratif — chaque bâtiment répond à : qu'est-ce que ça permet à mes héros ? ». Les cinq premiers répondaient « +1 de force », ce qui est un CHIFFRE, pas une permission. La Tour répond « ça permet d'ÉLEVER un héros » : niveau 1 pour le rang rare, niveau 3 pour le légendaire.\n\nELLE DORMAIT DANS LE PACK. Huit bâtiments sont dessinés en cinq couleurs et le jeu n'en employait que cinq — la tour et deux maisons n'avaient jamais été ouvertes.\n\nSES GAINS SERVENT TOUT LE MONDE, sans `hero_class` : une tour de guet protège la place entière, pas une caserne. C'est le seul bâtiment militaire dans ce cas, et c'est ce qui l'empêche d'être une sixième voie de spécialisation — le § 45 veut que bâtir soit un choix entre trois voies, pas un cumul.",
+   "max_level": 5,
+   "base_cost": {
+    "wood": 70,
+    "stone": 90,
+    "gold": 180
+   },
+   "grants": [
+    {
+     "defence": 1,
+     "ward": 3
+    },
+    {
+     "hit_points": 5,
+     "ward": 3
+    },
+    {
+     "defence": 1,
+     "ward": 3
+    },
+    {
+     "hit_points": 6,
+     "ward": 3
+    },
+    {
+     "critical": 1,
+     "ward": 3
+    }
+   ],
+   "spot": [
+    480,
+    380
+   ],
+   "_spot_note": "ELLE ÉTAIT EN 930 SUR UNE TOILE DE 900, donc DESSINÉE HORS DU TERRAIN depuis qu'elle existe : un joueur qui bâtissait la tour — et il le faut pour l'ascension — ne voyait rien apparaître. Aucun test ne le disait, seule la capture. `verify_kingdom` refuse désormais un emplacement qui sort de la toile."
+  }
+ },
+ "_layout_note": "LES EMPLACEMENTS SONT DES PIXELS DE LA GRILLE de `ground.json` (15 × 9 cases de 64 = 960 × 576), posés PAR LE PIED. `verify_kingdom` refuse un emplacement hors de la toile — la tour de guet était dessinée en 930 sur 900 depuis sa création (T12.8) — et refuse depuis T12.11 un bâtiment posé à l'eau ou dans un rocher : il se dessinerait très bien, et se lirait comme un défaut.\n\nLES ORDONNÉES SONT LÉGÈREMENT DÉCALÉES, exprès. Quatre bâtiments alignés au pixel se lisent comme une LISTE ; quelques pixels d'écart en font un village. C'est la même raison qui décale les rochers du rivage dans leur case (T9.10).",
+ "_recruit_note": "Le § 45 met le recrutement dans la Phase 4, et c'est le bâtiment qui l'autorise : sans caserne, pas de Guerrier. Le coût est en OR et en NOURRITURE — l'or parce qu'un héros s'équipe, la nourriture parce qu'il mange. Payer en bois pour un homme n'aurait rien voulu dire, et une seule monnaie aurait fait du recrutement un robinet plutôt qu'un arbitrage contre les bâtiments.",
+ "_ward_note": "CE QU'UN BÂTIMENT DÉFEND, `ward`, et tous n'en font pas autant. Une MAISON défendait exactement comme une tour de guet tant que la défense comptait des NIVEAUX de bâtiment : le seul bâtiment dont le rôle soit la défense n'avait donc aucun rôle. La tour en donne trois par niveau, le château deux — il a des murs —, la caserne et le camp d'archers un chacun, parce qu'on y forme des gens d'armes. Les maisons et le monastère n'en donnent aucun : ils servent à autre chose, et c'est ce qui fait de bâtir un arbitrage entre produire plus et tenir mieux.",
+ "canvas": [
+  960,
+  576
+ ],
+ "_canvas_note": "LA TOILE DE RÉFÉRENCE du terrain du royaume, en pixels. Les emplacements des bâtiments et des chantiers s'y expriment, et la vue la met à l'échelle du contrôle.\n\nELLE VIT ICI POUR POUVOIR ÊTRE VÉRIFIÉE. Déclarée en constante dans `kingdom_view.gd`, aucun outil ne pouvait comparer un emplacement à ses bornes — et la tour est restée hors du terrain sans que rien ne s'en plaigne."
+}

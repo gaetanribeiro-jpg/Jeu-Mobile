@@ -1,0 +1,117 @@
+{
+ "_note": "ACTE 5 — LES TERRES MAUDITES : CE QUI NE RESTE PAS MORT.\n\nLA QUESTION DE L'ACTE : LES DÉGÂTS NE RESTENT PAS. Sur trente-cinq bêtes en quatre actes, aucune ne remontait jamais. L'atelier de l'acte 4 recousait les EMPLACEMENTS, de l'extérieur, avec une recharge, et seulement si on le laissait faire ; ici c'est chacun pour soi et à chaque coup. Le grignotage cesse de fonctionner, et l'ordre des cibles cesse d'avoir une bonne réponse évidente — ce qui est exactement ce qu'on demande à une décision.\n\nCE QUE ÇA CHANGE POUR LE JOUEUR : il faut CONCENTRER. Quatre personnages qui frappent quatre cibles différentes ne tuent personne et nourrissent tout le monde. Le télégraphe annonce le drain sur la case du mordeur (§ 39), donc l'information est parfaite avant de choisir — comme le soin ennemi de l'acte 4, et pour la même raison : sans le chiffre, « lequel tuer d'abord » se poserait à l'aveugle.\n\nLE PIÈGE EST LE TROLL RELEVÉ, seul du lot à ne pas boire. C'est la cible « sûre », et c'est celle qui frappe le plus fort.\n\nAUCUN HUMAIN, AUCUNE COULEUR DÉPENSÉE. Les cinq couleurs du pack sont un budget : trois aux rangs des héros (Bleu, Violet, Or), deux aux factions (Rouge des Rougefer à l'acte 3, Noir de l'Empire à l'acte 6). L'acte 5 n'en prend aucune.\n\nCE QUE CET ACTE A COÛTÉ EN DESSIN, ET C'EST LE CONSTAT QU'IL FALLAIT ÉTABLIR. Les vingt et un visages de bêtes du pack sont consommés depuis l'acte 3 ; l'acte 4 a vidé `extra` de sa cavalerie et de son artillerie. Il restait QUATRE images inemployées — le troll mort, la caverne, la hutte et la tour des gnomes — les deux dernières étant des CHAMPIGNONS, ce que la capture a dû me dire — et cet acte les prend TOUTES, plus le vampire que nous avons dessiné nous-mêmes. Après lui, `extra` est vide à son tour : il ne reste que les cinq classes humaines en Noir, réservées à l'acte 6. Le premier acte 7 devra être entièrement dessiné.",
+ "vampire_spawn": {
+  "sprite": "vampire",
+  "role": "melee",
+  "hit_points": 186,
+  "action_points": 6,
+  "movement_points": 5,
+  "initiative": 8,
+  "strength": 8,
+  "agility": 6,
+  "intelligence": 3,
+  "defence": 4,
+  "abilities": [
+   "blood_bite"
+  ],
+  "question": "LA PREMIÈRE BÊTE DU JEU QUI REMONTE. Cent quarante-huit points de vie n'en font pas une menace ; ce qui en fait une, c'est qu'un coup mal placé la ramène là où elle était. Elle enseigne l'acte en une ronde : contre elle, entamer n'est plus un acquis, et quatre héros qui frappent quatre cibles différentes ne tuent personne."
+ },
+ "blood_thrall": {
+  "sprite": "vampire",
+  "role": "melee",
+  "hit_points": 152,
+  "action_points": 6,
+  "movement_points": 7,
+  "initiative": 11,
+  "strength": 6,
+  "agility": 9,
+  "intelligence": 2,
+  "defence": 3,
+  "abilities": [
+   "blood_bite"
+  ],
+  "question": "LE MÊME VISAGE, L'AUTRE VITESSE, et c'est ce qui rend l'ordre des cibles vraiment difficile. Sept PM et l'initiative onze : il mord AVANT que l'équipe ait joué, donc il arrive à son tour déjà rempli. IL N'EST PAS TIRAILLEUR, et c'est mesuré ailleurs : un décrocheur à portée un ne frappe jamais (T12.1), et un décrocheur tout court allonge le combat au lieu de le durcir (T8.1). Celui-ci fonce."
+ },
+ "risen_troll": {
+  "sprite": "risen_troll",
+  "role": "brute",
+  "hit_points": 332,
+  "action_points": 8,
+  "movement_points": 4,
+  "initiative": 3,
+  "strength": 10,
+  "agility": 3,
+  "intelligence": 1,
+  "defence": 7,
+  "abilities": [
+   "grave_smash"
+  ],
+  "question": "LE SEUL QUI NE BOIT PAS, ET C'EST UN PIÈGE. Devant quatre buveurs, la cible « sûre » est celle qui ne se recoud pas ; celle-ci frappe à soixante et onze et encaisse trois cent soixante-deux. Le joueur qui suit son réflexe passe deux rondes dessus pendant que le reste de la ligne se remplit. La bonne réponse est de l'IGNORER, comme la tortue de l'acte 2 — sauf qu'ici l'ignorer fait mal."
+ },
+ "pale_bloom": {
+  "sprite": "pale_bloom",
+  "role": "blocker",
+  "hit_points": 262,
+  "action_points": 6,
+  "movement_points": 0,
+  "initiative": 2,
+  "strength": 1,
+  "agility": 4,
+  "intelligence": 8,
+  "defence": 6,
+  "abilities": [
+   "siphon_bolt"
+  ],
+  "question": "LA LONGUE PORTÉE DE L'ACTE, ET ELLE BOIT. Sept cases comme la tour de guet de l'acte 4 — la différence n'est pas la portée, c'est ce que l'attente coûte : chaque ronde passée hors de sa portée la rend plus dure à abattre quand on arrive enfin dessus. C'est la seule bête du jeu que le joueur rend plus forte en ne faisant rien."
+ },
+ "barrow_mouth": {
+  "sprite": "barrow_mouth",
+  "role": "blocker",
+  "hit_points": 224,
+  "action_points": 7,
+  "movement_points": 0,
+  "initiative": 4,
+  "strength": 1,
+  "agility": 3,
+  "intelligence": 7,
+  "defence": 5,
+  "abilities": [
+   "grave_breath"
+  ],
+  "question": "DU DÉCOR QUI MORD. Zéro PM, quatre cases, une croix : ce n'est pas un tireur, c'est un passage qu'on ne franchit pas impunément. Elle ne draine pas — un trou dans le sol n'a pas de barre de vie à remonter — et c'est ce qui l'empêche d'être une sixième répétition de la même idée. Elle sert à INTERDIRE une ligne, donc à forcer le détour que les buveurs mettront à profit."
+ },
+ "spore_hovel": {
+  "sprite": "spore_hovel",
+  "role": "support",
+  "hit_points": 228,
+  "action_points": 8,
+  "movement_points": 0,
+  "initiative": 5,
+  "strength": 1,
+  "agility": 2,
+  "intelligence": 9,
+  "defence": 6,
+  "abilities": [
+   "grave_knit"
+  ],
+  "question": "ELLE NE POSE PAS DE QUESTION NEUVE, ET C'EST ASSUMÉ. Sœur de l'atelier de l'acte 4, sur un acte où tout se recoud déjà : elle ne change pas la question, elle la rend INSOUTENABLE tant qu'elle est debout. C'est ce qui transforme « je devrais concentrer » en « je dois concentrer, et sur elle d'abord »."
+ },
+ "the_countess": {
+  "sprite": "vampire",
+  "role": "brute",
+  "hit_points": 356,
+  "action_points": 11,
+  "movement_points": 5,
+  "initiative": 10,
+  "strength": 11,
+  "agility": 7,
+  "intelligence": 6,
+  "defence": 6,
+  "abilities": [
+   "countess_embrace",
+   "blood_call"
+  ],
+  "question": "TROIS QUARTS DE CE QU'ELLE PORTE. On ne la tue pas à l'usure : quatre rondes de grignotage la laissent au plein. La seule réponse est la concentration totale, dans la même ronde, avant qu'elle ait mordu deux fois. Son second coup ne boit pas — c'est la ronde où l'Étreinte recharge, et c'est la fenêtre. Une bête à compétence unique et à recharge chôme une ronde sur deux : mesuré à l'acte 4, corrigé ici."
+ },
+ "_balance_note": "L'ÉCHELLE EST CELLE DE L'ACTE, PAS DE L'ENVIE. Premier jet mesuré : 82 % des PV restants contre 67 % à l'acte 4 — l'acte 5 était plus FACILE que le précédent, et pour la raison exacte que le projet avait déjà corrigée une fois : ses corps étaient plus petits que ceux de l'acte 4 (148 PV contre 167 pour un lancier monté). La courbe s'inversait de nouveau.\n\nIL FAUT MONTER LES DEUX AXES, et se tromper une fois l'a prouvé : monter les PV seuls allonge sans durcir. Les dégâts montent donc avec."
+}

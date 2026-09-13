@@ -1,0 +1,336 @@
+{
+ "_readme": "LE THÈME DE L'INTERFACE (T9.1). Il existe pour deux raisons, et la première est une règle du projet.\n\nLA RÈGLE 1 ÉTAIT VIOLÉE PARTOUT. « Aucune valeur chiffrée dans le code » : sept fichiers d'écran portaient des `Color(0.13, 0.15, 0.13)` et des tailles de police en dur. Une couleur est une valeur de ressenti — exactement ce que le § 46 veut pouvoir régler sans réécrire la logique — et c'était le seul domaine du jeu où on ne le pouvait pas.\n\nLE PACK FOURNIT UNE INTERFACE ET PERSONNE NE LA DESSINAIT. 70 entrées `ui` dans `assets.json`, contrôlées à chaque exécution par `verify_assets`, et pas un écran ne les utilisait. Le projet vérifiait des images qu'il ne montrait jamais.\n\nCE FICHIER EST LA SOURCE UNIQUE. Un écran ne choisit plus une couleur : il demande un RÔLE (« le fond d'un panneau », « un bouton d'action »), et c'est ici qu'on décide à quoi ressemble ce rôle.",
+ "palette": {
+  "_note": "Les couleurs sont [r, v, b] ou [r, v, b, a] en 0–1, comme dans view.json — une seule convention pour tout le projet.",
+  "ink": [
+   0.93,
+   0.89,
+   0.8
+  ],
+  "ink_soft": [
+   0.66,
+   0.61,
+   0.52
+  ],
+  "ink_inverse": [
+   0.96,
+   0.93,
+   0.86
+  ],
+  "ink_muted": [
+   0.48,
+   0.44,
+   0.38
+  ],
+  "ink_gold": [
+   0.91,
+   0.78,
+   0.44
+  ],
+  "backdrop": [
+   0.032,
+   0.028,
+   0.023
+  ],
+  "parchment": [
+   1.0,
+   1.0,
+   1.0
+  ],
+  "wood": [
+   1.0,
+   1.0,
+   1.0
+  ],
+  "steel": [
+   0.55,
+   0.72,
+   0.86
+  ],
+  "gold": [
+   0.91,
+   0.76,
+   0.36
+  ],
+  "moss": [
+   0.55,
+   0.82,
+   0.44
+  ],
+  "rust": [
+   0.88,
+   0.42,
+   0.34
+  ],
+  "plum": [
+   0.72,
+   0.56,
+   0.92
+  ],
+  "_biome_note": "TROIS TEINTES DE BIOME (T11.6). La palette n'avait que six couleurs de rôle — acier, or, mousse, rouille, prune, pierre — et six régions à distinguer. Une carte du monde où toutes les régions se ressemblent n'est pas une carte, c'est une liste : le joueur ne peut pas savoir d'un coup d'œil ce qui l'attend.\n\nELLES TEINTENT LA TERRE, PAS SEULEMENT LE TRAIT. Chaque région montre un carré d'herbe du tileset, désaturé puis reteinté à sa couleur — exactement le procédé des six boutons de T9.3. Le pack ne livre que cinq variantes de VERT ; teintées, elles donnent du sable, du gel et de la cendre sans qu'aucun pixel n'ait été redessiné.",
+  "sand": [
+   0.85,
+   0.72,
+   0.42
+  ],
+  "frost": [
+   0.62,
+   0.79,
+   0.88
+  ],
+  "ash": [
+   0.55,
+   0.53,
+   0.58
+  ],
+  "stone": [
+   0.42,
+   0.4,
+   0.36
+  ],
+  "health_high": [
+   0.4,
+   0.72,
+   0.36
+  ],
+  "health_mid": [
+   0.9,
+   0.72,
+   0.28
+  ],
+  "health_low": [
+   0.82,
+   0.32,
+   0.28
+  ],
+  "action_points": [
+   1.0,
+   0.82,
+   0.3
+  ],
+  "move_points": [
+   0.42,
+   0.72,
+   1.0
+  ],
+  "ink_disabled": [
+   0.96,
+   0.93,
+   0.85,
+   0.38
+  ],
+  "wood_light": [
+   1.0,
+   0.94,
+   0.86
+  ],
+  "scroll_track": [
+   0.09,
+   0.08,
+   0.065,
+   0.85
+  ],
+  "slider_filled": [
+   0.95,
+   0.74,
+   0.32,
+   0.38
+  ],
+  "card_gold": [
+   1.0,
+   0.9,
+   0.62
+  ],
+  "wood_dim": [
+   0.72,
+   0.66,
+   0.6
+  ],
+  "panel_fill": [
+   0.105,
+   0.092,
+   0.075
+  ],
+  "panel_deep": [
+   0.086,
+   0.076,
+   0.062
+  ],
+  "panel_edge": [
+   0.72,
+   0.6,
+   0.34
+  ],
+  "panel_edge_soft": [
+   0.42,
+   0.35,
+   0.22
+  ],
+  "panel_potion": [
+   0.145,
+   0.105,
+   0.165
+  ],
+  "moment_day_fill": [
+   0.105,
+   0.115,
+   0.088
+  ],
+  "moment_dusk_fill": [
+   0.155,
+   0.098,
+   0.07
+  ],
+  "moment_night_fill": [
+   0.075,
+   0.085,
+   0.145
+  ],
+  "weave": [
+   1.0,
+   0.88,
+   0.62,
+   0.17
+  ],
+  "homeland": [
+   0.76,
+   0.88,
+   0.52
+  ]
+ },
+ "typography": {
+  "_note": "Silver est une police pixel : elle ne rend proprement qu'à certaines tailles. Les valeurs ici sont des multiples pairs, et ne doivent le rester.",
+  "game_title": 56,
+  "title": 40,
+  "heading": 26,
+  "subheading": 22,
+  "body": 20,
+  "small": 18,
+  "button": 22,
+  "button_large": 26,
+  "caption": 16
+ },
+ "metrics": {
+  "button_height": 72,
+  "button_height_small": 56,
+  "panel_margin": 14,
+  "row_spacing": 10,
+  "bar_height": 32,
+  "bar_height_small": 16,
+  "text_outline": 4,
+  "bar_fill_height": 14,
+  "bar_inset": 7,
+  "scrollbar_width": 16,
+  "portrait_small": 44,
+  "portrait_card": 44,
+  "card_margin": 12,
+  "card_width": 200,
+  "bar_height_card": 30,
+  "plank_margin": 14,
+  "objective_width": 300,
+  "corner_width": 260,
+  "timeline_width": 420,
+  "portrait_hero": 80,
+  "ability_card_width": 212,
+  "detail_width": 200,
+  "detail_height": 330,
+  "button_pad": 12,
+  "resource_icon": 28,
+  "tree_indent": 26
+ },
+ "act_air": {
+  "_note": "L'AIR D'UN ACTE (T11.9). « L'interface pourrait légèrement changer d'un acte à l'autre. » Elle le fait par le FOND, et seulement par le fond : le liseré doré, les panneaux et les rôles de bouton ne bougent pas, sinon ce n'est plus le même jeu d'un acte à l'autre mais deux jeux.\n\nLA COULEUR N'EST PAS UNE NOUVELLE DONNÉE : c'est l'`accent` que la région déclare déjà pour la carte du monde (T11.6). Une région qui existe a donc son air, gratuitement.\n\n`ground_mix` fait virer l'aplat presque noir vers cette couleur À LUMINANCE CONSTANTE — on change la teinte, pas la clarté, sinon le contraste des panneaux bouge d'un acte à l'autre et il faudrait tout revérifier six fois. `weave_mix` fait la même chose au motif, plus doucement : il est déjà à peine visible, et le teinter fort ne ferait que l'éteindre.",
+  "ground_mix": 0.55,
+  "weave_mix": 0.3,
+  "edge_mix": 0.35,
+  "_edge_note": "LE FOND NE PEUT PORTER QU'UN SOUPÇON, ET C'EST MESURÉ. À la luminance du fond (0,028), deux teintes opposées ne se séparent que de DEUX niveaux sur 255 : invisible. Et on ne peut pas l'éclaircir — dès 10 % de mélange direct, la crête du motif dépasse le panneau le plus sombre (0,077) et le fond passerait devant ce qu'on pose dessus, ce que T9.8 refuse. Un presque-noir n'a pas de place pour une couleur.\n\nLE TRAIT EN A. `panel_edge_soft` est un or éteint (107, 89, 56) : mélangé à 35 % vers l'accent d'une région, il vire visiblement — vert mousse, sable chaud, gris-bleu de gel — sans jamais s'approcher de l'or VIF (184, 153, 87), qui reste réservé à « c'est à lui » (T9.7). `verify_ui` mesure cette distance pour les six régions.\n\nPourquoi le trait doux et pas le vif : le vif porte le TOUR, le doux ne porte rien. Une couleur libre est celle qu'on peut donner."
+ },
+ "surfaces": {
+  "_note": "Chaque rôle dit QUEL asset du pack, à quelle RÉDUCTION, et de quelle TEINTE.\n\n`scale` est un diviseur ENTIER, et il n'y a pas d'exception à ça : le pack est du pixel art sur grille de 64, filtré en Nearest. Diviser par 2 fait tomber quatre pixels sur un ; diviser par 1,5 en fait tomber deux et demi, et la bordure bave. C'est aussi ce qui décide la taille des coins : un bouton de 72 px de haut ne peut pas porter des coins de 64, il lui faut du 32 — donc `scale: 2`.\n\n`desaturate` transforme la source en niveaux de gris AVANT de la teinter. Sans ça on ne pourrait pas sortir des deux couleurs du pack : multiplier un bouton bleu par de l'or donne du vert sale. Passé en gris, il prend n'importe quelle teinte proprement, et les six rôles ci-dessous sortent tous de la même image.",
+  "button": {
+   "asset": "bigbluebutton_regular",
+   "pressed_asset": "bigbluebutton_pressed",
+   "scale": 2,
+   "desaturate": true,
+   "tint": "steel"
+  },
+  "panel": {
+   "asset": "regularpaper",
+   "scale": 2,
+   "desaturate": false,
+   "tint": "parchment"
+  },
+  "panel_strong": {
+   "asset": "specialpaper",
+   "scale": 2,
+   "desaturate": false,
+   "tint": "parchment"
+  },
+  "frame": {
+   "asset": "woodtable",
+   "scale": 4,
+   "desaturate": false,
+   "tint": "wood_dim"
+  },
+  "banner": {
+   "_note": "LE RUBAN DE TITRE (T11.3). Le pack le livre en 9-tranches de 448 px : un parchemin crème à extrémités roulées, la seule pièce d'interface qu'il dessine comme une ENSEIGNE et pas comme une boîte. Il porte le nom du jeu sur l'écran de titre, et nulle part ailleurs — un ruban qui reviendrait sur chaque écran cesserait d'annoncer quoi que ce soit.\n\nNI DÉSATURÉ NI RETEINTÉ, contrairement à tout le reste : sa couleur crème EST ce qu'on vient chercher. Un écran sombre a besoin d'un point chaud, et c'est celui-là.",
+   "asset": "banner",
+   "scale": 2,
+   "desaturate": false,
+   "tint": "parchment"
+  }
+ },
+ "button_tints": {
+  "_note": "SIX COULEURS À PARTIR DE DEUX IMAGES. Le pack ne livre que du bleu et du rouge — une langue « confirmer / renoncer » qui ne suffit pas à un menu de sept entrées. La source est donc passée en gris et reteintée par rôle.\n\nLe rôle porte le SENS, pas la couleur : un écran demande « default » ou « danger », jamais « bleu ». Le jour où la palette change, aucun écran ne bouge.",
+  "default": "panel_edge_soft",
+  "primary": "gold",
+  "positive": "moss",
+  "danger": "rust",
+  "arcane": "plum",
+  "muted": "stone"
+ },
+ "bars": {
+  "_note": "Les jauges du pack sont en TROIS morceaux horizontaux — deux embouts et un corps — avec le même espace de 64 px entre eux que les boutons. `BigBar_Fill` est le remplissage, teinté par ce qu'il mesure.\n\n`normalise_fill` REMONTE LE PLUS CLAIR À BLANC avant de teinter, et sans ça la jauge est invisible : le remplissage est livré en rouge sombre, luminance 0,71 au plus haut et 0,37 en moyenne. Désaturé puis multiplié par un vert de PV, il tombait sous 0,3 — du brun foncé dans une auge brun foncé. On voyait le bois, jamais la vie.",
+  "base_asset": "bigbar_base",
+  "fill_asset": "bigbar_fill",
+  "scale": 2,
+  "normalise_fill": true
+ },
+ "widgets": {
+  "_note": "LES TROIS WIDGETS QUE TINY SWORDS NE DESSINE PAS, pris chez Kenney (CC0). Une barre de défilement grise de Godot au milieu d'une interface en bois se voit plus qu'un léger écart de style entre deux packs — et sur un élément que le premier n'a jamais dessiné, il n'y a rien à trahir.\n\nIls sont TEINTÉS comme le reste : la palette décide, pas le fichier.",
+  "scrollbar": {
+   "asset": "scrollbar",
+   "scale": 1,
+   "tint": "panel_edge_soft"
+  },
+  "checkbox": {
+   "empty": "checkbox_empty",
+   "checked": "checkbox_checked",
+   "scale": 1,
+   "tint": "panel_edge"
+  }
+ },
+ "glyphs": {
+  "_note": "LES ICÔNES DE COMPÉTENCES (§ 48), et le seul endroit du jeu où l'on mélange du vectoriel à du pixel art.\n\n`size` est la taille de rendu final. `alpha_threshold` est ce qui rend le mélange supportable : une silhouette vectorielle est LISSE, et posée à côté du pixel art de Tiny Swords ça se voit tout de suite. En seuillant l'alpha, le dégradé de bord disparaît et le glyphe redevient un masque franc — du pixel, comme le reste.\n\nIls sont blancs à la source et se teintent comme les boutons : la palette décide, pas le fichier.",
+  "size": 32,
+  "alpha_threshold": 0.5,
+  "tint": "ink_inverse"
+ },
+ "motion": {
+  "_note": "LE MOUVEMENT (T12.13). Une interface qui ne répond pas au doigt paraît morte, même bien dessinée : les boutons passaient de « normal » à « survol » sans CHANGER D'ASPECT, et rien n'accusait jamais réception d'un clic. Tout ce qui suit est du ressenti, donc des données (règle 1).\n\nLES DURÉES SONT COURTES EXPRÈS. Au-delà d'un dixième de seconde, une réaction de bouton cesse d'être un retour et devient une animation qu'on attend — et sur un téléphone, où l'on enchaîne les touchers, l'attente est le défaut le plus vite insupportable.\n\nL'ÉCHELLE PLUTÔT QUE LA POSITION : une position animée sur un enfant de conteneur se fait écraser à la première mise en page. `scale` est une transformation, la mise en page ne la touche pas.",
+  "screen_fade": 0.18,
+  "screen_scale": 1.015,
+  "hover_scale": 1.03,
+  "press_scale": 0.97,
+  "hover_time": 0.09,
+  "hover_glow": 1.22,
+  "press_time": 0.06
+ },
+ "backlight": {
+  "_note": "LA LUEUR DE FOND (T12.13) — et c'est un VIGNETAGE PRIS À L'ENVERS.\n\nLe réflexe était d'assombrir les bords. Mesuré : le fond de l'interface vaut 0,032 de luminance, c'est-à-dire un presque-noir — il n'y a RIEN de plus sombre à y mettre, et la première version n'a strictement rien changé à l'écran. Même famille que « une source ne se teinte que si elle est claire » (neuf variantes depuis T9.8) : on n'assombrit pas ce qui est déjà noir.\n\nOn ÉCLAIRE donc le centre, très peu, dans un ton chaud. Les panneaux cessent de flotter sur du vide : ils sont posés dans une lumière.\n\nELLE VIT DANS LE FOND, jamais au-dessus des panneaux — règle de la crête du motif de T9.8. Et en filtrage LINÉAIRE, seule exception du jeu à la règle Nearest : ce n'est pas du pixel art, c'est de la lumière, et un dégradé en Nearest fait des anneaux.",
+  "strength": 0.13,
+  "inner": 0.1,
+  "side_bias": 1.35,
+  "tint": "wood_light"
+ }
+}

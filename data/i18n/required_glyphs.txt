@@ -1,0 +1,19 @@
+# Glyphes exigés par le jeu. Une ligne = un ensemble de caractères.
+# Les lignes vides et celles qui commencent par # sont ignorées.
+# Vérification : godot --headless --path . -s tools/verify_font.gd
+
+[indispensable]
+ABCDEFGHIJKLMNOPQRSTUVWXYZ
+abcdefghijklmnopqrstuvwxyz
+0123456789
+ÀÂÄÇÉÈÊËÎÏÔÖÙÛÜŸÆŒ
+àâäçéèêëîïôöùûüÿæœ
+.,;:!?'"()[]{}/\|@#%&*+-=_<>
+# Guillemets français, points de suspension et apostrophe courbe :
+# la règle de voix du § 7.3 les met dans presque chaque carte d'événement.
+«»…’‘“”—–
+€
+
+[confort]
+# Absents, ils se remplacent par un sprite ou une autre tournure.
+†·×$

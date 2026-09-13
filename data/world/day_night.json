@@ -1,0 +1,32 @@
+{
+  "_readme": "LE CYCLE JOUR / NUIT (§ 36). Il était dans le périmètre annoncé de la Phase 5 et n'avait jamais été écrit.\n\nUNE EXPÉDITION EST UNE JOURNÉE. On part au matin, et chaque étape franchie avance l'heure. Aller plus loin, ce n'est plus seulement « depth + 1 » : c'est rentrer plus tard. Le § 29 y gagne sa formulation la plus concrète — rentrer avant la nuit, ou pas — et le § 36 son « véritable intérêt gameplay », puisque le moment n'est pas un décor mais un terme de la décision.\n\nLE CALENDRIER EST LU PAR INDICE D'ÉTAPE, et la DERNIÈRE VALEUR TIENT au-delà. Une région dont la chaîne fait six étapes finit sa journée au boss ; une chaîne de neuf passe le mini-boss dans le noir. C'est voulu : la route longue est la route gourmande, et c'est elle qui paie.\n\nLA NUIT AJOUTE UN ENNEMI — le mot du § 36 est « plus nombreux ». Un renfort se voit, se compte et se joue contre ; un bonus de statistiques caché ne se verrait qu'au moment de mourir. Le plafond de `rules.json` (max_enemies) est respecté : une carte qui en a déjà sept ne reçoit rien.\n\nLA NUIT PAIE. Sans les deux moitiés, le cycle serait soit une punition gratuite, soit un cadeau gratuit, et le § 29 tomberait dans les deux cas.",
+  "schedule": [
+    "day",
+    "day",
+    "day",
+    "dusk",
+    "dusk",
+    "night"
+  ],
+  "moments": {
+    "day": {
+      "name_key": "MOMENT_DAY",
+      "reinforcements": 0,
+      "gold_multiplier": 1.0,
+      "rarity_bonus": 0
+    },
+    "dusk": {
+      "name_key": "MOMENT_DUSK",
+      "reinforcements": 0,
+      "gold_multiplier": 1.1,
+      "rarity_bonus": 0
+    },
+    "night": {
+      "name_key": "MOMENT_NIGHT",
+      "reinforcements": 1,
+      "gold_multiplier": 1.2,
+      "rarity_bonus": 1
+    }
+  },
+  "_measure": "CE QUE LA NUIT COÛTE, MESURÉ (tools/simulate_combats.gd, 50 graines par carte, colonne PV, cartes renforcées seulement) : 83 % de PV le jour, 82 % la nuit. UN POINT. Ce n'est pas ce qu'on attendait d'un ennemi de plus, et il faut le dire plutôt que le maquiller.\n\nL'ÉCART PAR CARTE VA DE −8 À +10, dans les deux sens. `vallee_09` perd 8 points et un héros de plus ; `vallee_03` en GAGNE 10. Le mécanisme est lisible : à sept bêtes, l'IA répartit ses coups au lieu de les concentrer, et des dégâts répartis ne mettent personne à terre. « Plus d'ennemis » n'est donc pas mécaniquement « plus dur ».\n\nL'INSTRUMENT SOUS-LIT, ET C'EST STRUCTUREL. La politique du simulateur ne protège pas son Archer, n'utilise pas le terrain et ne renonce jamais : une bête de plus dans la timeline ne peut pas lui gâcher un plan, puisqu'elle n'en fait pas. Les chiffres sont un plancher, comme le dit l'outil lui-même.\n\nLA RÉCOMPENSE EST DONC RÉGLÉE SUR CE QUI EST MESURÉ, pas sur ce qu'on espérait : ×1,2 sur l'or et un cran de rareté, là où le premier jet donnait ×1,4. Payer ×1,4 un risque mesuré à un point aurait fait de la nuit un choix évident, et un choix évident n'est pas un choix (§ 55).\n\nC'EST LE CHIFFRE À REJUGER À L'ŒIL. Sept ennemis au lieu de six, ça se sent en jouant bien avant que ça se voie dans une moyenne."
+}

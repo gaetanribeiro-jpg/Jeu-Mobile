@@ -1,0 +1,9 @@
+{
+  "_readme": "Les blessures (§ 3.4), le moteur de tension du jeu. Décision verrouillée : 0 PV en combat ne tue pas, il met hors de combat et inscrit une blessure. Trois blessures tuent, définitivement. Les blessures se soignent au Monastère, une par saison ; sans monastère, elles ne se soignent pas.",
+  "lethal_at": 3,
+  "steps": {
+    "1": { "grants": { "hit_points": -1 }, "unavailable_seasons": 1 },
+    "2": { "grants": { "hit_points": -2, "movement": -1 }, "unavailable_seasons": 2 },
+    "3": { "dead": true }
+  }
+}

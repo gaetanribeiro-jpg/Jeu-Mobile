@@ -1,0 +1,116 @@
+{
+ "_note": "ACTE 4 — LES TERRES BRISÉES : LA LIGNE ARTILLÉE.\n\nL'ACTE QUI OBLIGE LE JOUEUR À BOUGER. Trente cartes sur trente-six avaient pour objectif « éliminer », et les actes 3 et 4 ne connaissaient QUE celui-là. Avec « éliminer » et une IA qui vient au contact, attendre est toujours la bonne réponse : les PM du joueur ne servent qu'à se replacer de deux cases, et tout terrain lui est gratuit. Déplacer les obstacles de son côté ne soignait que le symptôme.\n\nDEUX FAMILLES, ET CHACUNE FERME UNE PORTE. Les EMPLACEMENTS — canon, tour, atelier — ne bougent PAS et portent jusqu'à neuf cases : rester coûte sans rendre. La CAVALERIE — gobelin monté, sanglier — court à six et sept PM : avancer à découvert coûte aussi. Entre les deux, il reste le terrain, et pour la première fois du jeu il sert au JOUEUR : `blocks_sight` est déclaré depuis la Phase 1 et aucune carte ne l'employait comme COUVERTURE.\n\nAUCUN HUMAIN, AUCUNE COULEUR DÉPENSÉE. Les cinq couleurs du pack sont un budget : trois vont aux rangs des héros (Bleu, Violet, Or) et deux aux factions ennemies (Rouge des Rougefer à l'acte 3, Noir de l'Empire à l'acte 6). Une couleur ne peut pas être à la fois un rang et une faction.\n\nCES SPRITES DORMAIENT DANS `extra`, la catégorie que l'inventaire des bêtes ne comptait pas : les « vingt et un visages » ne comptaient que `enemies`. Le pack a donc de la CAVALERIE, que le carnet déclarait absente depuis le premier jour.",
+ "siege_cannon": {
+  "sprite": "siege_cannon",
+  "role": "blocker",
+  "hit_points": 116,
+  "action_points": 6,
+  "movement_points": 0,
+  "initiative": 3,
+  "strength": 1,
+  "agility": 6,
+  "intelligence": 1,
+  "defence": 4,
+  "abilities": [
+   "siege_shot"
+  ],
+  "question": "LE PREMIER ENNEMI QUI NE PEUT PAS VENIR À TOI. Zéro PM, et neuf cases de portée — trois de plus que la Boule de feu du Mage. Les vingt-huit bêtes des trois premiers actes venaient toutes au contact, donc attendre était toujours la bonne réponse et les PM du joueur ne servaient à rien. Ici, attendre coûte trente par ronde sans rien rendre : il FAUT traverser. Et comme il exige la ligne de vue, la traversée se joue de rocher en bosquet."
+ },
+ "watch_tower": {
+  "sprite": "watch_tower",
+  "role": "blocker",
+  "hit_points": 290,
+  "action_points": 6,
+  "movement_points": 0,
+  "initiative": 2,
+  "strength": 1,
+  "agility": 5,
+  "intelligence": 1,
+  "defence": 7,
+  "abilities": [
+   "tower_bolt"
+  ],
+  "question": "ELLE GRIGNOTE, LÀ OÙ LE CANON ASSOMME. Trois PA sur six : deux tirs par ronde à dix-huit, sans recharge. Sept de défense et deux cents points de vie : on ne l'efface pas en passant. Le canon punit d'être resté loin, la tour punit d'avoir été LENT — les deux moitiés de la même contrainte, et elles se lisent différemment sur le télégraphe."
+ },
+ "repair_shed": {
+  "sprite": "repair_shed",
+  "role": "support",
+  "hit_points": 174,
+  "action_points": 8,
+  "movement_points": 0,
+  "initiative": 4,
+  "strength": 1,
+  "agility": 2,
+  "intelligence": 7,
+  "defence": 5,
+  "abilities": [
+   "field_suture"
+  ],
+  "question": "IL RÉPARE CE QUE TU BOMBARDES. Vingt-huit bêtes en trois actes et pas une ne récupérait un point de vie : entamer était toujours un acquis. L'atelier le reprend, et sur des emplacements à deux cents points de vie que l'on met déjà trois rondes à abattre. La réponse n'est pas de frapper plus fort, c'est de le tuer LUI d'abord — donc d'aller au fond de la ligne au lieu de mordre le premier canon venu."
+ },
+ "boar_lancer": {
+  "sprite": "pig_rider",
+  "role": "melee",
+  "hit_points": 167,
+  "action_points": 6,
+  "movement_points": 7,
+  "initiative": 7,
+  "strength": 7,
+  "agility": 5,
+  "intelligence": 1,
+  "defence": 4,
+  "abilities": [
+   "boar_charge"
+  ],
+  "question": "SEPT PM, LA MONTURE LA PLUS RAPIDE DU JEU, et c'est de la CAVALERIE — que le pack était censé ne pas dessiner. Il traverse la moitié du plateau dans la ronde même où l'équipe quitte sa couverture pour aller chercher les canons. C'est le prix de l'avance : le serpent des dunes rendait la ligne arrière indéfendable par la distance, celui-ci rend la TRAVERSÉE indéfendable par la formation."
+ },
+ "war_pig": {
+  "sprite": "war_pig",
+  "role": "melee",
+  "hit_points": 109,
+  "action_points": 6,
+  "movement_points": 6,
+  "initiative": 6,
+  "strength": 5,
+  "agility": 4,
+  "intelligence": 1,
+  "defence": 3,
+  "abilities": [
+   "tusk_gore"
+  ],
+  "question": "IL NE POSE PAS DE QUESTION NEUVE, ET C'EST SON RÔLE. Rapide, fragile, nombreux : il occupe les PA de l'équipe pendant que le canon travaille. Un acte a besoin d'une bête qu'on tue sans réfléchir, sinon chaque activation devient un problème et le combat n'a plus de rythme."
+ },
+ "great_bombard": {
+  "sprite": "siege_cannon",
+  "role": "blocker",
+  "hit_points": 348,
+  "action_points": 8,
+  "movement_points": 0,
+  "initiative": 2,
+  "strength": 1,
+  "agility": 7,
+  "intelligence": 1,
+  "defence": 6,
+  "abilities": [
+   "bombard_shell"
+  ],
+  "question": "LE MINI-BOSS, ET IL PUNIT LA RÉPONSE À L'ACTE. On traverse à couvert, donc on se serre derrière les mêmes rochers — son obus éclate en croix à dix cases. Les deux réponses se contredisent enfin : rester groupé pour rester à l'abri, ou s'étaler pour éviter l'éclatement et sortir de la couverture."
+ },
+ "the_boar_chief": {
+  "sprite": "pig_rider",
+  "role": "brute",
+  "hit_points": 406,
+  "action_points": 10,
+  "movement_points": 6,
+  "initiative": 9,
+  "strength": 9,
+  "agility": 6,
+  "intelligence": 1,
+  "defence": 6,
+  "abilities": [
+   "chief_lance",
+   "boar_charge"
+  ],
+  "question": "LE BOSS, ET IL CHOISIT ENTRE COURIR ET FRAPPER FORT. Sa lance exige de n'avoir pas bougé ; un ennemi annonce APRÈS s'être déplacé, donc trente-quatre en ligne de deux ne s'annoncent que depuis un chef arrêté. Sur une monture à six PM, ça devient une décision à chaque activation — et la réponse du joueur est de le forcer à courir, c'est-à-dire de ne jamais rester à sa portée."
+ }
+}

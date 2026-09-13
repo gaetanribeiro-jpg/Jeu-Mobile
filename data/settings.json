@@ -1,0 +1,13 @@
+{
+  "_readme": "Les réglages du joueur : ce qu'il choisit une fois et qui doit lui survivre.\n\nCE FICHIER NE CONTIENT QUE LES DÉFAUTS. Les valeurs choisies vivent dans `user://settings.json`, à part de la sauvegarde de partie — sinon commencer une nouvelle partie remettrait le volume à zéro, et personne ne comprendrait pourquoi.\n\nLES VOLUMES SONT LINÉAIRES (0 à 1), pas en décibels. Un curseur linéaire est ce que le joueur comprend ; la conversion en décibels se fait au moment d'écrire dans le bus, et elle est le travail du moteur audio, pas du joueur.",
+  "audio": {
+    "_note": "Trois bus : le maître commande les deux autres. Les défauts ne sont pas à 1 — un jeu qui démarre à plein volume est un jeu qu'on coupe avant de l'avoir entendu.",
+    "master_volume": 0.8,
+    "music_volume": 0.6,
+    "sfx_volume": 0.8
+  },
+  "display": {
+    "_note": "`shake` est le tremblement d'écran des coups. Certains joueurs ne le supportent pas, et le § 48 veut une interface lisible avant d'être spectaculaire.",
+    "screen_shake": true
+  }
+}

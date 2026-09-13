@@ -1,0 +1,1120 @@
+{
+ "_readme": "Les compétences, héros et ennemis (vision § 21). Format data-driven du § 47 : une compétence est entièrement décrite ici, aucun .gd ne connaît son nom.\n\nCHAMPS :\n- action_points : coût en PA (§ 13 : légère 2, base 3, moyenne 4, puissante 5-7)\n- movement_points : coût en PM, quand la compétence en consomme aussi\n- range_min / range_max : portée en distance de Manhattan. 0 = sur soi.\n- needs_line_of_sight : la forêt et les rochers bloquent-ils le tir ?\n- area : forme de la zone touchée. single = la case visée. cross = la case et ses voisines dans un rayon de Manhattan. line et cone viendront avec les classes suivantes.\n- damage : dégâts de base, avant statistique et défense\n- scaling : la statistique du lanceur qui s'ajoute aux dégâts\n- cooldown : nombre d'activations avant de pouvoir la relancer. 0 = pas de recharge.\n- requires_not_moved : ne part que si le lanceur n'a pas dépensé de PM ce tour\n\nAUCUNE de ces valeurs n'est équilibrée. T1.11.",
+ "strike": {
+  "class": "warrior",
+  "kind": "attack",
+  "action_points": 3,
+  "range_min": 1,
+  "range_max": 1,
+  "needs_line_of_sight": true,
+  "area": {
+   "shape": "single"
+  },
+  "damage": 20,
+  "scaling": "strength",
+  "cooldown": 0,
+  "animation": "attack1",
+  "note": "L'attaque de base. Deux fois par tour avec 6 PA, il reste 2 PM pour se replacer."
+ },
+ "heavy_strike": {
+  "class": "warrior",
+  "kind": "attack",
+  "action_points": 5,
+  "range_min": 1,
+  "range_max": 1,
+  "needs_line_of_sight": true,
+  "area": {
+   "shape": "single"
+  },
+  "damage": 40,
+  "scaling": "strength",
+  "cooldown": 2,
+  "animation": "attack2",
+  "note": "La recharge est ce qui empêche « je fais toujours l'attaque la plus forte » (§ 50). Le tour où elle est prête, elle laisse 3 PA : une Frappe de plus, ou rien."
+ },
+ "taunt": {
+  "class": "warrior",
+  "kind": "taunt",
+  "action_points": 2,
+  "range_min": 0,
+  "range_max": 0,
+  "needs_line_of_sight": false,
+  "area": {
+   "shape": "single"
+  },
+  "duration": 1,
+  "cooldown": 3,
+  "animation": "guard",
+  "note": "Les ennemis adjacents doivent le cibler. Portée 0 : c'est l'adjacence à sa propre case qui compte. C'est le verbe « attirer » du Guerrier, et l'ouverture de tous les combos (§ 22)."
+ },
+ "shot": {
+  "class": "archer",
+  "kind": "attack",
+  "action_points": 3,
+  "range_min": 2,
+  "range_max": 5,
+  "needs_line_of_sight": true,
+  "area": {
+   "shape": "single"
+  },
+  "damage": 15,
+  "scaling": "agility",
+  "cooldown": 0,
+  "animation": "shoot",
+  "note": "Portée minimale 2 : l'Archer ne tire pas sur son voisin. C'est ce qui rend l'approche dangereuse pour lui.\n\nDÉGÂTS DESCENDUS DE 18 À 15 EN T1.14, et c'est la correction de fond. L'Archer faisait 18+7=25 par tir à cinq cases quand le Guerrier faisait 20+6=26 au contact, avec un PM de plus et un repli gratuit : il avait la puissance ET la portée, donc aucune contrepartie. Ajouter des tireurs au bestiaire ne réglait que la moitié du problème — une équipe entièrement à distance repassait à 97 % de PV dès qu'on adoucissait le chaman. LA PORTÉE EST UN AVANTAGE, ELLE DOIT SE PAYER EN DÉGÂTS (§ 17, § 20)."
+ },
+ "power_shot": {
+  "class": "archer",
+  "kind": "attack",
+  "action_points": 5,
+  "range_min": 2,
+  "range_max": 6,
+  "needs_line_of_sight": true,
+  "area": {
+   "shape": "single"
+  },
+  "damage": 30,
+  "scaling": "agility",
+  "cooldown": 2,
+  "requires_not_moved": true,
+  "animation": "shoot",
+  "note": "Ne part que s'il n'a pas dépensé un seul PM. Rester immobile devient tentant, et donc le Voleur devient dangereux : c'est la tension centrale de la classe."
+ },
+ "hop_back": {
+  "class": "archer",
+  "kind": "reposition",
+  "action_points": 2,
+  "range_min": 2,
+  "range_max": 2,
+  "needs_line_of_sight": true,
+  "area": {
+   "shape": "single"
+  },
+  "cooldown": 2,
+  "animation": "run",
+  "counts_as_movement": true,
+  "note": "Se replace de deux cases sans dépenser un seul PM. Cela reste un déplacement — le Tir puissant ne part plus après un bond — mais c'est la seule façon de décrocher d'un corps-à-corps quand les PM sont épuisés."
+ },
+ "bolt": {
+  "class": "mage",
+  "kind": "attack",
+  "action_points": 3,
+  "range_min": 1,
+  "range_max": 5,
+  "needs_line_of_sight": true,
+  "area": {
+   "shape": "single"
+  },
+  "damage": 12,
+  "scaling": "intelligence",
+  "cooldown": 0,
+  "animation": "heal",
+  "note": "Pas de portée minimale : le Mage peut se défendre au contact, mal. Trois fois par tour avec 9 PA — et trois Traits font toujours moins qu'une activation de Guerrier : l'AoE est sa raison d'être, pas la cible unique."
+ },
+ "fireball": {
+  "class": "mage",
+  "kind": "attack",
+  "action_points": 5,
+  "range_min": 2,
+  "range_max": 5,
+  "needs_line_of_sight": true,
+  "area": {
+   "shape": "cross",
+   "radius": 1
+  },
+  "damage": 24,
+  "scaling": "intelligence",
+  "friendly_fire": true,
+  "cooldown": 2,
+  "animation": "heal",
+  "effect": "explosion_01",
+  "note": "La case visée et ses quatre voisines : jusqu'à cinq cibles. friendly_fire à vrai — le Mage touche aussi les alliés, sinon le positionnement ne coûte rien (§ 20). C'est l'identité de la classe."
+ },
+ "frost": {
+  "class": "mage",
+  "kind": "attack",
+  "action_points": 3,
+  "range_min": 1,
+  "range_max": 4,
+  "needs_line_of_sight": true,
+  "area": {
+   "shape": "single"
+  },
+  "damage": 8,
+  "scaling": "intelligence",
+  "cooldown": 1,
+  "status": {
+   "id": "chilled",
+   "duration": 1
+  },
+  "animation": "heal",
+  "note": "Peu de dégâts, mais retire des PM à la cible au prochain tour. Le verbe « ralentir » : c'est ce qui met en place la Charge et la Provocation (§ 22)."
+ },
+ "goblin_spear": {
+  "class": "spear_goblin",
+  "kind": "attack",
+  "action_points": 3,
+  "range_min": 1,
+  "range_max": 2,
+  "needs_line_of_sight": true,
+  "area": {
+   "shape": "single"
+  },
+  "damage": 18,
+  "scaling": "strength",
+  "cooldown": 0,
+  "note": "C'est une lance : elle porte à deux cases. Le gobelin frappe donc sans être adjacent, et un mur de boucliers ne suffit pas."
+ },
+ "gnome_claw": {
+  "class": "gnome",
+  "kind": "attack",
+  "action_points": 3,
+  "range_min": 1,
+  "range_max": 1,
+  "needs_line_of_sight": true,
+  "area": {
+   "shape": "single"
+  },
+  "damage": 12,
+  "scaling": "strength",
+  "cooldown": 0
+ },
+ "sling_stone": {
+  "class": "slingshot_gnome",
+  "kind": "attack",
+  "action_points": 3,
+  "range_min": 2,
+  "range_max": 5,
+  "needs_line_of_sight": true,
+  "area": {
+   "shape": "single"
+  },
+  "damage": 14,
+  "scaling": "agility",
+  "cooldown": 0,
+  "note": "Porte aussi loin que l'Archer, et c'est délibéré : sans un ennemi capable de rendre le tir, une équipe entièrement à distance ne se fait jamais toucher — elle finissait ses combats à 98 % de PV. Le gnome à fronde est la réponse du bestiaire au jeu de portée."
+ },
+ "goblin_torch": {
+  "class": "torch_goblin",
+  "kind": "attack",
+  "action_points": 3,
+  "range_min": 1,
+  "range_max": 1,
+  "needs_line_of_sight": true,
+  "area": {
+   "shape": "single"
+  },
+  "damage": 18,
+  "scaling": "strength",
+  "cooldown": 0,
+  "leaves_terrain": "fire",
+  "note": "Laisse du feu sur la case touchée. Le terrain gagné devient coûteux à tenir. Le feu persistant est une tâche à part."
+ },
+ "thief_stab": {
+  "class": "thief",
+  "kind": "attack",
+  "action_points": 3,
+  "range_min": 1,
+  "range_max": 1,
+  "needs_line_of_sight": true,
+  "area": {
+   "shape": "single"
+  },
+  "damage": 20,
+  "scaling": "agility",
+  "cooldown": 0,
+  "note": "8 PA et 4 PM : le Voleur frappe et lui reste de quoi repartir. C'est ce qui rend l'Archer immobile vulnérable."
+ },
+ "troll_smash": {
+  "class": "troll",
+  "kind": "attack",
+  "action_points": 5,
+  "range_min": 1,
+  "range_max": 1,
+  "needs_line_of_sight": true,
+  "area": {
+   "shape": "line",
+   "length": 2
+  },
+  "damage": 40,
+  "scaling": "strength",
+  "cooldown": 1,
+  "note": "Frappe deux cases en ligne. Windup, Attack, Recovery : trois animations distinctes, donc un boss sur trois temps entièrement dessiné. Le cycle à trois temps reste à implémenter."
+ },
+ "bone_throw": {
+  "class": "gnoll",
+  "kind": "attack",
+  "action_points": 3,
+  "range_min": 2,
+  "range_max": 5,
+  "needs_line_of_sight": true,
+  "area": {
+   "shape": "single"
+  },
+  "damage": 16,
+  "scaling": "agility",
+  "cooldown": 0,
+  "animation": "throw",
+  "note": "Le second tireur du bestiaire. Le gnome à fronde était seul de son espèce et mourait le premier ; une équipe entièrement à distance finissait donc ses combats à 97 % de PV, sans jamais avoir été touchée. Deux tireurs ne se tuent pas d'un tir."
+ },
+ "hex_bolt": {
+  "class": "hex_shaman",
+  "kind": "attack",
+  "action_points": 5,
+  "range_min": 3,
+  "range_max": 6,
+  "needs_line_of_sight": true,
+  "area": {
+   "shape": "cross",
+   "radius": 1
+  },
+  "damage": 13,
+  "scaling": "intelligence",
+  "friendly_fire": false,
+  "cooldown": 2,
+  "animation": "attack",
+  "effect": "explosion_02",
+  "note": "LA RÉPONSE AU JEU DE PORTÉE, et elle est de forme plutôt que de chiffre. Une équipe à distance se masse hors de portée de la mêlée et tire ; le chaman punit exactement ça, parce qu'une zone touche un groupe et qu'un groupe immobile est un groupe rangé. Sa portée de 6 dépasse celle de l'Archer : il ouvre le feu avant qu'on puisse lui répondre, et il faut donc AVANCER pour le faire taire.\n\nfriendly_fire à FAUX, contrairement à la Boule de feu du Mage, et c'est une asymétrie assumée : l'IA ne choisit pas son point d'impact pour épargner les siens. Avec le feu ami, le chaman se saborderait sur sa propre mêlée et deviendrait un cadeau plutôt qu'une menace. À rouvrir le jour où l'IA saura placer une zone.\n\nDégâts descendus de 15 à 12 et recharge portée à 2 après mesure : à 15, une zone de cinq cases retirait jusqu'à 110 PV en une activation, et le coût moyen d'une rencontre passait de 13 % à 21 %. Une réponse au jeu de portée ne doit pas devenir la nouvelle réponse à tout."
+ },
+ "cleave": {
+  "class": "warrior",
+  "kind": "attack",
+  "action_points": 5,
+  "range_min": 1,
+  "range_max": 1,
+  "needs_line_of_sight": true,
+  "area": {
+   "shape": "line",
+   "length": 2
+  },
+  "damage": 24,
+  "scaling": "strength",
+  "friendly_fire": true,
+  "cooldown": 1,
+  "animation": "attack2",
+  "note": "Le « Tourbillon » du § 34, dans le vocabulaire que le moteur sait déjà dire : une ligne de deux cases à partir du Guerrier. Deux ennemis alignés tombent ensemble, et c'est ce qui récompense d'avoir attiré la mêlée avec la Provocation. friendly_fire à vrai : la ligne ne trie pas, donc où l'on se place compte (§ 20)."
+ },
+ "hamstring": {
+  "class": "warrior",
+  "kind": "attack",
+  "action_points": 3,
+  "range_min": 1,
+  "range_max": 1,
+  "needs_line_of_sight": true,
+  "area": {
+   "shape": "single"
+  },
+  "damage": 14,
+  "scaling": "strength",
+  "cooldown": 1,
+  "status": {
+   "id": "chilled",
+   "duration": 1
+  },
+  "animation": "attack1",
+  "note": "Peu de dégâts, mais la cible perd deux PM à sa prochaine activation. C'est le verbe « fixer » : un ennemi ralenti ne décroche plus du Guerrier, et le § 22 fait de l'enchaînement le cœur du plaisir."
+ },
+ "volley": {
+  "class": "archer",
+  "kind": "attack",
+  "action_points": 5,
+  "range_min": 3,
+  "range_max": 6,
+  "needs_line_of_sight": true,
+  "area": {
+   "shape": "cross",
+   "radius": 1
+  },
+  "damage": 15,
+  "scaling": "agility",
+  "friendly_fire": true,
+  "cooldown": 2,
+  "animation": "shoot",
+  "effect": "dust_01",
+  "note": "La réponse de l'Archer au groupe, et sa seule portée de 6. friendly_fire à vrai comme la Boule de feu : une zone qui trie ses cibles ne demande pas de viser."
+ },
+ "pinning_shot": {
+  "class": "archer",
+  "kind": "attack",
+  "action_points": 4,
+  "range_min": 2,
+  "range_max": 5,
+  "needs_line_of_sight": true,
+  "area": {
+   "shape": "single"
+  },
+  "damage": 12,
+  "scaling": "agility",
+  "cooldown": 1,
+  "status": {
+   "id": "chilled",
+   "duration": 1
+  },
+  "animation": "shoot",
+  "note": "Moins de dégâts qu'un tir simple, mais la cible avance moins au tour suivant. C'est ce qui permet à l'Archer de tenir sa distance sans le Guerrier — et donc de payer sa fragilité par de la préparation plutôt que par de la fuite."
+ },
+ "arcane_lance": {
+  "class": "mage",
+  "kind": "attack",
+  "action_points": 5,
+  "range_min": 2,
+  "range_max": 6,
+  "needs_line_of_sight": true,
+  "area": {
+   "shape": "line",
+   "length": 3
+  },
+  "damage": 18,
+  "scaling": "intelligence",
+  "friendly_fire": true,
+  "cooldown": 2,
+  "animation": "heal",
+  "effect": "explosion_01",
+  "note": "Trois cases en ligne à partir de la cible. La Boule de feu punit un amas, le Trait punit une colonne : deux formes de zone pour deux façons d'être mal placé."
+ },
+ "hoarfrost": {
+  "class": "mage",
+  "kind": "attack",
+  "action_points": 4,
+  "range_min": 2,
+  "range_max": 5,
+  "needs_line_of_sight": true,
+  "area": {
+   "shape": "cross",
+   "radius": 1
+  },
+  "damage": 8,
+  "scaling": "intelligence",
+  "friendly_fire": true,
+  "cooldown": 2,
+  "status": {
+   "id": "chilled",
+   "duration": 2
+  },
+  "animation": "heal",
+  "note": "Le Gel, mais sur cinq cases et pour deux activations. Presque aucun dégât : c'est du CONTRÔLE, et le § 15 le veut lisible — une vague qui gèle un groupe se comprend sans explication."
+ },
+ "gore": {
+  "class": "minotaur",
+  "kind": "attack",
+  "action_points": 5,
+  "range_min": 1,
+  "range_max": 1,
+  "needs_line_of_sight": true,
+  "area": {
+   "shape": "line",
+   "length": 2
+  },
+  "damage": 30,
+  "scaling": "strength",
+  "cooldown": 1,
+  "animation": "attack",
+  "effect": "dust_02",
+  "note": "L'Encornade traverse DEUX cases en ligne. C'est la seule attaque ennemie qui punit un alignement, et c'est tout le sujet du mini-boss : sur une carte à goulot, se ranger derrière son Guerrier cesse d'être la bonne réponse. Le télégraphe l'annonce comme les autres, donc la leçon se prend une fois et se retient."
+ },
+ "draught_of_mending": {
+  "class": "consumable",
+  "kind": "heal",
+  "action_points": 2,
+  "range_min": 0,
+  "range_max": 1,
+  "needs_line_of_sight": false,
+  "area": {
+   "shape": "single"
+  },
+  "damage": 45,
+  "cooldown": 0,
+  "animation": "attack",
+  "effect": "dust_01"
+ },
+ "firebomb": {
+  "class": "consumable",
+  "kind": "attack",
+  "action_points": 3,
+  "range_min": 2,
+  "range_max": 4,
+  "needs_line_of_sight": true,
+  "area": {
+   "shape": "cross",
+   "radius": 1
+  },
+  "damage": 28,
+  "cooldown": 0,
+  "animation": "attack",
+  "effect": "explosion_01"
+ },
+ "philtre_of_haste": {
+  "class": "consumable",
+  "kind": "heal",
+  "action_points": 2,
+  "range_min": 0,
+  "range_max": 0,
+  "needs_line_of_sight": false,
+  "area": {
+   "shape": "single"
+  },
+  "damage": 0,
+  "restores_movement_points": 3,
+  "cooldown": 0,
+  "animation": "attack",
+  "effect": "dust_01"
+ },
+ "_consumables_note": "LES TROIS DERNIÈRES SONT DES POTIONS (§ 44, § 48), et elles sont ici parce qu'une potion EST une compétence : un coût en PA, une portée, une zone, un effet. Leur donner un second système aurait doublé la surface du moteur pour rien — le § 46 demande l'inverse.\n\nCe qui les distingue d'une compétence vit ailleurs : elles se consomment. Le stock est dans `data/items/consumables.json` et dans la besace ; le moteur ne connaît qu'un compteur.\n\nTROIS VERBES DIFFÉRENTS, pas trois puissances : soigner, se dégager, frapper en zone. Trois potions qui soignent plus ou moins fort ne seraient qu'un seul choix, déguisé en trois.",
+ "lizard_bite": {
+  "class": "lizard",
+  "kind": "attack",
+  "action_points": 3,
+  "range_min": 1,
+  "range_max": 1,
+  "needs_line_of_sight": true,
+  "area": {
+   "shape": "single"
+  },
+  "damage": 36,
+  "scaling": "strength",
+  "cooldown": 0,
+  "note": "Plus fort que la lance du gobelin, mais SANS allonge : c'est l'échange qui définit la bête ordinaire des dunes."
+ },
+ "serpent_strike": {
+  "class": "sand_serpent",
+  "kind": "attack",
+  "action_points": 3,
+  "range_min": 1,
+  "range_max": 1,
+  "needs_line_of_sight": true,
+  "area": {
+   "shape": "single"
+  },
+  "damage": 38,
+  "scaling": "agility",
+  "cooldown": 0,
+  "note": "Frappe à l'AGILITÉ et pas à la force : le serpent est rapide, pas puissant, et sa statistique le dit. Combinée à sept PM, elle atteint la ligne arrière avant qu'elle ait joué."
+ },
+ "web_spit": {
+  "class": "dune_spider",
+  "kind": "attack",
+  "action_points": 3,
+  "range_min": 2,
+  "range_max": 4,
+  "needs_line_of_sight": true,
+  "area": {
+   "shape": "single"
+  },
+  "damage": 14,
+  "scaling": "agility",
+  "cooldown": 1,
+  "status": {
+   "id": "chilled",
+   "duration": 1
+  },
+  "note": "HUIT DE DÉGÂTS, ET C'EST VOULU : elle n'est pas là pour blesser. Le gel existe depuis la Phase 1 et n'était infligé que par les héros ; c'est la première fois que le joueur le SUBIT, et une ronde de retard vaut plus que huit points de vie."
+ },
+ "bat_swoop": {
+  "class": "carrion_bat",
+  "kind": "attack",
+  "action_points": 3,
+  "range_min": 1,
+  "range_max": 2,
+  "needs_line_of_sight": true,
+  "area": {
+   "shape": "single"
+  },
+  "damage": 25,
+  "scaling": "agility",
+  "cooldown": 0,
+  "note": "Une allonge de deux : elle mord depuis une case où le Guerrier ne la rejoint pas d'un pas. Le décrochage vient de ses six PM, pas de la compétence."
+ },
+ "shell_slam": {
+  "class": "bone_turtle",
+  "kind": "attack",
+  "action_points": 4,
+  "range_min": 1,
+  "range_max": 1,
+  "needs_line_of_sight": true,
+  "area": {
+   "shape": "single"
+  },
+  "damage": 29,
+  "scaling": "strength",
+  "cooldown": 0,
+  "note": "Peu de dégâts pour beaucoup de points de vie : la tortue est un OBSTACLE, et un obstacle qui frapperait fort serait une brute. Le laisser inoffensif est ce qui rend « la contourner » jouable."
+ },
+ "cinder_bolt": {
+  "class": "skull_wisp",
+  "kind": "attack",
+  "action_points": 5,
+  "range_min": 3,
+  "range_max": 6,
+  "needs_line_of_sight": true,
+  "area": {
+   "shape": "cross",
+   "radius": 1
+  },
+  "damage": 22,
+  "scaling": "intelligence",
+  "cooldown": 1,
+  "leaves_terrain": "fire",
+  "note": "LA ZONE DU CHAMAN, PLUS LE FEU DU GOBELIN À TORCHE. Les deux existaient séparément depuis l'acte 1 ; ensemble, ils se contredisent — se serrer pour encaisser la croix, c'est se serrer sur un terrain qui brûle."
+ },
+ "heavy_paw": {
+  "class": "dune_panda",
+  "kind": "attack",
+  "action_points": 5,
+  "range_min": 1,
+  "range_max": 1,
+  "needs_line_of_sight": true,
+  "area": {
+   "shape": "line",
+   "length": 2
+  },
+  "damage": 58,
+  "scaling": "strength",
+  "cooldown": 0,
+  "note": "La charge du minotaure, en plus dur. Partagée avec l'ours : c'est la MÊME menace, et la reconnaître d'un boss à l'autre est ce qui fait qu'on apprend un bestiaire au lieu de le subir."
+ },
+ "rending_swipe": {
+  "class": "dune_bear",
+  "kind": "attack",
+  "action_points": 5,
+  "range_min": 1,
+  "range_max": 1,
+  "needs_line_of_sight": true,
+  "area": {
+   "shape": "cross",
+   "radius": 1
+  },
+  "damage": 47,
+  "scaling": "strength",
+  "cooldown": 1,
+  "note": "LA SECONDE COMPÉTENCE D'UN ENNEMI, une première dans le jeu. Avec `heavy_paw`, l'ours punit la file ET le groupe : il n'y a plus de formation sûre, seulement une formation qui perd moins."
+ },
+ "frost_bite": {
+  "scaling": "strength",
+  "_note": "La morsure du requin des glaces. Il sort du lac, mord, et y retourne : la portée de UN dit qu'il faut être au bord pour le prendre.",
+  "kind": "attack",
+  "action_points": 3,
+  "range_min": 1,
+  "range_max": 1,
+  "damage": 53,
+  "area": {
+   "shape": "single"
+  },
+  "cooldown": 0,
+  "animation": "attack"
+ },
+ "harpoon_cast": {
+  "scaling": "agility",
+  "_note": "Le harpon, lancé depuis l'eau. Le pack dessine l'animation ET le projectile — c'est le seul ennemi aquatique qui tire.",
+  "kind": "attack",
+  "action_points": 3,
+  "range_min": 2,
+  "range_max": 5,
+  "damage": 34,
+  "area": {
+   "shape": "single"
+  },
+  "cooldown": 0,
+  "animation": "throw"
+ },
+ "cold_charge": {
+  "scaling": "intelligence",
+  "_note": "La charge du poisson-bombe, en croix. Même forme que la gerbe du chaman, depuis une eau où l'on ne peut pas aller la faire taire.\n\nSIX CASES, ET C'EST LA SEULE PORTÉE DE L'ACTE QUI DÉPASSE CELLE DU JOUEUR. Un tireur à la portée de l'Archer est un échange équitable, et un échange équitable se gagne à quatre contre un : l'équipe n'a qu'à rester en place. Un tireur qui la SURPASSE l'oblige à avancer, ce qui est exactement ce que le terrain de l'acte 3 rend cher. Les actes 1 et 2 avaient chacun le leur — le chaman et le feu follet — et l'acte 3 n'en avait aucun.",
+  "kind": "attack",
+  "action_points": 5,
+  "range_min": 2,
+  "range_max": 6,
+  "damage": 28,
+  "area": {
+   "shape": "cross",
+   "radius": 1
+  },
+  "cooldown": 1,
+  "animation": "shoot"
+ },
+ "chill_sting": {
+  "scaling": "agility",
+  "_note": "Le dard de la guêpe des cimes. Peu de dégâts, mais le Gel : elle vole, donc elle atteint la ligne arrière, et elle en repart avant qu'on la rattrape.",
+  "kind": "attack",
+  "action_points": 3,
+  "range_min": 1,
+  "range_max": 1,
+  "damage": 22,
+  "status": {
+   "id": "chilled",
+   "duration": 1
+  },
+  "area": {
+   "shape": "single"
+  },
+  "cooldown": 0,
+  "animation": "attack"
+ },
+ "shield_shove": {
+  "scaling": "strength",
+  "_note": "LE COUP D'ÉPAULE, ET LA PREMIÈRE COMPÉTENCE DU JEU QUI POUSSE. `push_away_from`, la noyade et leur prévisualisation étaient écrits depuis la Phase 1 sans qu'aucune donnée les emploie.\n\nQUATORZE DÉGÂTS, ET C'EST VOULU : ce n'est pas le coup qui fait mal, c'est la case d'arrivée. Sur une carte sans eau il est faible ; au bord d'un lac gelé il tue. Le télégraphe annonce la case d'arrivée (§ 39), sinon la noyade serait un piège au lieu d'une décision.",
+  "kind": "attack",
+  "action_points": 3,
+  "range_min": 1,
+  "range_max": 1,
+  "damage": 31,
+  "push": 1,
+  "area": {
+   "shape": "single"
+  },
+  "cooldown": 1,
+  "animation": "attack1"
+ },
+ "raid_shot": {
+  "scaling": "agility",
+  "_note": "Le tir des Rougefer : la portée d'un Archer joueur, entre les mains de quelqu'un qui recule.",
+  "kind": "attack",
+  "action_points": 3,
+  "range_min": 2,
+  "range_max": 5,
+  "damage": 33,
+  "area": {
+   "shape": "single"
+  },
+  "cooldown": 0,
+  "animation": "shoot"
+ },
+ "cleaving_blow": {
+  "scaling": "strength",
+  "_note": "La fente du champion, en ligne de deux. Punit exactement la formation serrée que le coup d'épaule pousse à prendre.",
+  "kind": "attack",
+  "action_points": 5,
+  "range_min": 1,
+  "range_max": 1,
+  "damage": 56,
+  "area": {
+   "shape": "line",
+   "length": 2
+  },
+  "cooldown": 1,
+  "animation": "attack2"
+ },
+ "jarl_thrust": {
+  "scaling": "strength",
+  "_note": "La lance du Jarl : deux cases en ligne, comme la charge du troll, mais portée par le seul sprite du pack qui ait des poses de défense dans cinq directions.",
+  "kind": "attack",
+  "action_points": 5,
+  "range_min": 1,
+  "range_max": 2,
+  "damage": 74,
+  "area": {
+   "shape": "line",
+   "length": 2
+  },
+  "cooldown": 1,
+  "animation": "attack_right"
+ },
+ "field_suture": {
+  "_note": "LE SOIN ENNEMI, ET IL A SURVÉCU AU CHANGEMENT DE FACTION. Écrit pour l'aumônier de la Compagnie dorée, il est passé à l'atelier qui répare les emplacements — la mécanique ne dépendait pas de qui la portait, et c'est bien pour ça qu'elle vaut la peine.\n\n`KIND_HEAL` servait aux potions depuis T10.1 et rien du côté ennemi ne l'employait. PORTÉE QUATRE, RECHARGE DEUX : la portée oblige l'atelier à se tenir DANS la ligne, donc à portée de qui va le chercher ; la recharge borne ce qu'il défait, sinon un combat deviendrait interminable — et un combat plus LONG n'est pas un combat plus dur.",
+  "kind": "heal",
+  "scaling": "intelligence",
+  "action_points": 5,
+  "range_min": 1,
+  "range_max": 4,
+  "needs_line_of_sight": true,
+  "damage": 22,
+  "area": {
+   "shape": "single"
+  },
+  "cooldown": 2,
+  "animation": "heal",
+  "effect": "heal_effect"
+ },
+ "siege_shot": {
+  "_note": "NEUF CASES, ET LE CANON NE PEUT PAS VENIR À TOI. Trois de plus que la meilleure portée du joueur (la Boule de feu du Mage, à six). Les trois actes précédents plafonnaient à six pile : l'échange était équitable, et un échange équitable se gagne à quatre contre un SANS BOUGER. C'est ce qui rendait l'attente confortable et tout terrain gratuit pour le joueur.\n\nIL EXIGE LA LIGNE DE VUE, et c'est la moitié qui donne son sens au terrain : un rocher ou un bosquet coupe le tir. Pour la première fois du jeu, la COUVERTURE existe — `blocks_sight` était déclaré depuis la Phase 1 et aucune carte ne s'en servait pour protéger le joueur.",
+  "kind": "attack",
+  "scaling": "agility",
+  "action_points": 5,
+  "range_min": 4,
+  "range_max": 9,
+  "needs_line_of_sight": true,
+  "damage": 74,
+  "area": {
+   "shape": "single"
+  },
+  "cooldown": 1,
+  "animation": "idle"
+ },
+ "tower_bolt": {
+  "_note": "DEUX TIRS PAR RONDE, ET C'EST SA DIFFÉRENCE AVEC LE CANON. Trois PA sur six : la tour n'assomme pas, elle grignote sans arrêt pendant toute la traversée. Le canon punit d'être resté loin, la tour punit d'avoir été lent.",
+  "kind": "attack",
+  "scaling": "agility",
+  "action_points": 3,
+  "range_min": 2,
+  "range_max": 7,
+  "needs_line_of_sight": true,
+  "damage": 42,
+  "area": {
+   "shape": "single"
+  },
+  "animation": "idle"
+ },
+ "bombard_shell": {
+  "_note": "L'OBUS DU MINI-BOSS : dix cases, et il éclate en croix. Traverser à couvert demande de se serrer derrière les mêmes rochers — c'est exactement ce qu'il punit. Les deux réponses de l'acte se contredisent enfin.",
+  "kind": "attack",
+  "scaling": "agility",
+  "action_points": 6,
+  "range_min": 4,
+  "range_max": 10,
+  "needs_line_of_sight": true,
+  "damage": 78,
+  "area": {
+   "shape": "cross",
+   "radius": 1
+  },
+  "cooldown": 1,
+  "animation": "idle"
+ },
+ "boar_charge": {
+  "_note": "LA CHARGE DU SANGLIER. Vingt-six au contact, deux cases d'allonge : ordinaire. Ce qui la rend dangereuse est les SEPT PM de sa monture — elle arrive pendant que l'équipe traverse à découvert.",
+  "kind": "attack",
+  "scaling": "strength",
+  "action_points": 3,
+  "range_min": 1,
+  "range_max": 2,
+  "needs_line_of_sight": true,
+  "damage": 63,
+  "area": {
+   "shape": "single"
+  },
+  "animation": "attack"
+ },
+ "tusk_gore": {
+  "_note": "Le coup de boutoir du sanglier seul. Rien de neuf, et c'est voulu : il est là pour être NOMBREUX et rapide, pas pour poser une question de plus.",
+  "kind": "attack",
+  "scaling": "strength",
+  "action_points": 3,
+  "range_min": 1,
+  "range_max": 1,
+  "needs_line_of_sight": true,
+  "damage": 48,
+  "area": {
+   "shape": "single"
+  },
+  "animation": "idle"
+ },
+ "chief_lance": {
+  "_note": "LA LANCE DU CHEF, ET IL FAUT S'ÊTRE ARRÊTÉ POUR LA PORTER. `requires_not_moved` n'était lu que par le Tir puissant du joueur et l'IA l'ignorait purement et simplement — un ennemi se serait déplacé PUIS aurait porté un coup réservé à qui reste planté.\n\nSUR UNE MONTURE À SIX PM, ÇA DEVIENT UNE DÉCISION : le chef choisit entre charger et frapper fort, il ne peut pas les deux dans la même activation. Le joueur le lit sur le télégraphe, et sa réponse est de le forcer à courir.",
+  "kind": "attack",
+  "scaling": "strength",
+  "action_points": 6,
+  "range_min": 1,
+  "range_max": 2,
+  "needs_line_of_sight": true,
+  "damage": 81,
+  "area": {
+   "shape": "line",
+   "length": 2
+  },
+  "requires_not_moved": true,
+  "cooldown": 1,
+  "animation": "attack"
+ },
+ "_scaling_note": "L'ÉCHELLE DES ENNEMIS SUIT CELLE DU JOUEUR, SUR DEUX AXES, et il a fallu se tromper une fois pour comprendre pourquoi les deux.\n\nMESURÉ, la croissance du joueur est ASYMÉTRIQUE : ses points de vie montent de ×1,23 / ×1,54 / ×1,68 par acte, ses dégâts de ×1,10 / ×1,13 / ×1,17 seulement. C'est la règle du § 47 qui le veut — les statistiques sont des MODIFICATEURS, pas des multiplicateurs, et elles tiennent dans une fourchette de 1 à 8. Un héros devient donc bien plus résistant qu'il ne devient meurtrier.\n\nPREMIER ESSAI : monter les dégâts ennemis de ×1,20 / ×1,40 / ×1,25. Résultat mesuré : 87 % → 85 % de PV, courbe toujours PLATE. Parce que ces multiplicateurs suivaient à peu près la croissance des PV du joueur, donc maintenaient la menace CONSTANTE — et parce qu'à 4,8 rondes de moyenne, les ennemis meurent avant d'avoir frappé : leurs dégâts ne servent que s'ils vivent assez pour les porter.\n\nDONC LES DEUX AXES. Les dégâts DÉPASSENT la croissance des PV du joueur, sinon rien ne monte ; les points de vie suivent la croissance de ses dégâts, sinon les dégâts ne sortent jamais. Monter les PV seuls resterait faux — ça allonge sans durcir, leçon de l'acte 2 — mais les monter AVEC les dégâts est ce qui préserve le taux d'échange.\n\nDERNIÈRE RETOUCHE, MESURÉE : l'acte 2 ne montait qu'à 18 % quand l'acte 1 en coûte 15, et l'acte 4 (30 %) passait SOUS l'acte 3 (32 %). Un acte plus tardif ne doit jamais coûter moins — même règle que pour le butin, que `verify_world` fait déjà respecter.",
+ "blood_bite": {
+  "_note": "LA PREMIÈRE MORSURE QUI NOURRIT. Sur trente-cinq bêtes en quatre actes, aucune ne remontait jamais : entamer quelqu'un était un acquis, et le meilleur ordre de cibles était toujours « le plus dangereux d'abord ». Ici il devient « le buveur d'abord », parce que ce qu'on lui laisse, il le reprend.\n\nLA MOITIÉ DE CE QU'IL PORTE, et le gain est plafonné par ses propres PV maximum : soigner un ennemi rend le combat plus LONG, pas plus dur (T11.7). Ce qu'on veut, c'est punir le grignotage, pas allonger la barre.",
+  "kind": "attack",
+  "scaling": "strength",
+  "action_points": 3,
+  "range_min": 1,
+  "range_max": 1,
+  "damage": 58,
+  "drain": 0.5,
+  "area": {
+   "shape": "single"
+  },
+  "animation": "attack1"
+ },
+ "siphon_bolt": {
+  "_note": "LA LONGUE PORTÉE DE L'ACTE, ET ELLE BOIT. `verify_world` exige par acte quelqu'un qui porte au moins aussi loin que le joueur, sinon attendre reste gratuit et tout terrain avec.\n\nSEPT CASES COMME LA TOUR DE GUET DE L'ACTE 4, ET C'EST VOULU : la différence n'est pas la portée, c'est ce que l'attente COÛTE. La tour punissait d'avoir été lent ; celle-ci se nourrit d'avoir attendu, donc chaque ronde passée à distance la rend plus dure à abattre quand on arrive enfin dessus.",
+  "kind": "attack",
+  "scaling": "intelligence",
+  "action_points": 4,
+  "range_min": 2,
+  "range_max": 7,
+  "needs_line_of_sight": true,
+  "damage": 56,
+  "drain": 0.4,
+  "area": {
+   "shape": "single"
+  },
+  "animation": "idle"
+ },
+ "grave_smash": {
+  "_note": "LE SEUL COUP DE L'ACTE QUI NE BOIT PAS, et c'est un piège tendu au joueur. Devant quatre buveurs, la cible « sûre » est celle qui ne se recoud pas — sauf qu'elle frappe le plus fort du lot. Choisir l'ordre des cibles cesse d'avoir une bonne réponse évidente, ce qui est exactement ce qu'on demande à une décision.",
+  "kind": "attack",
+  "scaling": "strength",
+  "action_points": 4,
+  "range_min": 1,
+  "range_max": 1,
+  "damage": 80,
+  "area": {
+   "shape": "single"
+  },
+  "animation": "attack1"
+ },
+ "grave_breath": {
+  "_note": "LE SOUFFLE DE LA CAVERNE. Zéro PM, quatre cases, et une croix : ce n'est pas un tireur, c'est un passage qu'on ne franchit pas impunément. Il ne draine pas — un trou dans le sol n'a pas de barre de vie à remonter, et lui en donner une aurait fait de tout l'acte une seule idée répétée six fois.",
+  "kind": "attack",
+  "scaling": "intelligence",
+  "action_points": 5,
+  "range_min": 2,
+  "range_max": 4,
+  "needs_line_of_sight": true,
+  "damage": 62,
+  "area": {
+   "shape": "cross",
+   "radius": 1
+  },
+  "cooldown": 1,
+  "animation": "idle"
+ },
+ "grave_knit": {
+  "_note": "LA HUTTE RECOUD, comme l'atelier de l'acte 4 — et c'est le seul emprunt assumé de l'acte. Sur une carte où quatre bêtes se recousent déjà toutes seules, un soigneur de plus ne pose pas une question neuve : il rend la question de l'acte INSOUTENABLE tant qu'il est debout. C'est ce qui force l'ordre des cibles au lieu de le suggérer.\n\nPORTÉE CINQ, RECHARGE DEUX : une case de plus que l'atelier, parce que les buveurs, eux, avancent — la hutte doit pouvoir suivre sa ligne sans se mettre au contact.",
+  "kind": "heal",
+  "scaling": "intelligence",
+  "action_points": 5,
+  "range_min": 1,
+  "range_max": 5,
+  "damage": 22,
+  "area": {
+   "shape": "single"
+  },
+  "cooldown": 2,
+  "animation": "idle"
+ },
+ "countess_embrace": {
+  "_note": "TROIS QUARTS DE CE QU'ELLE PORTE. La Comtesse ne se tue pas à l'usure : quatre rondes de grignotage la laissent au plein. La seule réponse est la CONCENTRATION — tout le monde sur elle, dans la même ronde, avant qu'elle ait mordu deux fois. C'est la question de l'acte poussée à son extrême, et c'est pour ça qu'elle en est le boss.\n\nLE PLAFOND DE SES PV MAXIMUM LA BORNE, sans quoi le combat n'aurait pas de fin plutôt que d'être difficile.",
+  "kind": "attack",
+  "scaling": "strength",
+  "action_points": 5,
+  "range_min": 1,
+  "range_max": 2,
+  "damage": 78,
+  "drain": 0.6,
+  "area": {
+   "shape": "single"
+  },
+  "cooldown": 1,
+  "animation": "attack1"
+ },
+ "blood_call": {
+  "_note": "SON SECOND COUP, ET IL NE BOIT PAS. Une compétence unique avec recharge fait chômer une bête une ronde sur deux — mesuré à l'acte 4, et c'est une des trois causes qui laissaient deux mercenaires sur six sans jamais frapper. La Comtesse a donc de quoi remplir la ronde où l'Étreinte recharge, et ce coup-là est le moment où elle est vulnérable : elle ne se rend rien.\n\nMESURÉ ET RABATTU : une croix à cinquante-quatre touche jusqu'à cinq cases, et sur le trône elle effaçait l'équipe en deux rondes — zéro victoire sur trente graines. La fenêtre où la Comtesse ne boit pas doit rester une fenêtre, pas le moment où elle tue.",
+  "kind": "attack",
+  "scaling": "intelligence",
+  "action_points": 4,
+  "range_min": 1,
+  "range_max": 3,
+  "needs_line_of_sight": true,
+  "damage": 42,
+  "area": {
+   "shape": "cross",
+   "radius": 1
+  },
+  "animation": "attack1"
+ },
+ "braced_pike": {
+  "_note": "LA PIQUE CALÉE — ELLE NE FRAPPE QUE S'IL N'A PAS BOUGÉ. `requires_not_moved` était déclaré depuis la Phase 1, IGNORÉ PAR L'IA jusqu'à l'acte 4, et porté par personne. Ici c'est l'identité d'une faction : l'Empire tient une ligne, il ne charge pas.\n\nDEUX CASES ET UN COUP EN LIGNE : contourner le boucher est possible, et c'est le prix de la carte. Un mur qu'on ne peut pas contourner serait un couloir ; un mur gratuit à contourner ne serait pas un mur.",
+  "kind": "attack",
+  "scaling": "strength",
+  "action_points": 4,
+  "range_min": 1,
+  "range_max": 2,
+  "damage": 79,
+  "area": {
+   "shape": "line",
+   "length": 2
+  },
+  "requires_not_moved": true,
+  "animation": "attack1"
+ },
+ "imperial_volley": {
+  "_note": "SIX CASES — EXACTEMENT LA PORTÉE DU MAGE, ET C'EST LE PROPOS. Les cinq actes précédents ont posé des tireurs plus courts (l'échange est équitable, donc l'attente gagne) puis plus longs (l'attente coûte). Celui-ci est À ÉGALITÉ : personne ne gagne l'échange par la portée, et le vainqueur est celui qui se place mieux. C'est le seul acte où ça se joue à armes égales, et c'est ce qu'on attend d'un dernier acte.",
+  "kind": "attack",
+  "scaling": "agility",
+  "action_points": 3,
+  "range_min": 2,
+  "range_max": 6,
+  "needs_line_of_sight": true,
+  "damage": 51,
+  "area": {
+   "shape": "single"
+  },
+  "animation": "shoot"
+ },
+ "imperial_lance": {
+  "_note": "LE COUP EN LIGNE QUI PUNIT LE COUVERT. Cinq actes ont appris au joueur à se serrer derrière un rocher ; celui-ci traverse deux cases et touche celui de derrière. La bonne habitude devient une mauvaise, et c'est la seule façon honnête de rendre un acte tardif difficile sans gonfler un chiffre.",
+  "kind": "attack",
+  "scaling": "strength",
+  "action_points": 5,
+  "range_min": 1,
+  "range_max": 2,
+  "damage": 86,
+  "area": {
+   "shape": "line",
+   "length": 3
+  },
+  "cooldown": 1,
+  "animation": "attack_right"
+ },
+ "black_litany": {
+  "_note": "LE CHAPELAIN RECOUD SA LIGNE. Troisième soigneur du jeu après l'atelier de l'acte 4 et la chapelle de l'acte 5, et il est différent des deux : il MARCHE. Les deux autres étaient des emplacements qu'on allait chercher ; celui-ci recule derrière ses boucliers, donc il faut percer la ligne au lieu de la contourner.\n\nCE QUI L'A FAIT BAISSER N'ÉTAIT PAS LUI, et c'est la leçon de mesure de cette passe. `empire_04` restait bloquée à seize rondes sans victoire, l'équipe intacte à 57 % : j'ai accusé le soin DEUX FOIS — moins de puissance, puis plus de recharge — sans que le chiffre bouge d'un point. La cause était un CINQUIÈME CORPS. Un soigneur est le coupable évident d'un combat qui ne finit pas, et c'est exactement pour ça qu'il faut mesurer au lieu de deviner : retirer un archer a rendu 100 % de victoires et six rondes.\n\nIl garde donc sa recharge de deux, et son intelligence rabaissée reste — un soigneur du dernier acte n'a pas besoin d'être plus fort que celui de l'acte 4, il a besoin d'être derrière une ligne.",
+  "kind": "heal",
+  "scaling": "intelligence",
+  "action_points": 5,
+  "range_min": 1,
+  "range_max": 4,
+  "damage": 24,
+  "area": {
+   "shape": "single"
+  },
+  "cooldown": 2,
+  "animation": "idle"
+ },
+ "censer_flame": {
+  "_note": "SON ARME, ET C'EST UNE LEÇON PAYÉE. Un soigneur sans arme est un corps gratuit tant qu'il ne soigne pas : mesuré à l'acte 4, où deux mercenaires sur six ne frappaient jamais. Le chapelain a donc de quoi remplir la ronde où la litanie recharge.\n\nIL LAISSE DU FEU AU SOL, seule reprise de l'acte 2 dans tout l'acte — et elle est ici pour couper une retraite, pas pour brûler.",
+  "kind": "attack",
+  "scaling": "intelligence",
+  "action_points": 4,
+  "range_min": 2,
+  "range_max": 4,
+  "needs_line_of_sight": true,
+  "damage": 44,
+  "area": {
+   "shape": "single"
+  },
+  "leaves_terrain": "fire",
+  "cooldown": 1,
+  "animation": "attack1"
+ },
+ "sapper_charge": {
+  "_note": "LE SAPEUR EMPIRE. Le Pawn est le sprite dont la couleur ne se voit pas — 7,9 % de pixels changés contre 51 % pour un Lancier — donc il porte un OUTIL pour se distinguer, pas une teinte. Corps bon marché, six PM, un coup faible : il n'est pas là pour tuer, il est là pour ARRIVER, encaisser le tour de l'équipe et laisser la ligne avancer intacte derrière lui.",
+  "kind": "attack",
+  "scaling": "strength",
+  "action_points": 3,
+  "range_min": 1,
+  "range_max": 1,
+  "damage": 41,
+  "area": {
+   "shape": "single"
+  },
+  "animation": "attack1"
+ },
+ "marshal_sentence": {
+  "_note": "LE COUP DU MARÉCHAL : trois cases en ligne, quatre-vingt-dix-huit, et il n'a besoin de rien d'autre que d'être resté en place. C'est la pique calée poussée à son terme — le boss de l'Empire est ce que l'Empire fait, en plus grand, et non une mécanique inventée pour lui.\n\nDERNIER BOSS DU JEU : il est le seul à cumuler la ligne ET la portée, donc le seul qu'on ne puisse ni contourner ni attendre.\n\nMESURÉ ET RABATTU : trois cases de rang à quatre-vingt-dix-huit font près de trois cents dégâts par ronde sur une équipe qui en totalise sept cents — zéro victoire sur trente graines, quatre personnages à terre. Deux de rang à soixante-seize : il reste le seul qu'on ne puisse ni contourner ni attendre, sans effacer l'équipe en trois rondes.",
+  "kind": "attack",
+  "scaling": "strength",
+  "action_points": 6,
+  "range_min": 1,
+  "range_max": 3,
+  "damage": 76,
+  "area": {
+   "shape": "line",
+   "length": 2
+  },
+  "cooldown": 1,
+  "requires_not_moved": true,
+  "animation": "attack_right"
+ },
+ "marshal_command": {
+  "_note": "SON SECOND COUP, POUR NE PAS CHÔMER. Une bête à compétence unique et à recharge chôme une ronde sur deux — mesuré à l'acte 4. La Sentence exige en plus de n'avoir pas bougé : sans ce second coup, le Maréchal qui se déplace une fois ne ferait plus RIEN de la ronde, et le joueur n'aurait qu'à le tirer hors de sa place.",
+  "kind": "attack",
+  "scaling": "strength",
+  "action_points": 4,
+  "range_min": 1,
+  "range_max": 2,
+  "damage": 62,
+  "area": {
+   "shape": "single"
+  },
+  "animation": "attack1"
+ },
+ "lance_thrust": {
+  "_note": "LE COUP DE BASE DU LANCIER, ET IL PORTE À DEUX. C'est toute son identité face au Guerrier : il frappe depuis une case où l'on ne le rejoint pas d'un pas, et il ne paie pas cette allonge en dégâts — il la paie en DÉFENSE et en points de vie. La portée se paie (T1.14), mais elle ne se paie pas forcément sur le même axe : l'Archer l'a payée en dégâts parce qu'il tire à cinq, le Lancier la paie en peau parce qu'il reste au contact.",
+  "class": "lancer",
+  "kind": "attack",
+  "action_points": 3,
+  "range_min": 1,
+  "range_max": 2,
+  "needs_line_of_sight": true,
+  "area": {
+   "shape": "single"
+  },
+  "damage": 18,
+  "scaling": "strength",
+  "cooldown": 0,
+  "animation": "attack_right"
+ },
+ "skewer": {
+  "_note": "LA BROCHE : deux cases de rang, d'un seul coup. Le pendant joueur de la lance impériale de l'acte 6 — ce que l'Empire fait, le Lancier le fait aussi, et c'est voulu : la classe arrive au moment où le jeu apprend au joueur à se méfier des files.\n\n`friendly_fire` EST VRAI, comme pour la Fendante du Guerrier : une compétence en ligne qui épargnerait les alliés serait gratuite, et le placement de sa propre équipe cesserait d'être une question.",
+  "class": "lancer",
+  "kind": "attack",
+  "action_points": 5,
+  "range_min": 1,
+  "range_max": 2,
+  "needs_line_of_sight": true,
+  "area": {
+   "shape": "line",
+   "length": 2
+  },
+  "damage": 26,
+  "scaling": "strength",
+  "friendly_fire": true,
+  "cooldown": 1,
+  "animation": "attack_right"
+ },
+ "repel": {
+  "_note": "LA REPOUSSE, RENDUE AU JEU. Le § 4.2 donne TROIS réponses à une attaque télégraphiée : sortir de la case, abattre l'ennemi, ou LE DÉPLACER. La troisième existait dans le moteur depuis la Phase 1 — `push_away_from`, la noyade, leur prévisualisation — et plus personne ne savait la déclencher depuis que le Lancier avait quitté la conception. Le coup d'épaule des Rougefer (T12.1) l'a rendue aux ENNEMIS ; celle-ci la rend au joueur.\n\n`KIND_PUSH` EST ENFIN EMPLOYÉ : c'était la dernière mécanique déclarée et jamais branchée, après `KIND_HEAL`, les 70 entrées `ui` et `requires_not_moved`. Une poussée PURE, sans dégâts : ce n'est pas un coup, c'est un déplacement qu'on impose — et au bord d'un lac gelé, c'est une exécution.\n\nDEUX PA ET UNE RECHARGE DE DEUX : assez bon marché pour être une réponse dans le tour, assez cher pour ne pas être la réponse à tout.",
+  "class": "lancer",
+  "kind": "push",
+  "action_points": 2,
+  "range_min": 1,
+  "range_max": 2,
+  "needs_line_of_sight": true,
+  "area": {
+   "shape": "single"
+  },
+  "length": 1,
+  "cooldown": 2,
+  "animation": "attack_right"
+ },
+ "phalanx": {
+  "_note": "LA PHALANGE : elle ne frappe que s'il n'a pas bougé. `requires_not_moved` n'avait jamais été donné au JOUEUR — l'acte 6 l'a donné à l'Empire, et ce nœud le lui rend. C'est le seul coup du jeu qui récompense de tenir sa position, donc le seul qui contredise « avancer est toujours juste ».",
+  "class": "lancer",
+  "kind": "attack",
+  "action_points": 4,
+  "range_min": 1,
+  "range_max": 2,
+  "needs_line_of_sight": true,
+  "area": {
+   "shape": "line",
+   "length": 3
+  },
+  "damage": 30,
+  "scaling": "strength",
+  "requires_not_moved": true,
+  "cooldown": 1,
+  "animation": "attack_right"
+ },
+ "impale": {
+  "_note": "L'EMPALEMENT : il blesse ET il repousse, comme le coup d'épaule des Rougefer. La branche opposée à la Phalange : celle-ci veut qu'on bouge, l'autre qu'on tienne.",
+  "class": "lancer",
+  "kind": "attack",
+  "action_points": 4,
+  "range_min": 1,
+  "range_max": 2,
+  "needs_line_of_sight": true,
+  "area": {
+   "shape": "single"
+  },
+  "damage": 22,
+  "scaling": "strength",
+  "push": 1,
+  "cooldown": 1,
+  "animation": "attack_right"
+ }
+}
