@@ -2313,6 +2313,7 @@ souvenir.**
 | **T12.1** | L'acte 3 — les Montagnes Gelées | la région n'avait que son nom | ✅ |
 | **T12.14** | La falaise entière | le jeu dessinait 22 px d'une paroi de 64, sans bouts ni pied | ✅ |
 | **T12.15** | Le terrain et le terrassement | 50 cartes sur 54 étaient leur propre miroir, 86 % d'herbe nue | ✅ |
+| **T12.16** | La hauteur aux tireurs | 5 bagarreurs perchés, 7 cartes molles avec leur tireur à plat | ✅ |
 | **T11.5** | Apprendre à jouer | aucun tutoriel, aucune aide, aucune première partie guidée | ⬜ |
 
 **L'ordre est celui-là et il se justifie.** Le téléphone d'abord parce que
@@ -3283,3 +3284,96 @@ montrer qu'il était choisi : un bouton éteint dit « vous ne pouvez pas »,
 et la capture montrait « Élever une butte » désactivé sur l'écran qui sert
 à élever des buttes. Il porte l'or vif maintenant, comme le héros qui joue
 au combat.
+
+### T12.16 — une hauteur est un poste de tir ✅
+
+**Reproche de Gaetan devant une capture :** « Attention au choix des
+ennemis du coup, là un squelette est en hauteur donc il peut pas attaquer.
+Parfois il faut mettre en hauteur un ennemi qui attaque à distance
+(obligeant aussi le joueur à jouer à distance) et parfois un ennemi
+n'attaquant pas à distance peut être en hauteur mais dans ce cas il faut
+des escaliers. »
+
+**Il s'était trompé de bête et il avait raison sur la règle.** Le crâne
+des Dunes est `skull_wisp`, un LANCEUR à 3–6 cases qui laisse du feu au
+sol — perché, il est à sa place. Mais son sprite est un squelette à ÉPÉE
+ET BOUCLIER, et rien à l'écran ne dit le contraire : c'est « le dessin
+n'est pas l'identité » (T11.8) vu depuis le fauteuil du joueur, et cette
+fois c'est le joueur qui s'est trompé, pas la vue.
+
+**LE VÉRIFICATEUR NE REFUSAIT QU'UNE PORTÉE DE UNE CASE, ET C'ÉTAIT TROP
+BAS.** Douze ennemis sont posés sur une hauteur ; aucun ne portait à une
+case, mais **cinq portaient à DEUX** — `carrion_bat`, `black_praetorian`
+et trois `boar_lancer`. Ce sont des bagarreurs : ils redescendent au
+premier tour, la colline ne leur a rien donné, et à l'écran ils se lisent
+exactement comme ce que Gaetan a décrit.
+
+**TROIS, PARCE QUE LE LANCIER FRAPPE À DEUX.** La décision verrouillée de
+T12.7 le dit en toutes lettres : « seule classe de mêlée à frapper à deux
+cases ». Dans ce jeu, porter à deux EST du contact, donc une hauteur
+commence à trois. **Le seuil vit sur le TERRAIN** (`perch_min_range` sur
+`hill`), pas dans l'outil : un relief neuf qui surplomberait porterait le
+sien, et le vérificateur n'aurait pas à le connaître.
+
+**L'AUTRE MOITIÉ DE SA REMARQUE ÉTAIT UN MANQUE, PAS UNE FAUTE.** Sept
+cartes molles avaient toutes leur tireur posé À PLAT : `vallee_04` et
+`vallee_07` à 100 % de PV rendus, `fer_04` à 100 %, `gel_05` à 97 %,
+`dunes_01` à 97 %, `vallee_06` à 94 %. Les percher est un changement d'UNE
+case qui leur donne +1 de portée et +1 de dégâts sans toucher à une seule
+statistique — et qui fait ce que Gaetan décrit : obliger l'équipe à
+répondre de loin au lieu d'attendre. Les tireurs perchés passent de 7 à
+**18, au moins un par acte** (4 / 1 / 3 / 7 / 2 / 1).
+
+**« IL FAUT DES ESCALIERS » DÉSIGNE UN DÉFAUT QUE T12.14 A CRÉÉ.**
+Mécaniquement, une colline n'a jamais bloqué personne : elle coûte UN PM
+et se prend par n'importe quel côté. Mais la paroi fait 64 px depuis
+T12.14, donc une unité qui arrive par le bas traverse un mur à l'écran.
+On ne touche pas au déplacement pour autant — le faire bloquer demanderait
+de rejuger cinquante-quatre cartes —, on garantit la LECTURE : chaque
+plateau garde un flanc ouvert par la gauche, la droite ou le haut, qui
+sont des bords de trait et pas des parois. C'est déjà vrai des 44
+plateaux ; `verify_maps` est là pour que ça le reste.
+
+**ET LE PACK DESSINE UNE RAMPE, que le jeu n'a jamais employée.** Les
+pièces diagonales `(0,4)/(0,5)` et `(3,4)/(3,5)` du tileset sont un coin
+de plateau taillé en biais, rocher compris — une descente, à gauche et à
+droite. **Huitième fois que l'inventaire du pack se révèle incomplet.**
+Elles demandent la même chose que la clôture de T12.11 : une case de
+combat ne sait pas si elle est un coin, donc il faudrait un terrain
+`slope` que la carte DÉCLARE. C'est écrit ici et pas fait : une rampe ne
+veut dire quelque chose que si la hauteur bloque, et faire bloquer la
+hauteur est une décision de Gaetan, pas la mienne.
+
+
+**UN OBSTACLE OPAQUE DEVANT SON PROPRE CAMP EST UN BOUCLIER (T12.16).**
+La loi des obstacles était écrite du côté du MOUVEMENT — « un obstacle
+entre les deux camps est gratuit pour le joueur », donc on le pose dans
+son camp à lui. Prise par la VUE, elle dit le contraire : un rocher ou un
+bois posé là aveugle tout ce qui tire. `fer_04` en est mort depuis que
+l'acte 4 existe — trois canons de portée neuf, un objectif « survivre »
+donc une équipe qui ne bouge pas, et UN ROCHER en (2, 4) juste devant la
+zone de placement. La carte rendait 100 % des PV ; le rocher retiré, elle
+en rend 90, **pour un seul caractère**. Trois choses à ne pas défaire :
+- **`verify_maps` EXIGE MAINTENANT QU'UN EMPLACEMENT VOIE, pas seulement
+  qu'il atteigne.** La moitié DISTANCE de cette règle date de T12.2 ; la
+  moitié VUE manquait, et c'est exactement le même défaut — « un
+  emplacement qui ne peut pas tirer n'est pas un ennemi, c'est du décor ».
+  Il a attrapé cinq canons et une tour de plus, tous dans l'acte 4.
+- **SEUL LE RELIEF TRANSPARENT VA DEVANT LE JOUEUR** — colline, boue,
+  ruine, eau. Le rocher et le bois vont aux bords, sur les rangées
+  qu'aucune ligne de tir ne traverse.
+- **MAIS SUR UNE CARTE « S'EMPARER », L'OPAQUE DU MILIEU COÛTE AU
+  JOUEUR.** Retirer les rochers de `fer_02` l'a fait passer de 78 % à
+  100 % de PV rendus : les deux règles se disputent la même case, et c'est
+  l'OBJECTIF qui tranche. Sur cette carte-là ils sont revenus rangée 4, la
+  seule qu'aucun canon ne regarde.
+
+**CE QUE PERCHER LES TIREURS N'A PAS FAIT, ET C'EST MESURÉ (T12.16).** Sur
+les sept cartes molles dont le tireur est monté sur une hauteur, une seule
+a bougé (`gel_05`, 100 → 97 %). +1 de portée et +1 de dégâts ne valent
+rien quand le tireur atteignait déjà sa cible, ou quand le combat se
+conclut avant qu'il tire. **La règle reste juste — une hauteur est un
+poste de tir, et le vérificateur refuse maintenant un bagarreur dessus —
+mais ce n'est pas un levier d'équilibrage.** Ce qui reste mou est
+structurel : `fer_02` se conclut en TROIS rondes parce qu'« s'emparer » se
+gagne dès qu'un héros touche une case, et aucun terrain n'y changera rien.

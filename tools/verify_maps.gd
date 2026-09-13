@@ -34,6 +34,7 @@ func _init() -> void:
 	_check_decorations()
 	_check_emplacements(ids)
 	_check_perches(ids)
+	_check_climbs(ids)
 	_check_vocabulary(ids)
 	_check_shapes(ids)
 	_check_reachable(ids)
@@ -223,11 +224,26 @@ func _check_perches(ids: Array) -> void:
 				var ability := Ability.of(ability_id)
 				if ability != null and ability.is_attack():
 					reach = maxi(reach, ability.range_max)
-			if reach <= 1:
+			# LE SEUIL EST DÉCLARÉ PAR LE TERRAIN, pas écrit ici : un relief
+			# neuf qui surplomberait porterait le sien.
+			#
+			# IL ÉTAIT À UNE CASE, ET C'ÉTAIT TROP BAS. Reproche de Gaetan :
+			# « un squelette est en hauteur donc il peut pas attaquer ». Cinq
+			# bêtes à portée DEUX étaient perchées — des bagarreurs qui
+			# redescendent au premier tour, à qui la hauteur n'a rien donné et
+			# qui se lisent comme coincés là-haut. Le Lancier frappe à deux
+			# cases et c'est « la seule classe de mêlée à le faire » (T12.7) :
+			# dans ce jeu, porter à deux EST du contact.
+			var floor_reach := int(CombatRules.terrain_property(
+				tile.terrain_id, &"perch_min_range", 2
+			))
+			if reach < floor_reach:
 				_problems.append(
 					"%s : « %s » est posé sur une hauteur en %s et ne porte qu'à "
 					% [map_id, unit.class_id, unit.cell]
-					+ "une case — la colline ne lui donne rien."
+					+ "%d case(s) — il faut %d. Une hauteur est un poste de TIR : "
+					% [reach, floor_reach]
+					+ "un bagarreur en redescend au premier tour."
 				)
 
 
@@ -261,6 +277,100 @@ func _check_emplacements(ids: Array[StringName]) -> void:
 					% [id, unit.class_id, reach]
 					+ "placement est à %d cases. Il ne tirera jamais." % nearest
 				)
+				continue
+
+			# ET IL DOIT VOIR, PAS SEULEMENT ATTEINDRE. La moitié DISTANCE
+			# de cette règle date de T12.2 ; la moitié VUE manquait, et
+			# c'est exactement le même défaut — un emplacement qui ne peut
+			# pas tirer n'est pas un ennemi, c'est du décor.
+			#
+			# `fer_04` en est mort pendant deux actes : trois canons de
+			# portée neuf, un objectif « survivre » (donc une équipe qui ne
+			# bouge pas), et UN ROCHER opaque en (2, 4), juste devant la
+			# zone de placement. La carte rendait 100 % des PV. Le rocher
+			# retiré, elle en rend 90 — pour un seul caractère.
+			#
+			# C'EST LA LOI DES OBSTACLES PRISE PAR LA VUE, et elle CONTREDIT
+			# la moitié qu'on connaissait : « un obstacle entre les deux
+			# camps est gratuit pour le joueur » disait de le poser dans son
+			# camp à LUI. Un obstacle OPAQUE posé là est un bouclier. Seul
+			# le relief transparent — colline, boue, ruine, eau — a sa place
+			# devant une équipe qu'on veut voir tirée dessus.
+			var seen := false
+			for cell: Vector2i in map.deployment_cells:
+				if map.board.grid.distance(unit.cell, cell) > reach:
+					continue
+				if map.board.has_line_of_sight(unit.cell, cell):
+					seen = true
+					break
+			if not seen:
+				_problems.append(
+					"%s : « %s » ne bouge pas et ne VOIT aucune case de "
+					% [id, unit.class_id]
+					+ "placement à sa portée — un terrain opaque le bouche. "
+					+ "Un emplacement qui ne tire pas est du décor."
+				)
+
+
+## ON DOIT POUVOIR MONTER SUR UNE HAUTEUR SANS ESCALADER SA FALAISE.
+##
+## Reproche de Gaetan, second volet : « un ennemi n'attaquant pas à
+## distance peut être en hauteur, mais dans ce cas il faut des escaliers ».
+## La mécanique, elle, n'a jamais bloqué personne — une colline coûte UN
+## PM et se prend par n'importe quel côté. C'est le DESSIN qui a changé en
+## T12.14 : la paroi de pierre fait 64 px maintenant, donc une unité qui
+## arrive par le bas traverse un mur à l'écran.
+##
+## On ne touche pas au déplacement pour autant — le faire bloquer
+## demanderait de rejuger cinquante-quatre cartes. On garantit la LECTURE :
+## chaque plateau garde un flanc ouvert par la gauche, la droite ou le
+## haut, qui sont des bords de trait et pas des parois. C'est vrai des 44
+## plateaux d'aujourd'hui ; ce contrôle est là pour que ça le reste.
+func _check_climbs(ids: Array[StringName]) -> void:
+	var climbed := 0
+	for map_id: StringName in ids:
+		var map := CombatMap.load_map(map_id)
+		if map == null or map.board == null:
+			continue
+		var seen := {}
+		for cell: Vector2i in map.board.grid.cells():
+			if seen.has(cell) or not _is_height(map, cell):
+				continue
+			var region: Array[Vector2i] = []
+			var stack: Array[Vector2i] = [cell]
+			seen[cell] = true
+			while not stack.is_empty():
+				var here: Vector2i = stack.pop_back()
+				region.append(here)
+				for step: Vector2i in [
+					Vector2i.LEFT, Vector2i.RIGHT, Vector2i.UP, Vector2i.DOWN
+				]:
+					var next := here + step
+					if seen.has(next) or not _is_height(map, next):
+						continue
+					seen[next] = true
+					stack.append(next)
+			climbed += 1
+			# LE BAS EST LA PAROI ; la montée se prend par les trois autres.
+			var open := false
+			for spot: Vector2i in region:
+				for step: Vector2i in [Vector2i.LEFT, Vector2i.RIGHT, Vector2i.UP]:
+					var beside := spot + step
+					var tile := map.board.tile_at(beside)
+					if tile != null and tile.is_walkable() and not _is_height(map, beside):
+						open = true
+			if not open:
+				_problems.append(
+					"%s : le plateau en %s n'a aucun flanc ouvert — on n'y monte "
+					% [map_id, region[0]]
+					+ "qu'en escaladant la falaise dessinée."
+				)
+	print("\n%d plateaux, tous avec un flanc par où monter" % climbed)
+
+
+func _is_height(map: CombatMap, cell: Vector2i) -> bool:
+	var tile := map.board.tile_at(cell)
+	return tile != null and tile.ranged_range_bonus() > 0
 
 
 func _check_vocabulary(ids: Array[StringName]) -> void:

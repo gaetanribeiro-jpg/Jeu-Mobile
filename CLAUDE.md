@@ -243,7 +243,8 @@ dur : passer par `data/assets.json`.
 *(à tenir à jour à chaque fin de session)*
 
 - **Phase courante : 12 — la campagne entière.** T12.14 la falaise
-  entière, T12.15 la diversité des terrains et le terrassement du royaume.
+  entière, T12.15 la diversité des terrains et le terrassement du royaume,
+  T12.16 la hauteur réservée aux tireurs.
   **1030 tests passent, les dix vérificateurs sont verts.** T12.3 le recrutement à
   trois candidats, T12.4 la brasserie du Monastère, T12.5 les actes 5 et 6,
   T12.7 le Lancier, T12.8 la garde et la fonte, T12.9 les habitants,
@@ -1441,6 +1442,73 @@ mécanique d'une décoration. Six choses à ne pas défaire :
 - **LE BOUTON D'ENTRÉE VIT SOUS LE CHÂTEAU.** Posé sur le panneau « rien
   de sélectionné », il ne se serait JAMAIS affiché — le piège exact de
   T12.10, repris à l'identique.
+
+**UNE HAUTEUR EST UN POSTE DE TIR (T12.16).** Reproche de Gaetan : « là un
+squelette est en hauteur donc il peut pas attaquer ». Il s'était trompé de
+bête — le crâne des Dunes est un LANCEUR à 3-6 cases, et son sprite
+d'épée et de bouclier ne le dit pas — mais il avait raison sur la règle.
+`verify_maps` ne refusait qu'une portée de UNE case : cinq bêtes à portée
+DEUX étaient perchées, c'est-à-dire des bagarreurs qui redescendent au
+premier tour. Quatre choses à ne pas défaire :
+- **TROIS, PARCE QUE LE LANCIER FRAPPE À DEUX.** La décision de T12.7 dit
+  « seule classe de mêlée à frapper à deux cases » : dans ce jeu, porter à
+  deux EST du contact, donc une hauteur commence à trois.
+- **LE SEUIL VIT SUR LE TERRAIN** (`perch_min_range` sur `hill`), pas dans
+  l'outil : un relief neuf qui surplomberait porterait le sien.
+- **LA HAUTEUR VA AU TIREUR, et c'est ce qui rend les cartes molles
+  chères.** Sept d'entre elles avaient leur tireur posé à PLAT ; le
+  percher est un changement d'UNE case, sans toucher à une statistique, et
+  ça oblige l'équipe à répondre de loin au lieu d'attendre. Les tireurs
+  perchés passent de 7 à 18, au moins un par acte.
+- **CHAQUE PLATEAU GARDE UN FLANC OUVERT.** « Il faut des escaliers »
+  désigne un défaut que T12.14 a créé : une colline n'a jamais bloqué
+  personne — un PM, par n'importe quel côté — mais sa paroi fait 64 px
+  maintenant, donc arriver par le bas traverse un mur à l'écran. On ne
+  touche pas au déplacement (ce serait rejuger 54 cartes), on garantit la
+  lecture : gauche, droite et haut sont des bords de trait, pas des
+  parois.
+
+**UN OBSTACLE OPAQUE DEVANT SON PROPRE CAMP EST UN BOUCLIER (T12.16).**
+La loi des obstacles était écrite du côté du MOUVEMENT — « un obstacle
+entre les deux camps est gratuit pour le joueur », donc on le pose dans
+son camp à lui. Prise par la VUE, elle dit le contraire : un rocher ou un
+bois posé là aveugle tout ce qui tire. `fer_04` en est mort depuis que
+l'acte 4 existe — trois canons de portée neuf, un objectif « survivre »
+donc une équipe qui ne bouge pas, et UN ROCHER en (2, 4) juste devant la
+zone de placement. La carte rendait 100 % des PV ; le rocher retiré, elle
+en rend 90, **pour un seul caractère**. Trois choses à ne pas défaire :
+- **`verify_maps` EXIGE MAINTENANT QU'UN EMPLACEMENT VOIE, pas seulement
+  qu'il atteigne.** La moitié DISTANCE de cette règle date de T12.2 ; la
+  moitié VUE manquait, et c'est exactement le même défaut — « un
+  emplacement qui ne peut pas tirer n'est pas un ennemi, c'est du décor ».
+  Il a attrapé cinq canons et une tour de plus, tous dans l'acte 4.
+- **SEUL LE RELIEF TRANSPARENT VA DEVANT LE JOUEUR** — colline, boue,
+  ruine, eau. Le rocher et le bois vont aux bords, sur les rangées
+  qu'aucune ligne de tir ne traverse.
+- **MAIS SUR UNE CARTE « S'EMPARER », L'OPAQUE DU MILIEU COÛTE AU
+  JOUEUR.** Retirer les rochers de `fer_02` l'a fait passer de 78 % à
+  100 % de PV rendus : les deux règles se disputent la même case, et c'est
+  l'OBJECTIF qui tranche. Sur cette carte-là ils sont revenus rangée 4, la
+  seule qu'aucun canon ne regarde.
+
+**CE QUE PERCHER LES TIREURS N'A PAS FAIT, ET C'EST MESURÉ (T12.16).** Sur
+les sept cartes molles dont le tireur est monté sur une hauteur, une seule
+a bougé (`gel_05`, 100 → 97 %). +1 de portée et +1 de dégâts ne valent
+rien quand le tireur atteignait déjà sa cible, ou quand le combat se
+conclut avant qu'il tire. **La règle reste juste — une hauteur est un
+poste de tir, et le vérificateur refuse maintenant un bagarreur dessus —
+mais ce n'est pas un levier d'équilibrage.** Ce qui reste mou est
+structurel : `fer_02` se conclut en TROIS rondes parce qu'« s'emparer » se
+gagne dès qu'un héros touche une case, et aucun terrain n'y changera rien.
+
+**LE PACK DESSINE UNE RAMPE, ET ELLE N'A JAMAIS SERVI (T12.16).** Les
+pièces diagonales `(0,4)/(0,5)` et `(3,4)/(3,5)` du tileset sont un coin
+de plateau taillé en biais, rocher compris. **Huitième fois que
+l'inventaire du pack se révèle incomplet.** Elles demandent la même chose
+que la clôture de T12.11 — une case de combat ne sait pas si elle est un
+coin, donc il faudrait un terrain `slope` que la carte DÉCLARE. Écrit et
+pas fait : une rampe ne veut dire quelque chose que si la hauteur bloque,
+et **faire bloquer la hauteur est une décision de Gaetan.**
 
 **L'expédition se joue, sur PC.** Écran de titre → carte du monde →
 composition de l'équipe → départ → route du § 28 (combats, évènements,

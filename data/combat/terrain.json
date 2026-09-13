@@ -46,7 +46,9 @@
     "damage_taken": 0,
     "ranged_range_bonus": 1,
     "ranged_damage_bonus": 1,
-    "flammable": true
+    "flammable": true,
+    "perch_min_range": 3,
+    "_perch_note": "UNE HAUTEUR EST UN POSTE DE TIR, et elle ne vaut que pour qui frappe de loin. Reproche de Gaetan devant une capture : « un squelette est en hauteur donc il peut pas attaquer ». Il avait raison sur la règle même s'il s'était trompé de bête — le crâne des Dunes est un LANCEUR à 3-6 cases, et son sprite d'épée et de bouclier ne le dit pas. Mais le vérificateur ne refusait qu'une portée de UNE case : cinq bêtes à portée DEUX étaient perchées, c'est-à-dire des bagarreurs qui redescendent au premier tour et à qui la colline n'a rien donné.\n\nTROIS, PARCE QUE LE LANCIER FRAPPE À DEUX. La décision verrouillée de T12.7 le dit en toutes lettres : « seule classe de mêlée à frapper à deux cases ». Dans ce jeu, porter à deux EST du contact. Une hauteur commence donc à trois.\n\nC'EST LE TERRAIN QUI DÉCLARE SON SEUIL, pas l'outil : un relief neuf qui surplomberait porterait le sien, et le vérificateur n'aurait pas à le connaître."
   },
   "rock": {
     "symbol": "#",
