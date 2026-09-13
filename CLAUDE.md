@@ -1390,8 +1390,8 @@ n'a ni haut ni bas : le flanc nord vaut exactement le flanc sud, donc
 choisir son côté au placement ne décide de rien. 86 % de toutes les cases
 étaient de l'herbe nue, 40 cartes n'avaient pas une colline, 46 pas une
 goutte d'eau. Aucune carte prise seule n'était fautive. Après la passe :
-3 miroirs, 79 % d'herbe, 21 sans colline, 21 sans eau, relief médian de
-9 % à 17 %. `verify_maps` compte désormais les FORMES d'un acte et pas
+4 miroirs, 80 % d'herbe, 23 sans colline, 23 sans eau, relief médian
+passé de 9 % à 16 %. `verify_maps` compte désormais les FORMES d'un acte et pas
 seulement ses mots — une carte presque plate, une accidentée, trois à
 colline, une à eau, et pas plus d'un tiers de miroirs.
 
@@ -1406,9 +1406,13 @@ ajoute :
   en profite. Les buttes vont chez l'ENNEMI.
 - **SUR UNE CARTE OÙ L'ENNEMI VIENT À VOUS, TOUT CE QUI RALENTIT EST UN
   CADEAU, OÙ QUE CE SOIT SUR SON CHEMIN.** Il ne reste que les BORDS — les
-  rangées que personne ne traverse. `gel_08` est passé de 28 % de PV
-  restants à ZÉRO par l'autre bout : deux buttes posées sur la banquise du
-  joueur ont donné aux harponneurs une hauteur à trois cases de l'équipe.
+  rangées que personne ne traverse.
+- **UNE CARTE ASSEZ ÉTROITE N'A PAS DE PLACE POUR DU DÉCOR.** `gel_08` est
+  la seule des cinquante-quatre rendue TELLE QUELLE : sa banquise fait
+  trois rangées de haut, deux buttes l'ont fait tomber de 28 % de PV
+  restants à ZÉRO, et deux trous dans la glace l'ont remontée à 46 %,
+  c'est-à-dire plus facile que l'original. N'importe quoi y détourne la
+  mêlée, et une mêlée détournée arrive plus tard.
 
 **CE QU'ON FAÇONNE EST CE SUR QUOI ON SE BAT (T12.15).** Demande de
 Gaetan : « le joueur doit pouvoir agrandir sa map, et terraformer ». La

@@ -3186,11 +3186,11 @@ fautive, et c'est pour ça que personne ne l'avait vu.
 
 | | avant | après |
 |---|---|---|
-| cartes en miroir haut/bas | 50 / 54 | 3 / 54 |
-| cases d'herbe nue | 86 % | 79 % |
-| cartes sans colline | 40 | 21 |
-| cartes sans eau | 46 | 21 |
-| relief médian | 9 % | 17 % |
+| cartes en miroir haut/bas | 50 / 54 | 4 / 54 |
+| cases d'herbe nue | 86 % | 80 % |
+| cartes sans colline | 40 | 23 |
+| cartes sans eau | 46 | 23 |
+| relief médian | 9 % | 16 % |
 
 **`verify_maps` compte désormais les FORMES d'un acte, pas seulement ses
 mots.** Le contrôle du vocabulaire de T11.9 comptait les terrains
@@ -3215,10 +3215,15 @@ mesure a ajoutés :
   BORDS — les rangées que personne ne traverse — et c'est là que va l'eau
   qui n'a qu'un rôle de forme.
 
-**`gel_08` est passé de 28 % de PV restants à ZÉRO**, et c'est le même
-défaut par l'autre bout : deux buttes posées sur la banquise du joueur ont
-donné aux harponneurs une hauteur à trois cases de l'équipe. Sa forme lui
-vient maintenant de deux trous dans la glace, qui n'abritent personne.
+**`gel_08` A ÉTÉ RENDUE TELLE QUELLE, et c'est la seule carte des
+cinquante-quatre que la passe n'a pas touchée.** Deux buttes posées sur la
+banquise du joueur ont donné aux harponneurs une hauteur à trois cases de
+l'équipe : 28 % de PV restants sont devenus ZÉRO. Deux TROUS dans la glace
+à la place, qui n'abritent personne — et le chiffre est remonté à 46 %,
+c'est-à-dire plus facile que l'original. Sa banquise ne fait que trois
+rangées de haut : n'importe quel obstacle y détourne la mêlée, et une
+mêlée détournée arrive plus tard. **Une carte assez étroite n'a pas de
+place pour du décor.**
 
 **La courbe de difficulté tient : 14 % → 19 % → 30 % → 36 % → 35 % → 36 %**
 contre 15 / 20 / 30 / 33 / 34 / 36 avant la passe.
