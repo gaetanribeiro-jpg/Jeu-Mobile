@@ -2311,6 +2311,8 @@ souvenir.**
 | **T11.8** | La passe de finition | 5 évènements pour deux actes, l'acte 2 payé comme l'acte 1 | ✅ |
 | **T11.9** | Le décor et l'air d'un acte | 7 cartes des Dunes sur 9 n'employaient que du rocher | ✅ |
 | **T12.1** | L'acte 3 — les Montagnes Gelées | la région n'avait que son nom | ✅ |
+| **T12.14** | La falaise entière | le jeu dessinait 22 px d'une paroi de 64, sans bouts ni pied | ✅ |
+| **T12.15** | Le terrain et le terrassement | 50 cartes sur 54 étaient leur propre miroir, 86 % d'herbe nue | ✅ |
 | **T11.5** | Apprendre à jouer | aucun tutoriel, aucune aide, aucune première partie guidée | ⬜ |
 
 **L'ordre est celui-là et il se justifie.** Le téléphone d'abord parce que
@@ -3131,3 +3133,148 @@ Déplacé dans `plus-tard.md` avec ses données intactes :
 
 Rien n'est supprimé du dépôt : les fichiers de données restent, marqués
 comme hors périmètre.
+
+### T12.14 — la falaise entière, au lieu de vingt-deux pixels ✅
+
+**Le reproche de Gaetan portait sur les cartes ; la première moitié de la
+réponse était dans le DESSIN.** « Certaines restent plates, d'autres avec
+de petites hauteurs, d'autres de plus grandes hauteurs. » Avant de
+réécrire une seule carte il fallait regarder ce qu'une colline montrait :
+un liseré de pierre de vingt-deux pixels sous son bord bas. Corriger les
+cartes d'abord n'aurait fait que multiplier l'autocollant.
+
+**Relevé sur le fichier, alpha en main.** Les colonnes 5 à 8 des rangées 4
+et 5 du tileset sont une PAROI ENTIÈRE de 64 px, et elles encodent les
+mêmes quatre états que les blocs 4 × 4 :
+
+| alpha du bord gauche | alpha du bord droit | ce que c'est |
+|---|---|---|
+| 6 | 119 | bout gauche (colonne 5) |
+| 117 | 118 | milieu (colonne 6) |
+| 116 | 9 | bout droit (colonne 7) |
+| 6 | 9 | une seule case de large (colonne 8) |
+
+C'est exactement `_edge_index`, qui existait déjà et servait aux blocs de
+terrain. Le bloc était simplement DÉCLARÉ comme une case unique.
+
+**La rangée dit sur quoi la falaise retombe** : la première a des touffes
+d'herbe au pied, la seconde l'écume du rivage. Se tromper de rangée pose
+de l'écume au milieu d'une prairie — et le hors-grille compte comme de
+l'eau, comme dans `_is_land`, sans quoi une colline de la dernière rangée
+faisait flotter des touffes sur la mer.
+
+**La grille ne bouge pas.** La paroi PEND sous la colline, elle ne mord
+pas dedans : une case vaut toujours 64 px et l'unité au pied d'une falaise
+se dessine DEVANT elle. Lever le plateau de quelques pixels serait plus
+fidèle à la promo du pack et romprait la correspondance case ↔ pixel — la
+seule chose qu'un jeu tactique ne peut pas se permettre.
+
+**Aucun chiffre dans le code.** Le relief se reconnaît au bonus de portée,
+pas à un identifiant de terrain : un terrain neuf qui surplomberait
+hériterait de sa falaise sans qu'on y pense.
+
+### T12.15 — la diversité des terrains, et le terrassement du royaume ✅
+
+**LE VRAI DÉFAUT N'ÉTAIT PAS LA PLATITUDE, C'ÉTAIT LA SYMÉTRIE.** Compté
+sur les cinquante-quatre fichiers : **cinquante d'entre eux étaient leur
+PROPRE MIROIR haut/bas**, 86 % de toutes les cases étaient de l'herbe nue,
+quarante cartes n'avaient pas une colline et quarante-six pas une goutte
+d'eau. Une carte en miroir n'a ni haut ni bas : le flanc nord vaut
+exactement le flanc sud, donc choisir son côté au placement ne décide de
+rien et la carte se joue en couloir. Aucune carte prise seule n'était
+fautive, et c'est pour ça que personne ne l'avait vu.
+
+| | avant | après |
+|---|---|---|
+| cartes en miroir haut/bas | 50 / 54 | 3 / 54 |
+| cases d'herbe nue | 86 % | 79 % |
+| cartes sans colline | 40 | 21 |
+| cartes sans eau | 46 | 21 |
+| relief médian | 9 % | 17 % |
+
+**`verify_maps` compte désormais les FORMES d'un acte, pas seulement ses
+mots.** Le contrôle du vocabulaire de T11.9 comptait les terrains
+employés ; un acte pouvait en employer six et poser les six dans la même
+disposition. Chaque acte doit maintenant montrer une carte presque plate
+(≤ 12 %), une carte accidentée (≥ 20 %), au moins trois cartes à colline,
+au moins une carte d'eau, et pas plus d'un tiers de miroirs.
+
+**LA MESURE M'A REPRIS SUR MA PROPRE LEÇON, SEPT FOIS.** Première passe :
+sept cartes étaient devenues plus FACILES, et toutes pour la même raison —
+j'avais posé leur relief au milieu. `dunes_05` 72 → 83 %, `maudit_01`
+87 → 100 %, `fer_07` 78 → 95 %, `empire_04` 64 → 74 %. C'est mot pour mot
+« un obstacle entre les deux camps est gratuit pour le joueur » de T12.1,
+et l'avoir écrit ne m'a pas empêché d'y retomber. Deux corollaires que la
+mesure a ajoutés :
+
+- **UNE COLLINE À PORTÉE DU JOUEUR EST UN CADEAU**, pas un décor : elle
+  donne +1 de portée et +1 de dégâts à qui s'y tient, et c'est l'équipe
+  immobile qui en profite. Les buttes vont chez l'ENNEMI.
+- **SUR UNE CARTE OÙ L'ENNEMI VIENT À VOUS, TOUT CE QUI RALENTIT EST UN
+  CADEAU, OÙ QUE CE SOIT SUR SON CHEMIN.** Il ne reste donc que les
+  BORDS — les rangées que personne ne traverse — et c'est là que va l'eau
+  qui n'a qu'un rôle de forme.
+
+**`gel_08` est passé de 28 % de PV restants à ZÉRO**, et c'est le même
+défaut par l'autre bout : deux buttes posées sur la banquise du joueur ont
+donné aux harponneurs une hauteur à trois cases de l'équipe. Sa forme lui
+vient maintenant de deux trous dans la glace, qui n'abritent personne.
+
+**La courbe de difficulté tient : 14 % → 19 % → 30 % → 36 % → 35 % → 36 %**
+contre 15 / 20 / 30 / 33 / 34 / 36 avant la passe.
+
+**Un défaut silencieux trouvé au passage :** deux des trois cases
+d'objectif de `gel_05` étaient DE L'EAU. Une carte « s'empare » qui
+déclare une zone de trois cases en offrait une seule, et rien ne s'en
+plaignait — `_check_objective` vérifiait que la case est dans la grille,
+pas qu'on peut s'y tenir.
+
+#### Façonner le royaume
+
+**Demande de Gaetan, mot pour mot :** « le joueur doit pouvoir agrandir sa
+map, et terraformer en ajoutant lui même des collines, de l'eau etc. »
+
+**CE QU'ON FAÇONNE EST CE SUR QUOI ON SE BAT, et c'est la seule chose qui
+sépare cette mécanique d'une décoration.** La bataille de défense du § 38
+fabrique sa carte à partir du royaume — mais elle n'en prenait que les
+BÂTIMENTS, posés sur douze colonnes d'herbe nue. Elle prend le SOL
+maintenant : une butte élevée derrière la porte est une hauteur pour les
+archers le jour de l'assaut, des douves obligent les assaillants à
+contourner. Le joueur dessine son champ de bataille des mois avant d'y
+livrer bataille. Six choses à ne pas défaire :
+
+- **LE SOL VIT DANS LA SAUVEGARDE, pas dans `ground.json`** — même règle
+  que la campagne de T11.4 : le fichier dit ce que le royaume est au
+  premier jour, la partie dit ce que le joueur en a fait. Vide veut dire
+  « celui du fichier », ce qui laisse retoucher l'île de départ sans
+  réécrire les parties en cours.
+- **ON N'AGRANDIT PAS LA TOILE, ON GAGNE SUR LA MER.** L'île n'occupe pas
+  toute la grille et ses quatre coins sont de l'eau : elle s'étend DANS
+  son plateau. La règle de T12.11 — la grille EST la toile — reste donc
+  intacte, et un royaume agrandi ne peut pas faire sortir un bâtiment du
+  terrain, ce qui est exactement le défaut de la tour de guet.
+- **TOUT EST RÉVERSIBLE, ET `verify_kingdom` L'EXIGE.** C'est chez le
+  joueur : une faute de goût ne doit jamais être définitive. Ce qui coûte
+  n'est pas l'erreur, c'est le TEMPS — chaque travail se paie en bois et
+  en pierre, donc en bâtiments qu'on ne monte pas ce cycle-là.
+- **ÇA SE PAIE DANS LA MONNAIE DE LA VILLE, jamais en or** — règle du
+  conseil de T12.10, et le vérificateur refuse une ressource qui vit avec
+  la compagnie.
+- **ON NE COUPE PAS SON ÎLE EN DEUX**, et on n'annule pas sa propre
+  bataille : les trois colonnes du rivage des assaillants restent
+  praticables quoi qu'on ait creusé. Façonner doit pouvoir compliquer sa
+  défense, jamais la supprimer.
+- **UN TRAVAIL QUI NE PEUT S'APPLIQUER NULLE PART EST UN BOUTON MORT.**
+  `verify_kingdom` compte les cases que chaque travail accepte sur l'île
+  de départ, et il a attrapé « araser une butte » du premier coup : l'île
+  n'avait pas une seule hauteur. Elle a une crête maintenant — ce que la
+  promo du pack promet au royaume.
+
+**Deux défauts que seule la capture a vus, encore.** Le bouton d'entrée
+avait été posé sur le panneau « rien de sélectionné », qui ne s'affiche
+JAMAIS puisque l'écran ouvre sur le château — le piège exact de T12.10,
+repris à l'identique un an après. Et le travail en cours était GRISÉ pour
+montrer qu'il était choisi : un bouton éteint dit « vous ne pouvez pas »,
+et la capture montrait « Élever une butte » désactivé sur l'écran qui sert
+à élever des buttes. Il porte l'or vif maintenant, comme le héros qui joue
+au combat.

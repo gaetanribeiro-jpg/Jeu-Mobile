@@ -1,0 +1,36 @@
+{
+ "_readme": "FAÇONNER LE ROYAUME (T12.15).\n\nDEMANDE DE GAETAN, MOT POUR MOT : « le joueur doit pouvoir agrandir sa map, et terraformer en ajoutant lui même des collines, de l'eau etc. »\n\nCE N'EST PAS DE LA DÉCORATION, ET C'EST LA SEULE CHOSE QUI JUSTIFIE DE L'ÉCRIRE. Le § 55 ne demande qu'une chose d'une fonctionnalité : est-ce que ça améliore la boucle ? Une île qu'on redessine pour le plaisir de l'œil n'améliorerait rien — le carnet refuse déjà les bâtiments décoratifs, il n'allait pas accepter des collines décoratives.\n\nCE QU'ON FAÇONNE EST CE SUR QUOI ON SE BAT. La bataille de défense du § 38 fabrique sa carte à partir du royaume ; elle n'en prenait que les BÂTIMENTS, sur douze colonnes d'herbe nue. Elle prend désormais le SOL. Une butte élevée derrière la porte est une hauteur pour les archers quand l'assaut vient ; des douves creusées devant la palissade obligent les assaillants à contourner. Le joueur dessine son champ de bataille des mois avant d'y livrer bataille, et c'est le § 43 : chaque activité influence les autres.\n\nTOUT EST RÉVERSIBLE, ET IL LE FAUT. C'est chez lui. Une action irréversible qu'on ne peut pas évaluer avant n'est pas une décision, c'est un pari (T12.8) — ici on peut l'évaluer ET revenir dessus, au prix d'un second chantier. Ce qui coûte n'est donc jamais l'erreur, c'est le TEMPS : chaque travail se paie en bois et en pierre, c'est-à-dire en bâtiments qu'on ne monte pas ce cycle-là.\n\nÇA SE PAIE DANS LA MONNAIE DE LA VILLE, jamais en or. Même règle que le conseil de T12.10 : l'or est la bourse de l'expédition, le bois et la pierre sont ce que le royaume a produit. Terraformer se paie donc avec le cycle qu'on vient de faire tourner.\n\nON NE COUPE PAS SON ÎLE EN DEUX. C'est la leçon de T12.1 — « de la terre INJOIGNABLE au quart de l'écran » — appliquée au royaume : un étang qui isolerait un morceau de rive donnerait un bout de terrain où plus rien ne peut aller, et rien ne s'en plaindrait.",
+ "_cost_note": "L'ÉCHELLE EST CELLE D'UN CYCLE DE PRODUCTION. Une scierie pleine rend 12 bois par cycle, une carrière 8 pierres : élever une butte coûte donc à peu près deux cycles de carrière, et gagner une case sur la mer un peu plus de trois. C'est cher exprès — le § 5 veut que l'évolution du royaume se VOIE, et une île qui doublerait en deux retours ne se verrait plus évoluer, elle se verrait gonfler. Même réserve que pour un objet ou un conseil : l'équilibrage d'un chantier n'a pas d'instrument, seulement un barème.",
+ "works": {
+  "raise": {
+   "name_key": "TERRAFORM_RAISE",
+   "hint_key": "TERRAFORM_RAISE_HINT",
+   "from": ["grass"],
+   "to": "hill",
+   "cost": {"stone": 16, "wood": 8}
+  },
+  "dig": {
+   "name_key": "TERRAFORM_DIG",
+   "hint_key": "TERRAFORM_DIG_HINT",
+   "from": ["grass"],
+   "to": "water",
+   "cost": {"wood": 14}
+  },
+  "level": {
+   "name_key": "TERRAFORM_LEVEL",
+   "hint_key": "TERRAFORM_LEVEL_HINT",
+   "from": ["hill"],
+   "to": "grass",
+   "cost": {"wood": 10}
+  },
+  "reclaim": {
+   "name_key": "TERRAFORM_RECLAIM",
+   "hint_key": "TERRAFORM_RECLAIM_HINT",
+   "from": ["water"],
+   "to": "grass",
+   "cost": {"stone": 28, "wood": 18},
+   "needs_shore": true,
+   "_note": "GAGNER SUR LA MER. C'est le « agrandir sa map » de la demande, et il n'y avait pas besoin d'une seconde grille pour ça : l'île n'occupe pas toute la toile, et ses quatre coins sont de l'eau. Elle s'étend donc DANS son plateau, ce qui garde intacte la règle de T12.11 — la grille EST la toile — et évite qu'un royaume agrandi fasse sortir un bâtiment du terrain, ce qui est exactement le défaut de la tour de guet.\n\nIL FAUT UNE RIVE. On ne pose pas une case de terre au milieu de la mer : elle serait injoignable, et le jeu a déjà payé cette leçon en T12.1."
+  }
+ }
+}

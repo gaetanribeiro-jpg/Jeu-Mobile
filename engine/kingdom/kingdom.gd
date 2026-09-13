@@ -106,6 +106,16 @@ var pending_council: StringName = &""
 ## Les derniers conseils vus, pour ne pas les reproposer tout de suite.
 var recent_councils: Array[String] = []
 
+## Le sol du royaume, façonné par le joueur (T12.15). VIDE veut dire
+## « celui du fichier », et c'est ce qui permet de retoucher l'île de
+## départ dans `ground.json` sans réécrire les parties en cours.
+##
+## IL VIT DANS LA SAUVEGARDE, comme la campagne de T11.4 : le fichier dit
+## ce que le royaume EST au premier jour, la partie dit ce que le joueur en
+## a fait. Un terrain gardé dans le fichier serait le même pour toutes les
+## parties, ce qui est l'exact contraire de « son » royaume.
+var terrain: PackedStringArray = PackedStringArray()
+
 
 static func create() -> Kingdom:
 	var kingdom := Kingdom.new()
@@ -833,6 +843,61 @@ func run_cycle(company: Company = null, rng: CombatRng = null) -> Dictionary:
 # d'un coup au premier retour.
 
 ## Le crédit d'une ville. Zéro pour celle avec qui rien ne s'est passé.
+# --- Façonner le sol (T12.15) ----------------------------------------------
+
+## Le sol du royaume : celui que le joueur a façonné, sinon celui du
+## fichier. Tout le reste passe par ici — la vue, la carte de défense, le
+## vérificateur — pour qu'il n'y ait jamais deux idées du terrain.
+func ground() -> PackedStringArray:
+	return terrain if not terrain.is_empty() else KingdomGround.rows()
+
+
+## Les cases qu'un bâtiment ou un chantier occupe déjà. On n'arase pas
+## sous un château et on n'inonde pas une carrière.
+##
+## LES DEUX FAMILLES, PAS UNE SEULE. Les chantiers ne sont pas des
+## bâtiments (décision verrouillée) et vivent dans une autre table ; n'en
+## regarder qu'une laissait creuser un étang sous la scierie, qui se
+## serait dessinée dessus sans qu'une seule erreur soit poussée.
+func occupied_cells() -> Array[Vector2i]:
+	var out: Array[Vector2i] = []
+	for building_id: StringName in Buildings.ids():
+		out.append(KingdomGround.cell_of(Buildings.spot_of(building_id)))
+	for worksite_id: StringName in Worksite.ids():
+		out.append(KingdomGround.cell_of(Worksite.spot_of(worksite_id)))
+	return out
+
+
+## Pourquoi ce travail est refusé ici, ou &"" s'il est permis. Le prix
+## vient EN DERNIER : un joueur doit lire « on ne peut pas creuser dans un
+## rocher » avant « il vous manque du bois », sinon il économise pour une
+## chose impossible.
+func shape_refusal(
+	cell: Vector2i, work_id: StringName, company: Company = null
+) -> StringName:
+	var reason := Terraform.refusal(ground(), cell, work_id, occupied_cells())
+	if not reason.is_empty():
+		return reason
+	if not can_afford(Terraform.cost(work_id), company):
+		return &"TERRAFORM_TOO_DEAR"
+	return &""
+
+
+func can_shape(cell: Vector2i, work_id: StringName, company: Company = null) -> bool:
+	return shape_refusal(cell, work_id, company).is_empty()
+
+
+## Façonne une case. Rend faux sans rien prendre si c'est refusé — une
+## dépense partielle laisserait le joueur sans sa butte ET sans sa pierre.
+func shape(cell: Vector2i, work_id: StringName, company: Company = null) -> bool:
+	if not can_shape(cell, work_id, company):
+		return false
+	if not pay(Terraform.cost(work_id), company):
+		return false
+	terrain = Terraform.applied(ground(), cell, work_id)
+	return true
+
+
 func standing_of(town_id: StringName) -> int:
 	return Neighbour.clamp_standing(int(standings.get(town_id, 0)))
 
@@ -1111,6 +1176,7 @@ func to_dictionary() -> Dictionary:
 		"standings": saved_standings,
 		"council": String(pending_council),
 		"recent_councils": recent_councils.duplicate(),
+		"terrain": Array(terrain),
 		"invasion": invasion.to_dictionary() if invasion != null else {},
 	}
 
@@ -1174,6 +1240,17 @@ static func from_dictionary(data: Dictionary) -> Kingdom:
 	for raw: Variant in data.get("recent_councils", []):
 		if KingdomEvent.exists(StringName(raw)):
 			kingdom.recent_councils.append(String(raw))
+	# UN TERRAIN SAUVEGARDÉ QUI NE COLLE PLUS À LA TOILE EST IGNORÉ, pas
+	# rafistolé : si `ground.json` change de taille entre deux versions,
+	# reprendre des rangées trop courtes ferait sortir un bâtiment du
+	# terrain — le défaut exact de la tour de guet (T12.8).
+	var saved := PackedStringArray()
+	for raw: Variant in data.get("terrain", []):
+		saved.append(String(raw))
+	if saved.size() == KingdomGround.height() and (
+		saved.is_empty() or saved[0].length() == KingdomGround.width()
+	):
+		kingdom.terrain = saved
 	kingdom.invasion = Invasion.from_dictionary(data.get("invasion", {}))
 	kingdom.settle_assignments()
 	return kingdom

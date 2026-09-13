@@ -37,6 +37,7 @@ func _init() -> void:
 	_check_councils()
 	_check_muster()
 	_check_loans()
+	_check_terraform()
 
 	if _problems.is_empty():
 		print("\nL'économie du royaume tient debout.")
@@ -277,6 +278,90 @@ func _check_trades() -> void:
 				% worksite_id)
 	if Worksite.max_trade_level() <= 0:
 		_problems.append("aucun rang de métier : la spécialisation n'existe pas")
+
+
+## FAÇONNER LE SOL (T12.15). Un travail mal déclaré ne plante pas : il ne
+## fait RIEN, ou il refuse toujours, et le joueur croit l'écran cassé.
+## C'est la même famille que « un effet mal orthographié ne plante pas »
+## du conseil (T12.10).
+func _check_terraform() -> void:
+	print("\nTerrassement\n")
+	var works := Terraform.work_ids()
+	if works.is_empty():
+		_problems.append("aucun travail de terrassement déclaré")
+		return
+	var island := KingdomGround.rows()
+	var taken: Array[Vector2i] = []
+	for building_id: StringName in Buildings.ids():
+		taken.append(KingdomGround.cell_of(Buildings.spot_of(building_id)))
+	for worksite_id: StringName in Worksite.ids():
+		taken.append(KingdomGround.cell_of(Worksite.spot_of(worksite_id)))
+
+	# UN TRAVAIL QUI NE PEUT S'APPLIQUER NULLE PART EST UN BOUTON MORT.
+	# L'île de départ doit offrir au moins une case à chacun, sinon le
+	# joueur lit quatre travaux et n'en voit marcher que deux — sans
+	# comprendre pourquoi, puisque rien ne se plaint.
+	var reachable := {}
+	for y in island.size():
+		for x in island[y].length():
+			for work_id: StringName in works:
+				if Terraform.allowed(island, Vector2i(x, y), work_id, taken):
+					reachable[work_id] = int(reachable.get(work_id, 0)) + 1
+
+	# CHAQUE TRAVAIL A SON CONTRAIRE. C'est chez le joueur : une faute de
+	# goût ne doit jamais être définitive, et un aller sans retour serait
+	# une action irréversible qu'on ne peut pas évaluer avant (T12.8).
+	var reverses := {}
+	for work_id: StringName in works:
+		for source: StringName in Terraform.sources(work_id):
+			reverses["%s>%s" % [source, Terraform.target(work_id)]] = String(work_id)
+
+	for work_id: StringName in works:
+		_check_translation(work_id, Terraform.name_key(work_id))
+		_check_translation(work_id, Terraform.hint_key(work_id))
+		var target := Terraform.target(work_id)
+		if not CombatRules.terrain_ids().has(target):
+			_problems.append("terrassement %s : « %s » n'est pas un terrain"
+				% [work_id, target])
+		for source: StringName in Terraform.sources(work_id):
+			if not CombatRules.terrain_ids().has(source):
+				_problems.append("terrassement %s : « %s » n'est pas un terrain"
+					% [work_id, source])
+			elif source == target:
+				_problems.append("terrassement %s : il ne change rien" % work_id)
+			elif not reverses.has("%s>%s" % [target, source]):
+				_problems.append(
+					"terrassement %s : « %s » → « %s » ne se défait pas. " 
+					% [work_id, source, target]
+					+ "C'est chez le joueur : une faute de goût ne doit pas être définitive."
+				)
+		# IL SE PAIE DANS LA MONNAIE DE LA VILLE, jamais en or — même règle
+		# que le conseil (T12.10). L'or est la bourse de l'expédition ;
+		# creuser des douves avec doublerait le marchand.
+		var cost := Terraform.cost(work_id)
+		if cost.is_empty():
+			_problems.append("terrassement %s : gratuit — ce n'est donc pas une décision"
+				% work_id)
+		for key: Variant in cost.keys():
+			var resource_id := StringName(key)
+			if not ResourceTable.exists(resource_id):
+				_problems.append("terrassement %s : ressource « %s » inconnue"
+					% [work_id, resource_id])
+			elif not ResourceTable.lives_in_kingdom(resource_id):
+				_problems.append(
+					"terrassement %s : payé en « %s », qui vit avec la compagnie. "
+					% [work_id, resource_id]
+					+ "Les travaux se paient dans la monnaie de la ville."
+				)
+		var places := int(reachable.get(work_id, 0))
+		print("  %-9s %2d case(s) possible(s) sur l'île de départ — %s"
+			% [work_id, places, Terraform.name_key(work_id)])
+		if places == 0:
+			_problems.append(
+				"terrassement %s : aucune case de l'île de départ ne l'accepte — "
+				% work_id
+				+ "le bouton existe et ne fera jamais rien."
+			)
 
 
 ## UN BÂTIMENT POSÉ HORS DE LA TOILE NE SE DESSINE PAS, et ne se plaint

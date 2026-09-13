@@ -42,6 +42,16 @@ var _council_outcome: Dictionary = {}
 ## aurait fait trois fois plus.
 var _lending_town: StringName = &""
 
+## Le travail de terrassement choisi (T12.15), ou vide. Tant qu'il est
+## posé, toucher une case du royaume la façonne — et le panneau reste sur
+## le terrassement, parce qu'on en fait rarement un seul.
+var _shaping: StringName = &""
+
+## Pourquoi le dernier essai a été refusé, ou vide. Il s'affiche SOUS les
+## boutons plutôt que dans une bulle : le § 39 veut que le joueur sache
+## pourquoi il ne peut pas, sans avoir à essayer une seconde fois.
+var _shaping_refusal: StringName = &""
+
 @onready var _title: Label = %Title
 @onready var _stores: HBoxContainer = %Stores
 @onready var _back: Button = %Back
@@ -61,6 +71,7 @@ func _ready() -> void:
 	_back.text = tr("COMBAT_BACK")
 	_back.pressed.connect(func() -> void: closed.emit())
 	_view.picked.connect(_on_picked)
+	_view.ground_touched.connect(_on_ground_touched)
 	refresh()
 
 
@@ -75,6 +86,7 @@ func refresh() -> void:
 	if _kingdom == null or not is_node_ready():
 		return
 	_view.kingdom = _kingdom
+	_view.shaping = not _shaping.is_empty()
 	_view.refresh()
 	_title.text = tr("KINGDOM_TITLE")
 	_build_stores()
@@ -192,6 +204,9 @@ func _build_panel() -> void:
 	if not _lending_town.is_empty():
 		_build_lending_panel(_lending_town)
 		return
+	if not _shaping.is_empty():
+		_build_shaping_panel()
+		return
 
 	match _view.selected_kind:
 		_view.KIND_BUILDING:
@@ -237,6 +252,7 @@ func _build_building_panel(building_id: StringName) -> void:
 	_recruit_buttons(building_id)
 	_ascend_buttons(building_id)
 	_build_neighbours(building_id)
+	_shaping_button(building_id)
 
 
 ## ÉLEVER UN HÉROS EST CE QUE LA TOUR PERMET, et c'est le premier bâtiment
@@ -717,6 +733,93 @@ func _choose_council(index: int) -> void:
 
 
 # --- Agir ------------------------------------------------------------------
+
+# --- Façonner le sol (T12.15) ----------------------------------------------
+#
+# DEMANDE DE GAETAN : « le joueur doit pouvoir agrandir sa map, et
+# terraformer en ajoutant lui même des collines, de l'eau etc. »
+#
+# CE N'EST PAS DE LA DÉCORATION, et c'est la seule chose qui justifie de
+# l'écrire. La bataille de défense du § 38 fabrique sa carte à partir du
+# royaume : ce qu'on façonne est ce sur quoi on se bat. Une butte élevée
+# derrière la porte est une hauteur pour les archers le jour de l'assaut,
+# des douves obligent les assaillants à contourner.
+#
+# UN VERBE, PUIS UNE CASE. Demander la case d'abord obligerait à lire
+# quatre boutons pour découvrir que trois sont refusés ici ; demander le
+# verbe d'abord permet de MONTRER ce qu'il coûte avant de choisir où.
+
+## IL VIT SOUS LE CHÂTEAU, et c'est la leçon de T12.10 prise d'avance :
+## le panneau « rien de sélectionné » ne s'affiche JAMAIS, parce que
+## l'écran du royaume ouvre sur le château. La liste des voisines y avait
+## été posée et resta invisible sans une seule erreur ; façonner son
+## domaine est de toute façon le travail du seigneur, pas celui d'une
+## scierie.
+func _shaping_button(building_id: StringName) -> void:
+	if building_id != Buildings.KEYSTONE:
+		return
+	_line(tr("TERRAFORM_INVITE"), 19)
+	_action(tr("TERRAFORM_OPEN"), _open_shaping, true)
+
+
+func _open_shaping() -> void:
+	var works := Terraform.work_ids()
+	_shaping = works[0] if not works.is_empty() else &""
+	_shaping_refusal = &""
+	refresh()
+
+
+func _close_shaping() -> void:
+	_shaping = &""
+	_shaping_refusal = &""
+	refresh()
+
+
+func _build_shaping_panel() -> void:
+	_line(tr("TERRAFORM_TITLE"), 26)
+	_line(tr(Terraform.hint_key(_shaping)), 19)
+	for work_id: StringName in Terraform.work_ids():
+		# LE BOUTON DIT CE QU'IL REND, CHIFFRES COMPRIS — règle de la fonte
+		# (T12.8). « Élever une butte » seul demanderait d'essayer pour
+		# savoir ce que ça prend.
+		var label := "%s — %s" % [
+			tr(Terraform.name_key(work_id)), _costs(Terraform.cost(work_id))
+		]
+		# LE TRAVAIL CHOISI PORTE L'OR VIF, il ne se DÉSACTIVE pas. Un
+		# bouton grisé dit « vous ne pouvez pas », et c'est l'exact
+		# contraire de « c'est celui-là » : la première version grisait le
+		# travail en cours, et la capture montrait « Élever une butte »
+		# éteint sur l'écran qui sert à élever des buttes. L'or dit le
+		# tour au combat depuis T9.7 ; il dit ici le travail en main.
+		var button := _action(label, _pick_work.bind(work_id), true)
+		UiSkin.dress_button(button, &"primary" if work_id == _shaping else &"muted")
+	if not _shaping_refusal.is_empty():
+		_line(tr(String(_shaping_refusal)), 19)
+	_action(tr("TERRAFORM_DONE"), _close_shaping, true)
+
+
+func _pick_work(work_id: StringName) -> void:
+	_shaping = work_id
+	_shaping_refusal = &""
+	refresh()
+
+
+func _on_ground_touched(cell: Vector2i) -> void:
+	if _shaping.is_empty():
+		return
+	var refusal := _kingdom.shape_refusal(cell, _shaping, _company)
+	if not refusal.is_empty():
+		_shaping_refusal = refusal
+		refresh()
+		return
+	if not _kingdom.shape(cell, _shaping, _company):
+		return
+	_shaping_refusal = &""
+	AudioManager.play_cue(&"build")
+	_note(tr("TERRAFORM_DONE_LINE") % tr(Terraform.name_key(_shaping)))
+	changed.emit()
+	refresh()
+
 
 func _on_picked(kind: StringName, id: StringName) -> void:
 	_view.selected_kind = kind

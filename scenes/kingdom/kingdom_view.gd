@@ -45,6 +45,11 @@ extends Control
 ## Le joueur a désigné quelque chose : un bâtiment ou un chantier.
 signal picked(kind: StringName, id: StringName)
 
+## Le joueur a touché une CASE du terrain (T12.15). Le signal est séparé
+## de `picked` exprès : une case n'est pas une chose du royaume, c'est un
+## endroit, et l'écran n'y répond que lorsqu'il est en train de façonner.
+signal ground_touched(cell: Vector2i)
+
 const KIND_BUILDING := &"building"
 const KIND_WORKSITE := &"worksite"
 
@@ -68,6 +73,17 @@ const WATCH_SPACING := Vector2(30.0, 24.0)
 const WATCH_OFFSET := Vector2(0.0, 46.0)
 
 var kingdom: Kingdom
+
+## Les rangées du terrain actuellement bâties, pour savoir quand le
+## reconstruire.
+var _rows: PackedStringArray = PackedStringArray()
+
+## Le joueur est-il en train de façonner le sol (T12.15) ? Quand il l'est,
+## le TERRAIN répond en premier : toucher la carrière doit dire « un
+## chantier occupe déjà cette case » et non re-sélectionner la carrière —
+## le § 39 veut qu'on sache pourquoi on ne peut pas, et un écran qui
+## change de sujet ne le dit pas.
+var shaping := false
 ## Ce que le joueur a désigné. Le château au départ, jamais rien : un
 ## panneau vide au premier regard n'apprend pas qu'on peut toucher le
 ## terrain, il donne l'impression que l'écran ne fait rien.
@@ -102,11 +118,20 @@ func _ready() -> void:
 	set_process(not _blind)
 
 
-## Le terrain du royaume, bâti une fois. Il ne change jamais : ce qui
-## évolue, ce sont les bâtiments posés dessus.
+## Le terrain du royaume. Il CHANGE depuis T12.15 — le joueur le façonne —
+## donc il se rebâtit quand ses rangées ne sont plus celles du plateau
+## affiché. Le reconstruire à chaque redessin coûterait un `CombatBoard`
+## par image ; ne jamais le reconstruire laissait la butte invisible
+## jusqu'au prochain lancement.
 func _build_terrain() -> void:
-	var rows := KingdomGround.rows()
+	var rows := kingdom.ground() if kingdom != null else KingdomGround.rows()
 	if rows.is_empty():
+		return
+	_rows = rows
+	if _terrain != null:
+		_board = CombatBoard.from_rows(rows)
+		_terrain.setup(_board)
+		_frame_terrain()
 		return
 	_board = CombatBoard.from_rows(rows)
 	if _board == null:
@@ -151,8 +176,27 @@ func _process(delta: float) -> void:
 
 
 func refresh() -> void:
+	if kingdom != null and kingdom.ground() != _rows:
+		_build_terrain()
 	if not _blind:
 		queue_redraw()
+
+
+## La case du terrain sous un point du contrôle, ou (-1, -1) hors du
+## plateau. C'est l'inverse exact de `_place` : mêmes échelle et origine,
+## sans quoi le doigt toucherait une case et le dessin en montrerait une
+## autre.
+func cell_at(point: Vector2) -> Vector2i:
+	var factor := _scale()
+	if factor <= 0.0:
+		return Vector2i(-1, -1)
+	var local := (point - _origin()) / factor
+	var cell := KingdomGround.cell_of(local)
+	if cell.x < 0 or cell.y < 0:
+		return Vector2i(-1, -1)
+	if cell.x >= KingdomGround.width() or cell.y >= KingdomGround.height():
+		return Vector2i(-1, -1)
+	return cell
 
 
 ## DEUX ÉCHELLES, ET C'EST VOULU. Les POSITIONS s'étirent sur les deux axes
@@ -504,6 +548,12 @@ func _gui_input(event: InputEvent) -> void:
 	if not (event is InputEventMouseButton) or not event.pressed:
 		return
 	var at: Vector2 = (event as InputEventMouseButton).position
+	if shaping:
+		var touched := cell_at(at)
+		if touched.x >= 0:
+			ground_touched.emit(touched)
+			accept_event()
+			return
 	# À l'envers : ce qui est dessiné en dernier est devant, et c'est lui
 	# que le doigt doit toucher.
 	for index in range(_hits.size() - 1, -1, -1):
@@ -512,3 +562,10 @@ func _gui_input(event: InputEvent) -> void:
 			picked.emit(StringName(hit["kind"]), StringName(hit["id"]))
 			accept_event()
 			return
+	# LE TERRAIN EST DESSOUS, ET IL RÉPOND EN DERNIER. Un bâtiment touché
+	# reste un bâtiment touché : sans cet ordre, façonner le sol volerait
+	# les clics de la moitié du royaume.
+	var cell := cell_at(at)
+	if cell.x >= 0:
+		ground_touched.emit(cell)
+		accept_event()

@@ -46,6 +46,11 @@ const GATE_ROWS := [3, 4, 5]
 ## part et d'autre, et le château posé sur sa case le recouvrait.
 const STEWARD_CELL := Vector2i(0, 4)
 
+## Largeur du rivage des assaillants, en colonnes. C'est là qu'ils
+## débarquent, et c'est la bande que le sol du royaume ne peut pas noyer
+## (T12.15).
+const SPAWN_COLUMNS := 3
+
 
 ## Fabrique la carte. `rng` sert au tirage des assaillants.
 static func build(kingdom: Kingdom, raid: Invasion, rng: CombatRng) -> CombatMap:
@@ -75,14 +80,40 @@ static func build(kingdom: Kingdom, raid: Invasion, rng: CombatRng) -> CombatMap
 	return CombatMap.from_data(MAP_ID, data)
 
 
-## Le terrain : de l'herbe, les bâtiments bâtis, et la palissade.
+## Le terrain : LE SOL DU ROYAUME, les bâtiments bâtis, et la palissade.
+##
+## LE SOL VIENT DU ROYAUME DEPUIS T12.15, et c'est ce qui donne un sens à
+## le façonner. Cette carte prenait les BÂTIMENTS du royaume et les posait
+## sur douze colonnes d'herbe nue : le joueur pouvait élever une butte
+## derrière sa porte sans que l'assaut ne la rencontre jamais. Ce qu'on
+## façonne est maintenant ce sur quoi on se bat — § 43, chaque activité
+## influence les autres, et par le TERRAIN cette fois.
+##
+## ON PREND LA FENÊTRE DE DROITE, pas celle de gauche. L'île fait quinze
+## colonnes, la carte douze : c'est le côté par lequel l'assaut arrive
+## qu'il faut montrer, donc les douze dernières colonnes. Prendre les
+## premières aurait montré l'arrière-pays, que personne ne défend.
 static func _ground(kingdom: Kingdom, width: int, height: int) -> Array:
 	var grid: Array[PackedStringArray] = []
+	var open := String(CombatRules.terrain_property(&"grass", &"symbol", "."))
+	var island := kingdom.ground()
+	var offset := maxi(KingdomGround.width() - width, 0)
 	for row in height:
 		var line := PackedStringArray()
 		for column in width:
-			line.append(String(CombatRules.terrain_property(&"grass", &"symbol", ".")))
+			line.append(_island_symbol(island, offset + column, row, open))
 		grid.append(line)
+
+	# LE TIERS GAUCHE RESTE PRATICABLE, QUOI QU'ON AIT CREUSÉ. C'est là que
+	# le joueur se place et que l'intendant se tient : une mare tombée
+	# dessus rendrait la bataille impossible à mettre en place, et
+	# `verify_maps` ne voit pas une carte qui n'existe dans aucun fichier.
+	# Façonner son royaume doit pouvoir compliquer sa défense, jamais
+	# l'annuler.
+	for row in height:
+		for column in range(mini(FENCE_COLUMN + 1, width)):
+			if not _walkable(grid[row][column]):
+				grid[row][column] = open
 
 	for building_id: StringName in SPOTS.keys():
 		if kingdom.level_of(building_id) <= 0:
@@ -100,10 +131,51 @@ static func _ground(kingdom: Kingdom, width: int, height: int) -> Array:
 			continue
 		grid[row][FENCE_COLUMN] = String(CombatRules.terrain_property(&"palisade", &"symbol", "p"))
 
+	# LES ASSAILLANTS DOIVENT POUVOIR ARRIVER. Les trois dernières colonnes
+	# sont leur rivage — `_assault` les y pose — et un joueur qui aurait
+	# creusé tout le bord de son île les noierait avant le premier coup.
+	# Ce n'est pas une défense, c'est une annulation, et le § 41 refuse
+	# déjà l'inverse : on ne punit pas absolument, on ne gagne pas
+	# absolument non plus.
+	#
+	# TROIS COLONNES, ET LE CHIFFRE SE LIT OÙ IL SERT. `SPAWN_COLUMNS` est
+	# la même constante que `_assault` emploie : deux nombres écrits
+	# séparément auraient fini par ne plus dire la même chose, et le jour
+	# où ils divergent un assaillant apparaît dans un lac sans qu'une
+	# seule erreur soit poussée.
+	for row in height:
+		for column in range(maxi(width - SPAWN_COLUMNS, 0), width):
+			if not _walkable(grid[row][column]):
+				grid[row][column] = open
+
 	var out: Array = []
 	for line: PackedStringArray in grid:
 		out.append("".join(line))
 	return out
+
+
+## Le symbole d'une case de l'île, ou de l'herbe hors de ses bords.
+##
+## LES BÂTIMENTS DU ROYAUME NE VIENNENT PAS PAR LÀ. Le sol de l'île porte
+## de l'herbe, de l'eau, du bois et des collines ; les bâtiments sont posés
+## en PIXELS par `buildings.json`, pas en cases, et ils arrivent juste
+## après par `SPOTS`. Confondre les deux poserait un château deux fois.
+static func _island_symbol(
+	island: PackedStringArray, column: int, row: int, fallback: String
+) -> String:
+	if row < 0 or row >= island.size():
+		return fallback
+	var line := island[row]
+	if column < 0 or column >= line.length():
+		return fallback
+	return line[column]
+
+
+static func _walkable(symbol: String) -> bool:
+	var terrain := CombatRules.terrain_for_symbol(symbol)
+	if terrain.is_empty():
+		return false
+	return bool(CombatRules.terrain_property(terrain, &"walkable", false))
 
 
 ## Les cases de placement : les deux colonnes qui précèdent la palissade.
@@ -140,7 +212,7 @@ static func _assault(raid: Invasion, rng: CombatRng, width: int, height: int) ->
 
 	var out: Array = []
 	var free: Array[Vector2i] = []
-	for column in range(maxi(width - 3, 0), width):
+	for column in range(maxi(width - SPAWN_COLUMNS, 0), width):
 		for row in height:
 			free.append(Vector2i(column, row))
 	if rng != null:

@@ -242,14 +242,15 @@ dur : passer par `data/assets.json`.
 
 *(à tenir à jour à chaque fin de session)*
 
-- **Phase courante : 12 — la campagne entière.** T12.3 le recrutement à
+- **Phase courante : 12 — la campagne entière.** T12.14 la falaise
+  entière, T12.15 la diversité des terrains et le terrassement du royaume.
+  **1030 tests passent, les dix vérificateurs sont verts.** T12.3 le recrutement à
   trois candidats, T12.4 la brasserie du Monastère, T12.5 les actes 5 et 6,
   T12.7 le Lancier, T12.8 la garde et la fonte, T12.9 les habitants,
   T12.10 le conseil du royaume et les villes voisines, T12.11 la carte du
   monde dessinée et le royaume qui a une tête, T12.12 le renfort et le prêt,
   T12.13 la passe d'esthétique.
   **La campagne se joue de bout en bout : six actes, 54 cartes.**
-  **991 tests passent, les dix vérificateurs sont verts.**
 - **Phase 11 — la bêta.** Les chantiers sont listés avec leur
   constat vérifié dans `docs/etat-des-lieux.md` § 5. **Faits :** T11.2 le
   son, T11.3 l'écran de titre, T11.4 le déverrouillage et la fin, T11.6
@@ -1362,6 +1363,80 @@ posaient à même le décor : l'œil ne savait pas s'ils appartenaient à
 l'île, au ciel ou à l'interface. Un cadre sombre les rassemble en MENU. Et
 **le premier bouton est plus haut que les autres** — cinq boutons de même
 taille demandent de lire pour savoir par où commencer.
+
+**LE PACK DESSINE UNE PAROI, PAS UNE LÈVRE (T12.14).** Relevé sur le
+fichier, alpha en main : les colonnes 5 à 8 des rangées 4 et 5 du tileset
+sont une falaise ENTIÈRE de 64 px, et elles encodent les mêmes quatre
+états que les blocs 4 × 4 — bout gauche, milieu, bout droit, une seule
+case de large. Le jeu n'en prenait que VINGT-DEUX PIXELS d'une tuile du
+milieu : une colline se lisait comme un autocollant posé à plat. Trois
+choses à ne pas défaire :
+- **La grille ne bouge pas.** La paroi PEND sous la colline, elle ne mord
+  pas dedans : une case vaut toujours 64 px et l'unité au pied d'une
+  falaise se dessine DEVANT elle. Lever le plateau de quelques pixels
+  serait plus fidèle à la promo du pack et romprait la correspondance
+  case ↔ pixel.
+- **Le pied suit ce qu'il y a en dessous**, et le hors-grille compte comme
+  de l'eau, comme dans `_is_land` : une colline de la dernière rangée
+  retombe sur la mer du décor, et un pied d'herbe y faisait flotter des
+  touffes sur l'eau.
+- **Aucun chiffre dans le code** : le relief se reconnaît au bonus de
+  portée, pas à un identifiant de terrain.
+
+**CINQUANTE CARTES SUR CINQUANTE-QUATRE ÉTAIENT LEUR PROPRE MIROIR
+(T12.15).** Le reproche de Gaetan était « certaines restent plates » ; la
+mesure a dit autre chose et de plus grave. Une carte en miroir haut/bas
+n'a ni haut ni bas : le flanc nord vaut exactement le flanc sud, donc
+choisir son côté au placement ne décide de rien. 86 % de toutes les cases
+étaient de l'herbe nue, 40 cartes n'avaient pas une colline, 46 pas une
+goutte d'eau. Aucune carte prise seule n'était fautive. Après la passe :
+3 miroirs, 79 % d'herbe, 21 sans colline, 21 sans eau, relief médian de
+9 % à 17 %. `verify_maps` compte désormais les FORMES d'un acte et pas
+seulement ses mots — une carte presque plate, une accidentée, trois à
+colline, une à eau, et pas plus d'un tiers de miroirs.
+
+**LA MESURE M'A REPRIS SUR MA PROPRE LEÇON, SEPT FOIS (T12.15).** Première
+passe : sept cartes étaient devenues plus FACILES, toutes parce que
+j'avais posé leur relief au milieu — c'est mot pour mot « un obstacle
+entre les deux camps est gratuit pour le joueur » de T12.1, et l'avoir
+écrit ne m'a pas empêché d'y retomber. Deux corollaires que la mesure
+ajoute :
+- **UNE COLLINE À PORTÉE DU JOUEUR EST UN CADEAU**, pas un décor : +1 de
+  portée et +1 de dégâts à qui s'y tient, et c'est l'équipe immobile qui
+  en profite. Les buttes vont chez l'ENNEMI.
+- **SUR UNE CARTE OÙ L'ENNEMI VIENT À VOUS, TOUT CE QUI RALENTIT EST UN
+  CADEAU, OÙ QUE CE SOIT SUR SON CHEMIN.** Il ne reste que les BORDS — les
+  rangées que personne ne traverse. `gel_08` est passé de 28 % de PV
+  restants à ZÉRO par l'autre bout : deux buttes posées sur la banquise du
+  joueur ont donné aux harponneurs une hauteur à trois cases de l'équipe.
+
+**CE QU'ON FAÇONNE EST CE SUR QUOI ON SE BAT (T12.15).** Demande de
+Gaetan : « le joueur doit pouvoir agrandir sa map, et terraformer ». La
+bataille de défense du § 38 fabrique sa carte à partir du royaume — mais
+elle n'en prenait que les BÂTIMENTS, sur douze colonnes d'herbe nue. Elle
+prend le SOL maintenant, et c'est la seule chose qui sépare cette
+mécanique d'une décoration. Six choses à ne pas défaire :
+- **LE SOL VIT DANS LA SAUVEGARDE**, comme la campagne de T11.4 : le
+  fichier dit ce que le royaume est au premier jour, la partie dit ce que
+  le joueur en a fait. Vide veut dire « celui du fichier ».
+- **ON N'AGRANDIT PAS LA TOILE, ON GAGNE SUR LA MER.** L'île n'occupe pas
+  toute la grille : elle s'étend DANS son plateau, donc la règle de T12.11
+  — la grille EST la toile — reste intacte et un royaume agrandi ne peut
+  pas faire sortir un bâtiment du terrain.
+- **TOUT EST RÉVERSIBLE, et `verify_kingdom` l'exige.** C'est chez le
+  joueur. Ce qui coûte n'est pas l'erreur, c'est le TEMPS : chaque travail
+  se paie en bois et en pierre, donc en bâtiments qu'on ne monte pas ce
+  cycle-là — et jamais en OR, qui est la bourse de l'expédition.
+- **ON NE COUPE PAS SON ÎLE EN DEUX**, et les trois colonnes du rivage des
+  assaillants restent praticables quoi qu'on ait creusé : façonner doit
+  pouvoir compliquer sa défense, jamais la supprimer.
+- **UN TRAVAIL QUI NE PEUT S'APPLIQUER NULLE PART EST UN BOUTON MORT.**
+  Le vérificateur compte les cases que chacun accepte sur l'île de départ,
+  et il a attrapé « araser une butte » du premier coup — l'île n'avait pas
+  une seule hauteur. Elle a une crête maintenant.
+- **LE BOUTON D'ENTRÉE VIT SOUS LE CHÂTEAU.** Posé sur le panneau « rien
+  de sélectionné », il ne se serait JAMAIS affiché — le piège exact de
+  T12.10, repris à l'identique.
 
 **L'expédition se joue, sur PC.** Écran de titre → carte du monde →
 composition de l'équipe → départ → route du § 28 (combats, évènements,

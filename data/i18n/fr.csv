@@ -812,3 +812,23 @@ KINGDOM_MASTERED,"%s est maître — %s, rang %d"
 WORLD_GIFTS,Votre royaume accompagne l'équipe :
 WORLD_GIFT_HEALING,"Soin entre les étapes : +%.0f %%"
 WORLD_GIFT_NONE,Votre royaume n'envoie rien encore — bâtissez.
+TERRAFORM_INVITE,Le sol du royaume se façonne. Ce que vous dessinez ici est le terrain sur lequel vous défendrez la ville.
+TERRAFORM_OPEN,Façonner le terrain
+TERRAFORM_TITLE,Travaux de terrassement
+TERRAFORM_DONE,Terminer les travaux
+TERRAFORM_DONE_LINE,Travaux achevés : %s.
+TERRAFORM_RAISE,Élever une butte
+TERRAFORM_RAISE_HINT,"Une butte donne de la portée à qui s'y tient. Touchez une case d'herbe libre."
+TERRAFORM_DIG,Creuser des douves
+TERRAFORM_DIG_HINT,"L'eau ne se traverse pas : elle oblige à contourner. Touchez une case d'herbe libre."
+TERRAFORM_LEVEL,Araser une butte
+TERRAFORM_LEVEL_HINT,Rendre une butte à la plaine. Touchez une hauteur.
+TERRAFORM_RECLAIM,Gagner sur la mer
+TERRAFORM_RECLAIM_HINT,"Agrandir l'île d'une case, le long d'une rive. Touchez de l'eau qui touche la terre."
+TERRAFORM_UNKNOWN,Ce travail n'existe pas.
+TERRAFORM_OFF_BOARD,Cette case est hors du royaume.
+TERRAFORM_WRONG_GROUND,Ce travail ne se fait pas sur ce sol.
+TERRAFORM_OCCUPIED,Un bâtiment ou un chantier occupe déjà cette case.
+TERRAFORM_NO_SHORE,On ne pose pas de terre au large : il faut une rive voisine.
+TERRAFORM_WOULD_SPLIT,Ces travaux couperaient le royaume en deux.
+TERRAFORM_TOO_DEAR,Les réserves n'y suffisent pas.
