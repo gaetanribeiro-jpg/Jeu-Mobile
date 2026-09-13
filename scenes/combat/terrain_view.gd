@@ -367,23 +367,38 @@ func _draw_land(cell: Vector2i, tile: Tile, origin: Vector2) -> void:
 	)
 
 
-## Lèvre de pierre sous une colline, quand la case du dessous n'en est pas
+## Paroi de pierre sous une colline, quand la case du dessous n'en est pas
 ## une. C'est ce qui rend le relief visible : sans elle, l'intérieur du
 ## plateau et celui de l'herbe sont la même image.
+##
+## ELLE PEND SOUS LA COLLINE plutôt que de mordre dedans : la case de la
+## colline garde son herbe entière, et le relief se lit au décroché. La
+## grille ne bouge donc jamais — une case vaut toujours 64 px, et
+## l'unité qui se tient au pied d'une falaise se dessine DEVANT elle,
+## ce qui est exactement ce qu'on veut voir.
 func _draw_cliff(cell: Vector2i) -> void:
 	if _tileset == null:
 		return
-	var tile := board.tile_at(cell)
-	if tile == null or tile.ranged_range_bonus() <= 0:
+	if not _is_hill(cell):
 		return
-	var below := board.tile_at(cell + Vector2i.DOWN)
-	if below != null and below.ranged_range_bonus() > 0:
+	if _is_hill(cell + Vector2i.DOWN):
 		return
 
-	# La falaise PEND SOUS la colline plutôt que de mordre dedans : la case
-	# de la colline garde son herbe entière, et le relief se lit au décroché.
+	# LES BOUTS SE LISENT COMME CEUX D'UN BLOC 4 × 4, et la rangée dit sur
+	# quoi la falaise retombe : de l'herbe ou de l'eau. Deux colonnes de
+	# rocher côte à côte sans leurs bouts donnaient une bande sans début ni
+	# fin, ce qui est la moitié de ce qui faisait lire une colline à plat.
+	# HORS GRILLE COMPTE COMME DE L'EAU, comme dans `_is_land` : une colline
+	# de la dernière rangée retombe sur la mer du décor, et lui poser un
+	# pied d'herbe y dessinait des touffes flottant sur l'eau.
+	var on_water := not _is_land(cell + Vector2i.DOWN)
 	var height := ViewSettings.size_of(&"hill_cliff_height_px")
-	var region := ViewSettings.hill_cliff_region(_tile_size)
+	var region := ViewSettings.hill_cliff_region(
+		_tile_size,
+		_is_hill(cell + Vector2i.LEFT),
+		_is_hill(cell + Vector2i.RIGHT),
+		on_water
+	)
 	region.size.y = height
 	draw_texture_rect_region(
 		_tileset,
@@ -393,6 +408,14 @@ func _draw_cliff(cell: Vector2i) -> void:
 		),
 		region
 	)
+
+
+## Une case porte-t-elle du relief ? Le bonus de portée EST la hauteur :
+## c'est ce qui fait qu'un terrain neuf qui surplomberait hériterait de sa
+## falaise sans qu'on y pense, et qu'aucun chiffre n'est écrit ici.
+func _is_hill(cell: Vector2i) -> bool:
+	var tile := board.tile_at(cell)
+	return tile != null and tile.ranged_range_bonus() > 0
 
 
 ## Une teinte franche sous tout terrain qui blesse celui qui s'y arrête.

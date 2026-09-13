@@ -379,7 +379,7 @@
   "damage_font_size": 28,
   "telegraph_font_size": 34,
   "telegraph_badge_radius_px": 17.0,
-  "hill_cliff_height_px": 22.0,
+  "hill_cliff_height_px": 64.0,
   "slot_badge_radius_px": 13.0,
   "slot_badge_offset_px": -60.0,
   "slot_font_size": 22,
@@ -420,9 +420,9 @@
    5,
    0
   ],
-  "_cliff_note": "cliff = la rangee de falaise du bloc 'hill', dessinee sous le bord bas d'une colline. Sans elle, l'interieur du plateau est identique a l'herbe et le joueur ne voit pas ou est le bonus de portee.",
+  "_cliff_note": "hill_cliff = le coin haut-gauche du bloc de PAROI, colonnes 5 a 8. Il s'indexe comme les blocs 4 x 4 sur l'axe X (0 = bout gauche, 1 = milieu, 2 = bout droit, 3 = une seule case de large), et sa rangee dit sur quoi la falaise retombe : la premiere a des touffes d'herbe au pied, la seconde l'ecume du rivage. Le jeu n'en prenait que vingt-deux pixels d'une tuile du milieu, sans bouts ni pied : une colline se lisait comme un autocollant pose a plat.",
   "hill_cliff": [
-   6,
+   5,
    4
   ]
  },

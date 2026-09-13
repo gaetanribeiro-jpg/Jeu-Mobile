@@ -139,14 +139,33 @@ static func _edge_index(before: bool, after: bool) -> int:
 	return 1
 
 
-## Rangée de falaise du bloc « hill », dessinée sous le bord bas d'une
-## colline. L'intérieur du plateau est identique à celui de l'herbe : sans
-## cette lèvre de pierre, le joueur ne voit pas où est le bonus de portée.
-static func hill_cliff_region(tile_size: int) -> Rect2:
-	var raw: Variant = section(&"terrain_blocks").get("hill_cliff", [6, 4])
+## Face de falaise sous le bord bas d'une colline. L'intérieur du plateau
+## est identique à celui de l'herbe : sans cette paroi de pierre, le
+## joueur ne voit pas où est le bonus de portée.
+##
+## LE PACK DESSINE UNE PAROI ENTIÈRE, PAS UNE LÈVRE. Relevé sur le
+## fichier, alpha en main : les colonnes 5 à 8 de la rangée 4 encodent les
+## MÊMES quatre états que les blocs 4 × 4 — 0 = bout gauche, 1 = milieu,
+## 2 = bout droit, 3 = une seule case de large — et la rangée 5 est la
+## même paroi au pied MOUILLÉ. Le jeu n'en prenait que vingt-deux pixels
+## d'une tuile du milieu : ni bouts, ni pied. Une colline se lisait comme
+## un autocollant posé à plat, et c'est exactement le reproche de Gaetan
+## sur le terrain.
+##
+## LE PIED SUIT CE QU'IL Y A EN DESSOUS. Rangée 4 : des touffes d'herbe,
+## donc une falaise qui tombe sur de la terre. Rangée 5 : un liseré crème,
+## qui est l'écume du rivage, donc une falaise qui plonge dans l'eau. Se
+## tromper de rangée pose de l'écume au milieu d'une prairie.
+static func hill_cliff_region(
+	tile_size: int, same_left: bool = true, same_right: bool = true,
+	on_water: bool = false
+) -> Rect2:
+	var raw: Variant = section(&"terrain_blocks").get("hill_cliff", [5, 4])
 	var cell: Array = raw
 	return Rect2(
-		int(cell[0]) * tile_size, int(cell[1]) * tile_size, tile_size, tile_size
+		(int(cell[0]) + _edge_index(same_left, same_right)) * tile_size,
+		(int(cell[1]) + (1 if on_water else 0)) * tile_size,
+		tile_size, tile_size
 	)
 
 
